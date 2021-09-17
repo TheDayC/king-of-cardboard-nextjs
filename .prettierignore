@@ -1,0 +1,23 @@
+# Directories
+node_modules/
+dist/
+build/
+build-server/
+coverage/
+tmp/
+public/
+.cache/
+.next/
+
+# Files
+.gitignore
+README.md
+yarn.lock
+yarn-error.log
+LICENSE
+*.tgz
+*.yml
+*.yaml
+*.png
+*.jpg
+*.jpeg
