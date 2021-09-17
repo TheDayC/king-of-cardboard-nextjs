@@ -5,11 +5,11 @@ import store from '../store';
 import '../styles/globals.css';
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
-  return (
-    <Provider store={store}>
-      <Component {...pageProps} />
-    </Provider>
-  );
-}
+    return (
+        <Provider store={store}>
+            <Component {...pageProps} />
+        </Provider>
+    );
+};
 
-export default MyApp
+export default MyApp;
