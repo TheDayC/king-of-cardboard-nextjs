@@ -184,3 +184,20 @@ export function getCounties(): Counties[] {
         Counties.Worcestershire,
     ];
 }
+
+export function fieldPatternMsgs(field: string): string {
+    switch (field) {
+        case 'firstName':
+        case 'lastName':
+            return 'Name must only contain letters.';
+        case 'email':
+            return 'Email address must be valid.';
+        case 'mobile':
+            return 'Must not contain letters.';
+        case 'billingPostcode':
+        case 'shippingPostcode':
+            return 'Must be a valid postcode.';
+        default:
+            return '';
+    }
+}
