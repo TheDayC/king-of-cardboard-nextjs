@@ -9,7 +9,7 @@ export const Header: React.FC = () => {
     const { cartItemCount } = useSelector(selector);
 
     return (
-        <div className="navbar mb-2 shadow-lg bg-neutral text-neutral-content">
+        <div className="navbar mb-4 shadow-md bg-neutral text-neutral-content">
             <div className="flex-none px-2 mx-2">
                 <img
                     src="/images/logo1x.png"
@@ -46,8 +46,7 @@ export const Header: React.FC = () => {
                     <a href="/cart">
                         <div className="flex justify-start items-center">
                             <AiOutlineShoppingCart className={styles.cart} />
-                            {cartItemCount > 0 && <div className="badge ml-2 badge-outline">3</div>}
-                            <div className="badge ml-2 badge-outline">3</div>
+                            {cartItemCount > 0 && <div className="badge ml-2 badge-outline">{cartItemCount}</div>}
                         </div>
                     </a>
                 </button>
