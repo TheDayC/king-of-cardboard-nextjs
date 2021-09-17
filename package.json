@@ -17,6 +17,7 @@
     },
     "dependencies": {
         "@reduxjs/toolkit": "^1.6.1",
+        "axios": "^0.21.4",
         "daisyui": "^1.14.0",
         "lodash": "^4.17.21",
         "next": "11.1.2",
@@ -27,6 +28,7 @@
         "redux-devtools-extension": "^2.13.9"
     },
     "devDependencies": {
+        "@types/axios": "^0.14.0",
         "@types/lodash": "^4.14.173",
         "@types/react": "17.0.21",
         "@types/react-dom": "^17.0.9",
