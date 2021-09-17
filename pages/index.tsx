@@ -6,7 +6,9 @@ export const Home: React.FC = () => {
     return (
         <React.Fragment>
             <Header />
-            <ProductGrid useFilters={false} />
+            <div className="container mx-auto px-16">
+                <ProductGrid useFilters={false} />
+            </div>
         </React.Fragment>
     );
 };

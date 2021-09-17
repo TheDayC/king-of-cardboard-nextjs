@@ -17,10 +17,10 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
     );
 
     return (
-        <div className="container mx-auto px-16">
-            <div className="grid grid-cols-3 gap-4">
+        <div className="flex-1">
+            <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl2:grid-cols-4 gap-4">
                 {filteredProducts.map((product) => (
-                    <div className="card bordered">
+                    <div className="card bordered" key={product.name}>
                         <figure>
                             <img src="https://picsum.photos/id/1005/400/250" />
                         </figure>
