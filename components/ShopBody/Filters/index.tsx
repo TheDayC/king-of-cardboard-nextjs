@@ -48,7 +48,7 @@ export const Filters: React.FC<FiltersProps> = ({ category }) => {
                                 value={type}
                                 type={FilterTypes.ProductType}
                                 label={`${type === ProductType.TCG ? upperCase(type) : upperFirst(type)}`}
-                                checked={Boolean(category === type || filters.productTypes.includes(type))}
+                                checked={filters.productTypes.includes(type)}
                                 changeFilterState={handleFilterOnChange}
                                 key={`Filter-${type}`}
                             />
@@ -65,7 +65,7 @@ export const Filters: React.FC<FiltersProps> = ({ category }) => {
                                 value={cat}
                                 type={FilterTypes.Category}
                                 label={`${upperFirst(cat)}`}
-                                checked={Boolean(category === cat || filters.categories.includes(cat))}
+                                checked={filters.categories.includes(cat)}
                                 changeFilterState={handleFilterOnChange}
                                 key={`Filter-${cat}`}
                             />

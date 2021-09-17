@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { combinedFilters, FilterTypes } from '../../../../enums/shop';
 
@@ -11,8 +11,8 @@ interface FilterProps {
 }
 
 export const Filter: React.FC<FilterProps> = ({ value, type, label, checked, changeFilterState }) => {
-    const handleOnChange = () => {
-        changeFilterState(value, type, !checked ? true : false);
+    const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        changeFilterState(value, type, e.target.checked);
     };
 
     return (
