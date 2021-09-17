@@ -5,7 +5,7 @@ import selector from './selector';
 import CartItem from './CartItem';
 import CartTotals from './CartTotals';
 
-export const BasketBody: React.FC = () => {
+export const Cart: React.FC = () => {
     const { cartItemCount, fullCartItemData } = useSelector(selector);
     const itemPlural = cartItemCount === 1 ? 'item' : 'items';
     const hasCartItems = fullCartItemData.length > 0;
@@ -15,14 +15,14 @@ export const BasketBody: React.FC = () => {
             <h1 className="mb-8">{`Your basket (${cartItemCount} ${itemPlural})`}</h1>
             {hasCartItems ? (
                 <div className="overflow-x-auto">
-                    <table className="table-w-full">
+                    <table className="table w-full">
                         <thead>
                             <tr>
-                                <th>Remove</th>
-                                <th>Product</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
+                                <th className="text-center rounded-none">Remove</th>
+                                <th className="text-center">Product</th>
+                                <th className="text-center">Price</th>
+                                <th className="text-center">Quantity</th>
+                                <th className="text-center">Total</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -49,4 +49,4 @@ export const BasketBody: React.FC = () => {
     );
 };
 
-export default BasketBody;
+export default Cart;

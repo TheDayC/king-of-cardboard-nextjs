@@ -9,7 +9,7 @@ interface ShopBodyProps {
     category: string | null;
 }
 
-export const ShopBody: React.FC<ShopBodyProps> = ({ category }) => {
+export const Shop: React.FC<ShopBodyProps> = ({ category }) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -30,4 +30,4 @@ export const ShopBody: React.FC<ShopBodyProps> = ({ category }) => {
     );
 };
 
-export default ShopBody;
+export default Shop;

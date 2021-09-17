@@ -26,17 +26,17 @@ export const CartTotals: React.FC = () => {
     return (
         <React.Fragment>
             <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
+                <td colSpan={3}>&nbsp;</td>
                 <td>Subtotal</td>
                 <td align="right">&pound;{ccyFormat(subTotal)}</td>
             </tr>
             <tr>
+                <td colSpan={3}>&nbsp;</td>
                 <td>Tax</td>
                 <td align="right">&pound;{`${ccyFormat(taxes)} (${calculateTaxPercentage(taxRate)})`}</td>
             </tr>
             <tr>
+                <td colSpan={3}>&nbsp;</td>
                 <td>Total</td>
                 <td align="right">&pound;{ccyFormat(total)}</td>
             </tr>

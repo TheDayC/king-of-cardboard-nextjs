@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import { fetchContent } from '../../utils/content';
 import Header from '../../components/Header';
-import ShopBody from '../../components/ShopBody';
+import Shop from '../../components/Shop';
 
 const QUERY = `
     query {
@@ -39,7 +39,7 @@ export const ShopPage: React.FC = () => {
     return (
         <React.Fragment>
             <Header />
-            <ShopBody category={null} />
+            <Shop category={null} />
         </React.Fragment>
     );
 };

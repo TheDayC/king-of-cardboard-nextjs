@@ -29,23 +29,23 @@ export const CartItem: React.FC<BasketItemProps> = ({ id, name, price, amount, s
 
     return (
         <tr>
-            <td align="center">
+            <td className="text-center">
                 <button aria-label="remove item" onClick={handleRemoveItem}>
                     <MdDeleteForever />
                 </button>
             </td>
-            <td align="center">{name}</td>
-            <td align="center">&pound;{price.toFixed(2)}</td>
-            <td align="center">
+            <td className="text-center">{name}</td>
+            <td className="text-center">&pound;{price.toFixed(2)}</td>
+            <td className="text-center">
                 <button aria-label="subtract one item" onClick={handleDecreaseAmount}>
                     <MdRemoveCircleOutline />
                 </button>
-                {amount}
+                <span className="px-4">{amount}</span>
                 <button aria-label="add one item" onClick={handleIncreaseAmount}>
                     <MdAddCircleOutline />
                 </button>
             </td>
-            <td align="center">&pound;{`${(price * amount).toFixed(2)}`}</td>
+            <td className="text-center">&pound;{`${(price * amount).toFixed(2)}`}</td>
         </tr>
     );
 };
