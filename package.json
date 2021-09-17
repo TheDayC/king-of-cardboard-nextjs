@@ -17,6 +17,7 @@
     },
     "dependencies": {
         "@reduxjs/toolkit": "^1.6.1",
+        "daisyui": "^1.14.0",
         "next": "11.1.2",
         "react": "17.0.2",
         "react-dom": "17.0.2",
@@ -29,12 +30,15 @@
         "@types/react-redux": "^7.1.18",
         "@typescript-eslint/eslint-plugin": "^4.31.1",
         "@typescript-eslint/parser": "^4.31.1",
+        "autoprefixer": "^10.3.4",
         "eslint": "7.32.0",
         "eslint-config-next": "11.1.2",
         "eslint-config-prettier": "^8.3.0",
         "husky": "^7.0.2",
         "lint-staged": "^11.1.2",
+        "postcss": "^8.3.6",
         "prettier": "^2.4.1",
+        "tailwindcss": "^2.2.15",
         "typescript": "4.4.3"
     }
 }
