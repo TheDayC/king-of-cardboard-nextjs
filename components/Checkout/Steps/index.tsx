@@ -19,7 +19,7 @@ export const Steps: React.FC<StepsProps> = ({ currentStep }) => {
                 }
 
                 return (
-                    <li data-content={(i += 1)} className={stepClasses}>
+                    <li data-content={(i += 1)} className={stepClasses} key={`step-${(i += 1)}`}>
                         {step}
                     </li>
                 );

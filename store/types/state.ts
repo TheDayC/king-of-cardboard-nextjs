@@ -43,6 +43,8 @@ export interface Checkout {
     taxes: number;
     total: number;
     taxRate: number;
+    currentStep: number;
+    shippingMethod: string | null;
     customerDetails: CustomerDetails;
 }
 

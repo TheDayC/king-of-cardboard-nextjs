@@ -15,3 +15,7 @@ export interface PersonalDetails {
     shippingCounty?: string;
     shippingPostcode?: string;
 }
+
+export interface DeliveryDetails {
+    shippingMethod: string;
+}

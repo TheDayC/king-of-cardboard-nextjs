@@ -5,6 +5,8 @@ const checkoutInitialState: Checkout = {
     taxes: 0,
     total: 0,
     taxRate: 0.2,
+    currentStep: 0,
+    shippingMethod: null,
     customerDetails: {
         allowShippingAddress: false,
         email: null,

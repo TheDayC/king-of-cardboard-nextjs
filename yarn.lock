@@ -62,11 +62,29 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
+"@commercelayer/active-resource@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@commercelayer/active-resource/-/active-resource-1.0.2.tgz#6415103274060952a6db4d4206927d10b5755343"
+  dependencies:
+    axios "^0.21.1"
+    es6-promise "^4.1.1"
+    pluralize-js "^8.0.1"
+    qs "^6.5.0"
+
 "@commercelayer/js-auth@^2.0.8":
   version "2.0.8"
   resolved "https://registry.yarnpkg.com/@commercelayer/js-auth/-/js-auth-2.0.8.tgz#4cad1efc0046d40749a101f12cf11070386b94fe"
   dependencies:
     client-oauth2 "^4.3.3"
+
+"@commercelayer/js-sdk@^4.1.4":
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/@commercelayer/js-sdk/-/js-sdk-4.1.4.tgz#2d58799e75703499adc7b7b30f13194e0cbd3cf9"
+  dependencies:
+    "@commercelayer/active-resource" "^1.0.2"
+    axios "^0.21.1"
+    lodash "^4.17.21"
+    lodash-es "^4.17.21"
 
 "@commercelayer/sdk@^2.0.7":
   version "2.0.7"
@@ -1153,6 +1171,10 @@ es6-object-assign@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/es6-object-assign/-/es6-object-assign-1.1.0.tgz#c2c3582656247c39ea107cb1e6652b6f9f24523c"
 
+es6-promise@^4.1.1:
+  version "4.2.8"
+  resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-4.2.8.tgz#4eb21594c972bc40553d276e510539143db53e0a"
+
 escalade@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/escalade/-/escalade-3.1.1.tgz#d8cfdc7000965c5a0174b4a82eaa5c0552742e40"
@@ -2083,6 +2105,10 @@ locate-path@^5.0.0:
   dependencies:
     p-locate "^4.1.0"
 
+lodash-es@^4.17.21:
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
+
 lodash.clonedeep@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
@@ -2616,6 +2642,10 @@ please-upgrade-node@^3.2.0:
   dependencies:
     semver-compare "^1.0.0"
 
+pluralize-js@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/pluralize-js/-/pluralize-js-8.0.1.tgz#8bf30c88d70c0385cfa0ad2b9db64d39820c3ec9"
+
 pnp-webpack-plugin@1.6.4:
   version "1.6.4"
   resolved "https://registry.yarnpkg.com/pnp-webpack-plugin/-/pnp-webpack-plugin-1.6.4.tgz#c9711ac4dc48a685dabafc86f8b6dd9f8df84149"
@@ -2783,6 +2813,12 @@ purgecss@^4.0.3:
     glob "^7.0.0"
     postcss "^8.2.1"
     postcss-selector-parser "^6.0.2"
+
+qs@^6.5.0:
+  version "6.10.1"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.10.1.tgz#4931482fa8d647a5aab799c5271d2133b981fb6a"
+  dependencies:
+    side-channel "^1.0.4"
 
 querystring-es3@0.2.1, querystring-es3@^0.2.0:
   version "0.2.1"
