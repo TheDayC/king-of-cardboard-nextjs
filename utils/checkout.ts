@@ -1,3 +1,6 @@
+import axios, { AxiosResponse } from 'axios';
+
+import { AxiosData } from '../types/fetch';
 import { Counties } from '../enums/checkout';
 
 function regexEmail(email: string): boolean {
@@ -199,5 +202,22 @@ export function fieldPatternMsgs(field: string): string {
             return 'Must be a valid postcode.';
         default:
             return '';
+    }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function fetchStripeGateway(accessToken: string): Promise<AxiosResponse<AxiosData> | void> {
+    try {
+        const url = `${process.env.NEXT_PUBLIC_ECOM_DOMAIN}/api/stripe_gateways/`;
+
+        return await axios.get(url, {
+            headers: {
+                Accept: 'application/vnd.api+json',
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+    } catch (e) {
+        console.error(e);
     }
 }

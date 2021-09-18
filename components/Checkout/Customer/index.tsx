@@ -25,7 +25,7 @@ import {
     setCurrentStep,
 } from '../../../store/slices/checkout';
 
-const CustomerDetails: React.FC = () => {
+const Customer: React.FC = () => {
     const { currentStep, customerDetails } = useSelector(selector);
     const {
         firstName,
@@ -471,4 +471,4 @@ const CustomerDetails: React.FC = () => {
     );
 };
 
-export default CustomerDetails;
+export default Customer;

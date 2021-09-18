@@ -4,12 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Header from '../../components/Header';
 import Steps from '../../components/Checkout/Steps';
-import CustomerDetails from '../../components/Checkout/CustomerDetails';
+import Customer from '../../components/Checkout/Customer';
 import { getCommerceAuth } from '../../utils/commerce';
 import { setAccessToken, setExpires } from '../../store/slices/global';
 import { CommerceAuthProps } from '../../types/commerce';
 import selector from './selector';
 import Delivery from '../../components/Checkout/Delivery';
+import Payment from '../../components/Checkout/Payment';
+import { fetchStripeGateway } from '../../utils/checkout';
 
 export const getStaticProps: GetStaticProps = async () => {
     const tokenProps = await getCommerceAuth();
@@ -38,8 +40,9 @@ export const CheckoutPage: React.FC<CommerceAuthProps> = ({ accessToken, expires
             <div className="container mx-auto p-8">
                 <div className="flex flex-col">
                     <Steps currentStep={currentStep} />
-                    <CustomerDetails />
+                    <Customer />
                     <Delivery />
+                    <Payment />
                 </div>
             </div>
         </React.Fragment>
