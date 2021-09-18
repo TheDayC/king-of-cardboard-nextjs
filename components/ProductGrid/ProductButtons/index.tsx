@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Link from 'next/link';
 
 import { addItemToCart } from '../../../store/slices/cart';
 import selector from './selector';
@@ -26,9 +27,10 @@ export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, stock, short
 
     return (
         <React.Fragment>
-            <button className="btn btn-outline btn-secondary">
-                <a href={to}>{shortButtons ? 'View' : 'View Product'}</a>
-            </button>
+            <Link href={to} passHref>
+                <button className="btn btn-outline btn-secondary">{shortButtons ? 'View' : 'View Product'}</button>
+            </Link>
+
             <button className="btn btn-primary" onClick={handleOnAddToCart} disabled={hasExceededStock}>
                 {shortButtons ? 'Add' : 'Add to Cart'}
             </button>

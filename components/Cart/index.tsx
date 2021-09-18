@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import Link from 'next/link';
 
 import selector from './selector';
 import CartItem from './CartItem';
@@ -32,9 +33,9 @@ export const Cart: React.FC = () => {
                             <CartTotals />
                             <tr>
                                 <td align="right" colSpan={5}>
-                                    <button className="btn btn-primary btn-lg">
-                                        <a href="/checkout">Checkout</a>
-                                    </button>
+                                    <Link href="/checkout" passHref>
+                                        <button className="btn btn-primary btn-lg">Checkout</button>
+                                    </Link>
                                 </td>
                             </tr>
                         </tbody>
