@@ -10,6 +10,7 @@ import { createInitialState } from './state';
 const persistConfig = {
     key: 'root',
     storage,
+    whitelist: ['cart', 'checkout'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

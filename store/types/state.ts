@@ -1,5 +1,6 @@
 import { Counties } from '../../enums/checkout';
 import { Categories, ProductType } from '../../enums/shop';
+import { DescriptionContent } from '../../types/products';
 
 export interface IAppState {
     global: Global;
@@ -13,17 +14,17 @@ export interface IAppState {
 }
 
 export interface Product {
-    id: number;
+    id: string;
     name: string;
-    price: number;
-    stock: number;
-    description: string;
-    types: ProductType[];
-    categories: Categories[];
+    price: number | null;
+    stock: number | null;
+    description: DescriptionContent[];
+    types: ProductType[] | null;
+    categories: Categories[] | null;
 }
 
 export interface CartItem {
-    id: number;
+    id: string;
     amount: number;
 }
 

@@ -6,7 +6,7 @@ import { addItemToCart } from '../../../store/slices/cart';
 import selector from './selector';
 
 interface ProductButtonsProps {
-    id: number;
+    id: string;
     stock: number;
     shortButtons: boolean;
 }
@@ -15,7 +15,7 @@ export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, stock, short
     const dispatch = useDispatch();
     const { cart } = useSelector(selector);
     const currentProduct = cart.find((c) => c.id === id);
-    const hasExceededStock = Boolean(currentProduct && currentProduct.amount >= stock);
+    const hasExceededStock = Boolean(currentProduct && stock && currentProduct.amount >= stock);
     const to = `/product/${id}`;
 
     const handleOnAddToCart = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
