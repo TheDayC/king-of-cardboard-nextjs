@@ -6,8 +6,11 @@ const globalSlice = createSlice({
     name: 'global',
     initialState: globalInitialState,
     reducers: {
-        setNavValue(state, action) {
-            state.currentNavItem = action.payload;
+        setAccessToken(state, action) {
+            state.accessToken = action.payload;
+        },
+        setExpires(state, action) {
+            state.expires = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -15,5 +18,5 @@ const globalSlice = createSlice({
     },
 });
 
-export const { setNavValue } = globalSlice.actions;
+export const { setAccessToken, setExpires } = globalSlice.actions;
 export default globalSlice.reducer;

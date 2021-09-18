@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { GetStaticProps } from 'next';
 import { useDispatch } from 'react-redux';
 
-import Header from '../../components/Header';
-import Steps from '../../components/Checkout/Steps';
-import CustomerDetails from '../../components/Checkout/CustomerDetails';
-import { getCommerceAuth } from '../../utils/commerce';
-import { setAccessToken, setExpires } from '../../store/slices/global';
-import { CommerceAuthProps } from '../../types/commerce';
+import Header from '../../../components/Header';
+import Steps from '../../../components/Checkout/Steps';
+import Delivery from '../../../components/Checkout/Delivery';
+import { getCommerceAuth } from '../../../utils/commerce';
+import { setAccessToken, setExpires } from '../../../store/slices/global';
+import { CommerceAuthProps } from '../../../types/commerce';
 
 export const getStaticProps: GetStaticProps = async () => {
     const tokenProps = await getCommerceAuth();
@@ -21,7 +21,7 @@ export const getStaticProps: GetStaticProps = async () => {
     }
 };
 
-export const CheckoutPage: React.FC<CommerceAuthProps> = ({ accessToken, expires }) => {
+export const DeliveryPage: React.FC<CommerceAuthProps> = ({ accessToken, expires }) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -34,12 +34,12 @@ export const CheckoutPage: React.FC<CommerceAuthProps> = ({ accessToken, expires
             <Header />
             <div className="container mx-auto p-8">
                 <div className="flex flex-col">
-                    <Steps currentStep={0} />
-                    <CustomerDetails />
+                    <Steps currentStep={1} />
+                    <Delivery />
                 </div>
             </div>
         </React.Fragment>
     );
 };
 
-export default CheckoutPage;
+export default DeliveryPage;

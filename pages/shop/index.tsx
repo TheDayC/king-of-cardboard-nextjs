@@ -1,9 +1,25 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { GetStaticProps } from 'next';
 
 import { fetchContent } from '../../utils/content';
 import Header from '../../components/Header';
 import Shop from '../../components/Shop';
+import { getCommerceAuth } from '../../utils/commerce';
+import { CommerceAuthProps } from '../../types/commerce';
+import { setAccessToken, setExpires } from '../../store/slices/global';
+
+export const getStaticProps: GetStaticProps = async () => {
+    const tokenProps = await getCommerceAuth();
+
+    if (tokenProps) {
+        return tokenProps;
+    } else {
+        return {
+            props: {}, // will be passed to the page component as props
+        };
+    }
+};
 
 const QUERY = `
     query {
@@ -19,8 +35,13 @@ const QUERY = `
     }
 `;
 
-export const ShopPage: React.FC = () => {
+export const ShopPage: React.FC<CommerceAuthProps> = ({ accessToken, expires }) => {
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(setAccessToken(accessToken));
+        dispatch(setExpires(expires));
+    }, [dispatch, accessToken, expires]);
 
     useEffect(() => {
         fetchContent(QUERY).then((response) => {

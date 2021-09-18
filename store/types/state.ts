@@ -34,7 +34,8 @@ export interface Filters {
 
 export interface Global {
     loading: boolean;
-    currentNavItem: number;
+    accessToken: string | null;
+    expires: string | null;
 }
 
 export interface Checkout {
