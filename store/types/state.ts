@@ -39,7 +39,6 @@ export interface Global {
 }
 
 export interface Checkout {
-    currentStep: number;
     subTotal: number;
     taxes: number;
     total: number;

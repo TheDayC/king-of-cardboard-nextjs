@@ -1,12 +1,12 @@
 import { Checkout } from '../types/state';
 
 const checkoutInitialState: Checkout = {
-    currentStep: 0,
     subTotal: 0,
     taxes: 0,
     total: 0,
     taxRate: 0.2,
     customerDetails: {
+        allowShippingAddress: false,
         email: null,
         firstName: null,
         lastName: null,

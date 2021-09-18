@@ -6,19 +6,6 @@ const checkoutSlice = createSlice({
     name: 'checkout',
     initialState: checkoutInitialState,
     reducers: {
-        incrementStep(state) {
-            if (state.currentStep < 3) {
-                state.currentStep += 1;
-            }
-        },
-        decrementStep(state) {
-            if (state.currentStep > 1) {
-                state.currentStep -= 1;
-            }
-        },
-        setStep(state, action) {
-            state.currentStep = action.payload;
-        },
         setTotals(state, action) {
             const { subTotal, taxes, total } = action.payload;
 
