@@ -26,9 +26,26 @@ import {
 } from '../../../store/slices/checkout';
 
 const CustomerDetails: React.FC = () => {
-    const { currentStep } = useSelector(selector);
+    const { currentStep, customerDetails } = useSelector(selector);
+    const {
+        firstName,
+        lastName,
+        email,
+        phone,
+        addressLineOne,
+        addressLineTwo,
+        city,
+        postcode,
+        county,
+        allowShippingAddress,
+        shippingAddressLineOne,
+        shippingAddressLineTwo,
+        shippingCity,
+        shippingPostcode,
+        shippingCounty,
+    } = customerDetails;
     const dispatch = useDispatch();
-    const [allowShippingAddressInternal, setAllowShippingAddressInternal] = useState(false);
+    const [allowShippingAddressInternal, setAllowShippingAddressInternal] = useState(allowShippingAddress);
     const [loading, setLoading] = useState(false);
     const {
         register,
@@ -126,6 +143,7 @@ const CustomerDetails: React.FC = () => {
                                                     value: /^[a-z ,.'-]+$/i,
                                                     message: fieldPatternMsgs('firstName'),
                                                 },
+                                                value: firstName,
                                             })}
                                             className={`input input-bordered${firstNameErr ? ' input-error' : ''}`}
                                         />
@@ -148,6 +166,7 @@ const CustomerDetails: React.FC = () => {
                                                     value: /^[a-z ,.'-]+$/i,
                                                     message: fieldPatternMsgs('lastName'),
                                                 },
+                                                value: lastName,
                                             })}
                                             className={`input input-bordered${lastNameErr ? ' input-error' : ''}`}
                                         />
@@ -170,6 +189,7 @@ const CustomerDetails: React.FC = () => {
                                                     value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                                                     message: fieldPatternMsgs('email'),
                                                 },
+                                                value: email,
                                             })}
                                             className={`input input-bordered${emailErr ? ' input-error' : ''}`}
                                         />
@@ -192,6 +212,7 @@ const CustomerDetails: React.FC = () => {
                                                     value: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g,
                                                     message: fieldPatternMsgs('mobile'),
                                                 },
+                                                value: phone,
                                             })}
                                             className={`input input-bordered${mobileErr ? ' input-error' : ''}`}
                                         />
@@ -215,6 +236,7 @@ const CustomerDetails: React.FC = () => {
                                             placeholder="Address Line One"
                                             {...register('billingAddressLineOne', {
                                                 required: { value: true, message: 'Required' },
+                                                value: addressLineOne,
                                             })}
                                             className={`input input-bordered${billingLineOneErr ? ' input-error' : ''}`}
                                         />
@@ -231,7 +253,7 @@ const CustomerDetails: React.FC = () => {
                                         <input
                                             type="text"
                                             placeholder="Address Line Two"
-                                            {...register('billingAddressLineTwo', {})}
+                                            {...register('billingAddressLineTwo', { value: addressLineTwo })}
                                             className={`input input-bordered${billingLineTwoErr ? ' input-error' : ''}`}
                                         />
                                         {billingLineTwoErr && (
@@ -249,6 +271,7 @@ const CustomerDetails: React.FC = () => {
                                             placeholder="City"
                                             {...register('billingCity', {
                                                 required: { value: true, message: 'Required' },
+                                                value: city,
                                             })}
                                             className={`input input-bordered${billingCityErr ? ' input-error' : ''}`}
                                         />
@@ -271,6 +294,7 @@ const CustomerDetails: React.FC = () => {
                                                     value: /^([A-Z][A-HJ-Y]?\d[A-Z\d]? ?\d[A-Z]{2}|GIR ?0A{2})$/gim,
                                                     message: fieldPatternMsgs('billingPostcode'),
                                                 },
+                                                value: postcode,
                                             })}
                                             className={`input input-bordered${
                                                 billingPostcodeErr ? ' input-error' : ''
@@ -291,6 +315,7 @@ const CustomerDetails: React.FC = () => {
                                             placeholder="County"
                                             {...register('billingCounty', {
                                                 required: { value: true, message: 'Required' },
+                                                value: county,
                                             })}
                                             className={`input input-bordered${billingCountyErr ? ' input-error' : ''}`}
                                         />
@@ -312,6 +337,7 @@ const CustomerDetails: React.FC = () => {
                                             {...register('allowShippingAddress', {})}
                                             className="checkbox"
                                             onChange={onAllowShippingAddress}
+                                            defaultChecked={allowShippingAddress}
                                         />
                                     </label>
                                 </div>
@@ -327,6 +353,7 @@ const CustomerDetails: React.FC = () => {
                                                 placeholder="Address Line One"
                                                 {...register('shippingAddressLineOne', {
                                                     required: { value: true, message: 'Required' },
+                                                    value: shippingAddressLineOne,
                                                 })}
                                                 className={`input input-bordered${
                                                     shippingLineOneErr ? ' input-error' : ''
@@ -345,7 +372,9 @@ const CustomerDetails: React.FC = () => {
                                             <input
                                                 type="text"
                                                 placeholder="Address Line Two"
-                                                {...register('shippingAddressLineTwo', {})}
+                                                {...register('shippingAddressLineTwo', {
+                                                    value: shippingAddressLineTwo,
+                                                })}
                                                 className={`input input-bordered${
                                                     shippingLineTwoErr ? ' input-error' : ''
                                                 }`}
@@ -365,6 +394,7 @@ const CustomerDetails: React.FC = () => {
                                                 placeholder="City"
                                                 {...register('shippingCity', {
                                                     required: { value: true, message: 'Required' },
+                                                    value: shippingCity,
                                                 })}
                                                 className={`input input-bordered${
                                                     shippingCityErr ? ' input-error' : ''
@@ -389,6 +419,7 @@ const CustomerDetails: React.FC = () => {
                                                         value: /^([A-Z][A-HJ-Y]?\d[A-Z\d]? ?\d[A-Z]{2}|GIR ?0A{2})$/gim,
                                                         message: fieldPatternMsgs('shippingPostcode'),
                                                     },
+                                                    value: shippingPostcode,
                                                 })}
                                                 className={`input input-bordered${
                                                     shippingPostcodeErr ? ' input-error' : ''
@@ -409,6 +440,7 @@ const CustomerDetails: React.FC = () => {
                                                 placeholder="County"
                                                 {...register('shippingCounty', {
                                                     required: { value: true, message: 'Required' },
+                                                    value: shippingCounty,
                                                 })}
                                                 className={`input input-bordered${
                                                     shippingCountyErr ? ' input-error' : ''
