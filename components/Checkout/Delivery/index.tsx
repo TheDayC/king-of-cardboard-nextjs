@@ -107,13 +107,13 @@ export const Delivery: React.FC = () => {
                                     />
                                 </div>
                             ))}
+                        <button
+                            type="submit"
+                            className={`btn${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
+                        >
+                            Payment
+                        </button>
                     </div>
-                    <button
-                        type="submit"
-                        className={`btn${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
-                    >
-                        Payment
-                    </button>
                 </div>
             </div>
         </form>
