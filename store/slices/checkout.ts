@@ -6,17 +6,7 @@ const checkoutSlice = createSlice({
     name: 'checkout',
     initialState: checkoutInitialState,
     reducers: {
-        incrementStep(state) {
-            if (state.currentStep < 3) {
-                state.currentStep += 1;
-            }
-        },
-        decrementStep(state) {
-            if (state.currentStep > 1) {
-                state.currentStep -= 1;
-            }
-        },
-        setStep(state, action) {
+        setCurrentStep(state, action) {
             state.currentStep = action.payload;
         },
         setTotals(state, action) {
@@ -62,6 +52,9 @@ const checkoutSlice = createSlice({
         setPhone(state, action) {
             state.customerDetails.phone = action.payload;
         },
+        setAllowShippingAddress(state, action) {
+            state.customerDetails.allowShippingAddress = action.payload;
+        },
         setShippingAddressLineOne(state, action) {
             state.customerDetails.shippingAddressLineOne = action.payload;
         },
@@ -77,6 +70,9 @@ const checkoutSlice = createSlice({
         setShippingCounty(state, action) {
             state.customerDetails.shippingCounty = action.payload;
         },
+        setShippingMethod(state, action) {
+            state.shippingMethod = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addDefaultCase((state) => state);
@@ -84,9 +80,7 @@ const checkoutSlice = createSlice({
 });
 
 export const {
-    incrementStep,
-    decrementStep,
-    setStep,
+    setCurrentStep,
     setTotals,
     setSubTotal,
     setTaxes,
@@ -100,10 +94,13 @@ export const {
     setPostCode,
     setCounty,
     setPhone,
+    setAllowShippingAddress,
     setShippingAddressLineOne,
     setShippingAddressLineTwo,
     setShippingCity,
     setShippingPostcode,
     setShippingCounty,
+    setShippingMethod,
 } = checkoutSlice.actions;
+
 export default checkoutSlice.reducer;

@@ -34,15 +34,17 @@ export interface Filters {
 
 export interface Global {
     loading: boolean;
-    currentNavItem: number;
+    accessToken: string | null;
+    expires: string | null;
 }
 
 export interface Checkout {
-    currentStep: number;
     subTotal: number;
     taxes: number;
     total: number;
     taxRate: number;
+    currentStep: number;
+    shippingMethod: string | null;
     customerDetails: CustomerDetails;
 }
 
@@ -55,7 +57,8 @@ export interface CustomerDetails {
     city: string | null;
     postcode: string | null;
     county: Counties | null;
-    phone: number | null;
+    phone: string | null;
+    allowShippingAddress: boolean;
     shippingAddressLineOne: string | null;
     shippingAddressLineTwo: string | null;
     shippingCity: string | null;
