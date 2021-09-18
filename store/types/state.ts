@@ -55,7 +55,8 @@ export interface CustomerDetails {
     city: string | null;
     postcode: string | null;
     county: Counties | null;
-    phone: number | null;
+    phone: string | null;
+    allowShippingAddress: boolean;
     shippingAddressLineOne: string | null;
     shippingAddressLineTwo: string | null;
     shippingCity: string | null;

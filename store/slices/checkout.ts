@@ -62,6 +62,9 @@ const checkoutSlice = createSlice({
         setPhone(state, action) {
             state.customerDetails.phone = action.payload;
         },
+        setAllowShippingAddress(state, action) {
+            state.customerDetails.allowShippingAddress = action.payload;
+        },
         setShippingAddressLineOne(state, action) {
             state.customerDetails.shippingAddressLineOne = action.payload;
         },
@@ -100,6 +103,7 @@ export const {
     setPostCode,
     setCounty,
     setPhone,
+    setAllowShippingAddress,
     setShippingAddressLineOne,
     setShippingAddressLineTwo,
     setShippingCity,

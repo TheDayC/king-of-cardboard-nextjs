@@ -1,41 +1,96 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { get } from 'lodash';
+import { useRouter } from 'next/router';
 
 import selector from './selector';
 import { fieldPatternMsgs } from '../../../utils/checkout';
+import { PersonalDetails } from '../../../types/checkout';
+import {
+    setFirstName,
+    setLastName,
+    setEmail,
+    setPhone,
+    setAddressLineOne,
+    setAddressLineTwo,
+    setCity,
+    setPostCode,
+    setCounty,
+    setAllowShippingAddress,
+    setShippingAddressLineOne,
+    setShippingAddressLineTwo,
+    setShippingCity,
+    setShippingPostcode,
+    setShippingCounty,
+} from '../../../store/slices/checkout';
 
 const CustomerDetails: React.FC = () => {
     const { customerDetails } = useSelector(selector);
-    const [allowShippingAddress, setAllowShippingAddress] = useState(false);
+    const dispatch = useDispatch();
+    const router = useRouter();
+    const [allowShippingAddressInternal, setAllowShippingAddressInternal] = useState(false);
+    const [loading, setLoading] = useState(false);
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm();
-    const onSubmit = (data) => console.log('Data: ', data);
-    const {
-        firstName: firstNameErr,
-        lastName: lastNameErr,
-        email: emailErr,
-        mobile: mobileErr,
-        billingAddressLineOne: billingLineOneErr,
-        billingAddressLineTwo: billingLineTwoErr,
-        billingCity: billingCityErr,
-        billingPostcode: billingPostcodeErr,
-        billingCounty: billingCountyErr,
-        allowShippingAddress: allowShippingAddressErr,
-        shippingAddressLineOne: shippingLineOneErr,
-        shippingAddressLineTwo: shippingLineTwoErr,
-        shippingCity: shippingCityErr,
-        shippingPostcode: shippingPostcodeErr,
-        shippingCounty: shippingCountyErr,
-    } = errors;
-    console.log('Errors: ', errors);
 
+    const onSubmit = (data: PersonalDetails) => {
+        // Set loading in current form.
+        setLoading(true);
+
+        // Fetch allowShipping and also dispatch current state on submission.
+        const allowShipping = get(data, 'allowShippingAddress', false);
+        dispatch(setAllowShippingAddress(allowShipping));
+
+        // Dispatch personal and billing details to the redux store.
+        dispatch(setFirstName(get(data, 'firstName', null)));
+        dispatch(setLastName(get(data, 'lastName', null)));
+        dispatch(setEmail(get(data, 'email', null)));
+        dispatch(setPhone(get(data, 'phone', null)));
+        dispatch(setAddressLineOne(get(data, 'billingAddressLineOne', null)));
+        dispatch(setAddressLineTwo(get(data, 'billingAddressLineTwo', null)));
+        dispatch(setCity(get(data, 'billingCity', null)));
+        dispatch(setPostCode(get(data, 'billingPostcode', null)));
+        dispatch(setCounty(get(data, 'billingCounty', null)));
+
+        // If the user has allowed shipping address dispatch shipping address to redux store.
+        if (allowShipping) {
+            dispatch(setShippingAddressLineOne(get(data, 'shippingAddressLineOne', null)));
+            dispatch(setShippingAddressLineTwo(get(data, 'shippingAddressLineTwo', null)));
+            dispatch(setShippingCity(get(data, 'shippingCity', null)));
+            dispatch(setShippingPostcode(get(data, 'shippingPostcode', null)));
+            dispatch(setShippingCounty(get(data, 'shippingCounty', null)));
+        }
+
+        // Remove load barriers.
+        setLoading(false);
+
+        // Redirect to next stage.
+        router.push('/checkout/delivery');
+    };
+
+    // Collect errors.
+    const firstNameErr = get(errors, 'firstName.message', null);
+    const lastNameErr = get(errors, 'lastName.message', null);
+    const emailErr = get(errors, 'email.message', null);
+    const mobileErr = get(errors, 'mobile.message', null);
+    const billingLineOneErr = get(errors, 'billingAddressLineOne.message', null);
+    const billingLineTwoErr = get(errors, 'billingAddressLineTwo.message', null);
+    const billingCityErr = get(errors, 'billingCity.message', null);
+    const billingPostcodeErr = get(errors, 'billingPostcode.message', null);
+    const billingCountyErr = get(errors, 'billingCounty.message', null);
+    const shippingLineOneErr = get(errors, 'shippingAddressLineOne.message', null);
+    const shippingLineTwoErr = get(errors, 'shippingAddressLineTwo.message', null);
+    const shippingCityErr = get(errors, 'shippingCity.message', null);
+    const shippingPostcodeErr = get(errors, 'shippingPostcode.message', null);
+    const shippingCountyErr = get(errors, 'shippingCounty.message', null);
+
+    // Update internal allow shipping state to add / hide address.
     const onAllowShippingAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setAllowShippingAddress(e.target.checked);
+        setAllowShippingAddressInternal(e.target.checked);
     };
 
     return (
@@ -60,7 +115,7 @@ const CustomerDetails: React.FC = () => {
                                 />
                                 {firstNameErr && (
                                     <label className="label">
-                                        <span className="label-text-alt">{firstNameErr.message}</span>
+                                        <span className="label-text-alt">{firstNameErr}</span>
                                     </label>
                                 )}
                             </div>
@@ -79,7 +134,7 @@ const CustomerDetails: React.FC = () => {
                                 />
                                 {lastNameErr && (
                                     <label className="label">
-                                        <span className="label-text-alt">{lastNameErr.message}</span>
+                                        <span className="label-text-alt">{lastNameErr}</span>
                                     </label>
                                 )}
                             </div>
@@ -101,19 +156,18 @@ const CustomerDetails: React.FC = () => {
                                 />
                                 {emailErr && (
                                     <label className="label">
-                                        <span className="label-text-alt">{emailErr.message}</span>
+                                        <span className="label-text-alt">{emailErr}</span>
                                     </label>
                                 )}
                             </div>
                             <div className="form-control">
                                 <label className="label">
                                     <span className="label-text">Mobile No.</span>
-                                    <span className="label-text-alt">+44 only</span>
                                 </label>
                                 <input
                                     type="tel"
                                     placeholder="Mobile No."
-                                    {...register('mobile', {
+                                    {...register('phone', {
                                         required: { value: true, message: 'Required' },
                                         pattern: {
                                             value: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g,
@@ -124,7 +178,7 @@ const CustomerDetails: React.FC = () => {
                                 />
                                 {mobileErr && (
                                     <label className="label">
-                                        <span className="label-text-alt">{mobileErr.message}</span>
+                                        <span className="label-text-alt">{mobileErr}</span>
                                     </label>
                                 )}
                             </div>
@@ -147,7 +201,7 @@ const CustomerDetails: React.FC = () => {
                                 />
                                 {billingLineOneErr && (
                                     <label className="label">
-                                        <span className="label-text-alt">{billingLineOneErr.message}</span>
+                                        <span className="label-text-alt">{billingLineOneErr}</span>
                                     </label>
                                 )}
                             </div>
@@ -163,7 +217,7 @@ const CustomerDetails: React.FC = () => {
                                 />
                                 {billingLineTwoErr && (
                                     <label className="label">
-                                        <span className="label-text-alt">{billingLineTwoErr.message}</span>
+                                        <span className="label-text-alt">{billingLineTwoErr}</span>
                                     </label>
                                 )}
                             </div>
@@ -179,7 +233,7 @@ const CustomerDetails: React.FC = () => {
                                 />
                                 {billingCityErr && (
                                     <label className="label">
-                                        <span className="label-text-alt">{billingCityErr.message}</span>
+                                        <span className="label-text-alt">{billingCityErr}</span>
                                     </label>
                                 )}
                             </div>
@@ -201,7 +255,7 @@ const CustomerDetails: React.FC = () => {
                                 />
                                 {billingPostcodeErr && (
                                     <label className="label">
-                                        <span className="label-text-alt">{billingPostcodeErr.message}</span>
+                                        <span className="label-text-alt">{billingPostcodeErr}</span>
                                     </label>
                                 )}
                             </div>
@@ -217,7 +271,7 @@ const CustomerDetails: React.FC = () => {
                                 />
                                 {billingCountyErr && (
                                     <label className="label">
-                                        <span className="label-text-alt">{billingCountyErr.message}</span>
+                                        <span className="label-text-alt">{billingCountyErr}</span>
                                     </label>
                                 )}
                             </div>
@@ -237,7 +291,7 @@ const CustomerDetails: React.FC = () => {
                             </label>
                         </div>
                         <h3 className="card-title mt-6">Shipping Details</h3>
-                        {allowShippingAddress && (
+                        {allowShippingAddressInternal && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-4 lg:gap-6">
                                 <div className="form-control">
                                     <label className="label">
@@ -253,7 +307,7 @@ const CustomerDetails: React.FC = () => {
                                     />
                                     {shippingLineOneErr && (
                                         <label className="label">
-                                            <span className="label-text-alt">{shippingLineOneErr.message}</span>
+                                            <span className="label-text-alt">{shippingLineOneErr}</span>
                                         </label>
                                     )}
                                 </div>
@@ -269,7 +323,7 @@ const CustomerDetails: React.FC = () => {
                                     />
                                     {shippingLineTwoErr && (
                                         <label className="label">
-                                            <span className="label-text-alt">{shippingLineTwoErr.message}</span>
+                                            <span className="label-text-alt">{shippingLineTwoErr}</span>
                                         </label>
                                     )}
                                 </div>
@@ -287,7 +341,7 @@ const CustomerDetails: React.FC = () => {
                                     />
                                     {shippingCityErr && (
                                         <label className="label">
-                                            <span className="label-text-alt">{shippingCityErr.message}</span>
+                                            <span className="label-text-alt">{shippingCityErr}</span>
                                         </label>
                                     )}
                                 </div>
@@ -309,7 +363,7 @@ const CustomerDetails: React.FC = () => {
                                     />
                                     {shippingPostcodeErr && (
                                         <label className="label">
-                                            <span className="label-text-alt">{shippingPostcodeErr.message}</span>
+                                            <span className="label-text-alt">{shippingPostcodeErr}</span>
                                         </label>
                                     )}
                                 </div>
@@ -327,7 +381,7 @@ const CustomerDetails: React.FC = () => {
                                     />
                                     {shippingCountyErr && (
                                         <label className="label">
-                                            <span className="label-text-alt">{shippingCountyErr.message}</span>
+                                            <span className="label-text-alt">{shippingCountyErr}</span>
                                         </label>
                                     )}
                                 </div>
@@ -336,8 +390,11 @@ const CustomerDetails: React.FC = () => {
                     </div>
                 </div>
             </div>
-
-            <input type="submit" />
+            <div className="flex justify-end mt-6">
+                <button type="submit" className={`btn btn-lg btn-secondary${loading ? ' loading' : ''}`}>
+                    {loading ? 'Loading' : 'Next'}
+                </button>
+            </div>
         </form>
     );
 };
