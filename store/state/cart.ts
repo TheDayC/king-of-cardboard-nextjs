@@ -1,5 +1,8 @@
-import { CartItem } from '../types/state';
+import { CartState } from '../types/state';
 
-const cartInitialState: CartItem[] = [];
+const cartInitialState: CartState = {
+    order: null,
+    items: [],
+};
 
 export default cartInitialState;

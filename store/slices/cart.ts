@@ -7,39 +7,42 @@ const cartSlice = createSlice({
     initialState: cartInitialState,
     reducers: {
         addItemToCart(state, action) {
-            const productIndex = state.findIndex((s) => s.id === action.payload.id);
+            const productIndex = state.items.findIndex((s) => s.id === action.payload.id);
 
             if (productIndex >= 0) {
                 const newProduct = {
-                    ...state[productIndex],
-                    amount: (state[productIndex].amount += 1),
+                    ...state.items[productIndex],
+                    amount: (state.items[productIndex].amount += 1),
                 };
 
-                state[productIndex] = newProduct;
+                state.items[productIndex] = newProduct;
             } else {
-                state.push(action.payload);
+                state.items.push(action.payload);
             }
         },
         removeItem(state, action) {
-            const cartIndex = state.findIndex((c) => c.id === action.payload);
+            const cartIndex = state.items.findIndex((c) => c.id === action.payload);
 
-            if (state[cartIndex]) {
-                state.splice(cartIndex, 1);
+            if (state.items[cartIndex]) {
+                state.items.splice(cartIndex, 1);
             }
         },
         increaseAmount(state, action) {
-            const cartIndex = state.findIndex((c) => c.id === action.payload.id);
+            const cartIndex = state.items.findIndex((c) => c.id === action.payload.id);
 
-            if (state[cartIndex] && state[cartIndex].amount < action.payload.stock) {
-                state[cartIndex].amount += 1;
+            if (state.items[cartIndex] && state.items[cartIndex].amount < action.payload.stock) {
+                state.items[cartIndex].amount += 1;
             }
         },
         decreaseAmount(state, action) {
-            const cartIndex = state.findIndex((c) => c.id === action.payload);
+            const cartIndex = state.items.findIndex((c) => c.id === action.payload);
 
-            if (state[cartIndex] && state[cartIndex].amount > 1) {
-                state[cartIndex].amount -= 1;
+            if (state.items[cartIndex] && state.items[cartIndex].amount > 1) {
+                state.items[cartIndex].amount -= 1;
             }
+        },
+        createOrder(state, action) {
+            state.order = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -47,5 +50,5 @@ const cartSlice = createSlice({
     },
 });
 
-export const { addItemToCart, removeItem, increaseAmount, decreaseAmount } = cartSlice.actions;
+export const { addItemToCart, removeItem, increaseAmount, decreaseAmount, createOrder } = cartSlice.actions;
 export default cartSlice.reducer;

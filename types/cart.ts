@@ -1,3 +1,5 @@
+import { Order } from '@commercelayer/sdk/lib/resources/orders';
+
 export interface FullCartItem {
     amount: number;
     id: number;
@@ -5,4 +7,8 @@ export interface FullCartItem {
     price: number;
     stock: number;
     description: string;
+}
+
+export interface CartStaticProps {
+    order: Order | null;
 }

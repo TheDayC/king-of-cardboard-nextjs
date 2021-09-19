@@ -1,3 +1,4 @@
+import { CartStaticProps } from './cart';
 import { Product } from './products';
 
 export interface CommerceAuthProps {
@@ -9,7 +10,7 @@ export interface CommerceProductProps {
     products: Product[] | null;
 }
 
-export interface CommerceStaticProps extends CommerceAuthProps, CommerceProductProps {}
+export interface CommerceStaticProps extends CommerceAuthProps, CommerceProductProps, CartStaticProps {}
 
 export interface ShippingMethods {
     id: string;

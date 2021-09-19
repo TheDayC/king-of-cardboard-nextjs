@@ -13,6 +13,13 @@ export const PRODUCT_QUERY = `
                 productLink
                 types
                 categories
+                imageCollection {
+                    items {
+                        title
+                        description
+                        url
+                    }
+                }
             }
         }
     }

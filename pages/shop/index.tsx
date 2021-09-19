@@ -10,6 +10,7 @@ import { setAccessToken, setExpires } from '../../store/slices/global';
 import { addProductCollection } from '../../store/slices/products';
 import { fetchProductCollection } from '../../utils/products';
 import { PRODUCT_QUERY } from '../../utils/content';
+import { createOrder } from '../../store/slices/cart';
 
 export const getStaticProps: GetStaticProps = async () => {
     const token = await getCommerceAuth();
@@ -17,12 +18,14 @@ export const getStaticProps: GetStaticProps = async () => {
     const stockItems = cl ? await cl.stock_items.list() : null;
     const prices = cl ? await cl.prices.list() : null;
     const products = await fetchProductCollection(PRODUCT_QUERY, stockItems, prices);
+    const order = cl ? await cl.orders.create({ guest: true }) : null;
 
-    if (token && products) {
+    if (token && products && order) {
         return {
             props: {
                 ...token,
                 products: products,
+                order,
             },
         };
     } else {
@@ -32,7 +35,7 @@ export const getStaticProps: GetStaticProps = async () => {
     }
 };
 
-export const ShopPage: React.FC<CommerceStaticProps> = ({ accessToken, expires, products }) => {
+export const ShopPage: React.FC<CommerceStaticProps> = ({ accessToken, expires, products, order }) => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setAccessToken(accessToken));
@@ -42,6 +45,10 @@ export const ShopPage: React.FC<CommerceStaticProps> = ({ accessToken, expires, 
     useEffect(() => {
         dispatch(addProductCollection(products));
     }, [dispatch, products]);
+
+    useEffect(() => {
+        dispatch(createOrder(order));
+    }, [dispatch, order]);
 
     return (
         <React.Fragment>

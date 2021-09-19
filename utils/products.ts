@@ -28,13 +28,15 @@ export function filterProducts(products: Product[], filters: Filters): Product[]
 
 function normaliseProductCollection(products: ContentfulProduct[]): Product[] {
     return products.map((p) => ({
-        id: p.productLink,
+        id: '',
+        sku: p.productLink,
         name: p.name,
-        price: null,
-        stock: null,
+        price: 0,
+        stock: 0,
         description: p.description.json.content,
         types: p.types.map((type) => parseProductType(type)),
         categories: p.categories.map((cat) => parseProductCategory(cat)),
+        images: p.imageCollection.items,
     }));
 }
 
@@ -44,14 +46,15 @@ async function hydrateProductCollection(
     prices: ListResponse<Price>
 ): Promise<Product[]> {
     return products.map((product) => {
-        const { id } = product;
-        const stock = stockItems.find((s) => s.sku_code === id);
-        const price = prices.find((p) => p.sku_code === id);
+        const { sku } = product;
+        const stock = stockItems.find((s) => s.sku_code === sku);
+        const price = prices.find((p) => p.sku_code === sku);
 
         return {
             ...product,
-            stock: stock && stock.quantity ? stock.quantity : null,
-            price: price && price.amount_cents ? price.amount_cents : null,
+            id: stock && stock.id ? stock.id : '',
+            stock: stock && stock.quantity ? stock.quantity : 0,
+            price: price && price.amount_cents ? price.amount_cents : 0,
         };
     });
 }
