@@ -13,6 +13,8 @@ export interface ContentfulProduct {
     name: string;
     productLink: string;
     description: Description;
+    types: string[];
+    categories: string[];
 }
 
 interface Description {

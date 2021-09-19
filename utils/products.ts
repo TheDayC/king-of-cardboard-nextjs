@@ -2,6 +2,7 @@ import { ListResponse } from '@commercelayer/sdk/lib/resource';
 import { Price } from '@commercelayer/sdk/lib/resources/prices';
 import { StockItem } from '@commercelayer/sdk/lib/resources/stock_items';
 
+import { Categories, ProductType } from '../enums/shop';
 import { Filters } from '../store/types/state';
 import { ContentfulProduct, Product } from '../types/products';
 import { fetchContent } from './content';
@@ -32,8 +33,8 @@ function normaliseProductCollection(products: ContentfulProduct[]): Product[] {
         price: null,
         stock: null,
         description: p.description.json.content,
-        types: null,
-        categories: null,
+        types: p.types.map((type) => parseProductType(type)),
+        categories: p.categories.map((cat) => parseProductCategory(cat)),
     }));
 }
 
@@ -66,6 +67,7 @@ export async function fetchProductCollection(
         const productCollection = productResponse.data.data.productCollection;
 
         if (productCollection) {
+            console.log('🚀 ~ file: products.ts ~ line 69 ~ productCollection', productCollection);
             const normalisedCollections = normaliseProductCollection(productCollection.items);
 
             if (stockItems && prices) {
@@ -79,4 +81,28 @@ export async function fetchProductCollection(
     }
 
     return null;
+}
+
+export function parseProductType(type: string): ProductType {
+    switch (type) {
+        case 'tcg':
+            return ProductType.TCG;
+        case 'sports':
+            return ProductType.Sports;
+        default:
+            return ProductType.Other;
+    }
+}
+
+export function parseProductCategory(type: string): Categories {
+    switch (type) {
+        case 'sealed':
+            return Categories.Sealed;
+        case 'singles':
+            return Categories.Singles;
+        case 'breaks':
+            return Categories.Breaks;
+        default:
+            return Categories.Other;
+    }
 }
