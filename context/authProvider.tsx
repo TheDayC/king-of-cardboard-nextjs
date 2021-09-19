@@ -14,7 +14,7 @@ import { PRODUCT_QUERY } from '../utils/content';
 import { addProductCollection } from '../store/slices/products';
 
 const AuthProvider: React.FC = ({ children }) => {
-    const { accessToken, expires, order } = useSelector(selector);
+    const { accessToken, expires, order, products } = useSelector(selector);
     const dispatch = useDispatch();
 
     const createNewToken = useCallback(async () => {
@@ -26,31 +26,10 @@ const AuthProvider: React.FC = ({ children }) => {
         }
     }, [dispatch]);
 
+    // Init the client if accessToken is available.
     const commerceLayer = useMemo(() => {
-        // Check to see if we have a token.
-        if (accessToken) {
-            if (expires) {
-                const expiryDate = DateTime.fromISO(expires, { zone: 'Europe/London' });
-                const currentDate = DateTime.now();
-                currentDate.setZone('Europe/London');
-
-                // Check to see where our current token has expired.
-                if (expiryDate < currentDate) {
-                    createNewToken();
-
-                    return null;
-                }
-            }
-
-            // Our token is valid, init commerceLayer SDK.
-            return initCommerceClient(accessToken);
-        } else {
-            // We don't have a token at all yet, create one.
-            createNewToken();
-
-            return null;
-        }
-    }, [accessToken, createNewToken, expires]);
+        return accessToken ? initCommerceClient(accessToken) : null;
+    }, [accessToken]);
 
     // Create a draft order for the current session and add to store.
     const createNewOrder = useCallback(
@@ -74,17 +53,40 @@ const AuthProvider: React.FC = ({ children }) => {
         [dispatch]
     );
 
+    // Create the product collection on load.
     useIsomorphicLayoutEffect(() => {
-        if (commerceLayer) {
-            // Create the product collection on load.
+        if (commerceLayer && products.length <= 0) {
             createProductCollection(commerceLayer);
+        }
+    }, [products, createProductCollection, commerceLayer]);
 
-            // If the order doesn't exist then create one.
-            if (!order) {
-                createNewOrder(commerceLayer);
+    // If the order doesn't exist then create one.
+    useIsomorphicLayoutEffect(() => {
+        if (commerceLayer && !order) {
+            createNewOrder(commerceLayer);
+        }
+    }, [order, createNewOrder, commerceLayer]);
+
+    // If accessToken doesn't exist create a new one.
+    useIsomorphicLayoutEffect(() => {
+        if (!accessToken) {
+            createNewToken();
+        }
+    }, [accessToken, createNewToken]);
+
+    // If expiry date has passed, refresh token.
+    useIsomorphicLayoutEffect(() => {
+        if (accessToken && expires) {
+            const expiryDate = DateTime.fromISO(expires, { zone: 'Europe/London' });
+            const currentDate = DateTime.now();
+            currentDate.setZone('Europe/London');
+
+            // Check to see where our current token has expired.
+            if (expiryDate < currentDate) {
+                createNewToken();
             }
         }
-    }, [accessToken, order, commerceLayer]);
+    }, [accessToken, expires, createNewToken]);
 
     // Our context value that we'll provide to the app.
     const contextValue = useMemo(() => {
