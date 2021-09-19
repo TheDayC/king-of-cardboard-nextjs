@@ -14,7 +14,7 @@ interface ProductButtonsProps {
 export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, stock, shortButtons }) => {
     const dispatch = useDispatch();
     const { cart } = useSelector(selector);
-    const currentProduct = cart.find((c) => c.id === id);
+    const currentProduct = cart.items.find((c) => c.id === id);
     const hasExceededStock = Boolean(currentProduct && stock && currentProduct.amount >= stock);
     const to = `/product/${id}`;
 

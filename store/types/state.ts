@@ -1,3 +1,5 @@
+import { Order } from '@commercelayer/sdk/lib/resources/orders';
+
 import { Counties } from '../../enums/checkout';
 import { Categories, ProductType } from '../../enums/shop';
 import { Product } from '../../types/products';
@@ -5,12 +7,17 @@ import { Product } from '../../types/products';
 export interface IAppState {
     global: Global;
     products: Product[];
-    cart: CartItem[];
+    cart: CartState;
     errors: string | null;
     productType: ProductType[];
     categories: Categories[];
     filters: Filters;
     checkout: Checkout;
+}
+
+export interface CartState {
+    order: Order | null;
+    items: CartItem[];
 }
 
 export interface CartItem {
