@@ -67,7 +67,6 @@ export async function fetchProductCollection(
         const productCollection = productResponse.data.data.productCollection;
 
         if (productCollection) {
-            console.log('🚀 ~ file: products.ts ~ line 69 ~ productCollection', productCollection);
             const normalisedCollections = normaliseProductCollection(productCollection.items);
 
             if (stockItems && prices) {

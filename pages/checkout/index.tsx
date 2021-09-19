@@ -14,10 +14,12 @@ import Payment from '../../components/Checkout/Payment';
 import { fetchStripeGateway } from '../../utils/checkout';
 
 export const getStaticProps: GetStaticProps = async () => {
-    const tokenProps = await getCommerceAuth();
+    const token = await getCommerceAuth();
 
-    if (tokenProps) {
-        return tokenProps;
+    if (token) {
+        return {
+            props: token,
+        };
     } else {
         return {
             props: {}, // will be passed to the page component as props

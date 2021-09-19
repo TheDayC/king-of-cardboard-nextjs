@@ -9,10 +9,12 @@ import { getCommerceAuth } from '../utils/commerce';
 import { CommerceAuthProps } from '../types/commerce';
 
 export const getStaticProps: GetStaticProps = async () => {
-    const tokenProps = await getCommerceAuth();
+    const token = await getCommerceAuth();
 
-    if (tokenProps) {
-        return tokenProps;
+    if (token) {
+        return {
+            props: token,
+        };
     } else {
         return {
             props: {}, // will be passed to the page component as props

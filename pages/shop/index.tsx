@@ -9,29 +9,14 @@ import { CommerceStaticProps } from '../../types/commerce';
 import { setAccessToken, setExpires } from '../../store/slices/global';
 import { addProductCollection } from '../../store/slices/products';
 import { fetchProductCollection } from '../../utils/products';
-
-const QUERY = `
-    query {
-        productCollection {
-            items {
-                name
-                description {
-                    json
-                }
-                productLink
-                types
-                categories
-            }
-        }
-    }
-`;
+import { PRODUCT_QUERY } from '../../utils/content';
 
 export const getStaticProps: GetStaticProps = async () => {
     const token = await getCommerceAuth();
     const cl = token ? initCommerceClient(token.accessToken) : null;
     const stockItems = cl ? await cl.stock_items.list() : null;
     const prices = cl ? await cl.prices.list() : null;
-    const products = await fetchProductCollection(QUERY, stockItems, prices);
+    const products = await fetchProductCollection(PRODUCT_QUERY, stockItems, prices);
 
     if (token && products) {
         return {
