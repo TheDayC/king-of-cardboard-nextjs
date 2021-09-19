@@ -15,7 +15,7 @@ export function createFullItemData(products: Product[], cart: CartItem[]): FullC
 
         return {
             ...mP,
-            amount: cartItem ? cartItem.amount : 0,
+            quantity: cartItem ? cartItem.amount : 0,
         };
     });
 
@@ -23,7 +23,7 @@ export function createFullItemData(products: Product[], cart: CartItem[]): FullC
 }
 
 export function calculateSubtotal(cartItems: FullCartItem[]): number {
-    return cartItems.map(({ price, amount }) => price * amount).reduce((sum, currentValue) => sum + currentValue);
+    return cartItems.map(({ price, quantity }) => price * quantity).reduce((sum, currentValue) => sum + currentValue);
 }
 
 export function calculateTaxes(subTotal: number, taxRate: number): number {

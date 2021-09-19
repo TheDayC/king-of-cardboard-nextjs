@@ -6,7 +6,7 @@ import { createFullItemData } from '../../../utils/cart';
 const selector = createSelector(
     [selectCartData, selectProductData, selectCheckoutData],
     (cart, products, checkout) => ({
-        fullCartItemData: createFullItemData(products, cart),
+        fullCartItemData: createFullItemData(products, cart.items),
         taxRate: checkout.taxRate,
     })
 );

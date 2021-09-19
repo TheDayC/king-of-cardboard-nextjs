@@ -1,15 +1,21 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 
 import selector from './selector';
 import CartItem from './CartItem';
 import CartTotals from './CartTotals';
+import AuthProviderContext from '../../context/context';
+import { createOrder } from '../../store/slices/cart';
+import { orderQueryParams } from '../../utils/commerce';
 
 export const Cart: React.FC = () => {
-    const { cartItemCount, fullCartItemData } = useSelector(selector);
+    const { cartItemCount, orderId, order } = useSelector(selector);
+    const dispatch = useDispatch();
+
     const itemPlural = cartItemCount === 1 ? 'item' : 'items';
-    const hasCartItems = fullCartItemData.length > 0;
+    // const hasCartItems = fullCartItemData.length > 0;
+    const hasCartItems = true;
 
     return (
         <div className="flex flex-col">
@@ -27,10 +33,10 @@ export const Cart: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {fullCartItemData.map((item) => (
+                            {/* fullCartItemData.map((item) => (
                                 <CartItem {...item} key={item.name} />
-                            ))}
-                            <CartTotals />
+                            )) <CartTotals />*/}
+
                             <tr>
                                 <td align="right" colSpan={5}>
                                     <Link href="/checkout" passHref>

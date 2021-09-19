@@ -5,8 +5,10 @@ import { selectCartData, selectProductData } from '../../store/state/selectors';
 import { createFullItemData } from '../../utils/cart';
 
 const selector = createSelector([selectCartData, selectProductData], (cart, products) => ({
-    cartItemCount: sumBy(cart, (cartItem) => cartItem.amount),
-    fullCartItemData: createFullItemData(products, cart),
+    cartItemCount: sumBy(cart.items, (cartItem) => cartItem.amount),
+    fullCartItemData: createFullItemData(products, cart.items),
+    orderId: cart.order ? cart.order.id : null,
+    order: cart.order,
 }));
 
 export default selector;
