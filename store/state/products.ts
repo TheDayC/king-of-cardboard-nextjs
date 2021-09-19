@@ -1,5 +1,5 @@
 import { Categories, ProductType } from '../../enums/shop';
-import { Product } from '../types/state';
+import { Product } from '../../types/products';
 
 const productsInitialState: Product[] = [
     {

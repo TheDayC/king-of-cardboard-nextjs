@@ -1,4 +1,4 @@
-import { Product } from '../store/types/state';
+import { Product } from './products';
 
 export interface CommerceAuthProps {
     accessToken: string;

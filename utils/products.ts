@@ -1,12 +1,9 @@
 import { ListResponse } from '@commercelayer/sdk/lib/resource';
 import { Price } from '@commercelayer/sdk/lib/resources/prices';
-import { Sku } from '@commercelayer/sdk/lib/resources/skus';
 import { StockItem } from '@commercelayer/sdk/lib/resources/stock_items';
-import axios, { AxiosResponse } from 'axios';
 
-import { Filters, Product } from '../store/types/state';
-import { AxiosData } from '../types/fetch';
-import { ContentfulProduct } from '../types/products';
+import { Filters } from '../store/types/state';
+import { ContentfulProduct, Product } from '../types/products';
 import { fetchContent } from './content';
 
 export function filterProducts(products: Product[], filters: Filters): Product[] {
@@ -26,24 +23,6 @@ export function filterProducts(products: Product[], filters: Filters): Product[]
             return false;
         }
     });
-}
-
-async function fetchProductData(query: string, accessToken: string): Promise<AxiosResponse<AxiosData> | void> {
-    try {
-        const url = `${process.env.NEXT_PUBLIC_ECOM_DOMAIN}/api/skus`;
-
-        return await axios.get(url, {
-            params: {
-                query,
-            },
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${process.env.NEXT_PUBLIC_CONTENTFUL_TOKEN}`,
-            },
-        });
-    } catch (e) {
-        console.error(e);
-    }
 }
 
 function normaliseProductCollection(products: ContentfulProduct[]): Product[] {

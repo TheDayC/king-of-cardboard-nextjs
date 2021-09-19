@@ -1,4 +1,4 @@
-import { Product } from './products';
+import { ContentfulProduct } from './products';
 
 export interface AxiosData {
     data: Data;
@@ -9,5 +9,5 @@ interface Data {
 }
 
 interface ProductCollection {
-    items: Product[];
+    items: ContentfulProduct[];
 }

@@ -1,3 +1,14 @@
+import { Categories, ProductType } from '../enums/shop';
+export interface Product {
+    id: string;
+    name: string;
+    price: number | null;
+    stock: number | null;
+    description: DescriptionContent[];
+    types: ProductType[] | null;
+    categories: Categories[] | null;
+}
+
 export interface ContentfulProduct {
     name: string;
     productLink: string;
