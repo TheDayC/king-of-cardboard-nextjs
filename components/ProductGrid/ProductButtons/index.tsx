@@ -31,7 +31,7 @@ export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, stock, short
                 <button className="btn btn-outline btn-secondary">{shortButtons ? 'View' : 'View Product'}</button>
             </Link>
 
-            <button className="btn btn-primary" onClick={handleOnAddToCart} disabled={hasExceededStock}>
+            <button className="btn btn-primary" onClick={handleOnAddToCart} disabled={hasExceededStock || stock <= 0}>
                 {shortButtons ? 'Add' : 'Add to Cart'}
             </button>
         </React.Fragment>

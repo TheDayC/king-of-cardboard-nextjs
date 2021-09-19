@@ -1,5 +1,6 @@
 import { Filters, Product } from '../store/types/state';
 import { ContentfulProduct } from '../types/products';
+import { fetchContent } from './content';
 
 export function filterProducts(products: Product[], filters: Filters): Product[] {
     return products.filter((p) => {
@@ -30,4 +31,21 @@ export function normaliseProductCollection(products: ContentfulProduct[]): Produ
         types: null,
         categories: null,
     }));
+}
+
+export async function fetchProductCollection(query: string): Promise<Product[] | null> {
+    const productResponse = await fetchContent(query);
+
+    if (productResponse) {
+        const productCollection = productResponse.data.data.productCollection;
+
+        if (productCollection) {
+            const normalisedCollections = normaliseProductCollection(productCollection.items);
+
+            // TODO: Fetch product with product link and organise into correct data structure.
+            return normalisedCollections;
+        }
+    }
+
+    return null;
 }
