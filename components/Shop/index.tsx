@@ -20,7 +20,7 @@ export const Shop: React.FC<ShopBodyProps> = ({ category }) => {
         }
 
         dispatch(removeAllCategories());
-    }, [category]);
+    }, [dispatch, category]);
 
     return (
         <div className="flex p-4 flex-col md:flex-row">

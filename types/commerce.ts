@@ -1,11 +1,15 @@
-export interface CommerceAuth {
-    props: CommerceAuthProps;
-}
+import { Product } from './products';
 
 export interface CommerceAuthProps {
     accessToken: string;
     expires: string;
 }
+
+export interface CommerceProductProps {
+    products: Product[] | null;
+}
+
+export interface CommerceStaticProps extends CommerceAuthProps, CommerceProductProps {}
 
 export interface ShippingMethods {
     id: string;

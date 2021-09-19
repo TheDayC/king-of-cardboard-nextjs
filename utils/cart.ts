@@ -1,5 +1,6 @@
-import { CartItem, Product } from '../store/types/state';
+import { CartItem } from '../store/types/state';
 import { FullCartItem } from '../types/cart';
+import { Product } from '../types/products';
 
 export function ccyFormat(num: number): string {
     return `${num.toFixed(2)}`;

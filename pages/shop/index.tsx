@@ -2,20 +2,29 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { GetStaticProps } from 'next';
 
-import { fetchContent } from '../../utils/content';
 import Header from '../../components/Header';
 import Shop from '../../components/Shop';
-import { getCommerceAuth } from '../../utils/commerce';
-import { CommerceAuthProps } from '../../types/commerce';
+import { getCommerceAuth, initCommerceClient } from '../../utils/commerce';
+import { CommerceStaticProps } from '../../types/commerce';
 import { setAccessToken, setExpires } from '../../store/slices/global';
 import { addProductCollection } from '../../store/slices/products';
-import { normaliseProductCollection } from '../../utils/products';
+import { fetchProductCollection } from '../../utils/products';
+import { PRODUCT_QUERY } from '../../utils/content';
 
 export const getStaticProps: GetStaticProps = async () => {
-    const tokenProps = await getCommerceAuth();
+    const token = await getCommerceAuth();
+    const cl = token ? initCommerceClient(token.accessToken) : null;
+    const stockItems = cl ? await cl.stock_items.list() : null;
+    const prices = cl ? await cl.prices.list() : null;
+    const products = await fetchProductCollection(PRODUCT_QUERY, stockItems, prices);
 
-    if (tokenProps) {
-        return tokenProps;
+    if (token && products) {
+        return {
+            props: {
+                ...token,
+                products: products,
+            },
+        };
     } else {
         return {
             props: {}, // will be passed to the page component as props
@@ -23,21 +32,7 @@ export const getStaticProps: GetStaticProps = async () => {
     }
 };
 
-const QUERY = `
-    query {
-        productCollection {
-            items {
-                name
-                description {
-                    json
-                }
-                productLink
-            }
-        }
-    }
-`;
-
-export const ShopPage: React.FC<CommerceAuthProps> = ({ accessToken, expires }) => {
+export const ShopPage: React.FC<CommerceStaticProps> = ({ accessToken, expires, products }) => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setAccessToken(accessToken));
@@ -45,22 +40,8 @@ export const ShopPage: React.FC<CommerceAuthProps> = ({ accessToken, expires }) 
     }, [dispatch, accessToken, expires]);
 
     useEffect(() => {
-        fetchContent(QUERY).then((response) => {
-            if (response) {
-                const productCollection = response.data.data.productCollection;
-
-                if (productCollection) {
-                    const normalisedCollections = normaliseProductCollection(productCollection.items);
-                    console.log(
-                        '🚀 ~ file: index.tsx ~ line 55 ~ fetchContent ~ normalisedCollections',
-                        normalisedCollections
-                    );
-                    // TODO: Fetch product with product link and organise into correct data structure.
-                    // dispatch(addProductCollection(productCollection));
-                }
-            }
-        });
-    }, []);
+        dispatch(addProductCollection(products));
+    }, [dispatch, products]);
 
     return (
         <React.Fragment>
