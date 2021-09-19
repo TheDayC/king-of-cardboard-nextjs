@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 
-import { addItemToCart } from '../../../store/slices/cart';
+import { addItemToCart, fetchOrder } from '../../../store/slices/cart';
 import selector from './selector';
 import { initCommerceClient } from '../../../utils/commerce';
 import { Image } from '../../../types/products';
@@ -32,17 +32,21 @@ export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, sku, name, s
         // Dispatch an action to add item to cart
         dispatch(addItemToCart({ id, amount: 1 }));
         if (cl && order) {
-            cl.line_items.create({
-                sku_code: sku,
-                name,
-                image_url: firstImage.url,
-                quantity: item ? (item.amount += 1) : 1,
-                _update_quantity: true, // Always update let commerce layer handle whether to create a new line_item or not.
-                order: {
-                    id: order.id,
-                    type: 'orders',
-                },
-            });
+            cl.line_items
+                .create({
+                    sku_code: sku,
+                    name,
+                    image_url: firstImage.url,
+                    quantity: item ? (item.amount += 1) : 1,
+                    _update_quantity: true, // Always update let commerce layer handle whether to create a new line_item or not.
+                    order: {
+                        id: order.id,
+                        type: 'orders',
+                    },
+                })
+                .then(() => {
+                    dispatch(fetchOrder(true));
+                });
         }
     };
 

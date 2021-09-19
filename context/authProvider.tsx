@@ -8,7 +8,7 @@ import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import selector from './selector';
 import { getCommerceAuth, initCommerceClient, orderQueryParams } from '../utils/commerce';
 import { setAccessToken, setExpires } from '../store/slices/global';
-import { createOrder, updateOrder } from '../store/slices/cart';
+import { createOrder, updateOrder, fetchOrder as fetchOrderAction } from '../store/slices/cart';
 import { fetchProductCollection } from '../utils/products';
 import { PRODUCT_QUERY } from '../utils/content';
 import { addProductCollection } from '../store/slices/products';
@@ -23,9 +23,8 @@ const AuthProvider: React.FC = ({ children }) => {
         waitForHydro();
     }, []);
 
-    const { accessToken, expires, order, products } = useSelector(selector);
+    const { accessToken, expires, order, products, cartItems, shouldFetchOrder } = useSelector(selector);
     const dispatch = useDispatch();
-    const [shouldFetchOrder, setShouldFetchOrder] = useState(true);
 
     const createNewToken = useCallback(async () => {
         const token = await getCommerceAuth();
@@ -68,6 +67,7 @@ const AuthProvider: React.FC = ({ children }) => {
         async (cl: CommerceLayerClient) => {
             if (cl && order) {
                 const fetchedOrder = await cl.orders.retrieve(order.id, orderQueryParams);
+                console.log('🚀 ~ file: authProvider.tsx ~ line 70 ~ fetchedOrder', fetchedOrder);
 
                 if (fetchedOrder) {
                     dispatch(updateOrder(fetchedOrder));
@@ -95,9 +95,16 @@ const AuthProvider: React.FC = ({ children }) => {
     useIsomorphicLayoutEffect(() => {
         if (commerceLayer && order && shouldFetchOrder) {
             fetchOrder(commerceLayer);
-            setShouldFetchOrder(false);
+            dispatch(fetchOrderAction(false));
         }
     }, [order, commerceLayer, shouldFetchOrder]);
+
+    // If we add something to the cart, trigger an order fetch.
+    /* useIsomorphicLayoutEffect(() => {
+        if (cartItems) {
+            dispatch(fetchOrderAction(true));
+        }
+    }, [cartItems]); */
 
     // If accessToken doesn't exist create a new one.
     useIsomorphicLayoutEffect(() => {

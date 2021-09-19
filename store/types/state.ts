@@ -18,6 +18,7 @@ export interface IAppState {
 export interface CartState {
     order: Order | null;
     items: CartItem[];
+    shouldFetchOrder: boolean;
 }
 
 export interface CartItem {

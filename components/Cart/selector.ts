@@ -9,6 +9,7 @@ const selector = createSelector([selectCartData, selectProductData], (cart, prod
     fullCartItemData: createFullItemData(products, cart.items),
     orderId: cart.order ? cart.order.id : null,
     order: cart.order,
+    items: cart.order ? cart.order.line_items : null,
 }));
 
 export default selector;

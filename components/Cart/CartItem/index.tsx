@@ -5,14 +5,15 @@ import { useDispatch } from 'react-redux';
 import { decreaseAmount, increaseAmount, removeItem } from '../../../store/slices/cart';
 
 interface BasketItemProps {
-    id: number;
+    id: string;
+    sku: string;
     name: string;
     price: number;
-    amount: number;
+    quantity: number;
     stock: number;
 }
 
-export const CartItem: React.FC<BasketItemProps> = ({ id, name, price, amount, stock }) => {
+export const CartItem: React.FC<BasketItemProps> = ({ id, name, price, quantity, stock }) => {
     const dispatch = useDispatch();
 
     const handleDecreaseAmount = () => {
@@ -40,12 +41,12 @@ export const CartItem: React.FC<BasketItemProps> = ({ id, name, price, amount, s
                 <button aria-label="subtract one item" onClick={handleDecreaseAmount}>
                     <MdRemoveCircleOutline />
                 </button>
-                <span className="px-4">{amount}</span>
+                <span className="px-4">{quantity}</span>
                 <button aria-label="add one item" onClick={handleIncreaseAmount}>
                     <MdAddCircleOutline />
                 </button>
             </td>
-            <td className="text-center">&pound;{`${(price * amount).toFixed(2)}`}</td>
+            <td className="text-center">&pound;{`${(price * quantity).toFixed(2)}`}</td>
         </tr>
     );
 };

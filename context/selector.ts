@@ -7,6 +7,8 @@ const selector = createSelector([selectGlobalData, selectCartData, selectProduct
     expires: global.expires,
     order: cart.order,
     products,
+    cartItems: cart.items,
+    shouldFetchOrder: cart.shouldFetchOrder,
 }));
 
 export default selector;

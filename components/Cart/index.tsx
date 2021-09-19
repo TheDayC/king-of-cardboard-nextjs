@@ -10,12 +10,12 @@ import { createOrder } from '../../store/slices/cart';
 import { orderQueryParams } from '../../utils/commerce';
 
 export const Cart: React.FC = () => {
-    const { cartItemCount, orderId, order } = useSelector(selector);
+    const { cartItemCount, orderId, order, fullCartItemData, items } = useSelector(selector);
+    console.log('🚀 ~ file: index.tsx ~ line 14 ~ items', items);
     const dispatch = useDispatch();
 
     const itemPlural = cartItemCount === 1 ? 'item' : 'items';
-    // const hasCartItems = fullCartItemData.length > 0;
-    const hasCartItems = true;
+    const hasCartItems = fullCartItemData.length > 0;
 
     return (
         <div className="flex flex-col">
@@ -33,10 +33,18 @@ export const Cart: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {/* fullCartItemData.map((item) => (
-                                <CartItem {...item} key={item.name} />
-                            )) <CartTotals />*/}
-
+                            {fullCartItemData.map((item) => (
+                                <CartItem
+                                    id={item.id}
+                                    sku={item.sku}
+                                    name={item.name}
+                                    price={item.price}
+                                    quantity={item.quantity}
+                                    stock={item.stock}
+                                    key={item.name}
+                                />
+                            ))}
+                            <CartTotals />
                             <tr>
                                 <td align="right" colSpan={5}>
                                     <Link href="/checkout" passHref>
