@@ -1,4 +1,4 @@
-export interface Product {
+export interface ContentfulProduct {
     name: string;
     productLink: string;
     description: Description;
@@ -14,7 +14,7 @@ interface DescriptionJSON {
     data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-interface DescriptionContent {
+export interface DescriptionContent {
     nodeType: string;
     value: string;
     marks: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any

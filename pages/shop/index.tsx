@@ -8,6 +8,8 @@ import Shop from '../../components/Shop';
 import { getCommerceAuth } from '../../utils/commerce';
 import { CommerceAuthProps } from '../../types/commerce';
 import { setAccessToken, setExpires } from '../../store/slices/global';
+import { addProductCollection } from '../../store/slices/products';
+import { normaliseProductCollection } from '../../utils/products';
 
 export const getStaticProps: GetStaticProps = async () => {
     const tokenProps = await getCommerceAuth();
@@ -37,7 +39,6 @@ const QUERY = `
 
 export const ShopPage: React.FC<CommerceAuthProps> = ({ accessToken, expires }) => {
     const dispatch = useDispatch();
-
     useEffect(() => {
         dispatch(setAccessToken(accessToken));
         dispatch(setExpires(expires));
@@ -47,9 +48,13 @@ export const ShopPage: React.FC<CommerceAuthProps> = ({ accessToken, expires }) 
         fetchContent(QUERY).then((response) => {
             if (response) {
                 const productCollection = response.data.data.productCollection;
-                console.log('🚀 ~ file: index.tsx ~ line 34 ~ fetchContent ~ productCollection', productCollection);
 
                 if (productCollection) {
+                    const normalisedCollections = normaliseProductCollection(productCollection.items);
+                    console.log(
+                        '🚀 ~ file: index.tsx ~ line 55 ~ fetchContent ~ normalisedCollections',
+                        normalisedCollections
+                    );
                     // TODO: Fetch product with product link and organise into correct data structure.
                     // dispatch(addProductCollection(productCollection));
                 }

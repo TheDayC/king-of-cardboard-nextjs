@@ -29,9 +29,8 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
                                 {product.name}
                                 <div className="badge mx-2 badge-secondary">NEW</div>
                             </h2>
-                            <p>{product.description}</p>
                             <div className="grid grid-cols-2 gap-2 justify-items-stretch card-actions">
-                                <ProductButtons id={product.id} stock={product.stock} shortButtons={useFilters} />
+                                <ProductButtons id={product.id} stock={product.stock || 0} shortButtons={useFilters} />
                             </div>
                         </div>
                     </div>

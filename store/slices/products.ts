@@ -7,6 +7,15 @@ const productsSlice = createSlice({
     initialState: productsInitialState,
     reducers: {
         addProductCollection(state, action) {
+            /* const products = action.payload.map(p => ({
+                sku: p.productLink,
+                name: p.name,
+                description: p.description.json.content,
+                stock: null,
+                types: null,
+                categories: null,
+            })); */
+
             return action.payload;
         },
     },
