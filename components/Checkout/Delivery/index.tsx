@@ -20,7 +20,6 @@ export const Delivery: React.FC = () => {
     } = useForm();
     const isCurrentStep = currentStep === 1;
     const hasErrors = Object.keys(errors).length > 0;
-    console.log('🚀 ~ file: index.tsx ~ line 21 ~ errors', errors);
 
     const getFirstSku = useCallback(async () => {
         if (accessToken) {
