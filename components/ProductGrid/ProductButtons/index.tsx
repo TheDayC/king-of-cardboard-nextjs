@@ -17,7 +17,6 @@ interface ProductButtonsProps {
 }
 
 export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, sku, name, stock, shortButtons, images }) => {
-    console.log('🚀 ~ file: index.tsx ~ line 20 ~ images', images);
     const dispatch = useDispatch();
     const { items, order, accessToken } = useSelector(selector);
     const currentProduct = items.find((c) => c.id === id);

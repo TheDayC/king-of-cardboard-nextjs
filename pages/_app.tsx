@@ -4,6 +4,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 import storeInstance from '../store';
 import '../styles/globals.css';
+import AuthProvider from '../context/authProvider';
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
     const { store, persistor } = storeInstance();
@@ -11,7 +12,9 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
     return (
         <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
-                <Component {...pageProps} />
+                <AuthProvider>
+                    <Component {...pageProps} />
+                </AuthProvider>
             </PersistGate>
         </Provider>
     );
