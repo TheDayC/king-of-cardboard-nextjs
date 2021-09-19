@@ -4,7 +4,7 @@ import { GetStaticProps } from 'next';
 
 import Header from '../../components/Header';
 import Shop from '../../components/Shop';
-import { getCommerceAuth } from '../../utils/commerce';
+import { getCommerceAuth, initCommerceClient } from '../../utils/commerce';
 import { CommerceStaticProps } from '../../types/commerce';
 import { setAccessToken, setExpires } from '../../store/slices/global';
 import { addProductCollection } from '../../store/slices/products';
@@ -26,7 +26,10 @@ const QUERY = `
 
 export const getStaticProps: GetStaticProps = async () => {
     const token = await getCommerceAuth();
-    const products = await fetchProductCollection(QUERY);
+    const cl = token ? initCommerceClient(token.accessToken) : null;
+    const stockItems = cl ? await cl.stock_items.list() : null;
+    const prices = cl ? await cl.prices.list() : null;
+    const products = await fetchProductCollection(QUERY, stockItems, prices);
 
     if (token && products) {
         return {
