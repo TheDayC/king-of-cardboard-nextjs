@@ -10,17 +10,16 @@ import { createOrder } from '../../store/slices/cart';
 import { orderQueryParams } from '../../utils/commerce';
 
 export const Cart: React.FC = () => {
-    const { cartItemCount, orderId, order, fullCartItemData, items } = useSelector(selector);
+    const { cartItemCount, items } = useSelector(selector);
     console.log('🚀 ~ file: index.tsx ~ line 14 ~ items', items);
     const dispatch = useDispatch();
 
     const itemPlural = cartItemCount === 1 ? 'item' : 'items';
-    const hasCartItems = fullCartItemData.length > 0;
 
     return (
         <div className="flex flex-col">
             <h1 className="mb-8">{`Your basket (${cartItemCount} ${itemPlural})`}</h1>
-            {hasCartItems ? (
+            {cartItemCount > 0 ? (
                 <div className="overflow-x-auto">
                     <table className="table w-full">
                         <thead>
@@ -42,7 +41,6 @@ export const Cart: React.FC = () => {
                                         unitAmount={item.formatted_unit_amount || null}
                                         totalAmount={item.formatted_total_amount || null}
                                         quantity={item.quantity || null}
-                                        stock={item.stock}
                                         key={item.name}
                                     />
                                 ))}

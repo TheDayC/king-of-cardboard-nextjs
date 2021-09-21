@@ -1,38 +1,69 @@
-import React, { useContext } from 'react';
+import { isNumber } from 'lodash';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { MdDeleteForever, MdRemoveCircleOutline, MdAddCircleOutline } from 'react-icons/md';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import AuthProviderContext from '../../../context/context';
-import { decreaseAmount, increaseAmount, removeItem } from '../../../store/slices/cart';
+import { decreaseAmount, fetchOrder, increaseAmount, removeItem } from '../../../store/slices/cart';
+import selector from './selector';
 
 interface BasketItemProps {
     id: string;
     sku: string | null;
     name: string | null;
-    unitAmount: number | null;
-    totalAmount: number | null;
+    unitAmount: string | null;
+    totalAmount: string | null;
     quantity: number | null;
-    stock: number | null;
 }
 
-export const CartItem: React.FC<BasketItemProps> = ({ id, name, price, quantity, stock }) => {
-    console.log('🚀 ~ file: index.tsx ~ line 18 ~ id', id);
+export const CartItem: React.FC<BasketItemProps> = ({ id, sku, name, unitAmount, totalAmount, quantity }) => {
+    console.log('🚀 ~ file: index.tsx ~ line 20 ~ quantity', quantity);
+    console.log('🚀 ~ file: index.tsx ~ line 20 ~ id', id);
+    const { order, products } = useSelector(selector);
     const cl = useContext(AuthProviderContext);
     const dispatch = useDispatch();
+    const [stock, setStock] = useState(0);
+
+    const currentProduct = products && products.find((c) => c.sku === sku);
+
+    const matchingStockLineItem = useCallback(async () => {
+        if (cl && currentProduct) {
+            const stockItem = await cl.stock_items.retrieve(currentProduct.id);
+
+            if (isNumber(stockItem.quantity)) {
+                setStock(stockItem.quantity);
+            }
+        }
+    }, [cl, currentProduct]);
+
+    useEffect(() => {
+        matchingStockLineItem();
+    }, [matchingStockLineItem]);
 
     const handleDecreaseAmount = () => {
-        dispatch(decreaseAmount(id));
+        if (cl && quantity && quantity > 1) {
+            cl.line_items.update({ id, quantity: (quantity -= 1) }).then(() => {
+                matchingStockLineItem();
+                dispatch(fetchOrder(true));
+            });
+        }
     };
 
     const handleIncreaseAmount = () => {
-        dispatch(increaseAmount({ id, stock }));
+        if (cl && quantity && quantity < stock) {
+            cl.line_items.update({ id, quantity: (quantity += 1) }).then(() => {
+                matchingStockLineItem();
+                dispatch(fetchOrder(true));
+            });
+        }
     };
 
     const handleRemoveItem = () => {
         if (cl) {
-            cl.line_items.delete(id);
+            cl.line_items.delete(id).then(() => {
+                dispatch(fetchOrder(true));
+            });
         }
-        // dispatch(removeItem(id));
     };
 
     return (
@@ -43,7 +74,7 @@ export const CartItem: React.FC<BasketItemProps> = ({ id, name, price, quantity,
                 </button>
             </td>
             <td className="text-center">{name}</td>
-            <td className="text-center">&pound;{price.toFixed(2)}</td>
+            <td className="text-center">{unitAmount}</td>
             <td className="text-center">
                 <button aria-label="subtract one item" onClick={handleDecreaseAmount}>
                     <MdRemoveCircleOutline />
@@ -53,7 +84,7 @@ export const CartItem: React.FC<BasketItemProps> = ({ id, name, price, quantity,
                     <MdAddCircleOutline />
                 </button>
             </td>
-            <td className="text-center">&pound;{`${(price * quantity).toFixed(2)}`}</td>
+            <td className="text-center">{totalAmount}</td>
         </tr>
     );
 };

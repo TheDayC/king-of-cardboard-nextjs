@@ -9,22 +9,6 @@ const checkoutSlice = createSlice({
         setCurrentStep(state, action) {
             state.currentStep = action.payload;
         },
-        setTotals(state, action) {
-            const { subTotal, taxes, total } = action.payload;
-
-            state.subTotal = subTotal;
-            state.taxes = taxes;
-            state.total = total;
-        },
-        setSubTotal(state, action) {
-            state.subTotal = action.payload;
-        },
-        setTaxes(state, action) {
-            state.taxes = action.payload;
-        },
-        setTotal(state, action) {
-            state.total = action.payload;
-        },
         setEmail(state, action) {
             state.customerDetails.email = action.payload;
         },

@@ -24,21 +24,19 @@ export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, sku, name, s
     const [stock, setStock] = useState(0);
     const currentProduct = items && items.find((c) => c.sku_code === sku);
 
-    const matchingLineItem = useCallback(async () => {
+    const matchingStockLineItem = useCallback(async () => {
         if (cl) {
             const stockItem = await cl.stock_items.retrieve(id);
 
             if (isNumber(stockItem.quantity)) {
                 setStock(stockItem.quantity);
             }
-
-            return stockItem;
         }
     }, [cl, id]);
 
     useEffect(() => {
-        matchingLineItem();
-    }, [matchingLineItem]);
+        matchingStockLineItem();
+    }, [matchingStockLineItem]);
 
     const hasExceededStock = Boolean(currentProduct && currentProduct.quantity && currentProduct.quantity >= stock);
     const to = `/product/${id}`;
@@ -60,7 +58,7 @@ export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, sku, name, s
                     },
                 })
                 .then(() => {
-                    matchingLineItem();
+                    matchingStockLineItem();
                     dispatch(fetchOrder(true));
                 });
         }

@@ -1,14 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectCartData, selectProductData, selectCheckoutData } from '../../../store/state/selectors';
-import { createFullItemData } from '../../../utils/cart';
+import { selectCartData } from '../../../store/state/selectors';
 
-const selector = createSelector(
-    [selectCartData, selectProductData, selectCheckoutData],
-    (cart, products, checkout) => ({
-        fullCartItemData: createFullItemData(products, cart.items),
-        taxRate: checkout.taxRate,
-    })
-);
+const selector = createSelector([selectCartData], (cart) => ({
+    order: cart.order,
+}));
 
 export default selector;
