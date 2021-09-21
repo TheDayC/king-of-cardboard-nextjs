@@ -18,12 +18,12 @@ export interface IAppState {
 export interface CartState {
     order: Order | null;
     items: CartItem[];
+    shouldFetchOrder: boolean;
 }
 
 export interface CartItem {
     id: string;
-    sku: string;
-    amount: number;
+    stock: number;
 }
 
 export interface Filters {

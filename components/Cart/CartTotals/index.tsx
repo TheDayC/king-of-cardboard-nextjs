@@ -1,44 +1,31 @@
-import React, { useMemo, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 
 import selector from './selector';
-import {
-    calculateSubtotal,
-    calculateTaxes,
-    calculateTotal,
-    ccyFormat,
-    calculateTaxPercentage,
-} from '../../../utils/cart';
-import { setTotals } from '../../../store/slices/checkout';
 
 export const CartTotals: React.FC = () => {
-    const { fullCartItemData, taxRate } = useSelector(selector);
-    const dispatch = useDispatch();
+    const { order } = useSelector(selector);
 
-    const subTotal = useMemo(() => calculateSubtotal(fullCartItemData), [fullCartItemData]);
-    const taxes = useMemo(() => calculateTaxes(subTotal, taxRate), [subTotal, taxRate]);
-    const total = useMemo(() => calculateTotal(subTotal, taxes), [subTotal, taxes]);
-
-    useEffect(() => {
-        dispatch(setTotals({ subTotal, taxes, total }));
-    }, [subTotal, taxes, total]);
+    const subTotal = order && order.formatted_subtotal_amount ? order.formatted_subtotal_amount : null;
+    const taxes = order && order.formatted_total_tax_amount ? order.formatted_total_tax_amount : null;
+    const total = order && order.formatted_total_amount_with_taxes ? order.formatted_total_amount_with_taxes : null;
 
     return (
         <React.Fragment>
             <tr>
                 <td colSpan={3}>&nbsp;</td>
                 <td>Subtotal</td>
-                <td align="right">&pound;{ccyFormat(subTotal)}</td>
+                <td align="right">{subTotal}</td>
             </tr>
             <tr>
                 <td colSpan={3}>&nbsp;</td>
                 <td>Tax</td>
-                <td align="right">&pound;{`${ccyFormat(taxes)} (${calculateTaxPercentage(taxRate)})`}</td>
+                <td align="right">{taxes}</td>
             </tr>
             <tr>
                 <td colSpan={3}>&nbsp;</td>
                 <td>Total</td>
-                <td align="right">&pound;{ccyFormat(total)}</td>
+                <td align="right">{total}</td>
             </tr>
         </React.Fragment>
     );

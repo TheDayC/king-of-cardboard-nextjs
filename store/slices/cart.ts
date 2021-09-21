@@ -44,11 +44,23 @@ const cartSlice = createSlice({
         createOrder(state, action) {
             state.order = action.payload;
         },
+        updateOrder(state, action) {
+            if (state.order) {
+                state.order = {
+                    ...state.order,
+                    ...action.payload,
+                };
+            }
+        },
+        fetchOrder(state, action) {
+            state.shouldFetchOrder = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addDefaultCase((state) => state);
     },
 });
 
-export const { addItemToCart, removeItem, increaseAmount, decreaseAmount, createOrder } = cartSlice.actions;
+export const { addItemToCart, removeItem, increaseAmount, decreaseAmount, createOrder, updateOrder, fetchOrder } =
+    cartSlice.actions;
 export default cartSlice.reducer;

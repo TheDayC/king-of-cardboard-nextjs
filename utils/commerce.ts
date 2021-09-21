@@ -32,3 +32,29 @@ export function initCommerceClient(accessToken: string): CommerceLayerClient {
 
     return cl;
 }
+
+export const orderQueryParams = {
+    include: ['line_items'],
+    fields: {
+        orders: [
+            'number',
+            'skus_count',
+            'formatted_subtotal_amount',
+            'formatted_discount_amount',
+            'formatted_shipping_amount',
+            'formatted_total_tax_amount',
+            'formatted_gift_card_amount',
+            'formatted_total_amount_with_taxes',
+            'line_items',
+        ],
+        line_items: [
+            'item_type',
+            'image_url',
+            'name',
+            'sku_code',
+            'formatted_unit_amount',
+            'quantity',
+            'formatted_total_amount',
+        ],
+    },
+};

@@ -1,12 +1,9 @@
 import { Order } from '@commercelayer/sdk/lib/resources/orders';
 
-export interface FullCartItem {
-    amount: number;
-    id: number;
-    name: string;
-    price: number;
-    stock: number;
-    description: string;
+import { Product } from './products';
+
+export interface FullCartItem extends Product {
+    quantity: number;
 }
 
 export interface CartStaticProps {
