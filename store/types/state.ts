@@ -23,8 +23,7 @@ export interface CartState {
 
 export interface CartItem {
     id: string;
-    sku: string;
-    amount: number;
+    stock: number;
 }
 
 export interface Filters {

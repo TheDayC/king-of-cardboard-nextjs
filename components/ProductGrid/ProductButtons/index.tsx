@@ -1,43 +1,58 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
+import { isNumber } from 'lodash';
 
-import { addItemToCart, fetchOrder } from '../../../store/slices/cart';
+import { fetchOrder } from '../../../store/slices/cart';
 import selector from './selector';
-import { initCommerceClient } from '../../../utils/commerce';
+// import { initCommerceClient } from '../../../utils/commerce';
 import { Image } from '../../../types/products';
+import AuthProviderContext from '../../../context/context';
 
 interface ProductButtonsProps {
     id: string;
     sku: string;
     name: string;
-    stock: number;
     shortButtons: boolean;
     images: Image[];
 }
 
-export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, sku, name, stock, shortButtons, images }) => {
+export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, sku, name, shortButtons, images }) => {
     const dispatch = useDispatch();
-    const { items, order, accessToken } = useSelector(selector);
-    const currentProduct = items.find((c) => c.id === id);
-    const hasExceededStock = Boolean(currentProduct && stock && currentProduct.amount >= stock);
+    const cl = useContext(AuthProviderContext);
+    const { items, order } = useSelector(selector);
+    const [stock, setStock] = useState(0);
+    const currentProduct = items && items.find((c) => c.sku_code === sku);
+
+    const matchingLineItem = useCallback(async () => {
+        if (cl) {
+            const stockItem = await cl.stock_items.retrieve(id);
+
+            if (isNumber(stockItem.quantity)) {
+                setStock(stockItem.quantity);
+            }
+
+            return stockItem;
+        }
+    }, [cl, id]);
+
+    useEffect(() => {
+        matchingLineItem();
+    }, [matchingLineItem]);
+
+    const hasExceededStock = Boolean(currentProduct && currentProduct.quantity && currentProduct.quantity >= stock);
     const to = `/product/${id}`;
-    const cl = useMemo(() => (accessToken ? initCommerceClient(accessToken) : null), [accessToken]);
-    const item = items.find((i) => i.id === id);
     const firstImage = images[0];
 
     const handleOnAddToCart = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
-
-        // Dispatch an action to add item to cart
-        dispatch(addItemToCart({ id, amount: 1 }));
         if (cl && order) {
             cl.line_items
                 .create({
                     sku_code: sku,
                     name,
                     image_url: firstImage.url,
-                    quantity: item ? (item.amount += 1) : 1,
+                    quantity: currentProduct && currentProduct.quantity ? (currentProduct.quantity += 1) : 1,
                     _update_quantity: true, // Always update let commerce layer handle whether to create a new line_item or not.
                     order: {
                         id: order.id,
@@ -45,6 +60,7 @@ export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, sku, name, s
                     },
                 })
                 .then(() => {
+                    matchingLineItem();
                     dispatch(fetchOrder(true));
                 });
         }

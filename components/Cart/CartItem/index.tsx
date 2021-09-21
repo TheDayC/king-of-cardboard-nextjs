@@ -1,19 +1,23 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { MdDeleteForever, MdRemoveCircleOutline, MdAddCircleOutline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 
+import AuthProviderContext from '../../../context/context';
 import { decreaseAmount, increaseAmount, removeItem } from '../../../store/slices/cart';
 
 interface BasketItemProps {
     id: string;
-    sku: string;
-    name: string;
-    price: number;
-    quantity: number;
-    stock: number;
+    sku: string | null;
+    name: string | null;
+    unitAmount: number | null;
+    totalAmount: number | null;
+    quantity: number | null;
+    stock: number | null;
 }
 
 export const CartItem: React.FC<BasketItemProps> = ({ id, name, price, quantity, stock }) => {
+    console.log('🚀 ~ file: index.tsx ~ line 18 ~ id', id);
+    const cl = useContext(AuthProviderContext);
     const dispatch = useDispatch();
 
     const handleDecreaseAmount = () => {
@@ -25,7 +29,10 @@ export const CartItem: React.FC<BasketItemProps> = ({ id, name, price, quantity,
     };
 
     const handleRemoveItem = () => {
-        dispatch(removeItem(id));
+        if (cl) {
+            cl.line_items.delete(id);
+        }
+        // dispatch(removeItem(id));
     };
 
     return (

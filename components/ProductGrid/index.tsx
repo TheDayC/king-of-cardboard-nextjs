@@ -34,7 +34,6 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
                                     id={product.id}
                                     sku={product.sku}
                                     name={product.name}
-                                    stock={product.stock || 0}
                                     shortButtons={useFilters}
                                     images={product.images}
                                 />
