@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { get } from 'lodash';
@@ -9,6 +9,7 @@ import { PersonalDetails } from '../../../types/checkout';
 import {
     setFirstName,
     setLastName,
+    setCompany,
     setEmail,
     setPhone,
     setAddressLineOne,
@@ -24,12 +25,15 @@ import {
     setShippingCounty,
     setCurrentStep,
 } from '../../../store/slices/checkout';
+import AuthProviderContext from '../../../context/context';
+import { Address } from '@commercelayer/sdk/lib/resources/addresses';
 
 const Customer: React.FC = () => {
-    const { currentStep, customerDetails } = useSelector(selector);
+    const { currentStep, customerDetails, order } = useSelector(selector);
     const {
         firstName,
         lastName,
+        company,
         email,
         phone,
         addressLineOne,
@@ -66,6 +70,7 @@ const Customer: React.FC = () => {
         // Dispatch personal and billing details to the redux store.
         dispatch(setFirstName(get(data, 'firstName', null)));
         dispatch(setLastName(get(data, 'lastName', null)));
+        dispatch(setCompany(get(data, 'company', null)));
         dispatch(setEmail(get(data, 'email', null)));
         dispatch(setPhone(get(data, 'phone', null)));
         dispatch(setAddressLineOne(get(data, 'billingAddressLineOne', null)));
@@ -94,6 +99,7 @@ const Customer: React.FC = () => {
     // Collect errors.
     const firstNameErr = get(errors, 'firstName.message', null);
     const lastNameErr = get(errors, 'lastName.message', null);
+    const companyErr = get(errors, 'company.message', null);
     const emailErr = get(errors, 'email.message', null);
     const mobileErr = get(errors, 'mobile.message', null);
     const billingLineOneErr = get(errors, 'billingAddressLineOne.message', null);
@@ -173,6 +179,25 @@ const Customer: React.FC = () => {
                                         {lastNameErr && (
                                             <label className="label">
                                                 <span className="label-text-alt">{lastNameErr}</span>
+                                            </label>
+                                        )}
+                                    </div>
+                                    <div className="form-control">
+                                        <label className="label">
+                                            <span className="label-text">Company</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            placeholder="Company"
+                                            {...register('company', {
+                                                required: false,
+                                                value: company,
+                                            })}
+                                            className={`input input-bordered${companyErr ? ' input-error' : ''}`}
+                                        />
+                                        {companyErr && (
+                                            <label className="label">
+                                                <span className="label-text-alt">{companyErr}</span>
                                             </label>
                                         )}
                                     </div>

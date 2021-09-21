@@ -99,7 +99,7 @@ export const Delivery: React.FC = () => {
                                         type="radio"
                                         className="radio"
                                         value={method.id}
-                                        checked={Boolean(shippingMethod)}
+                                        defaultChecked={Boolean(shippingMethod)}
                                         {...register('shippingMethod', {
                                             required: { value: true, message: 'Required' },
                                         })}
@@ -108,7 +108,15 @@ export const Delivery: React.FC = () => {
                             ))}
                         <button
                             type="submit"
-                            className={`btn${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
+                            className={`btn-sm btn-outline${
+                                hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'
+                            }`}
+                        >
+                            Back to Details
+                        </button>
+                        <button
+                            type="submit"
+                            className={`btn-sm${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
                         >
                             Payment
                         </button>

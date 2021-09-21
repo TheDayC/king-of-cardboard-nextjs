@@ -18,6 +18,9 @@ const checkoutSlice = createSlice({
         setLastName(state, action) {
             state.customerDetails.lastName = action.payload;
         },
+        setCompany(state, action) {
+            state.customerDetails.company = action.payload;
+        },
         setAddressLineOne(state, action) {
             state.customerDetails.addressLineOne = action.payload;
         },
@@ -65,13 +68,10 @@ const checkoutSlice = createSlice({
 
 export const {
     setCurrentStep,
-    setTotals,
-    setSubTotal,
-    setTaxes,
-    setTotal,
     setEmail,
     setFirstName,
     setLastName,
+    setCompany,
     setAddressLineOne,
     setAddressLineTwo,
     setCity,

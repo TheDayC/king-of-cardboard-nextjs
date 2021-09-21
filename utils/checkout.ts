@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 
 import { AxiosData } from '../types/fetch';
 import { Counties } from '../enums/checkout';
+import { CommerceLayerClient } from '@commercelayer/sdk';
 
 function regexEmail(email: string): boolean {
     // eslint-disable-next-line no-useless-escape

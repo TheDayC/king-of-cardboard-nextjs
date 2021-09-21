@@ -38,10 +38,6 @@ export interface Global {
 }
 
 export interface Checkout {
-    subTotal: number;
-    taxes: number;
-    total: number;
-    taxRate: number;
     currentStep: number;
     shippingMethod: string | null;
     customerDetails: CustomerDetails;
@@ -51,6 +47,7 @@ export interface CustomerDetails {
     email: string | null;
     firstName: string | null;
     lastName: string | null;
+    company: string | null;
     addressLineOne: string | null;
     addressLineTwo: string | null;
     city: string | null;
