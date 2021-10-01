@@ -7,11 +7,9 @@ import CartItem from './CartItem';
 import CartTotals from './CartTotals';
 import AuthProviderContext from '../../context/context';
 import { createOrder } from '../../store/slices/cart';
-import { orderQueryParams } from '../../utils/commerce';
 
 export const Cart: React.FC = () => {
     const { cartItemCount, items } = useSelector(selector);
-    console.log('🚀 ~ file: index.tsx ~ line 14 ~ items', items);
     const dispatch = useDispatch();
 
     const itemPlural = cartItemCount === 1 ? 'item' : 'items';

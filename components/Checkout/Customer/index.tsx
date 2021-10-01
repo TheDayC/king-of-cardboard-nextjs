@@ -118,10 +118,10 @@ const Customer: React.FC = () => {
         setAllowShippingAddressInternal(e.target.checked);
     };
 
-    const handleEdit = (e: React.MouseEvent<HTMLInputElement>) => {
-        e.preventDefault();
-
-        dispatch(setCurrentStep(0));
+    const handleEdit = () => {
+        if (!isCurrentStep) {
+            dispatch(setCurrentStep(0));
+        }
     };
 
     return (

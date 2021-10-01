@@ -12,7 +12,7 @@ const cartSlice = createSlice({
             if (productIndex >= 0) {
                 const newProduct = {
                     ...state.items[productIndex],
-                    amount: (state.items[productIndex].amount += 1),
+                    stock: (state.items[productIndex].stock += 1),
                 };
 
                 state.items[productIndex] = newProduct;
@@ -30,19 +30,22 @@ const cartSlice = createSlice({
         increaseAmount(state, action) {
             const cartIndex = state.items.findIndex((c) => c.id === action.payload.id);
 
-            if (state.items[cartIndex] && state.items[cartIndex].amount < action.payload.stock) {
-                state.items[cartIndex].amount += 1;
+            if (state.items[cartIndex] && state.items[cartIndex].stock < action.payload.stock) {
+                state.items[cartIndex].stock += 1;
             }
         },
         decreaseAmount(state, action) {
             const cartIndex = state.items.findIndex((c) => c.id === action.payload);
 
-            if (state.items[cartIndex] && state.items[cartIndex].amount > 1) {
-                state.items[cartIndex].amount -= 1;
+            if (state.items[cartIndex] && state.items[cartIndex].stock > 1) {
+                state.items[cartIndex].stock -= 1;
             }
         },
-        createOrder(state, action) {
-            state.order = action.payload;
+        setOrderId(state, action) {
+            return {
+                ...state,
+                order: action.payload,
+            };
         },
         updateOrder(state, action) {
             if (state.order) {
@@ -61,6 +64,6 @@ const cartSlice = createSlice({
     },
 });
 
-export const { addItemToCart, removeItem, increaseAmount, decreaseAmount, createOrder, updateOrder, fetchOrder } =
+export const { addItemToCart, removeItem, increaseAmount, decreaseAmount, setOrderId, updateOrder, fetchOrder } =
     cartSlice.actions;
 export default cartSlice.reducer;

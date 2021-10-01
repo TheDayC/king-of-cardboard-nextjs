@@ -1,6 +1,11 @@
 import { CartStaticProps } from './cart';
 import { Product } from './products';
 
+export interface CreateToken {
+    token: string | null;
+    expires: string | null;
+}
+
 export interface CommerceAuthProps {
     accessToken: string;
     expires: string;
@@ -23,4 +28,30 @@ export interface ShippingMethods {
     price_amount_for_shipment_cents?: number;
     price_amount_for_shipment_float?: number;
     type: string;
+}
+
+export interface StockItem {
+    id: string;
+    attributes: StockItemAttributes;
+}
+
+interface StockItemAttributes {
+    sku_code: string;
+    reference: string;
+    quantity: number;
+    created_at: string;
+}
+
+export interface Price {
+    id: string;
+    attributes: PriceAttributes;
+}
+
+interface PriceAttributes {
+    sku_code: string;
+    created_at: string;
+    formatted_amount: string;
+    currency_code: string;
+    amount_float: number;
+    amount_cents: number;
 }

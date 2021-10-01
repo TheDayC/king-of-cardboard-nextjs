@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { get, toNumber } from 'lodash';
 import { useForm } from 'react-hook-form';
@@ -8,11 +8,13 @@ import selector from './selector';
 import { ShippingMethods } from '../../../types/commerce';
 import { setCurrentStep, setShippingMethod } from '../../../store/slices/checkout';
 import { DeliveryDetails } from '../../../types/checkout';
+import AuthProviderContext from '../../../context/context';
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
-    const { accessToken, currentStep, shippingMethod } = useSelector(selector);
+    const { accessToken, currentStep, shippingMethod, order } = useSelector(selector);
     const [shippingMethodsInt, setShippingMethodsInt] = useState<ShippingMethods[] | null>(null);
+    const cl = useContext(AuthProviderContext);
     const {
         register,
         handleSubmit,
@@ -22,9 +24,7 @@ export const Delivery: React.FC = () => {
     const hasErrors = Object.keys(errors).length > 0;
 
     const getFirstSku = useCallback(async () => {
-        if (accessToken) {
-            const cl = initCommerceClient(accessToken);
-
+        if (accessToken && cl) {
             // const sku = await Sku.first();
             const fetchedShippingMethods = await cl.shipping_methods.list();
 
@@ -70,15 +70,27 @@ export const Delivery: React.FC = () => {
         getFirstSku();
     }, [getFirstSku]);
 
+    /* const addShippingMethodToOrder = async () => {
+        if (cl && order) {
+            const setShippingMethod = await cl.orders.update({
+                id: order.id,
+
+            });
+        }
+    } */
+
     const handleSelectShippingMethod = (data: DeliveryDetails) => {
         const shippingMethodId = get(data, 'shippingMethod', null);
 
+        // addShippingMethodToOrder();
         dispatch(setShippingMethod(shippingMethodId));
         dispatch(setCurrentStep(2));
     };
 
     const handleEdit = () => {
-        dispatch(setCurrentStep(1));
+        if (!isCurrentStep) {
+            dispatch(setCurrentStep(1));
+        }
     };
 
     return (

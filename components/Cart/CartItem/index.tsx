@@ -17,8 +17,6 @@ interface BasketItemProps {
 }
 
 export const CartItem: React.FC<BasketItemProps> = ({ id, sku, name, unitAmount, totalAmount, quantity }) => {
-    console.log('🚀 ~ file: index.tsx ~ line 20 ~ quantity', quantity);
-    console.log('🚀 ~ file: index.tsx ~ line 20 ~ id', id);
     const { order, products } = useSelector(selector);
     const cl = useContext(AuthProviderContext);
     const dispatch = useDispatch();

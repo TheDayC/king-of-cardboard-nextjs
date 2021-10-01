@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { Address } from '@commercelayer/sdk/lib/resources/addresses';
 import { PaymentMethod } from '@commercelayer/sdk/lib/resources/payment_methods';
+import { CardElement } from '@stripe/react-stripe-js';
 
 import selector from './selector';
 import { setCurrentStep } from '../../../store/slices/checkout';
@@ -39,7 +40,6 @@ export const Payment: React.FC = () => {
     const [billingAddress, setBillingAddress] = useState<Address | null>(null);
     const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[] | null>(null);
-    console.log('🚀 ~ file: index.tsx ~ line 41 ~ paymentMethods', paymentMethods);
 
     // Add the customer's email to the order and set flag.
     const addEmailToOrder = useCallback(async () => {
@@ -144,10 +144,10 @@ export const Payment: React.FC = () => {
         }
     }, [cl, order, shippingAddress]);
 
-    // Add the customer's shipping address to the order.
+    // Select a shipping method to add to the order
     const selectShippingMethod = useCallback(async () => {
         if (cl && order && shippingMethod) {
-            const shippingMethodUpdate = await cl.shipments.update({
+            /* const shippingMethodUpdate = await cl.shipments.update({
                 id: order.id,
                 shipping_method: {
                     id: shippingMethod,
@@ -155,7 +155,7 @@ export const Payment: React.FC = () => {
                 },
             });
 
-            return shippingMethodUpdate;
+            return shippingMethodUpdate; */
         }
 
         return null;
@@ -167,10 +167,6 @@ export const Payment: React.FC = () => {
             const fetchedPaymentMethods = await cl.orders.retrieve(order.id, {
                 include: ['available_payment_methods'],
             });
-            console.log(
-                '🚀 ~ file: index.tsx ~ line 155 ~ getPaymentMethods ~ fetchedPaymentMethods',
-                fetchedPaymentMethods
-            );
 
             if (fetchedPaymentMethods && fetchedPaymentMethods.available_payment_methods) {
                 setPaymentMethods(fetchedPaymentMethods.available_payment_methods);
@@ -179,7 +175,9 @@ export const Payment: React.FC = () => {
     }, [cl, order]);
 
     const handleEdit = () => {
-        dispatch(setCurrentStep(1));
+        if (!isCurrentStep) {
+            dispatch(setCurrentStep(2));
+        }
     };
 
     const onSubmit = (data: any) => {
@@ -200,19 +198,50 @@ export const Payment: React.FC = () => {
         }
     };
 
+    const createOrder = (gatewayType: string) => {
+        // console.log("🚀 ~ file: index.tsx ~ line 200 ~ createOrder ~ gatewayType", gatewayType)
+    };
+
     useEffect(() => {
         getPaymentMethods();
     }, [getPaymentMethods]);
 
     return (
-        <div className="flex">
-            <div className={`collapse collapse-${isCurrentStep ? 'open' : 'closed'}`}>
-                <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
-                    {!isCurrentStep ? 'Payment - Edit' : 'Payment'}
-                </h3>
-                <div className="collapse-content">
-                    <form onSubmit={handleSubmit(onSubmit)}></form>
-                </div>
+        <div className={`collapse collapse-${isCurrentStep ? 'open' : 'closed'}`}>
+            <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
+                {!isCurrentStep ? 'Payment - Edit' : 'Payment'}
+            </h3>
+            <div className="collapse-content">
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    {paymentMethods &&
+                        paymentMethods.map((method) => (
+                            <React.Fragment key={`card-entry-${method.name}`}>
+                                <CardElement
+                                    options={{
+                                        style: {
+                                            base: {
+                                                fontSize: '16px',
+                                                color: '#676767',
+                                                '::placeholder': {
+                                                    color: '#cccccc',
+                                                },
+                                            },
+                                            invalid: {
+                                                color: '#ff5724',
+                                            },
+                                        },
+                                    }}
+                                />
+                                <button
+                                    className="btn btn-primary"
+                                    key={`payment-method-${method.name}`}
+                                    onClick={() => createOrder(method.payment_source_type || '')}
+                                >
+                                    {method.name}
+                                </button>
+                            </React.Fragment>
+                        ))}
+                </form>
             </div>
         </div>
     );
