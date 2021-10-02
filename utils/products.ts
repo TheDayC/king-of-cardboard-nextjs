@@ -1,9 +1,8 @@
-import { ListResponse } from '@commercelayer/sdk/lib/resource';
-import { Price } from '@commercelayer/sdk/lib/resources/prices';
-import { StockItem } from '@commercelayer/sdk/lib/resources/stock_items';
+import { get } from 'lodash';
 
 import { Categories, ProductType } from '../enums/shop';
 import { Filters } from '../store/types/state';
+import { Price, StockItem } from '../types/commerce';
 import { ContentfulProduct, Product } from '../types/products';
 import { fetchContent } from './content';
 
@@ -42,38 +41,42 @@ function normaliseProductCollection(products: ContentfulProduct[]): Product[] {
 
 async function hydrateProductCollection(
     products: Product[],
-    stockItems: ListResponse<StockItem>,
-    prices: ListResponse<Price>
+    stockItems: StockItem[],
+    prices: Price[]
 ): Promise<Product[]> {
     return products.map((product) => {
         const { sku } = product;
-        const stock = stockItems.find((s) => s.sku_code === sku);
-        const price = prices.find((p) => p.sku_code === sku);
+        const stock = stockItems.find((s) => s.attributes.sku_code === sku);
+        const price = prices.find((p) => p.attributes.sku_code === sku);
 
         return {
             ...product,
             id: stock && stock.id ? stock.id : '',
-            stock: stock && stock.quantity ? stock.quantity : 0,
-            price: price && price.amount_cents ? price.amount_cents : 0,
+            stock: stock && stock.attributes.quantity ? stock.attributes.quantity : 0,
+            price: price && price.attributes.amount_cents ? price.attributes.amount_cents : 0,
         };
     });
 }
 
 export async function fetchProductCollection(
     query: string,
-    stockItems: ListResponse<StockItem> | null,
-    prices: ListResponse<Price> | null
+    stockItems: StockItem[] | null,
+    prices: Price[] | null
 ): Promise<Product[] | null> {
     const productResponse = await fetchContent(query);
 
     if (productResponse) {
-        const productCollection = productResponse.data.data.productCollection;
+        const productCollection: ContentfulProduct[] | null = get(
+            productResponse,
+            'data.data.productCollection.items',
+            null
+        );
 
         if (productCollection) {
-            const normalisedCollections = normaliseProductCollection(productCollection.items);
+            const normalisedCollections = normaliseProductCollection(productCollection);
 
             if (stockItems && prices) {
-                const products = hydrateProductCollection(normalisedCollections, stockItems, prices);
+                const products = await hydrateProductCollection(normalisedCollections, stockItems, prices);
 
                 return products;
             }
