@@ -55,3 +55,7 @@ interface PriceAttributes {
     amount_float: number;
     amount_cents: number;
 }
+
+export interface OrderData {
+    [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+}

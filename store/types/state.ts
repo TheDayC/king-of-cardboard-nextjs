@@ -16,14 +16,20 @@ export interface IAppState {
 }
 
 export interface CartState {
-    order: Order | null;
+    order: string | null;
     items: CartItem[];
+    paymentMethods: CartPaymentMethod[];
     shouldFetchOrder: boolean;
 }
 
 export interface CartItem {
     id: string;
     stock: number;
+}
+
+export interface CartPaymentMethod {
+    id: string;
+    type: string;
 }
 
 export interface Filters {

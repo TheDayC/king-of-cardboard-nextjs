@@ -1,11 +1,10 @@
 import { getSalesChannelToken } from '@commercelayer/js-auth';
 import CommerceLayer, { CommerceLayerClient } from '@commercelayer/sdk';
-import { Price } from '@commercelayer/sdk/lib/resources/prices';
 import axios from 'axios';
 import { get } from 'lodash';
 import { DateTime } from 'luxon';
 
-import { CommerceAuthProps, StockItem } from '../types/commerce';
+import { CommerceAuthProps, OrderData, Price, StockItem } from '../types/commerce';
 
 export async function getCommerceAuth(): Promise<CommerceAuthProps | null> {
     const token = await getSalesChannelToken({
@@ -64,7 +63,7 @@ export async function getStockItems(accessToken: string): Promise<StockItem[] | 
         if (response) {
             const stockItems = get(response, 'data.stockItems', null);
 
-            return stockItems.map((item) => {
+            return stockItems.map((item: unknown) => {
                 const id = get(item, 'id', '');
                 const sku_code = get(item, 'attributes.sku_code', '');
                 const reference = get(item, 'attributes.reference', '');
@@ -97,9 +96,8 @@ export async function getPrices(accessToken: string): Promise<Price[] | null> {
 
         if (response) {
             const prices = get(response, 'data.prices', null);
-            console.log('🚀 ~ file: commerce.ts ~ line 103 ~ getPrices ~ prices', prices);
 
-            return prices.map((price) => {
+            return prices.map((price: unknown) => {
                 const id = get(price, 'id', '');
                 const sku_code = get(price, 'attributes.sku_code', '');
                 const created_at = get(price, 'attributes.created_at', '');
@@ -120,8 +118,36 @@ export async function getPrices(accessToken: string): Promise<Price[] | null> {
                     },
                 };
             });
+        }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
 
-            return null;
+    return null;
+}
+
+export async function getOrder(accessToken: string, orderId: string, include: string[]): Promise<OrderData[] | null> {
+    try {
+        const response = await axios.post('/api/getOrder', {
+            token: accessToken,
+            orderId,
+            include,
+        });
+
+        if (response) {
+            const orderRelationships: object | null = get(response, 'data.order.relationships', null);
+            const orderData: OrderData[] = [];
+
+            if (orderRelationships) {
+                for (const [key, value] of Object.entries(orderRelationships)) {
+                    const data = get(value, 'data', null);
+                    if (data) {
+                        orderData.push({ [key]: data });
+                    }
+                }
+            }
+
+            return orderData;
         }
     } catch (error) {
         console.log('Error: ', error);

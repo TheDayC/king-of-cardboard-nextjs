@@ -1,28 +1,18 @@
-import React, { useMemo, useCallback, useContext } from 'react';
-import { Provider, useDispatch, useSelector } from 'react-redux';
+import React, { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
-import { CommerceLayerClient } from '@commercelayer/sdk';
-import axios from 'axios';
 import { get } from 'lodash';
 
-import AuthProviderContext from './context';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import selector from './selector';
-import {
-    createOrder,
-    createProductCollection,
-    getCommerceAuth,
-    getPrices,
-    getStockItems,
-    initCommerceClient,
-} from '../utils/commerce';
+import { createOrder, getOrder, getPrices, getStockItems } from '../utils/commerce';
 import { setAccessToken, setExpires } from '../store/slices/global';
-import { updateOrder, fetchOrder as fetchOrderAction, setOrderId } from '../store/slices/cart';
+import { fetchOrder as fetchOrderAction, setOrderId, setLineItems, setPaymentMethods } from '../store/slices/cart';
 import { fetchProductCollection } from '../utils/products';
 import { PRODUCT_QUERY } from '../utils/content';
 import { addProductCollection } from '../store/slices/products';
 import { rehydration } from '../store';
-import { authClient, createToken } from '../utils/auth';
+import { createToken } from '../utils/auth';
 
 const AuthProvider: React.FC = ({ children }) => {
     const waitForHydro = async () => {
@@ -37,21 +27,10 @@ const AuthProvider: React.FC = ({ children }) => {
     const dispatch = useDispatch();
 
     // Create the productCollection and hydrate.
-    /* const createProductCollection = useCallback(
-        async (cl: CommerceLayerClient) => {
-            const stockItems = await cl.stock_items.list();
-            const prices = await cl.prices.list();
-            const products = await fetchProductCollection(PRODUCT_QUERY, stockItems, prices);
-
-            dispatch(addProductCollection(products));
-        },
-        [dispatch]
-    ); */
-    // TODO: add stock item and prices function to this, call instead.
     const createProductCollection = useCallback(
-        async (cl: CommerceLayerClient) => {
-            const stockItems = await cl.stock_items.list();
-            const prices = await cl.prices.list();
+        async (accessToken: string) => {
+            const stockItems = await getStockItems(accessToken);
+            const prices = await getPrices(accessToken);
             const products = await fetchProductCollection(PRODUCT_QUERY, stockItems, prices);
 
             dispatch(addProductCollection(products));
@@ -61,34 +40,52 @@ const AuthProvider: React.FC = ({ children }) => {
 
     // Fetch order with line items.
     const fetchOrder = useCallback(
-        async (cl: CommerceLayerClient) => {
-            if (cl && order) {
-                const fetchedOrder = await cl.orders.retrieve(order.id, {
-                    include: ['line_items', 'available_payment_methods'],
-                });
+        async (accessToken: string, order: string) => {
+            const orderRelationships = await getOrder(accessToken, order, ['line_items', 'available_payment_methods']);
 
-                if (fetchedOrder) {
-                    dispatch(updateOrder(fetchedOrder));
+            if (orderRelationships) {
+                const items = orderRelationships.find((rL) => rL.line_items);
+                const paymentMethods = orderRelationships.find((rL) => rL.available_payment_methods);
+
+                if (items) {
+                    dispatch(setLineItems(items.line_items));
+                }
+
+                if (paymentMethods) {
+                    dispatch(setPaymentMethods(paymentMethods.available_payment_methods));
                 }
             }
+
+            dispatch(fetchOrderAction(false));
         },
-        [dispatch, order]
+        [dispatch]
+    );
+
+    // Create a brand new order and set the id in the store.
+    const generateOrder = useCallback(
+        async (accessToken: string) => {
+            const orderId = await createOrder(accessToken);
+
+            if (orderId) {
+                dispatch(setOrderId(orderId));
+            }
+        },
+        [dispatch]
     );
 
     // If order does exist then hydrate with line items.
-    /* useIsomorphicLayoutEffect(() => {
-        if (commerceLayer && order && shouldFetchOrder) {
-            fetchOrder(commerceLayer);
-            dispatch(fetchOrderAction(false));
+    useIsomorphicLayoutEffect(() => {
+        if (accessToken && order && shouldFetchOrder) {
+            fetchOrder(accessToken, order);
         }
-    }, [order, commerceLayer, shouldFetchOrder]); */
+    }, [order, shouldFetchOrder, accessToken]);
 
     // If we add something to the cart, trigger an order fetch.
-    /* useIsomorphicLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         if (cartItems) {
             dispatch(fetchOrderAction(true));
         }
-    }, [cartItems]); */
+    }, [cartItems]);
 
     // If accessToken doesn't exist create a new one.
     useIsomorphicLayoutEffect(() => {
@@ -120,32 +117,18 @@ const AuthProvider: React.FC = ({ children }) => {
     // If the order doesn't exist then create one.
     useIsomorphicLayoutEffect(() => {
         if (!order && accessToken) {
-            createOrder(accessToken).then((orderId) => {
-                if (orderId) {
-                    dispatch(setOrderId(orderId));
-                }
-            });
+            generateOrder(accessToken);
         }
     }, [order, accessToken]);
 
     // Create the product collection on load.
     useIsomorphicLayoutEffect(() => {
         if (products.length <= 0 && accessToken) {
-            getStockItems(accessToken).then((stockItems) => {
-                console.log('🚀 ~ file: authProvider.tsx ~ line 115 ~ getStockItems ~ stockItems', stockItems);
-                getPrices(accessToken);
-            });
+            createProductCollection(accessToken);
         }
     }, [products, accessToken]);
 
-    // Our context value that we'll provide to the app.
-    /* const contextValue = useMemo(() => {
-        return commerceLayer;
-    }, [commerceLayer]); */
-
-    // const Context = AuthProviderContext;
-
-    return children;
+    return <React.Fragment>{children}</React.Fragment>;
 };
 
 export default AuthProvider;
