@@ -4,7 +4,16 @@ import axios from 'axios';
 import { get } from 'lodash';
 import { DateTime } from 'luxon';
 
-import { CommerceAuthProps, OrderData, Price, StockItem } from '../types/commerce';
+import {
+    CommerceAuthProps,
+    IncludedData,
+    LineItemAttributes,
+    LineItemOptions,
+    LineItemRelationships,
+    OrderData,
+    Price,
+    StockItem,
+} from '../types/commerce';
 
 export async function getCommerceAuth(): Promise<CommerceAuthProps | null> {
     const token = await getSalesChannelToken({
@@ -126,7 +135,11 @@ export async function getPrices(accessToken: string): Promise<Price[] | null> {
     return null;
 }
 
-export async function getOrder(accessToken: string, orderId: string, include: string[]): Promise<OrderData[] | null> {
+export async function getOrder(
+    accessToken: string,
+    orderId: string,
+    include: string[]
+): Promise<IncludedData[] | null> {
     try {
         const response = await axios.post('/api/getOrder', {
             token: accessToken,
@@ -135,23 +148,50 @@ export async function getOrder(accessToken: string, orderId: string, include: st
         });
 
         if (response) {
-            const orderRelationships: object | null = get(response, 'data.order.relationships', null);
-            const orderData: OrderData[] = [];
+            const included: any[] | null = get(response, 'data.included', null);
 
-            if (orderRelationships) {
-                for (const [key, value] of Object.entries(orderRelationships)) {
-                    const data = get(value, 'data', null);
-                    if (data) {
-                        orderData.push({ [key]: data });
-                    }
-                }
+            if (included) {
+                return included.map((include) => {
+                    const id = get(include, 'id', null);
+                    const type = get(include, 'type', null);
+                    const attributes = get(include, 'attributes', null);
+                    return {
+                        id,
+                        type,
+                        attributes,
+                    };
+                });
             }
-
-            return orderData;
         }
+
+        return null;
     } catch (error) {
         console.log('Error: ', error);
     }
 
     return null;
+}
+
+export async function setLineItem(
+    accessToken: string,
+    attributes: LineItemAttributes,
+    relationships: LineItemRelationships
+): Promise<boolean> {
+    try {
+        const response = await axios.post('/api/lineItems', {
+            token: accessToken,
+            attributes,
+            relationships,
+        });
+
+        if (response) {
+            const hasUpdated: boolean = get(response, 'data.hasUpdated', false);
+
+            return hasUpdated;
+        }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return false;
 }

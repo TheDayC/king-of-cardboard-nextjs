@@ -30,7 +30,12 @@ function normaliseProductCollection(products: ContentfulProduct[]): Product[] {
         id: '',
         sku: p.productLink,
         name: p.name,
-        price: 0,
+        price: {
+            formatted_amount: '',
+            currency_code: '',
+            amount_float: 0,
+            amount_cents: 0,
+        },
         stock: 0,
         description: p.description.json.content,
         types: p.types.map((type) => parseProductType(type)),
@@ -49,11 +54,23 @@ async function hydrateProductCollection(
         const stock = stockItems.find((s) => s.attributes.sku_code === sku);
         const price = prices.find((p) => p.attributes.sku_code === sku);
 
+        const stockId = get(stock, 'id', '');
+        const quantity = get(stock, 'attributes.quantity', 0);
+        const formatted_amount = get(price, 'attributes.formatted_amount', '');
+        const currency_code = get(price, 'attributes.currency_code', '');
+        const amount_float = get(price, 'attributes.amount_float', 0);
+        const amount_cents = get(price, 'attributes.amount_cents', 0);
+
         return {
             ...product,
-            id: stock && stock.id ? stock.id : '',
-            stock: stock && stock.attributes.quantity ? stock.attributes.quantity : 0,
-            price: price && price.attributes.amount_cents ? price.attributes.amount_cents : 0,
+            id: stockId,
+            stock: quantity,
+            price: {
+                formatted_amount,
+                currency_code,
+                amount_float,
+                amount_cents,
+            },
         };
     });
 }

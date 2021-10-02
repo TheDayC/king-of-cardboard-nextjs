@@ -24,12 +24,18 @@ export interface CartState {
 
 export interface CartItem {
     id: string;
-    stock: number;
+    sku_code: string;
+    name: string;
+    quantity: number;
+    formatted_unit_amount: string;
+    formatted_total_amount: string;
+    image_url: string;
 }
 
 export interface CartPaymentMethod {
     id: string;
-    type: string;
+    name: string;
+    payment_source_type: string;
 }
 
 export interface Filters {

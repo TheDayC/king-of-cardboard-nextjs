@@ -56,6 +56,29 @@ interface PriceAttributes {
     amount_cents: number;
 }
 
-export interface OrderData {
-    [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+export interface IncludedData {
+    id: string;
+    type: string;
+    attributes: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
+export interface LineItemAttributes {
+    quantity: number;
+    sku_code: string;
+    name: string;
+    image_url: string;
+    _external_price: boolean;
+    _update_quantity: boolean;
+}
+
+export interface LineItemRelationships {
+    order: LineItemRelationshipsData;
+    item?: LineItemRelationshipsData;
+}
+
+interface LineItemRelationshipsData {
+    data: {
+        type: string;
+        id: string;
+    };
 }

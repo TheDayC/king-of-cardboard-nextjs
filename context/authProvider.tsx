@@ -41,18 +41,28 @@ const AuthProvider: React.FC = ({ children }) => {
     // Fetch order with line items.
     const fetchOrder = useCallback(
         async (accessToken: string, order: string) => {
-            const orderRelationships = await getOrder(accessToken, order, ['line_items', 'available_payment_methods']);
+            const includedData = await getOrder(accessToken, order, ['line_items', 'available_payment_methods']);
 
-            if (orderRelationships) {
-                const items = orderRelationships.find((rL) => rL.line_items);
-                const paymentMethods = orderRelationships.find((rL) => rL.available_payment_methods);
+            if (includedData) {
+                const items = includedData.filter((data) => data.type === 'line_items');
+                const paymentMethods = includedData.filter((data) => data.type === 'payment_methods');
 
                 if (items) {
-                    dispatch(setLineItems(items.line_items));
+                    const cartItems = items.map((item) => ({
+                        ...item.attributes,
+                        id: item.id,
+                    }));
+
+                    dispatch(setLineItems(cartItems));
                 }
 
                 if (paymentMethods) {
-                    dispatch(setPaymentMethods(paymentMethods.available_payment_methods));
+                    const cartPaymentMethods = paymentMethods.map((method) => ({
+                        ...method.attributes,
+                        id: method.id,
+                    }));
+
+                    dispatch(setPaymentMethods(cartPaymentMethods));
                 }
             }
 

@@ -1,12 +1,10 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 
 import selector from './selector';
 import CartItem from './CartItem';
 import CartTotals from './CartTotals';
-import AuthProviderContext from '../../context/context';
-import { createOrder } from '../../store/slices/cart';
 
 export const Cart: React.FC = () => {
     const { cartItemCount, items } = useSelector(selector);

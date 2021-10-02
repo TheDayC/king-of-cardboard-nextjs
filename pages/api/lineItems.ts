@@ -1,28 +1,27 @@
-import { get, join } from 'lodash';
+import { get } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { authClient } from '../../utils/auth';
 
-async function getOrder(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+async function lineItems(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST' && process.env.ECOM_CLIENT_ID) {
         const token = get(req, 'body.token', null);
-        const orderId = get(req, 'body.orderId', null);
-        const include = get(req, 'body.include', null);
+        const attributes = get(req, 'body.attributes', null);
+        const relationships = get(req, 'body.relationships', null);
         const cl = authClient(token);
 
-        const apiUrl = include
-            ? `/api/orders/${orderId}?include=${join(
-                  include,
-                  ','
-              )}&fields[line_items]=item_type,image_url,name,sku_code,formatted_unit_amount,quantity,formatted_total_amount&fields[payment_methods]=name,payment_source_type`
-            : `/api/orders/${orderId}`;
-
-        cl.get(apiUrl)
+        cl.post('/api/line_items', {
+            data: {
+                type: 'line_items',
+                attributes,
+                relationships,
+            },
+        })
             .then((response) => {
                 const status = get(response, 'status', 500);
-                const { data: order, included } = get(response, 'data', null);
+                const { data: lineItems } = get(response, 'data', null);
 
-                res.status(status).json({ order, included });
+                res.status(status).json({ hasUpdated: Boolean(lineItems) });
             })
             .catch((error) => {
                 const status = get(error, 'response.status', 500);
@@ -36,4 +35,4 @@ async function getOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
     }
 }
 
-export default getOrder;
+export default lineItems;
