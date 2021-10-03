@@ -4,7 +4,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { authClient } from '../../utils/auth';
 
 async function getAccessToken(req: NextApiRequest, res: NextApiResponse): Promise<void> {
-    if (req.method === 'GET' && process.env.ECOM_CLIENT_ID && process.env.ECOM_CLIENT_SECRET) {
+    if (req.method === 'GET' && process.env.ECOM_CLIENT_ID) {
         const cl = authClient();
 
         cl.post('/oauth/token', {

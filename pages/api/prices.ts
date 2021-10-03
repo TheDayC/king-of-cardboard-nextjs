@@ -4,7 +4,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { authClient } from '../../utils/auth';
 
 async function prices(req: NextApiRequest, res: NextApiResponse): Promise<void> {
-    if (req.method === 'POST' && process.env.ECOM_CLIENT_ID) {
+    if (req.method === 'POST') {
         const token = get(req, 'body.token', null);
         const cl = authClient(token);
 
