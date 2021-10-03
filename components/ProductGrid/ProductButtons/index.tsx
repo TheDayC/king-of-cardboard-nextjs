@@ -30,7 +30,7 @@ export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, sku, name, s
 
     const updateLineItem = useCallback(
         async (accessToken: string, currentProduct: Product, orderId: string) => {
-            if (accessToken && currentProduct && order) {
+            if (accessToken && currentProduct && orderId) {
                 const attributes = {
                     quantity: 1,
                     sku_code: sku,

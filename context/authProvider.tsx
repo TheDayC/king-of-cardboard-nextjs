@@ -23,7 +23,7 @@ const AuthProvider: React.FC = ({ children }) => {
         waitForHydro();
     }, []);
 
-    const { accessToken, expires, order, products, cartItems, shouldFetchOrder } = useSelector(selector);
+    const { accessToken, expires, order, products, shouldFetchOrder } = useSelector(selector);
     const dispatch = useDispatch();
     const [shouldCreateOrder, setShouldCreateOrder] = useState(true);
 
@@ -76,17 +76,13 @@ const AuthProvider: React.FC = ({ children }) => {
     // Create a brand new order and set the id in the store.
     const generateOrder = useCallback(
         async (accessToken: string) => {
-            if (shouldCreateOrder) {
-                const order = await createOrder(accessToken);
+            const order = await createOrder(accessToken);
 
-                if (order) {
-                    dispatch(setOrder(order));
-                }
-
-                setShouldCreateOrder(false);
+            if (order) {
+                dispatch(setOrder(order));
             }
         },
-        [dispatch, shouldCreateOrder]
+        [dispatch]
     );
 
     // If order does exist then hydrate with line items.
@@ -126,10 +122,11 @@ const AuthProvider: React.FC = ({ children }) => {
 
     // If the order doesn't exist then create one.
     useIsomorphicLayoutEffect(() => {
-        if (!order && accessToken) {
+        if (!order && accessToken && shouldCreateOrder) {
             generateOrder(accessToken);
+            setShouldCreateOrder(false);
         }
-    }, [order, accessToken]);
+    }, [order, accessToken, shouldCreateOrder]);
 
     // Create the product collection on load.
     useIsomorphicLayoutEffect(() => {
