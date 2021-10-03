@@ -4,7 +4,7 @@ import { sumBy } from 'lodash';
 import { selectCartData } from '../../store/state/selectors';
 
 const selector = createSelector([selectCartData], (cart) => {
-    const items = cart.order ? cart.order.line_items : null;
+    const items = cart.items;
 
     return {
         cartItemCount: items ? sumBy(items, (item) => (item.quantity ? item.quantity : 0)) : 0,
