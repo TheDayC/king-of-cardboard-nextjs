@@ -176,6 +176,45 @@ export async function setLineItem(
     return false;
 }
 
+export async function removeLineItem(accessToken: string, id: string): Promise<boolean> {
+    try {
+        const response = await axios.post('/api/removeLineItem', {
+            token: accessToken,
+            id,
+        });
+
+        if (response) {
+            const hasDeleted: boolean = get(response, 'data.deleted', false);
+
+            return hasDeleted;
+        }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return false;
+}
+
+export async function updateLineItem(accessToken: string, id: string, quantity: number): Promise<boolean> {
+    try {
+        const response = await axios.post('/api/updateLineItem', {
+            token: accessToken,
+            id,
+            quantity,
+        });
+
+        if (response) {
+            const hasUpdated: boolean = get(response, 'data.hasUpdated', false);
+
+            return hasUpdated;
+        }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return false;
+}
+
 function parseOrderData(order: unknown, included: unknown): Order | null {
     if (order !== null) {
         const id: string = get(order, 'id', '');

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import AuthProviderContext from '../../../context/context';
 import { decreaseAmount, fetchOrder, increaseAmount, removeItem } from '../../../store/slices/cart';
+import { removeLineItem, updateLineItem } from '../../../utils/commerce';
 import selector from './selector';
 
 interface BasketItemProps {
@@ -17,50 +18,45 @@ interface BasketItemProps {
 }
 
 export const CartItem: React.FC<BasketItemProps> = ({ id, sku, name, unitAmount, totalAmount, quantity }) => {
-    const { order, products } = useSelector(selector);
-    const cl = useContext(AuthProviderContext);
+    const { products, accessToken } = useSelector(selector);
     const dispatch = useDispatch();
-    const [stock, setStock] = useState(0);
-
     const currentProduct = products && products.find((c) => c.sku === sku);
 
-    const matchingStockLineItem = useCallback(async () => {
-        if (cl && currentProduct) {
-            const stockItem = await cl.stock_items.retrieve(currentProduct.id);
+    const handleDecreaseAmount = async () => {
+        if (accessToken && id && quantity && currentProduct) {
+            const newQuantity = (quantity -= 1);
 
-            if (isNumber(stockItem.quantity)) {
-                setStock(stockItem.quantity);
+            if (newQuantity > 0) {
+                const hasLineItemUpdated = await updateLineItem(accessToken, id, newQuantity);
+
+                if (hasLineItemUpdated) {
+                    dispatch(fetchOrder(true));
+                }
             }
         }
-    }, [cl, currentProduct]);
+    };
 
-    useEffect(() => {
-        matchingStockLineItem();
-    }, [matchingStockLineItem]);
+    const handleIncreaseAmount = async () => {
+        if (accessToken && id && quantity && currentProduct) {
+            const newQuantity = (quantity += 1);
 
-    const handleDecreaseAmount = () => {
-        if (cl && quantity && quantity > 1) {
-            cl.line_items.update({ id, quantity: (quantity -= 1) }).then(() => {
-                matchingStockLineItem();
-                dispatch(fetchOrder(true));
-            });
+            if (newQuantity <= currentProduct.stock) {
+                const hasLineItemUpdated = await updateLineItem(accessToken, id, newQuantity);
+
+                if (hasLineItemUpdated) {
+                    dispatch(fetchOrder(true));
+                }
+            }
         }
     };
 
-    const handleIncreaseAmount = () => {
-        if (cl && quantity && quantity < stock) {
-            cl.line_items.update({ id, quantity: (quantity += 1) }).then(() => {
-                matchingStockLineItem();
-                dispatch(fetchOrder(true));
-            });
-        }
-    };
+    const handleRemoveItem = async () => {
+        if (accessToken && id) {
+            const hasDeleted = await removeLineItem(accessToken, id);
 
-    const handleRemoveItem = () => {
-        if (cl) {
-            cl.line_items.delete(id).then(() => {
+            if (hasDeleted) {
                 dispatch(fetchOrder(true));
-            });
+            }
         }
     };
 
