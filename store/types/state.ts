@@ -1,7 +1,6 @@
-import { Order } from '@commercelayer/sdk/lib/resources/orders';
-
 import { Counties } from '../../enums/checkout';
 import { Categories, ProductType } from '../../enums/shop';
+import { Order } from '../../types/cart';
 import { Product } from '../../types/products';
 
 export interface IAppState {
@@ -16,7 +15,7 @@ export interface IAppState {
 }
 
 export interface CartState {
-    order: string | null;
+    order: Order | null;
     items: CartItem[];
     paymentMethods: CartPaymentMethod[];
     shouldFetchOrder: boolean;

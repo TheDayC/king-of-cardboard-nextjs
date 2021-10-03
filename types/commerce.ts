@@ -56,12 +56,6 @@ interface PriceAttributes {
     amount_cents: number;
 }
 
-export interface IncludedData {
-    id: string;
-    type: string;
-    attributes: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-}
-
 export interface LineItemAttributes {
     quantity: number;
     sku_code: string;

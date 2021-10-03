@@ -4,16 +4,8 @@ import axios from 'axios';
 import { get } from 'lodash';
 import { DateTime } from 'luxon';
 
-import {
-    CommerceAuthProps,
-    IncludedData,
-    LineItemAttributes,
-    LineItemOptions,
-    LineItemRelationships,
-    OrderData,
-    Price,
-    StockItem,
-} from '../types/commerce';
+import { IncludedData, Order } from '../types/cart';
+import { CommerceAuthProps, LineItemAttributes, LineItemRelationships, Price, StockItem } from '../types/commerce';
 
 export async function getCommerceAuth(): Promise<CommerceAuthProps | null> {
     const token = await getSalesChannelToken({
@@ -44,18 +36,20 @@ export function initCommerceClient(accessToken: string): CommerceLayerClient {
     return cl;
 }
 
-export async function createOrder(accessToken: string): Promise<string | null> {
+export async function createOrder(accessToken: string): Promise<Order | null> {
     try {
-        const { data } = await axios.post('/api/createOrder', {
+        const response = await axios.post('/api/createOrder', {
             token: accessToken,
         });
 
-        if (data) {
-            const { order } = data;
-            console.log('🚀 ~ file: commerce.ts ~ line 46 ~ createOrder ~ order', order);
+        if (response) {
+            const order: any[] | null = get(response, 'data.order', null);
+            const included: any[] | null = get(response, 'data.included', null);
 
-            return order.id;
+            return parseOrderData(order, included);
         }
+
+        return null;
     } catch (error) {
         console.log('Error: ', error);
     }
@@ -135,11 +129,7 @@ export async function getPrices(accessToken: string): Promise<Price[] | null> {
     return null;
 }
 
-export async function getOrder(
-    accessToken: string,
-    orderId: string,
-    include: string[]
-): Promise<IncludedData[] | null> {
+export async function getOrder(accessToken: string, orderId: string, include: string[]): Promise<Order | null> {
     try {
         const response = await axios.post('/api/getOrder', {
             token: accessToken,
@@ -148,20 +138,10 @@ export async function getOrder(
         });
 
         if (response) {
+            const order: any[] | null = get(response, 'data.order', null);
             const included: any[] | null = get(response, 'data.included', null);
 
-            if (included) {
-                return included.map((include) => {
-                    const id = get(include, 'id', null);
-                    const type = get(include, 'type', null);
-                    const attributes = get(include, 'attributes', null);
-                    return {
-                        id,
-                        type,
-                        attributes,
-                    };
-                });
-            }
+            return parseOrderData(order, included);
         }
 
         return null;
@@ -194,4 +174,52 @@ export async function setLineItem(
     }
 
     return false;
+}
+
+function parseOrderData(order: unknown, included: unknown): Order | null {
+    if (order !== null) {
+        const id: string = get(order, 'id', '');
+        const orderNumber: number = get(order, 'attributes.number', 0);
+        const sku_count: number = get(order, 'attributes.sku_count', 0);
+        const formatted_subtotal_amount: string = get(order, 'attributes.formatted_subtotal_amount', '£0.00');
+        const formatted_discount_amount: string = get(order, 'attributes.formatted_discount_amount', '£0.00');
+        const formatted_shipping_amount: string = get(order, 'attributes.formatted_shipping_amount', '£0.00');
+        const formatted_total_tax_amount: string = get(order, 'attributes.formatted_total_tax_amount', '£0.00');
+        const formatted_gift_card_amount: string = get(order, 'attributes.formatted_gift_card_amount', '£0.00');
+        const formatted_total_amount_with_taxes: string = get(
+            order,
+            'attributes.formatted_total_amount_with_taxes',
+            '£0.00'
+        );
+        const line_items: string[] = get(order, 'attributes.line_items', []);
+
+        return {
+            id,
+            number: orderNumber,
+            sku_count,
+            formatted_subtotal_amount,
+            formatted_discount_amount,
+            formatted_shipping_amount,
+            formatted_total_tax_amount,
+            formatted_gift_card_amount,
+            formatted_total_amount_with_taxes,
+            line_items,
+            included: included
+                ? included.map((include) => {
+                      const id: string = get(include, 'id', '');
+                      const type: string = get(include, 'type', '');
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      const attributes: any = get(include, 'attributes', null);
+
+                      return {
+                          id,
+                          type,
+                          attributes,
+                      };
+                  })
+                : [],
+        };
+    }
+
+    return null;
 }

@@ -41,7 +41,7 @@ const cartSlice = createSlice({
                 state.items[cartIndex].stock -= 1;
             }
         },
-        setOrderId(state, action) {
+        setOrder(state, action) {
             return {
                 ...state,
                 order: action.payload,
@@ -73,7 +73,7 @@ export const {
     removeItem,
     increaseAmount,
     decreaseAmount,
-    setOrderId,
+    setOrder,
     setLineItems,
     setPaymentMethods,
     fetchOrder,

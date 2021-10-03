@@ -7,7 +7,7 @@ import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import selector from './selector';
 import { createOrder, getOrder, getPrices, getStockItems } from '../utils/commerce';
 import { setAccessToken, setExpires } from '../store/slices/global';
-import { fetchOrder as fetchOrderAction, setOrderId, setLineItems, setPaymentMethods } from '../store/slices/cart';
+import { fetchOrder as fetchOrderAction, setOrder, setLineItems, setPaymentMethods } from '../store/slices/cart';
 import { fetchProductCollection } from '../utils/products';
 import { PRODUCT_QUERY } from '../utils/content';
 import { addProductCollection } from '../store/slices/products';
@@ -40,12 +40,13 @@ const AuthProvider: React.FC = ({ children }) => {
 
     // Fetch order with line items.
     const fetchOrder = useCallback(
-        async (accessToken: string, order: string) => {
-            const includedData = await getOrder(accessToken, order, ['line_items', 'available_payment_methods']);
+        async (accessToken: string, orderId: string) => {
+            const fullOrderData = await getOrder(accessToken, orderId, ['line_items', 'available_payment_methods']);
 
-            if (includedData) {
-                const items = includedData.filter((data) => data.type === 'line_items');
-                const paymentMethods = includedData.filter((data) => data.type === 'payment_methods');
+            if (fullOrderData) {
+                const { included } = fullOrderData;
+                const items = included.filter((data) => data.type === 'line_items');
+                const paymentMethods = included.filter((data) => data.type === 'payment_methods');
 
                 if (items) {
                     const cartItems = items.map((item) => ({
@@ -64,6 +65,8 @@ const AuthProvider: React.FC = ({ children }) => {
 
                     dispatch(setPaymentMethods(cartPaymentMethods));
                 }
+
+                dispatch(setOrder(order));
             }
 
             dispatch(fetchOrderAction(false));
@@ -74,10 +77,10 @@ const AuthProvider: React.FC = ({ children }) => {
     // Create a brand new order and set the id in the store.
     const generateOrder = useCallback(
         async (accessToken: string) => {
-            const orderId = await createOrder(accessToken);
+            const order = await createOrder(accessToken);
 
-            if (orderId) {
-                dispatch(setOrderId(orderId));
+            if (order) {
+                dispatch(setOrder(order));
             }
         },
         [dispatch]
@@ -86,7 +89,7 @@ const AuthProvider: React.FC = ({ children }) => {
     // If order does exist then hydrate with line items.
     useIsomorphicLayoutEffect(() => {
         if (accessToken && order && shouldFetchOrder) {
-            fetchOrder(accessToken, order);
+            fetchOrder(accessToken, order.id);
         }
     }, [order, shouldFetchOrder, accessToken]);
 
