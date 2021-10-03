@@ -1,10 +1,8 @@
-import { isNumber } from 'lodash';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React from 'react';
 import { MdDeleteForever, MdRemoveCircleOutline, MdAddCircleOutline } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 
-import AuthProviderContext from '../../../context/context';
-import { decreaseAmount, fetchOrder, increaseAmount, removeItem } from '../../../store/slices/cart';
+import { fetchOrder } from '../../../store/slices/cart';
 import { removeLineItem, updateLineItem } from '../../../utils/commerce';
 import selector from './selector';
 
