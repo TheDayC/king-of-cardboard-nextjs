@@ -29,7 +29,7 @@ export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, sku, name, s
     const firstImage = images[0];
 
     const updateLineItem = useCallback(
-        async (accessToken: string, currentProduct: Product, order: string) => {
+        async (accessToken: string, currentProduct: Product, orderId: string) => {
             if (accessToken && currentProduct && order) {
                 const attributes = {
                     quantity: 1,
@@ -43,7 +43,7 @@ export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, sku, name, s
                 const relationships = {
                     order: {
                         data: {
-                            id: order,
+                            id: orderId,
                             type: 'orders',
                         },
                     },
@@ -64,7 +64,7 @@ export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, sku, name, s
 
         if (accessToken && currentProduct && order && !loading) {
             setLoading(true);
-            updateLineItem(accessToken, currentProduct, order);
+            updateLineItem(accessToken, currentProduct, order.id);
         }
     };
 
