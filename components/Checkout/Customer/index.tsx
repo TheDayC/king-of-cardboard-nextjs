@@ -1,32 +1,12 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { get } from 'lodash';
 
 import selector from './selector';
-import { fieldPatternMsgs } from '../../../utils/checkout';
+import { fieldPatternMsgs, parseCustomerDetails } from '../../../utils/checkout';
 import { PersonalDetails } from '../../../types/checkout';
-import {
-    setFirstName,
-    setLastName,
-    setCompany,
-    setEmail,
-    setPhone,
-    setAddressLineOne,
-    setAddressLineTwo,
-    setCity,
-    setPostCode,
-    setCounty,
-    setAllowShippingAddress,
-    setShippingAddressLineOne,
-    setShippingAddressLineTwo,
-    setShippingCity,
-    setShippingPostcode,
-    setShippingCounty,
-    setCurrentStep,
-} from '../../../store/slices/checkout';
-import AuthProviderContext from '../../../context/context';
-import { Address } from '@commercelayer/sdk/lib/resources/addresses';
+import { setAllowShippingAddress, setCurrentStep, setCustomerDetails } from '../../../store/slices/checkout';
 
 const Customer: React.FC = () => {
     const { currentStep, customerDetails, order } = useSelector(selector);
@@ -67,26 +47,9 @@ const Customer: React.FC = () => {
         const allowShipping = get(data, 'allowShippingAddress', false);
         dispatch(setAllowShippingAddress(allowShipping));
 
-        // Dispatch personal and billing details to the redux store.
-        dispatch(setFirstName(get(data, 'firstName', null)));
-        dispatch(setLastName(get(data, 'lastName', null)));
-        dispatch(setCompany(get(data, 'company', null)));
-        dispatch(setEmail(get(data, 'email', null)));
-        dispatch(setPhone(get(data, 'phone', null)));
-        dispatch(setAddressLineOne(get(data, 'billingAddressLineOne', null)));
-        dispatch(setAddressLineTwo(get(data, 'billingAddressLineTwo', null)));
-        dispatch(setCity(get(data, 'billingCity', null)));
-        dispatch(setPostCode(get(data, 'billingPostcode', null)));
-        dispatch(setCounty(get(data, 'billingCounty', null)));
-
-        // If the user has allowed shipping address dispatch shipping address to redux store.
-        if (allowShipping) {
-            dispatch(setShippingAddressLineOne(get(data, 'shippingAddressLineOne', null)));
-            dispatch(setShippingAddressLineTwo(get(data, 'shippingAddressLineTwo', null)));
-            dispatch(setShippingCity(get(data, 'shippingCity', null)));
-            dispatch(setShippingPostcode(get(data, 'shippingPostcode', null)));
-            dispatch(setShippingCounty(get(data, 'shippingCounty', null)));
-        }
+        // There are quite a few customer details to parse so ship it off to a helper then store.
+        const customerDetails = parseCustomerDetails(data, allowShipping);
+        dispatch(setCustomerDetails(customerDetails));
 
         // Remove load barriers.
         setLoading(false);

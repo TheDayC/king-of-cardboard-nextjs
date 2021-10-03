@@ -3,6 +3,8 @@ import axios, { AxiosResponse } from 'axios';
 import { AxiosData } from '../types/fetch';
 import { Counties } from '../enums/checkout';
 import { CommerceLayerClient } from '@commercelayer/sdk';
+import { CustomerDetails } from '../store/types/state';
+import { get } from 'lodash';
 
 function regexEmail(email: string): boolean {
     // eslint-disable-next-line no-useless-escape
@@ -221,4 +223,42 @@ export async function fetchStripeGateway(accessToken: string): Promise<AxiosResp
     } catch (e) {
         console.error(e);
     }
+}
+
+export function parseCustomerDetails(data: unknown, allowShipping: boolean): CustomerDetails {
+    const firstName: string | null = get(data, 'firstName', null);
+    const lastName: string | null = get(data, 'lastName', null);
+    const company: string | null = get(data, 'company', null);
+    const email: string | null = get(data, 'email', null);
+    const phone: string | null = get(data, 'phone', null);
+    const addressLineOne: string | null = get(data, 'billingAddressLineOne', null);
+    const addressLineTwo: string | null = get(data, 'billingAddressLineTwo', null);
+    const city: string | null = get(data, 'billingCity', null);
+    const postcode: string | null = get(data, 'billingPostcode', null);
+    const county: Counties | null = get(data, 'billingCounty', null);
+
+    const shippingAddressLineOne: string | null = allowShipping ? get(data, 'shippingAddressLineOne', null) : null;
+    const shippingAddressLineTwo: string | null = allowShipping ? get(data, 'shippingAddressLineTwo', null) : null;
+    const shippingCity: string | null = allowShipping ? get(data, 'shippingCity', null) : null;
+    const shippingPostcode: string | null = allowShipping ? get(data, 'shippingPostcode', null) : null;
+    const shippingCounty: Counties | null = allowShipping ? get(data, 'shippingCounty', null) : null;
+
+    return {
+        firstName,
+        lastName,
+        company,
+        email,
+        phone,
+        allowShippingAddress: allowShipping,
+        addressLineOne,
+        addressLineTwo,
+        city,
+        postcode,
+        county,
+        shippingAddressLineOne,
+        shippingAddressLineTwo,
+        shippingCity,
+        shippingPostcode,
+        shippingCounty,
+    };
 }
