@@ -14,70 +14,8 @@ import {
 } from '../../../utils/checkout';
 import { fetchOrder } from '../../../store/slices/cart';
 
-export const Delivery: React.FC = () => {
-    const dispatch = useDispatch();
-    const { accessToken, currentStep, shippingMethod, order } = useSelector(selector);
-    const [shippingMethodsInt, setShippingMethodsInt] = useState<MergedShipments[] | null>(null);
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm();
-    const isCurrentStep = currentStep === 1;
-    const hasErrors = Object.keys(errors).length > 0;
-
-    const fetchAllShipments = useCallback(
-        async (accessToken: string, orderId: string) => {
-            if (accessToken && orderId) {
-                const shippingMethods = await getShipments(accessToken, orderId);
-                const deliveryLeadTimes = await getDeliveryLeadTimes(accessToken);
-
-                if (shippingMethods && deliveryLeadTimes) {
-                    const mergedMethods = mergeMethodsAndLeadTimes(shippingMethods.shippingMethods, deliveryLeadTimes);
-
-                    mergedMethods.forEach((method) => {
-                        if (method.leadTimes) {
-                            updateShipmentMethod(accessToken, method.id, method.leadTimes.id);
-                        }
-                    });
-
-                    // dispatch(fetchOrder(true));
-                    // setShippingMethodsInt();
-                }
-            }
-        },
-        [dispatch]
-    );
-
-    useEffect(() => {
-        if (accessToken && order) {
-            fetchAllShipments(accessToken, order.id);
-        }
-    }, [accessToken, order, fetchAllShipments]);
-
-    const handleSelectShippingMethod = async (data: DeliveryDetails) => {
-        /* const chosenId = get(data, 'shippingMethod', null);
-
-        if (chosenId && shippingMethodsInt && accessToken) {
-            const foundShipment = shippingMethodsInt.find(method => method.id === chosenId);
-
-            if (foundShipment && foundShipment.leadTimes) {
-                const hasUpdated = await updateShipmentMethod(accessToken, foundShipment.id, foundShipment.leadTimes.id);
-
-                if (hasUpdated) {
-                    dispatch(setCurrentStep(2));
-                    dispatch(fetchOrder(true));
-                }
-            }
-        } */
-    };
-
-    const handleEdit = () => {
-        if (!isCurrentStep) {
-            dispatch(setCurrentStep(1));
-        }
-    };
-
+export const Shipment: React.FC = () => {
+    // TODO: Flesh out Shipment.
     return (
         <form onSubmit={handleSubmit(handleSelectShippingMethod)}>
             <div className="flex">
@@ -129,4 +67,4 @@ export const Delivery: React.FC = () => {
     );
 };
 
-export default Delivery;
+export default Shipment;

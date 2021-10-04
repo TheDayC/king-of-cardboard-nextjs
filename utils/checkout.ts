@@ -4,7 +4,7 @@ import { get } from 'lodash';
 import { AxiosData } from '../types/fetch';
 import { Counties } from '../enums/checkout';
 import { CustomerDetails } from '../store/types/state';
-import { DeliveryLeadTimes, ShippingMethods } from '../types/checkout';
+import { DeliveryLeadTimes, MergedShipments, Shipments, ShippingMethods } from '../types/checkout';
 import { Order } from '../types/cart';
 
 function regexEmail(email: string): boolean {
@@ -252,7 +252,7 @@ export async function updateAddress(
     return false;
 }
 
-export async function getShipments(accessToken: string, orderId: string): Promise<ShippingMethods[] | null> {
+export async function getShipments(accessToken: string, orderId: string): Promise<Shipments | null> {
     try {
         const response = await axios.post('/api/getShipments', {
             token: accessToken,
@@ -263,46 +263,45 @@ export async function getShipments(accessToken: string, orderId: string): Promis
             const shipments: any[] | null = get(response, 'data.shipments', null);
             const included: any[] | null = get(response, 'data.included', null);
 
-            if (included) {
-                return included.map((method) => {
-                    const id: string | null = get(method, 'id', null);
-                    const name: string | null = get(method, 'attributes.name', null);
-                    const price_amount_cents: number = get(method, 'attributes.price_amount_cents', 0);
-                    const price_amount_float: number = get(method, 'attributes.price_amount_float', 0);
-                    const price_amount_for_shipment_cents: number = get(
-                        method,
-                        'attributes.price_amount_for_shipment_cents',
-                        0
-                    );
-                    const price_amount_for_shipment_float: number = get(
-                        method,
-                        'attributes.price_amount_for_shipment_float',
-                        0
-                    );
-                    const currency_code: string | null = get(method, 'attributes.currency_code', null);
-                    const formatted_price_amount: string | null = get(
-                        method,
-                        'attributes.formatted_price_amount',
-                        null
-                    );
-                    const formatted_price_amount_for_shipment: string | null = get(
-                        method,
-                        'attributes.formatted_price_amount_for_shipment',
-                        null
-                    );
+            if (shipments && included) {
+                return {
+                    shipments: shipments.map((shipment) => shipment.id),
+                    shippingMethods: included.map((method) => {
+                        const id: string = get(method, 'id', '');
+                        const name: string = get(method, 'attributes.name', '');
+                        const price_amount_cents: number = get(method, 'attributes.price_amount_cents', 0);
+                        const price_amount_float: number = get(method, 'attributes.price_amount_float', 0);
+                        const price_amount_for_shipment_cents: number = get(
+                            method,
+                            'attributes.price_amount_for_shipment_cents',
+                            0
+                        );
+                        const price_amount_for_shipment_float: number = get(
+                            method,
+                            'attributes.price_amount_for_shipment_float',
+                            0
+                        );
+                        const currency_code: string = get(method, 'attributes.currency_code', '');
+                        const formatted_price_amount: string = get(method, 'attributes.formatted_price_amount', '');
+                        const formatted_price_amount_for_shipment: string = get(
+                            method,
+                            'attributes.formatted_price_amount_for_shipment',
+                            ''
+                        );
 
-                    return {
-                        id,
-                        name,
-                        price_amount_cents,
-                        price_amount_float,
-                        price_amount_for_shipment_cents,
-                        price_amount_for_shipment_float,
-                        currency_code,
-                        formatted_price_amount,
-                        formatted_price_amount_for_shipment,
-                    };
-                });
+                        return {
+                            id,
+                            name,
+                            price_amount_cents,
+                            price_amount_float,
+                            price_amount_for_shipment_cents,
+                            price_amount_for_shipment_float,
+                            currency_code,
+                            formatted_price_amount,
+                            formatted_price_amount_for_shipment,
+                        };
+                    }),
+                };
             } else {
                 return null;
             }
@@ -316,7 +315,7 @@ export async function getShipments(accessToken: string, orderId: string): Promis
     return null;
 }
 
-export async function getDeliveryLeadTimes(accessToken: string): Promise<DeliveryLeadTimes | null> {
+export async function getDeliveryLeadTimes(accessToken: string): Promise<DeliveryLeadTimes[] | null> {
     try {
         const response = await axios.post('/api/getDeliveryLeadTimes', {
             token: accessToken,
@@ -324,6 +323,8 @@ export async function getDeliveryLeadTimes(accessToken: string): Promise<Deliver
 
         if (response) {
             const deliveryLeadTimes: any | null = get(response, 'data.deliveryLeadTimes', null);
+            const included: any | null = get(response, 'data.included', null);
+            console.log('🚀 ~ file: checkout.ts ~ line 328 ~ getDeliveryLeadTimes ~ include', included);
 
             if (deliveryLeadTimes) {
                 return deliveryLeadTimes.map((leadTime) => ({
@@ -342,4 +343,53 @@ export async function getDeliveryLeadTimes(accessToken: string): Promise<Deliver
     }
 
     return null;
+}
+
+export function mergeMethodsAndLeadTimes(
+    shippingMethods: ShippingMethods[],
+    leadTimes: DeliveryLeadTimes[]
+): MergedShipments[] {
+    return shippingMethods.map((method) => {
+        const matchingLeadTime = findLeadTimeIdFromMethodName(method.name, leadTimes);
+
+        return {
+            ...method,
+            leadTimes: matchingLeadTime,
+        };
+    });
+}
+
+function findLeadTimeIdFromMethodName(name: string, leadTimes: DeliveryLeadTimes[]): DeliveryLeadTimes | null {
+    switch (name) {
+        case 'Royal Mail 1st Class':
+            return leadTimes.find((time) => time.maxDays === 2) || null;
+        case 'Royal Mail 2nd Class':
+            return leadTimes.find((time) => time.maxDays === 5) || null;
+        default:
+            return null;
+    }
+}
+
+export async function updateShipmentMethod(
+    accessToken: string,
+    shipmentId: string,
+    methodId: string
+): Promise<boolean> {
+    try {
+        const response = await axios.post('/api/updateShipmentMethod', {
+            token: accessToken,
+            shipmentId,
+            methodId,
+        });
+
+        if (response) {
+            const hasUpdated: boolean = get(response, 'data.hasUpdated', false);
+
+            return hasUpdated;
+        }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return false;
 }

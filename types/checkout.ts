@@ -26,16 +26,21 @@ export interface DeliveryDetails {
     shippingMethod: string;
 }
 
+export interface Shipments {
+    shipments: string[];
+    shippingMethods: ShippingMethods[];
+}
+
 export interface ShippingMethods {
-    id: string | null;
-    name: string | null;
+    id: string;
+    name: string;
     price_amount_cents: number;
     price_amount_float: number;
     price_amount_for_shipment_cents: number;
     price_amount_for_shipment_float: number;
-    currency_code: string | null;
-    formatted_price_amount: string | null;
-    formatted_price_amount_for_shipment: string | null;
+    currency_code: string;
+    formatted_price_amount: string;
+    formatted_price_amount_for_shipment: string;
 }
 
 export interface DeliveryLeadTimes {
@@ -44,4 +49,8 @@ export interface DeliveryLeadTimes {
     maxHours: number;
     minDays: number;
     maxDays: number;
+}
+
+export interface MergedShipments extends ShippingMethods {
+    leadTimes: DeliveryLeadTimes | null;
 }

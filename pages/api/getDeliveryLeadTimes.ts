@@ -12,9 +12,9 @@ async function getDeliveryLeadTimes(req: NextApiRequest, res: NextApiResponse): 
         cl.get(`/api/delivery_lead_times?include=${include}`)
             .then((response) => {
                 const status = get(response, 'status', 500);
-                const { data: deliveryLeadTimes } = get(response, 'data', null);
+                const { data: deliveryLeadTimes, included } = get(response, 'data', null);
 
-                res.status(status).json({ deliveryLeadTimes });
+                res.status(status).json({ deliveryLeadTimes, included });
             })
             .catch((error) => {
                 const status = get(error, 'response.status', 500);
