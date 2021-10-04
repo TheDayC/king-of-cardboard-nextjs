@@ -25,3 +25,23 @@ export interface ShippingAddress {
 export interface DeliveryDetails {
     shippingMethod: string;
 }
+
+export interface ShippingMethods {
+    id: string | null;
+    name: string | null;
+    price_amount_cents: number;
+    price_amount_float: number;
+    price_amount_for_shipment_cents: number;
+    price_amount_for_shipment_float: number;
+    currency_code: string | null;
+    formatted_price_amount: string | null;
+    formatted_price_amount_for_shipment: string | null;
+}
+
+export interface DeliveryLeadTimes {
+    id: string;
+    minHours: number;
+    maxHours: number;
+    minDays: number;
+    maxDays: number;
+}

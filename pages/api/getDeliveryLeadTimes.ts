@@ -3,19 +3,18 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import { authClient } from '../../utils/auth';
 
-async function getShipments(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+async function getDeliveryLeadTimes(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         const token = get(req, 'body.token', null);
-        const id = get(req, 'body.id', null);
         const cl = authClient(token);
-        const include = 'available_shipping_methods,stock_location';
+        const include = 'shipping_method,stock_location';
 
-        cl.get(`/api/orders/${id}/shipments?include=${include}`)
+        cl.get(`/api/delivery_lead_times?include=${include}`)
             .then((response) => {
                 const status = get(response, 'status', 500);
-                const { data: shipments, included } = get(response, 'data', null);
+                const { data: deliveryLeadTimes } = get(response, 'data', null);
 
-                res.status(status).json({ shipments, included });
+                res.status(status).json({ deliveryLeadTimes });
             })
             .catch((error) => {
                 const status = get(error, 'response.status', 500);
@@ -29,4 +28,4 @@ async function getShipments(req: NextApiRequest, res: NextApiResponse): Promise<
     }
 }
 
-export default getShipments;
+export default getDeliveryLeadTimes;

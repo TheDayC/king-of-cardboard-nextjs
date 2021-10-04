@@ -1,19 +1,17 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { get, toNumber } from 'lodash';
+import { get } from 'lodash';
 import { useForm } from 'react-hook-form';
 
-import { getShipments, initCommerceClient } from '../../../utils/commerce';
 import selector from './selector';
 import { ShippingMethods } from '../../../types/commerce';
-import { setCurrentStep, setShippingMethod } from '../../../store/slices/checkout';
+import { setCurrentStep } from '../../../store/slices/checkout';
 import { DeliveryDetails } from '../../../types/checkout';
-import AuthProviderContext from '../../../context/context';
+import { getDeliveryLeadTimes, getShipments } from '../../../utils/checkout';
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
     const { accessToken, currentStep, shippingMethod, order } = useSelector(selector);
-    const [shippingMethodsInt, setShippingMethodsInt] = useState<ShippingMethods[] | null>(null);
     const {
         register,
         handleSubmit,
@@ -80,7 +78,10 @@ export const Delivery: React.FC = () => {
 
     const fetchAllShipments = useCallback(async (accessToken: string, orderId: string) => {
         if (accessToken && orderId) {
-            await getShipments(accessToken, orderId);
+            const shippingMethods = await getShipments(accessToken, orderId);
+            console.log('🚀 ~ file: index.tsx ~ line 82 ~ fetchAllShipments ~ shippingMethods', shippingMethods);
+            const deliveryLeadTimes = await getDeliveryLeadTimes(accessToken);
+            console.log('🚀 ~ file: index.tsx ~ line 87 ~ fetchAllShipments ~ deliveryLeadTimes', deliveryLeadTimes);
         }
     }, []);
 
@@ -91,11 +92,11 @@ export const Delivery: React.FC = () => {
     }, [accessToken, order, fetchAllShipments]);
 
     const handleSelectShippingMethod = (data: DeliveryDetails) => {
-        const shippingMethodId = get(data, 'shippingMethod', null);
+        /* const shippingMethodId = get(data, 'shippingMethod', null);
 
         // addShippingMethodToOrder();
-        dispatch(setShippingMethod(shippingMethodId));
-        dispatch(setCurrentStep(2));
+        dispatch(setShippingMetho(shippingMethodId));
+        dispatch(setCurrentStep(2)); */
     };
 
     const handleEdit = () => {
@@ -112,7 +113,7 @@ export const Delivery: React.FC = () => {
                         {!hasErrors && !isCurrentStep ? 'Delivery - Edit' : 'Delivery'}
                     </h3>
                     <div className="collapse-content">
-                        {shippingMethodsInt &&
+                        {/* shippingMethodsInt &&
                             shippingMethodsInt.map((method) => (
                                 <div className="form-control" key={`method-${method.id}`}>
                                     <label className="label cursor-pointer">
@@ -128,7 +129,7 @@ export const Delivery: React.FC = () => {
                                         })}
                                     />
                                 </div>
-                            ))}
+                            )) */}
                         <button
                             type="submit"
                             className={`btn-sm btn-outline${

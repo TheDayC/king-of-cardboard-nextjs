@@ -185,27 +185,3 @@ export async function updateLineItem(accessToken: string, id: string, quantity: 
 
     return false;
 }
-
-export async function getShipments(accessToken: string, orderId: string): Promise<Order | null> {
-    try {
-        const response = await axios.post('/api/getShipments', {
-            token: accessToken,
-            id: orderId,
-        });
-
-        if (response) {
-            const shipments: any[] | null = get(response, 'data.shipments', null);
-            console.log('🚀 ~ file: commerce.ts ~ line 196 ~ getShipments ~ shipments', shipments);
-            const included: any[] | null = get(response, 'data.included', null);
-            console.log('🚀 ~ file: commerce.ts ~ line 198 ~ getShipments ~ included', included);
-
-            return null;
-        }
-
-        return null;
-    } catch (error) {
-        console.log('Error: ', error);
-    }
-
-    return null;
-}

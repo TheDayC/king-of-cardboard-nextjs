@@ -4,6 +4,8 @@ import { get } from 'lodash';
 import { AxiosData } from '../types/fetch';
 import { Counties } from '../enums/checkout';
 import { CustomerDetails } from '../store/types/state';
+import { DeliveryLeadTimes, ShippingMethods } from '../types/checkout';
+import { Order } from '../types/cart';
 
 function regexEmail(email: string): boolean {
     // eslint-disable-next-line no-useless-escape
@@ -248,4 +250,96 @@ export async function updateAddress(
     }
 
     return false;
+}
+
+export async function getShipments(accessToken: string, orderId: string): Promise<ShippingMethods[] | null> {
+    try {
+        const response = await axios.post('/api/getShipments', {
+            token: accessToken,
+            id: orderId,
+        });
+
+        if (response) {
+            const shipments: any[] | null = get(response, 'data.shipments', null);
+            const included: any[] | null = get(response, 'data.included', null);
+
+            if (included) {
+                return included.map((method) => {
+                    const id: string | null = get(method, 'id', null);
+                    const name: string | null = get(method, 'attributes.name', null);
+                    const price_amount_cents: number = get(method, 'attributes.price_amount_cents', 0);
+                    const price_amount_float: number = get(method, 'attributes.price_amount_float', 0);
+                    const price_amount_for_shipment_cents: number = get(
+                        method,
+                        'attributes.price_amount_for_shipment_cents',
+                        0
+                    );
+                    const price_amount_for_shipment_float: number = get(
+                        method,
+                        'attributes.price_amount_for_shipment_float',
+                        0
+                    );
+                    const currency_code: string | null = get(method, 'attributes.currency_code', null);
+                    const formatted_price_amount: string | null = get(
+                        method,
+                        'attributes.formatted_price_amount',
+                        null
+                    );
+                    const formatted_price_amount_for_shipment: string | null = get(
+                        method,
+                        'attributes.formatted_price_amount_for_shipment',
+                        null
+                    );
+
+                    return {
+                        id,
+                        name,
+                        price_amount_cents,
+                        price_amount_float,
+                        price_amount_for_shipment_cents,
+                        price_amount_for_shipment_float,
+                        currency_code,
+                        formatted_price_amount,
+                        formatted_price_amount_for_shipment,
+                    };
+                });
+            } else {
+                return null;
+            }
+        }
+
+        return null;
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
+
+export async function getDeliveryLeadTimes(accessToken: string): Promise<DeliveryLeadTimes | null> {
+    try {
+        const response = await axios.post('/api/getDeliveryLeadTimes', {
+            token: accessToken,
+        });
+
+        if (response) {
+            const deliveryLeadTimes: any | null = get(response, 'data.deliveryLeadTimes', null);
+
+            if (deliveryLeadTimes) {
+                return deliveryLeadTimes.map((leadTime) => ({
+                    id: leadTime.id,
+                    minHours: leadTime.attributes.min_hours,
+                    maxHours: leadTime.attributes.max_hours,
+                    minDays: leadTime.attributes.min_days,
+                    maxDays: leadTime.attributes.max_days,
+                }));
+            } else {
+                return null;
+            }
+        }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
 }
