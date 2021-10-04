@@ -42,7 +42,11 @@ const AuthProvider: React.FC = ({ children }) => {
     // Fetch order with line items.
     const fetchOrder = useCallback(
         async (accessToken: string, orderId: string) => {
-            const fullOrderData = await getOrder(accessToken, orderId, ['line_items', 'available_payment_methods']);
+            const fullOrderData = await getOrder(accessToken, orderId, [
+                'line_items',
+                'available_payment_methods',
+                'shipments',
+            ]);
 
             if (fullOrderData) {
                 const { included } = fullOrderData;

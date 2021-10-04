@@ -13,9 +13,9 @@ async function getShipments(req: NextApiRequest, res: NextApiResponse): Promise<
         cl.get(`/api/orders/${id}/shipments?include=${include}`)
             .then((response) => {
                 const status = get(response, 'status', 500);
-                const { data: shipments, included } = get(response, 'data', null);
+                const { data: shipments, include } = get(response, 'data', null);
 
-                res.status(status).json({ shipments, included });
+                res.status(status).json({ shipments, include });
             })
             .catch((error) => {
                 const status = get(error, 'response.status', 500);

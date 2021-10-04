@@ -1,40 +1,9 @@
-import { getSalesChannelToken } from '@commercelayer/js-auth';
-import CommerceLayer, { CommerceLayerClient } from '@commercelayer/sdk';
 import axios from 'axios';
 import { get } from 'lodash';
-import { DateTime } from 'luxon';
 
-import { IncludedData, Order } from '../types/cart';
-import { CommerceAuthProps, LineItemAttributes, LineItemRelationships, Price, StockItem } from '../types/commerce';
-
-export async function getCommerceAuth(): Promise<CommerceAuthProps | null> {
-    const token = await getSalesChannelToken({
-        clientId: process.env.NEXT_PUBLIC_ECOM_CLIENT_ID || '',
-        endpoint: process.env.NEXT_PUBLIC_ECOM_DOMAIN || '',
-        scope: 'market:6098',
-    });
-
-    if (token) {
-        const parsedDate = token.expires ? DateTime.fromJSDate(token.expires) : null;
-        const isoDate = parsedDate ? parsedDate.toISO() : '';
-
-        return {
-            accessToken: token.accessToken,
-            expires: isoDate,
-        };
-    }
-
-    return null;
-}
-
-export function initCommerceClient(accessToken: string): CommerceLayerClient {
-    const cl = CommerceLayer({
-        accessToken: accessToken,
-        organization: process.env.NEXT_PUBLIC_ORG_SLUG || '',
-    });
-
-    return cl;
-}
+import { Order } from '../types/cart';
+import { LineItemAttributes, LineItemRelationships, Price, StockItem } from '../types/commerce';
+import { parseOrderData } from './parsers';
 
 export async function createOrder(accessToken: string): Promise<Order | null> {
     try {
@@ -133,13 +102,15 @@ export async function getOrder(accessToken: string, orderId: string, include: st
     try {
         const response = await axios.post('/api/getOrder', {
             token: accessToken,
-            orderId,
+            id: orderId,
             include,
         });
 
         if (response) {
             const order: any[] | null = get(response, 'data.order', null);
+            console.log('🚀 ~ file: commerce.ts ~ line 111 ~ getOrder ~ order', order);
             const included: any[] | null = get(response, 'data.included', null);
+            console.log('🚀 ~ file: commerce.ts ~ line 113 ~ getOrder ~ included', included);
 
             return parseOrderData(order, included);
         }
@@ -215,49 +186,25 @@ export async function updateLineItem(accessToken: string, id: string, quantity: 
     return false;
 }
 
-function parseOrderData(order: unknown, included: unknown): Order | null {
-    if (order !== null) {
-        const id: string = get(order, 'id', '');
-        const orderNumber: number = get(order, 'attributes.number', 0);
-        const sku_count: number = get(order, 'attributes.sku_count', 0);
-        const formatted_subtotal_amount: string = get(order, 'attributes.formatted_subtotal_amount', '£0.00');
-        const formatted_discount_amount: string = get(order, 'attributes.formatted_discount_amount', '£0.00');
-        const formatted_shipping_amount: string = get(order, 'attributes.formatted_shipping_amount', '£0.00');
-        const formatted_total_tax_amount: string = get(order, 'attributes.formatted_total_tax_amount', '£0.00');
-        const formatted_gift_card_amount: string = get(order, 'attributes.formatted_gift_card_amount', '£0.00');
-        const formatted_total_amount_with_taxes: string = get(
-            order,
-            'attributes.formatted_total_amount_with_taxes',
-            '£0.00'
-        );
-        const line_items: string[] = get(order, 'attributes.line_items', []);
+export async function getShipments(accessToken: string, orderId: string): Promise<Order | null> {
+    try {
+        const response = await axios.post('/api/getShipments', {
+            token: accessToken,
+            id: orderId,
+        });
 
-        return {
-            id,
-            number: orderNumber,
-            sku_count,
-            formatted_subtotal_amount,
-            formatted_discount_amount,
-            formatted_shipping_amount,
-            formatted_total_tax_amount,
-            formatted_gift_card_amount,
-            formatted_total_amount_with_taxes,
-            line_items,
-            included: included
-                ? included.map((include) => {
-                      const id: string = get(include, 'id', '');
-                      const type: string = get(include, 'type', '');
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      const attributes: any = get(include, 'attributes', null);
+        if (response) {
+            const shipments: any[] | null = get(response, 'data.shipments', null);
+            console.log('🚀 ~ file: commerce.ts ~ line 196 ~ getShipments ~ shipments', shipments);
+            const included: any[] | null = get(response, 'data.included', null);
+            console.log('🚀 ~ file: commerce.ts ~ line 198 ~ getShipments ~ included', included);
 
-                      return {
-                          id,
-                          type,
-                          attributes,
-                      };
-                  })
-                : [],
-        };
+            return null;
+        }
+
+        return null;
+    } catch (error) {
+        console.log('Error: ', error);
     }
 
     return null;

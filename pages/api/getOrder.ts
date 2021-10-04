@@ -6,18 +6,19 @@ import { authClient } from '../../utils/auth';
 async function getOrder(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         const token = get(req, 'body.token', null);
-        const orderId = get(req, 'body.orderId', null);
+        const orderId = get(req, 'body.id', null);
         const include = get(req, 'body.include', null);
         const cl = authClient(token);
         const includeJoin = join(include, ',');
         const orderFields =
-            'fields[orders]=number,skus_count,formatted_subtotal_amount,formatted_discount_amount,formatted_shipping_amount,formatted_total_tax_amount,formatted_gift_card_amount,formatted_total_amount_with_taxes,line_items';
+            'fields[orders]=number,skus_count,formatted_subtotal_amount,formatted_discount_amount,formatted_shipping_amount,formatted_total_tax_amount,formatted_gift_card_amount,formatted_total_amount_with_taxes,line_items,shipments_count';
         const lineItemFields =
             'fields[line_items]=item_type,image_url,name,sku_code,formatted_unit_amount,quantity,formatted_total_amount';
         const paymentFields = 'fields[payment_methods]=name,payment_source_type';
+        const shipmentsFields = 'fields[shipments]=id,status';
 
         const apiUrl = include
-            ? `/api/orders/${orderId}?include=${includeJoin}&${orderFields}&${lineItemFields}&${paymentFields}`
+            ? `/api/orders/${orderId}?include=${includeJoin}&${orderFields}&${lineItemFields}&${paymentFields}&${shipmentsFields}`
             : `/api/orders/${orderId}`;
 
         cl.get(apiUrl)

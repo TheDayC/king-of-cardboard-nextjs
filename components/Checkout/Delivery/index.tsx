@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { get, toNumber } from 'lodash';
 import { useForm } from 'react-hook-form';
 
-import { initCommerceClient } from '../../../utils/commerce';
+import { getShipments, initCommerceClient } from '../../../utils/commerce';
 import selector from './selector';
 import { ShippingMethods } from '../../../types/commerce';
 import { setCurrentStep, setShippingMethod } from '../../../store/slices/checkout';
@@ -14,7 +14,6 @@ export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
     const { accessToken, currentStep, shippingMethod, order } = useSelector(selector);
     const [shippingMethodsInt, setShippingMethodsInt] = useState<ShippingMethods[] | null>(null);
-    const cl = useContext(AuthProviderContext);
     const {
         register,
         handleSubmit,
@@ -23,7 +22,7 @@ export const Delivery: React.FC = () => {
     const isCurrentStep = currentStep === 1;
     const hasErrors = Object.keys(errors).length > 0;
 
-    const getFirstSku = useCallback(async () => {
+    /* const getFirstSku = useCallback(async () => {
         if (accessToken && cl) {
             // const sku = await Sku.first();
             const fetchedShippingMethods = await cl.shipping_methods.list();
@@ -68,7 +67,7 @@ export const Delivery: React.FC = () => {
 
     useEffect(() => {
         getFirstSku();
-    }, [getFirstSku]);
+    }, [getFirstSku]); */
 
     /* const addShippingMethodToOrder = async () => {
         if (cl && order) {
@@ -78,6 +77,18 @@ export const Delivery: React.FC = () => {
             });
         }
     } */
+
+    const fetchAllShipments = useCallback(async (accessToken: string, orderId: string) => {
+        if (accessToken && orderId) {
+            await getShipments(accessToken, orderId);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (accessToken && order) {
+            fetchAllShipments(accessToken, order.id);
+        }
+    }, [accessToken, order, fetchAllShipments]);
 
     const handleSelectShippingMethod = (data: DeliveryDetails) => {
         const shippingMethodId = get(data, 'shippingMethod', null);

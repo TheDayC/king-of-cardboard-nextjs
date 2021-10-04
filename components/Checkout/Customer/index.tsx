@@ -4,12 +4,14 @@ import { useForm } from 'react-hook-form';
 import { get } from 'lodash';
 
 import selector from './selector';
-import { fieldPatternMsgs, parseCustomerDetails } from '../../../utils/checkout';
+import { fieldPatternMsgs, updateAddress } from '../../../utils/checkout';
 import { PersonalDetails } from '../../../types/checkout';
 import { setAllowShippingAddress, setCurrentStep, setCustomerDetails } from '../../../store/slices/checkout';
+import { parseCustomerDetails } from '../../../utils/parsers';
+import { fetchOrder } from '../../../store/slices/cart';
 
 const Customer: React.FC = () => {
-    const { currentStep, customerDetails, order } = useSelector(selector);
+    const { currentStep, customerDetails, order, accessToken } = useSelector(selector);
     const {
         firstName,
         lastName,
@@ -39,7 +41,7 @@ const Customer: React.FC = () => {
     const isCurrentStep = currentStep === 0;
     const hasErrors = Object.keys(errors).length > 0;
 
-    const onSubmit = (data: PersonalDetails) => {
+    const onSubmit = async (data: PersonalDetails) => {
         // Set loading in current form.
         setLoading(true);
 
@@ -51,11 +53,22 @@ const Customer: React.FC = () => {
         const customerDetails = parseCustomerDetails(data, allowShipping);
         dispatch(setCustomerDetails(customerDetails));
 
+        if (order && accessToken) {
+            // Update billing address details in commerceLayer
+            const hasBillingAddressUpdated = await updateAddress(accessToken, order.id, customerDetails, false);
+
+            if (hasBillingAddressUpdated) {
+                // Update shipping address details in commerceLayer
+                await updateAddress(accessToken, order.id, customerDetails, true);
+            }
+
+            dispatch(fetchOrder(true));
+        }
+
         // Remove load barriers.
         setLoading(false);
 
         // Redirect to next stage.
-        // router.push('/checkout/delivery');
         dispatch(setCurrentStep(1));
     };
 
