@@ -21,7 +21,7 @@ export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, sku, name, s
     const { items, order, products, accessToken, shouldFetchOrder } = useSelector(selector);
     const [loading, setLoading] = useState(false);
     const currentProduct = products.find((c) => c.sku === sku) || null;
-    const currentProductLineItem = items.find((c) => c.sku_code === sku) || null;
+    const currentProductLineItem = items ? items.find((c) => c.sku_code === sku) : null;
     const stock = (currentProduct && currentProduct.stock) || 0;
 
     const hasExceededStock = currentProduct && currentProductLineItem && currentProductLineItem.quantity >= stock;

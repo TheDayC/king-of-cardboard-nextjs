@@ -1,23 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { get } from 'lodash';
 import { useForm } from 'react-hook-form';
+import { get } from 'lodash';
 
 import selector from './selector';
-import { setCurrentStep } from '../../../store/slices/checkout';
-import { DeliveryDetails, MergedShipments } from '../../../types/checkout';
+import { setCurrentStep, setShipmentsWithMethods } from '../../../store/slices/checkout';
+import { FinalShipments } from '../../../types/checkout';
 import {
     getDeliveryLeadTimes,
     getShipments,
     mergeMethodsAndLeadTimes,
     updateShipmentMethod,
 } from '../../../utils/checkout';
+import Shipment from './Shipment';
 import { fetchOrder } from '../../../store/slices/cart';
+import { ShipmentsWithMethods } from '../../../store/types/state';
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
-    const { accessToken, currentStep, shippingMethod, order } = useSelector(selector);
-    const [shippingMethodsInt, setShippingMethodsInt] = useState<MergedShipments[] | null>(null);
+    const { accessToken, currentStep, shipmentsWithMethods, order } = useSelector(selector);
+    const [shipments, setShipments] = useState<FinalShipments | null>(null);
     const {
         register,
         handleSubmit,
@@ -26,28 +28,22 @@ export const Delivery: React.FC = () => {
     const isCurrentStep = currentStep === 1;
     const hasErrors = Object.keys(errors).length > 0;
 
-    const fetchAllShipments = useCallback(
-        async (accessToken: string, orderId: string) => {
-            if (accessToken && orderId) {
-                const shippingMethods = await getShipments(accessToken, orderId);
-                const deliveryLeadTimes = await getDeliveryLeadTimes(accessToken);
+    const fetchAllShipments = useCallback(async (accessToken: string, orderId: string) => {
+        if (accessToken && orderId) {
+            const shipmentData = await getShipments(accessToken, orderId);
+            const deliveryLeadTimes = await getDeliveryLeadTimes(accessToken);
 
-                if (shippingMethods && deliveryLeadTimes) {
-                    const mergedMethods = mergeMethodsAndLeadTimes(shippingMethods.shippingMethods, deliveryLeadTimes);
+            if (shipmentData && deliveryLeadTimes) {
+                const { shipments, shippingMethods } = shipmentData;
+                const mergedMethods = mergeMethodsAndLeadTimes(shippingMethods, deliveryLeadTimes);
 
-                    mergedMethods.forEach((method) => {
-                        if (method.leadTimes) {
-                            updateShipmentMethod(accessToken, method.id, method.leadTimes.id);
-                        }
-                    });
-
-                    // dispatch(fetchOrder(true));
-                    // setShippingMethodsInt();
-                }
+                setShipments({
+                    shipments,
+                    shippingMethods: mergedMethods,
+                });
             }
-        },
-        [dispatch]
-    );
+        }
+    }, []);
 
     useEffect(() => {
         if (accessToken && order) {
@@ -55,21 +51,30 @@ export const Delivery: React.FC = () => {
         }
     }, [accessToken, order, fetchAllShipments]);
 
-    const handleSelectShippingMethod = async (data: DeliveryDetails) => {
-        /* const chosenId = get(data, 'shippingMethod', null);
+    const handleSelectShippingMethod = async (data: unknown) => {
+        if (shipments) {
+            // Set shipments with methods for local storage.
+            const setShipmentsAndMethods: ShipmentsWithMethods[] = shipments.shipments.map((shipment) => ({
+                shipmentId: shipment,
+                methodId: get(data, `shipment-${shipment}-method`, ''),
+            }));
 
-        if (chosenId && shippingMethodsInt && accessToken) {
-            const foundShipment = shippingMethodsInt.find(method => method.id === chosenId);
+            dispatch(setShipmentsWithMethods(setShipmentsAndMethods));
 
-            if (foundShipment && foundShipment.leadTimes) {
-                const hasUpdated = await updateShipmentMethod(accessToken, foundShipment.id, foundShipment.leadTimes.id);
+            // Set shipments in the commerce layer.
+            shipments.shipments.forEach((shipment) => {
+                const chosenMethod = get(data, `shipment-${shipment}-shippingMethod`, null);
 
-                if (hasUpdated) {
-                    dispatch(setCurrentStep(2));
-                    dispatch(fetchOrder(true));
+                if (chosenMethod && accessToken) {
+                    updateShipmentMethod(accessToken, shipment, chosenMethod).then((res) => {
+                        if (res) {
+                            dispatch(setCurrentStep(2));
+                            dispatch(fetchOrder(true));
+                        }
+                    });
                 }
-            }
-        } */
+            });
+        }
     };
 
     const handleEdit = () => {
@@ -86,28 +91,24 @@ export const Delivery: React.FC = () => {
                         {!hasErrors && !isCurrentStep ? 'Delivery - Edit' : 'Delivery'}
                     </h3>
                     <div className="collapse-content">
-                        {shippingMethodsInt &&
-                            shippingMethodsInt.map((method) => (
-                                <div className="form-control" key={`method-${method.id}`}>
-                                    <label className="label cursor-pointer">
-                                        <span className="label-text">
-                                            {method.name}
-                                            {method.formatted_price_amount_for_shipment}
-                                            {method.leadTimes &&
-                                                `Available in ${method.leadTimes.minDays} - ${method.leadTimes.maxDays} days.`}
-                                        </span>
-                                    </label>
-                                    <input
-                                        type="radio"
-                                        className="radio"
-                                        value={method.id}
-                                        defaultChecked={Boolean(shippingMethod)}
-                                        {...register('shippingMethod', {
-                                            required: { value: true, message: 'Required' },
-                                        })}
+                        {shipments &&
+                            shipments.shipments.map((shipment, index) => {
+                                const defaultValue = shipmentsWithMethods
+                                    ? shipmentsWithMethods.find((withMethod) => withMethod.shipmentId === shipment)
+                                    : null;
+
+                                return (
+                                    <Shipment
+                                        id={shipment}
+                                        shippingMethods={shipments.shippingMethods}
+                                        shipmentCount={index + 1}
+                                        shipmentsTotal={shipments.shipments.length}
+                                        register={register}
+                                        defaultChecked={defaultValue ? defaultValue.methodId : ''}
+                                        key={`shipment-${index}`}
                                     />
-                                </div>
-                            ))}
+                                );
+                            })}
                         <button
                             type="submit"
                             className={`btn-sm btn-outline${

@@ -50,7 +50,7 @@ export interface Global {
 
 export interface Checkout {
     currentStep: number;
-    shippingMethod: string | null;
+    shipmentsWithMethods: ShipmentsWithMethods[] | null;
     customerDetails: CustomerDetails;
 }
 
@@ -71,4 +71,9 @@ export interface CustomerDetails {
     shippingCity: string | null;
     shippingPostcode: string | null;
     shippingCounty: Counties | null;
+}
+
+export interface ShipmentsWithMethods {
+    shipmentId: string;
+    methodId: string;
 }

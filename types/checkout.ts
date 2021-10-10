@@ -51,6 +51,11 @@ export interface DeliveryLeadTimes {
     maxDays: number;
 }
 
-export interface MergedShipments extends ShippingMethods {
+export interface MergedShipmentMethods extends ShippingMethods {
     leadTimes: DeliveryLeadTimes | null;
+}
+
+export interface FinalShipments {
+    shipments: string[];
+    shippingMethods: MergedShipmentMethods[];
 }

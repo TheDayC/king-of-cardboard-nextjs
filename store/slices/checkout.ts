@@ -30,12 +30,38 @@ const checkoutSlice = createSlice({
                 },
             };
         },
+        setShipmentsWithMethods(state, action) {
+            return {
+                ...state,
+                shipmentsWithMethods: action.payload,
+            };
+        },
+        addShipmentWithMethod(state, action) {
+            const { shipmentId, methodId } = action.payload;
+            const currentState = state.shipmentsWithMethods;
+
+            if (currentState) {
+                const existingIndex = currentState.findIndex((cS) => cS.shipmentId === shipmentId);
+
+                state.shipmentsWithMethods = currentState.slice(existingIndex, existingIndex);
+
+                state.shipmentsWithMethods.push({ shipmentId, methodId });
+            } else {
+                state.shipmentsWithMethods = [{ shipmentId, methodId }];
+            }
+        },
     },
     extraReducers: (builder) => {
         builder.addDefaultCase((state) => state);
     },
 });
 
-export const { setCurrentStep, setAllowShippingAddress, setCustomerDetails } = checkoutSlice.actions;
+export const {
+    setCurrentStep,
+    setAllowShippingAddress,
+    setCustomerDetails,
+    setShipmentsWithMethods,
+    addShipmentWithMethod,
+} = checkoutSlice.actions;
 
 export default checkoutSlice.reducer;

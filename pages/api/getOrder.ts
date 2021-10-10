@@ -15,7 +15,7 @@ async function getOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
         const lineItemFields =
             'fields[line_items]=item_type,image_url,name,sku_code,formatted_unit_amount,quantity,formatted_total_amount';
         const paymentFields = 'fields[payment_methods]=name,payment_source_type';
-        const shipmentsFields = 'fields[shipments]=id,status';
+        const shipmentsFields = 'fields[shipments]=id,status,currency_code,cost_amount_cents';
 
         const apiUrl = include
             ? `/api/orders/${orderId}?include=${includeJoin}&${orderFields}&${lineItemFields}&${paymentFields}&${shipmentsFields}`

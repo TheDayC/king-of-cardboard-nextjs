@@ -13,6 +13,9 @@ import { PRODUCT_QUERY } from '../utils/content';
 import { addProductCollection } from '../store/slices/products';
 import { rehydration } from '../store';
 import { createToken } from '../utils/auth';
+import { ShipmentsWithMethods } from '../store/types/state';
+import { getShipment, getShipments } from '../utils/checkout';
+import { addShipmentWithMethod, setShipmentsWithMethods } from '../store/slices/checkout';
 
 const AuthProvider: React.FC = ({ children }) => {
     const waitForHydro = async () => {
@@ -42,16 +45,13 @@ const AuthProvider: React.FC = ({ children }) => {
     // Fetch order with line items.
     const fetchOrder = useCallback(
         async (accessToken: string, orderId: string) => {
-            const fullOrderData = await getOrder(accessToken, orderId, [
-                'line_items',
-                'available_payment_methods',
-                'shipments',
-            ]);
+            const fullOrderData = await getOrder(accessToken, orderId, ['line_items', 'available_payment_methods']);
 
             if (fullOrderData) {
-                const { included } = fullOrderData;
+                const { id, included } = fullOrderData;
                 const items = included.filter((data) => data.type === 'line_items');
                 const paymentMethods = included.filter((data) => data.type === 'payment_methods');
+                const shipmentData = await getShipments(accessToken, orderId);
 
                 if (items) {
                     const cartItems = items.map((item) => ({
@@ -69,6 +69,18 @@ const AuthProvider: React.FC = ({ children }) => {
                     }));
 
                     dispatch(setPaymentMethods(cartPaymentMethods));
+                }
+
+                if (shipmentData) {
+                    const { shipments } = shipmentData;
+
+                    shipments.forEach(async (shipment) => {
+                        const shipmentWithMethods = await getShipment(accessToken, shipment);
+
+                        if (shipmentWithMethods) {
+                            dispatch(addShipmentWithMethod(shipmentWithMethods));
+                        }
+                    });
                 }
 
                 dispatch(setOrder(fullOrderData));

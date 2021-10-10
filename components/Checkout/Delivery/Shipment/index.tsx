@@ -1,69 +1,55 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { get } from 'lodash';
-import { useForm } from 'react-hook-form';
+import React from 'react';
+import { FieldValues, UseFormRegister } from 'react-hook-form';
 
-import selector from './selector';
-import { setCurrentStep } from '../../../store/slices/checkout';
-import { DeliveryDetails, MergedShipments } from '../../../types/checkout';
-import {
-    getDeliveryLeadTimes,
-    getShipments,
-    mergeMethodsAndLeadTimes,
-    updateShipmentMethod,
-} from '../../../utils/checkout';
-import { fetchOrder } from '../../../store/slices/cart';
+import { MergedShipmentMethods } from '../../../../types/checkout';
 
-export const Shipment: React.FC = () => {
+interface ShipmentProps {
+    id: string;
+    shippingMethods: MergedShipmentMethods[];
+    shipmentCount: number;
+    shipmentsTotal: number;
+    register: UseFormRegister<FieldValues>;
+    defaultChecked: string;
+}
+
+export const Shipment: React.FC<ShipmentProps> = ({
+    id,
+    shippingMethods,
+    shipmentCount,
+    shipmentsTotal,
+    register,
+    defaultChecked,
+}) => {
     // TODO: Flesh out Shipment.
     return (
-        <form onSubmit={handleSubmit(handleSelectShippingMethod)}>
-            <div className="flex">
-                <div className={`collapse collapse-${isCurrentStep ? 'open' : 'closed'}`}>
-                    <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
-                        {!hasErrors && !isCurrentStep ? 'Delivery - Edit' : 'Delivery'}
-                    </h3>
-                    <div className="collapse-content">
-                        {shippingMethodsInt &&
-                            shippingMethodsInt.map((method) => (
-                                <div className="form-control" key={`method-${method.id}`}>
-                                    <label className="label cursor-pointer">
-                                        <span className="label-text">
-                                            {method.name}
-                                            {method.formatted_price_amount_for_shipment}
-                                            {method.leadTimes &&
-                                                `Available in ${method.leadTimes.minDays} - ${method.leadTimes.maxDays} days.`}
-                                        </span>
-                                    </label>
-                                    <input
-                                        type="radio"
-                                        className="radio"
-                                        value={method.id}
-                                        defaultChecked={Boolean(shippingMethod)}
-                                        {...register('shippingMethod', {
-                                            required: { value: true, message: 'Required' },
-                                        })}
-                                    />
-                                </div>
-                            ))}
-                        <button
-                            type="submit"
-                            className={`btn-sm btn-outline${
-                                hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'
-                            }`}
-                        >
-                            Back to Details
-                        </button>
-                        <button
-                            type="submit"
-                            className={`btn-sm${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
-                        >
-                            Payment
-                        </button>
+        <div className="flex">
+            <h4>
+                Shipment {shipmentCount} of {shipmentsTotal}
+            </h4>
+            <div className="collapse-content">
+                {shippingMethods.map((method) => (
+                    <div className="form-control" key={`method-${method.id}`}>
+                        <label className="label cursor-pointer">
+                            <span className="label-text">
+                                {method.name}
+                                {method.formatted_price_amount_for_shipment}
+                                {method.leadTimes &&
+                                    `Available in ${method.leadTimes.minDays} - ${method.leadTimes.maxDays} days.`}
+                            </span>
+                        </label>
+                        <input
+                            type="radio"
+                            className="radio"
+                            value={method.id}
+                            defaultChecked={defaultChecked === method.id ? true : false}
+                            {...register(`shipment-${id}-shippingMethod`, {
+                                required: { value: true, message: 'Required' },
+                            })}
+                        />
                     </div>
-                </div>
+                ))}
             </div>
-        </form>
+        </div>
     );
 };
 

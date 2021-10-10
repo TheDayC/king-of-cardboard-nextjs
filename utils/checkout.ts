@@ -3,8 +3,14 @@ import { get } from 'lodash';
 
 import { AxiosData } from '../types/fetch';
 import { Counties } from '../enums/checkout';
-import { CustomerDetails } from '../store/types/state';
-import { DeliveryLeadTimes, MergedShipments, Shipments, ShippingMethods } from '../types/checkout';
+import { CustomerDetails, ShipmentsWithMethods } from '../store/types/state';
+import {
+    DeliveryLeadTimes,
+    MergedShipmentMethods,
+    MergedShipments,
+    Shipments,
+    ShippingMethods,
+} from '../types/checkout';
 import { Order } from '../types/cart';
 
 function regexEmail(email: string): boolean {
@@ -324,7 +330,6 @@ export async function getDeliveryLeadTimes(accessToken: string): Promise<Deliver
         if (response) {
             const deliveryLeadTimes: any | null = get(response, 'data.deliveryLeadTimes', null);
             const included: any | null = get(response, 'data.included', null);
-            console.log('🚀 ~ file: checkout.ts ~ line 328 ~ getDeliveryLeadTimes ~ include', included);
 
             if (deliveryLeadTimes) {
                 return deliveryLeadTimes.map((leadTime) => ({
@@ -348,7 +353,7 @@ export async function getDeliveryLeadTimes(accessToken: string): Promise<Deliver
 export function mergeMethodsAndLeadTimes(
     shippingMethods: ShippingMethods[],
     leadTimes: DeliveryLeadTimes[]
-): MergedShipments[] {
+): MergedShipmentMethods[] {
     return shippingMethods.map((method) => {
         const matchingLeadTime = findLeadTimeIdFromMethodName(method.name, leadTimes);
 
@@ -392,4 +397,33 @@ export async function updateShipmentMethod(
     }
 
     return false;
+}
+
+export async function getShipment(accessToken: string, shipmentId: string): Promise<ShipmentsWithMethods | null> {
+    try {
+        const response = await axios.post('/api/getShipment', {
+            token: accessToken,
+            shipmentId,
+        });
+
+        if (response) {
+            const included = get(response, 'data.included', null);
+            const method = included ? included.find((include) => include.type === 'shipping_methods') : null;
+
+            if (method) {
+                const methodId: string = method ? get(method, 'id', '') : '';
+
+                return {
+                    shipmentId,
+                    methodId,
+                };
+            } else {
+                return null;
+            }
+        }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
 }

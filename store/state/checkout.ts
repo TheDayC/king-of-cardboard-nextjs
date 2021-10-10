@@ -2,7 +2,7 @@ import { Checkout } from '../types/state';
 
 const checkoutInitialState: Checkout = {
     currentStep: 0,
-    shippingMethod: null,
+    shipmentsWithMethods: null,
     customerDetails: {
         allowShippingAddress: false,
         email: null,

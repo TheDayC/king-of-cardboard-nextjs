@@ -6,7 +6,7 @@ const selector = createSelector([selectCheckoutData, selectGlobalData, selectCar
     customerDetails: checkout.customerDetails,
     accessToken: global.accessToken,
     currentStep: checkout.currentStep,
-    shippingMethod: checkout.shippingMethod,
+    shipmentsWithMethods: checkout.shipmentsWithMethods,
     order: cart.order,
 }));
 
