@@ -3,32 +3,25 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import { authClient } from '../../utils/auth';
 
-async function createPaymentSource(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+async function confirmOrder(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         const token = get(req, 'body.token', null);
         const id = get(req, 'body.id', null);
-        const paymentSourceType = get(req, 'body.paymentSourceType', null);
         const cl = authClient(token);
 
-        cl.post(`/api/${paymentSourceType}`, {
+        cl.patch(`/api/orders/${id}`, {
             data: {
-                type: paymentSourceType,
-                attributes: {},
-                relationships: {
-                    order: {
-                        data: {
-                            type: 'orders',
-                            id,
-                        },
-                    },
+                type: 'orders',
+                id,
+                attributes: {
+                    _place: true,
                 },
             },
         })
             .then((response) => {
                 const status = get(response, 'status', 500);
-                const clientSecret = get(response, 'data.data.attributes.client_secret', null);
 
-                res.status(status).json({ clientSecret });
+                res.status(status).json({ hasUpdated: status === 200 ? true : false });
             })
             .catch((error) => {
                 const status = get(error, 'response.status', 500);
@@ -42,4 +35,4 @@ async function createPaymentSource(req: NextApiRequest, res: NextApiResponse): P
     }
 }
 
-export default createPaymentSource;
+export default confirmOrder;

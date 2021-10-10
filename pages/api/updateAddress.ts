@@ -55,6 +55,9 @@ async function updateAddress(req: NextApiRequest, res: NextApiResponse): Promise
                         data: {
                             type: 'orders',
                             id,
+                            attributes: {
+                                customer_email: personalDetails.email,
+                            },
                             relationships,
                         },
                     })

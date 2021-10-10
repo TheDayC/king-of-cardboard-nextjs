@@ -108,9 +108,7 @@ export async function getOrder(accessToken: string, orderId: string, include: st
 
         if (response) {
             const order: any[] | null = get(response, 'data.order', null);
-            console.log('🚀 ~ file: commerce.ts ~ line 111 ~ getOrder ~ order', order);
             const included: any[] | null = get(response, 'data.included', null);
-            console.log('🚀 ~ file: commerce.ts ~ line 113 ~ getOrder ~ included', included);
 
             return parseOrderData(order, included);
         }
