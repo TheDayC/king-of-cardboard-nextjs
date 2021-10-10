@@ -16,8 +16,6 @@
         ]
     },
     "dependencies": {
-        "@commercelayer/js-auth": "^2.0.8",
-        "@commercelayer/sdk": "^2.0.7",
         "@reduxjs/toolkit": "^1.6.1",
         "@stripe/react-stripe-js": "^1.5.0",
         "@stripe/stripe-js": "^1.18.0",
