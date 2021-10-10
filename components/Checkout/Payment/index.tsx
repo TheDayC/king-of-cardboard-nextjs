@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
@@ -39,44 +39,41 @@ export const Payment: React.FC = () => {
             paymentSourceType: string,
             customerDetails: CustomerDetails
         ) => {
-            /* const { error, paymentMethod } = await stripe.createPaymentMethod({
-            type: 'card',
-            card,
-        }); */
+            // Fetch the client secret from Commerce Layer to use with Stripe.
+            const clientSecret = await createPaymentSource(accessToken, orderId, paymentSourceType);
 
-            if (card) {
-                const clientSecret = await createPaymentSource(accessToken, orderId, paymentSourceType);
-
-                if (clientSecret) {
-                    const result = await stripe.confirmCardPayment(clientSecret, {
-                        payment_method: {
-                            card,
-                            billing_details: {
-                                name: `${customerDetails.firstName || ''} ${customerDetails.lastName || ''}`,
-                                email: customerDetails.email || '',
-                                phone: customerDetails.phone || '',
-                                address: {
-                                    city: customerDetails.city || '',
-                                    country: 'GB',
-                                    line1: customerDetails.addressLineOne || '',
-                                    line2: customerDetails.addressLineTwo || '',
-                                    postal_code: customerDetails.postcode || '',
-                                    state: customerDetails.county || '',
-                                },
+            if (clientSecret) {
+                // Assuming we've got a secret then confirm the card payment with stripe.
+                const result = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card,
+                        billing_details: {
+                            name: `${customerDetails.firstName || ''} ${customerDetails.lastName || ''}`,
+                            email: customerDetails.email || '',
+                            phone: customerDetails.phone || '',
+                            address: {
+                                city: customerDetails.city || '',
+                                country: 'GB',
+                                line1: customerDetails.addressLineOne || '',
+                                line2: customerDetails.addressLineTwo || '',
+                                postal_code: customerDetails.postcode || '',
+                                state: customerDetails.county || '',
                             },
                         },
-                    });
+                    },
+                });
 
-                    if (result.error) {
-                        // TODO: Show error to your customer (e.g., insufficient funds)
-                        console.log(result.error.message);
-                    } else {
-                        const paymentStatus = await checkoutOrder(result.paymentIntent.id);
+                if (result.error) {
+                    // TODO: Show error to your customer (e.g., insufficient funds)
+                    console.log(result.error.message);
+                } else {
+                    // Capture the order with stripe now that we know the payment source has been confirmed.
+                    const paymentStatus = await checkoutOrder(result.paymentIntent.id);
 
-                        if (paymentStatus && paymentStatus === 'succeeded') {
-                            const hasBeenConfirmed = confirmOrder(accessToken, orderId);
-                            // TODO: Clear all order state after confirmation.
-                        }
+                    // Place the order with commerce layer when the payment status is confirmed with stripe.
+                    if (paymentStatus && paymentStatus === 'succeeded') {
+                        const hasBeenConfirmed = confirmOrder(accessToken, orderId);
+                        // TODO: Clear all order state after confirmation.
                     }
                 }
             }
@@ -88,9 +85,13 @@ export const Payment: React.FC = () => {
         (data: any) => {
             const methodId = get(data, 'paymentMethod', null);
             if (accessToken && orderId && methodId && stripe && elements) {
+                // Get the card element with Strip hooks.
                 const card = elements.getElement(CardElement);
+
+                // Find the payment method chosen by the user. THIS MIGHT NEED TO BE EARLIER.
                 const paymentMethodData = paymentMethods.find((pM) => pM.id === methodId) || null;
 
+                // If both exist then call the payment handler.
                 if (card && paymentMethodData) {
                     handlePaymentMethod(
                         accessToken,
@@ -101,11 +102,6 @@ export const Payment: React.FC = () => {
                         customerDetails
                     );
                 }
-                /* const paymentMethodData = paymentMethods.find((pM) => pM.id === methodId) || null;
-
-                if (paymentMethodData) {
-                    handlePayment(accessToken, orderId, paymentMethodData.payment_source_type);
-                } */
             }
         },
         [accessToken, orderId, paymentMethods, stripe, handlePaymentMethod, elements, customerDetails]
