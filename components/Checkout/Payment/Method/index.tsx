@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { FieldValues, UseFormRegister } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchOrder } from '../../../../store/slices/cart';
 
+import { fetchOrder } from '../../../../store/slices/cart';
 import { updatePaymentMethod } from '../../../../utils/checkout';
 import Source from '../Source';
 import selector from './selector';

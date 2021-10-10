@@ -6,10 +6,12 @@ import { CardElement } from '@stripe/react-stripe-js';
 import selector from './selector';
 import { setCurrentStep } from '../../../store/slices/checkout';
 import Method from './Method';
+import { createPaymentSource } from '../../../utils/commerce';
+import { get } from 'lodash';
 
 export const Payment: React.FC = () => {
     const dispatch = useDispatch();
-    const { currentStep, paymentMethods } = useSelector(selector);
+    const { currentStep, paymentMethods, accessToken, orderId } = useSelector(selector);
     const {
         register,
         handleSubmit,
@@ -23,11 +25,25 @@ export const Payment: React.FC = () => {
         }
     };
 
-    const onSubmit = (data: any) => {};
+    const handlePayment = useCallback(async (accessToken: string, orderId: string, paymentSourceType: string) => {
+        const clientSecret = await createPaymentSource(accessToken, orderId, paymentSourceType);
+        console.log('🚀 ~ file: index.tsx ~ line 30 ~ handlePayment ~ clientSecret', clientSecret);
+    }, []);
 
-    const createOrder = (gatewayType: string) => {
-        // console.log("🚀 ~ file: index.tsx ~ line 200 ~ createOrder ~ gatewayType", gatewayType)
-    };
+    const onSubmit = useCallback(
+        (data: any) => {
+            const methodId = get(data, 'paymentMethod', null);
+            if (accessToken && orderId && methodId) {
+                const paymentMethodData = paymentMethods.find((pM) => pM.id === methodId) || null;
+
+                if (paymentMethodData) {
+                    handlePayment(accessToken, orderId, paymentMethodData.payment_source_type);
+                }
+            }
+        },
+        [accessToken, orderId, handlePayment, paymentMethods]
+    );
+
     return (
         <div className={`collapse collapse-${isCurrentStep ? 'open' : 'closed'}`}>
             <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
@@ -45,15 +61,10 @@ export const Payment: React.FC = () => {
                                     defaultChecked={paymentMethods.length < 2 ? true : false}
                                     register={register}
                                 />
-                                <button
-                                    className="btn btn-primary"
-                                    key={`payment-method-${method.name}`}
-                                    onClick={() => createOrder(method.payment_source_type || '')}
-                                >
-                                    {method.name}
-                                </button>
                             </React.Fragment>
                         ))}
+
+                    <button className="btn btn-primary">Place Order</button>
                 </form>
             </div>
         </div>

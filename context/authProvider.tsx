@@ -45,10 +45,14 @@ const AuthProvider: React.FC = ({ children }) => {
     // Fetch order with line items.
     const fetchOrder = useCallback(
         async (accessToken: string, orderId: string) => {
-            const fullOrderData = await getOrder(accessToken, orderId, ['line_items', 'available_payment_methods']);
+            const fullOrderData = await getOrder(accessToken, orderId, [
+                'line_items',
+                'available_payment_methods',
+                'payment_method',
+            ]);
 
             if (fullOrderData) {
-                const { id, included } = fullOrderData;
+                const { included } = fullOrderData;
                 const items = included.filter((data) => data.type === 'line_items');
                 const paymentMethods = included.filter((data) => data.type === 'payment_methods');
                 const shipmentData = await getShipments(accessToken, orderId);

@@ -185,3 +185,31 @@ export async function updateLineItem(accessToken: string, id: string, quantity: 
 
     return false;
 }
+
+export async function createPaymentSource(
+    accessToken: string,
+    id: string,
+    paymentSourceType: string
+): Promise<string | null> {
+    try {
+        const response = await axios.post('/api/createPaymentSource', {
+            token: accessToken,
+            id,
+            paymentSourceType,
+        });
+
+        if (response) {
+            const clientSecret: string | null = get(response, 'data.clientSecret', null);
+
+            if (clientSecret) {
+                return clientSecret;
+            }
+
+            return null;
+        }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
