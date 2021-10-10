@@ -4,9 +4,7 @@ import { selectCartData, selectCheckoutData } from '../../../store/state/selecto
 
 const selector = createSelector([selectCheckoutData, selectCartData], (checkout, cart) => ({
     currentStep: checkout.currentStep,
-    customerDetails: checkout.customerDetails,
-    order: cart.order ? cart.order : null,
-    shippingMethod: checkout.shippingMethod,
+    paymentMethods: cart.paymentMethods,
 }));
 
 export default selector;

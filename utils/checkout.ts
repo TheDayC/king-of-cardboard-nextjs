@@ -427,3 +427,23 @@ export async function getShipment(accessToken: string, shipmentId: string): Prom
 
     return null;
 }
+
+export async function updatePaymentMethod(accessToken: string, id: string, paymentMethodId: string): Promise<boolean> {
+    try {
+        const response = await axios.post('/api/updatePaymentMethod', {
+            token: accessToken,
+            id,
+            paymentMethodId,
+        });
+
+        if (response) {
+            const hasUpdated: boolean = get(response, 'data.hasUpdated', false);
+
+            return hasUpdated;
+        }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return false;
+}

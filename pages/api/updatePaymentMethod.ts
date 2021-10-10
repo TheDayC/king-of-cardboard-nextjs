@@ -3,22 +3,22 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import { authClient } from '../../utils/auth';
 
-async function updateShipmentMethod(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+async function updatePaymentMethod(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         const token = get(req, 'body.token', null);
-        const shipmentId = get(req, 'body.shipmentId', null);
-        const methodId = get(req, 'body.methodId', null);
+        const id = get(req, 'body.id', null);
+        const paymentMethodId = get(req, 'body.paymentMethodId', null);
         const cl = authClient(token);
 
-        cl.patch(`/api/shipments/${shipmentId}`, {
+        cl.patch(`/api/orders/${id}`, {
             data: {
-                type: 'shipments',
-                id: shipmentId,
+                type: 'orders',
+                id,
                 relationships: {
-                    shipping_method: {
+                    payment_method: {
                         data: {
-                            type: 'shipping_methods',
-                            id: methodId,
+                            type: 'payment_methods',
+                            id: paymentMethodId,
                         },
                     },
                 },
@@ -41,4 +41,4 @@ async function updateShipmentMethod(req: NextApiRequest, res: NextApiResponse): 
     }
 }
 
-export default updateShipmentMethod;
+export default updatePaymentMethod;
