@@ -1,7 +1,6 @@
-import { Order } from '@commercelayer/sdk/lib/resources/orders';
-
 import { Counties } from '../../enums/checkout';
 import { Categories, ProductType } from '../../enums/shop';
+import { Order } from '../../types/cart';
 import { Product } from '../../types/products';
 
 export interface IAppState {
@@ -18,12 +17,24 @@ export interface IAppState {
 export interface CartState {
     order: Order | null;
     items: CartItem[];
+    paymentMethods: CartPaymentMethod[];
     shouldFetchOrder: boolean;
 }
 
 export interface CartItem {
     id: string;
-    stock: number;
+    sku_code: string;
+    name: string;
+    quantity: number;
+    formatted_unit_amount: string;
+    formatted_total_amount: string;
+    image_url: string;
+}
+
+export interface CartPaymentMethod {
+    id: string;
+    name: string;
+    payment_source_type: string;
 }
 
 export interface Filters {
@@ -38,12 +49,8 @@ export interface Global {
 }
 
 export interface Checkout {
-    subTotal: number;
-    taxes: number;
-    total: number;
-    taxRate: number;
     currentStep: number;
-    shippingMethod: string | null;
+    shipmentsWithMethods: ShipmentsWithMethods[] | null;
     customerDetails: CustomerDetails;
 }
 
@@ -51,6 +58,7 @@ export interface CustomerDetails {
     email: string | null;
     firstName: string | null;
     lastName: string | null;
+    company: string | null;
     addressLineOne: string | null;
     addressLineTwo: string | null;
     city: string | null;
@@ -63,4 +71,9 @@ export interface CustomerDetails {
     shippingCity: string | null;
     shippingPostcode: string | null;
     shippingCounty: Counties | null;
+}
+
+export interface ShipmentsWithMethods {
+    shipmentId: string;
+    methodId: string;
 }

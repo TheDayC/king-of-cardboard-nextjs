@@ -1,9 +1,8 @@
-import { ListResponse } from '@commercelayer/sdk/lib/resource';
-import { Price } from '@commercelayer/sdk/lib/resources/prices';
-import { StockItem } from '@commercelayer/sdk/lib/resources/stock_items';
+import { get } from 'lodash';
 
 import { Categories, ProductType } from '../enums/shop';
 import { Filters } from '../store/types/state';
+import { Price, StockItem } from '../types/commerce';
 import { ContentfulProduct, Product } from '../types/products';
 import { fetchContent } from './content';
 
@@ -31,7 +30,12 @@ function normaliseProductCollection(products: ContentfulProduct[]): Product[] {
         id: '',
         sku: p.productLink,
         name: p.name,
-        price: 0,
+        price: {
+            formatted_amount: '',
+            currency_code: '',
+            amount_float: 0,
+            amount_cents: 0,
+        },
         stock: 0,
         description: p.description.json.content,
         types: p.types.map((type) => parseProductType(type)),
@@ -42,38 +46,54 @@ function normaliseProductCollection(products: ContentfulProduct[]): Product[] {
 
 async function hydrateProductCollection(
     products: Product[],
-    stockItems: ListResponse<StockItem>,
-    prices: ListResponse<Price>
+    stockItems: StockItem[],
+    prices: Price[]
 ): Promise<Product[]> {
     return products.map((product) => {
         const { sku } = product;
-        const stock = stockItems.find((s) => s.sku_code === sku);
-        const price = prices.find((p) => p.sku_code === sku);
+        const stock = stockItems.find((s) => s.attributes.sku_code === sku);
+        const price = prices.find((p) => p.attributes.sku_code === sku);
+
+        const stockId = get(stock, 'id', '');
+        const quantity = get(stock, 'attributes.quantity', 0);
+        const formatted_amount = get(price, 'attributes.formatted_amount', '');
+        const currency_code = get(price, 'attributes.currency_code', '');
+        const amount_float = get(price, 'attributes.amount_float', 0);
+        const amount_cents = get(price, 'attributes.amount_cents', 0);
 
         return {
             ...product,
-            id: stock && stock.id ? stock.id : '',
-            stock: stock && stock.quantity ? stock.quantity : 0,
-            price: price && price.amount_cents ? price.amount_cents : 0,
+            id: stockId,
+            stock: quantity,
+            price: {
+                formatted_amount,
+                currency_code,
+                amount_float,
+                amount_cents,
+            },
         };
     });
 }
 
 export async function fetchProductCollection(
     query: string,
-    stockItems: ListResponse<StockItem> | null,
-    prices: ListResponse<Price> | null
+    stockItems: StockItem[] | null,
+    prices: Price[] | null
 ): Promise<Product[] | null> {
     const productResponse = await fetchContent(query);
 
     if (productResponse) {
-        const productCollection = productResponse.data.data.productCollection;
+        const productCollection: ContentfulProduct[] | null = get(
+            productResponse,
+            'data.data.productCollection.items',
+            null
+        );
 
         if (productCollection) {
-            const normalisedCollections = normaliseProductCollection(productCollection.items);
+            const normalisedCollections = normaliseProductCollection(productCollection);
 
             if (stockItems && prices) {
-                const products = hydrateProductCollection(normalisedCollections, stockItems, prices);
+                const products = await hydrateProductCollection(normalisedCollections, stockItems, prices);
 
                 return products;
             }

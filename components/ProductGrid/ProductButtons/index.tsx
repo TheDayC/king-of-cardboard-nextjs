@@ -1,13 +1,12 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
-import { isNumber } from 'lodash';
+import { add } from 'lodash';
 
-import { fetchOrder } from '../../../store/slices/cart';
 import selector from './selector';
-// import { initCommerceClient } from '../../../utils/commerce';
-import { Image } from '../../../types/products';
-import AuthProviderContext from '../../../context/context';
+import { Image, Product } from '../../../types/products';
+import { setLineItem } from '../../../utils/commerce';
+import { fetchOrder } from '../../../store/slices/cart';
 
 interface ProductButtonsProps {
     id: string;
@@ -19,50 +18,64 @@ interface ProductButtonsProps {
 
 export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, sku, name, shortButtons, images }) => {
     const dispatch = useDispatch();
-    const cl = useContext(AuthProviderContext);
-    const { items, order } = useSelector(selector);
-    const [stock, setStock] = useState(0);
-    const currentProduct = items && items.find((c) => c.sku_code === sku);
+    const { items, order, products, accessToken, shouldFetchOrder } = useSelector(selector);
+    const [loading, setLoading] = useState(false);
+    const currentProduct = products.find((c) => c.sku === sku) || null;
+    const currentProductLineItem = items ? items.find((c) => c.sku_code === sku) : null;
+    const stock = (currentProduct && currentProduct.stock) || 0;
 
-    const matchingStockLineItem = useCallback(async () => {
-        if (cl) {
-            const stockItem = await cl.stock_items.retrieve(id);
-
-            if (isNumber(stockItem.quantity)) {
-                setStock(stockItem.quantity);
-            }
-        }
-    }, [cl, id]);
-
-    useEffect(() => {
-        matchingStockLineItem();
-    }, [matchingStockLineItem]);
-
-    const hasExceededStock = Boolean(currentProduct && currentProduct.quantity && currentProduct.quantity >= stock);
+    const hasExceededStock = currentProduct && currentProductLineItem && currentProductLineItem.quantity >= stock;
     const to = `/product/${id}`;
     const firstImage = images[0];
 
-    const handleOnAddToCart = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault();
-        if (cl && order) {
-            cl.line_items
-                .create({
+    const updateLineItem = useCallback(
+        async (accessToken: string, currentProduct: Product, orderId: string) => {
+            if (accessToken && currentProduct && orderId) {
+                const attributes = {
+                    quantity: 1,
                     sku_code: sku,
                     name,
                     image_url: firstImage.url,
-                    quantity: currentProduct && currentProduct.quantity ? (currentProduct.quantity += 1) : 1,
-                    _update_quantity: true, // Always update let commerce layer handle whether to create a new line_item or not.
+                    _external_price: false,
+                    _update_quantity: true,
+                };
+
+                const relationships = {
                     order: {
-                        id: order.id,
-                        type: 'orders',
+                        data: {
+                            id: orderId,
+                            type: 'orders',
+                        },
                     },
-                })
-                .then(() => {
-                    matchingStockLineItem();
+                };
+
+                const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
+
+                if (hasLineItemUpdated) {
                     dispatch(fetchOrder(true));
-                });
+                }
+            }
+        },
+        [name, firstImage, sku, dispatch]
+    );
+
+    const handleOnAddToCart = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+
+        if (accessToken && currentProduct && order && !loading) {
+            setLoading(true);
+            updateLineItem(accessToken, currentProduct, order.id);
         }
     };
+
+    useEffect(() => {
+        if (!shouldFetchOrder) {
+            setLoading(false);
+        }
+    }, [shouldFetchOrder]);
+
+    const btnClassNames = `btn btn-primary${loading ? ' loading' : ''}`;
+    const btnText = shortButtons ? 'Add' : 'Add to Cart';
 
     return (
         <React.Fragment>
@@ -70,8 +83,8 @@ export const ProductButtons: React.FC<ProductButtonsProps> = ({ id, sku, name, s
                 <button className="btn btn-outline btn-secondary">{shortButtons ? 'View' : 'View Product'}</button>
             </Link>
 
-            <button className="btn btn-primary" onClick={handleOnAddToCart} disabled={hasExceededStock || stock <= 0}>
-                {shortButtons ? 'Add' : 'Add to Cart'}
+            <button className={btnClassNames} onClick={handleOnAddToCart} disabled={hasExceededStock || stock <= 0}>
+                {loading ? '' : btnText}
             </button>
         </React.Fragment>
     );

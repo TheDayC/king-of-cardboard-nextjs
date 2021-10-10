@@ -1,18 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { get, toNumber } from 'lodash';
 import { useForm } from 'react-hook-form';
+import { get } from 'lodash';
 
-import { initCommerceClient } from '../../../utils/commerce';
 import selector from './selector';
-import { ShippingMethods } from '../../../types/commerce';
-import { setCurrentStep, setShippingMethod } from '../../../store/slices/checkout';
-import { DeliveryDetails } from '../../../types/checkout';
+import { setCurrentStep, setShipmentsWithMethods } from '../../../store/slices/checkout';
+import { FinalShipments } from '../../../types/checkout';
+import {
+    getDeliveryLeadTimes,
+    getShipments,
+    mergeMethodsAndLeadTimes,
+    updateShipmentMethod,
+} from '../../../utils/checkout';
+import Shipment from './Shipment';
+import { fetchOrder } from '../../../store/slices/cart';
+import { ShipmentsWithMethods } from '../../../store/types/state';
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
-    const { accessToken, currentStep, shippingMethod } = useSelector(selector);
-    const [shippingMethodsInt, setShippingMethodsInt] = useState<ShippingMethods[] | null>(null);
+    const { accessToken, currentStep, shipmentsWithMethods, order } = useSelector(selector);
+    const [shipments, setShipments] = useState<FinalShipments | null>(null);
     const {
         register,
         handleSubmit,
@@ -21,64 +28,59 @@ export const Delivery: React.FC = () => {
     const isCurrentStep = currentStep === 1;
     const hasErrors = Object.keys(errors).length > 0;
 
-    const getFirstSku = useCallback(async () => {
-        if (accessToken) {
-            const cl = initCommerceClient(accessToken);
+    const fetchAllShipments = useCallback(async (accessToken: string, orderId: string) => {
+        if (accessToken && orderId) {
+            const shipmentData = await getShipments(accessToken, orderId);
+            const deliveryLeadTimes = await getDeliveryLeadTimes(accessToken);
 
-            // const sku = await Sku.first();
-            const fetchedShippingMethods = await cl.shipping_methods.list();
+            if (shipmentData && deliveryLeadTimes) {
+                const { shipments, shippingMethods } = shipmentData;
+                const mergedMethods = mergeMethodsAndLeadTimes(shippingMethods, deliveryLeadTimes);
 
-            if (fetchedShippingMethods) {
-                const methodKeys = Object.keys(fetchedShippingMethods)
-                    .filter((m) => m !== 'meta')
-                    .map((m) => toNumber(m));
-                const methods: ShippingMethods[] = [];
-                methodKeys.forEach((mK: number) => {
-                    const {
-                        id,
-                        name,
-                        currency_code,
-                        formatted_price_amount,
-                        formatted_price_amount_for_shipment,
-                        price_amount_cents,
-                        price_amount_float,
-                        price_amount_for_shipment_cents,
-                        price_amount_for_shipment_float,
-                        type,
-                    } = fetchedShippingMethods[mK];
-
-                    methods.push({
-                        id,
-                        name,
-                        currency_code,
-                        formatted_price_amount,
-                        formatted_price_amount_for_shipment,
-                        price_amount_cents,
-                        price_amount_float,
-                        price_amount_for_shipment_cents,
-                        price_amount_for_shipment_float,
-                        type,
-                    });
+                setShipments({
+                    shipments,
+                    shippingMethods: mergedMethods,
                 });
-
-                setShippingMethodsInt(methods);
             }
         }
-    }, [accessToken]);
+    }, []);
 
     useEffect(() => {
-        getFirstSku();
-    }, [getFirstSku]);
+        if (accessToken && order) {
+            fetchAllShipments(accessToken, order.id);
+        }
+    }, [accessToken, order, fetchAllShipments]);
 
-    const handleSelectShippingMethod = (data: DeliveryDetails) => {
-        const shippingMethodId = get(data, 'shippingMethod', null);
+    const handleSelectShippingMethod = async (data: unknown) => {
+        if (shipments) {
+            // Set shipments with methods for local storage.
+            const setShipmentsAndMethods: ShipmentsWithMethods[] = shipments.shipments.map((shipment) => ({
+                shipmentId: shipment,
+                methodId: get(data, `shipment-${shipment}-method`, ''),
+            }));
 
-        dispatch(setShippingMethod(shippingMethodId));
-        dispatch(setCurrentStep(2));
+            dispatch(setShipmentsWithMethods(setShipmentsAndMethods));
+
+            // Set shipments in the commerce layer.
+            shipments.shipments.forEach((shipment) => {
+                const chosenMethod = get(data, `shipment-${shipment}-shippingMethod`, null);
+
+                if (chosenMethod && accessToken) {
+                    updateShipmentMethod(accessToken, shipment, chosenMethod).then((res) => {
+                        if (res) {
+                            dispatch(setCurrentStep(2));
+                            dispatch(fetchOrder(true));
+                        }
+                    });
+                }
+            });
+        }
     };
 
     const handleEdit = () => {
-        dispatch(setCurrentStep(1));
+        if (!isCurrentStep) {
+            dispatch(setCurrentStep(1));
+        }
     };
 
     return (
@@ -89,26 +91,35 @@ export const Delivery: React.FC = () => {
                         {!hasErrors && !isCurrentStep ? 'Delivery - Edit' : 'Delivery'}
                     </h3>
                     <div className="collapse-content">
-                        {shippingMethodsInt &&
-                            shippingMethodsInt.map((method) => (
-                                <div className="form-control" key={`method-${method.id}`}>
-                                    <label className="label cursor-pointer">
-                                        <span className="label-text">{method.name}</span>
-                                    </label>
-                                    <input
-                                        type="radio"
-                                        className="radio"
-                                        value={method.id}
-                                        checked={Boolean(shippingMethod)}
-                                        {...register('shippingMethod', {
-                                            required: { value: true, message: 'Required' },
-                                        })}
+                        {shipments &&
+                            shipments.shipments.map((shipment, index) => {
+                                const defaultValue = shipmentsWithMethods
+                                    ? shipmentsWithMethods.find((withMethod) => withMethod.shipmentId === shipment)
+                                    : null;
+
+                                return (
+                                    <Shipment
+                                        id={shipment}
+                                        shippingMethods={shipments.shippingMethods}
+                                        shipmentCount={index + 1}
+                                        shipmentsTotal={shipments.shipments.length}
+                                        register={register}
+                                        defaultChecked={defaultValue ? defaultValue.methodId : ''}
+                                        key={`shipment-${index}`}
                                     />
-                                </div>
-                            ))}
+                                );
+                            })}
                         <button
                             type="submit"
-                            className={`btn${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
+                            className={`btn-sm btn-outline${
+                                hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'
+                            }`}
+                        >
+                            Back to Details
+                        </button>
+                        <button
+                            type="submit"
+                            className={`btn-sm${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
                         >
                             Payment
                         </button>

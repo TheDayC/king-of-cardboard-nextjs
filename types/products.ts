@@ -3,12 +3,19 @@ export interface Product {
     id: string;
     sku: string;
     name: string;
-    price: number;
     stock: number;
     description: DescriptionContent[];
     types: ProductType[] | null;
     categories: Categories[] | null;
     images: Image[];
+    price: ProductPrice;
+}
+
+interface ProductPrice {
+    formatted_amount: string;
+    currency_code: string;
+    amount_float: number;
+    amount_cents: number;
 }
 
 export interface ContentfulProduct {

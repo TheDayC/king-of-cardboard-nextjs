@@ -9,7 +9,6 @@ import { CommerceAuthProps } from '../../types/commerce';
 import selector from './selector';
 import Delivery from '../../components/Checkout/Delivery';
 import Payment from '../../components/Checkout/Payment';
-import { fetchStripeGateway } from '../../utils/checkout';
 
 export const CheckoutPage: React.FC<CommerceAuthProps> = ({ accessToken, expires }) => {
     const dispatch = useDispatch();
@@ -26,9 +25,16 @@ export const CheckoutPage: React.FC<CommerceAuthProps> = ({ accessToken, expires
             <div className="container mx-auto p-8">
                 <div className="flex flex-col">
                     <Steps currentStep={currentStep} />
-                    <Customer />
-                    <Delivery />
-                    <Payment />
+                    <div className="container mx-auto max-w-lg">
+                        <div className="flex flex-row">
+                            <div className="flex flex-col">
+                                <Customer />
+                                <Delivery />
+                                <Payment />
+                            </div>
+                            <div className="flex">Add summary here!</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </React.Fragment>

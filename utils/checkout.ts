@@ -1,7 +1,17 @@
 import axios, { AxiosResponse } from 'axios';
+import { get } from 'lodash';
 
 import { AxiosData } from '../types/fetch';
 import { Counties } from '../enums/checkout';
+import { CustomerDetails, ShipmentsWithMethods } from '../store/types/state';
+import {
+    DeliveryLeadTimes,
+    MergedShipmentMethods,
+    MergedShipments,
+    Shipments,
+    ShippingMethods,
+} from '../types/checkout';
+import { Order } from '../types/cart';
 
 function regexEmail(email: string): boolean {
     // eslint-disable-next-line no-useless-escape
@@ -220,4 +230,220 @@ export async function fetchStripeGateway(accessToken: string): Promise<AxiosResp
     } catch (e) {
         console.error(e);
     }
+}
+
+export async function updateAddress(
+    accessToken: string,
+    id: string,
+    personalDetails: CustomerDetails,
+    isShipping: boolean
+): Promise<boolean> {
+    try {
+        const response = await axios.post('/api/updateAddress', {
+            token: accessToken,
+            id,
+            personalDetails,
+            isShipping,
+        });
+
+        if (response) {
+            const hasUpdated: boolean = get(response, 'data.hasUpdated', false);
+
+            return hasUpdated;
+        }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return false;
+}
+
+export async function getShipments(accessToken: string, orderId: string): Promise<Shipments | null> {
+    try {
+        const response = await axios.post('/api/getShipments', {
+            token: accessToken,
+            id: orderId,
+        });
+
+        if (response) {
+            const shipments: any[] | null = get(response, 'data.shipments', null);
+            const included: any[] | null = get(response, 'data.included', null);
+
+            if (shipments && included) {
+                return {
+                    shipments: shipments.map((shipment) => shipment.id),
+                    shippingMethods: included.map((method) => {
+                        const id: string = get(method, 'id', '');
+                        const name: string = get(method, 'attributes.name', '');
+                        const price_amount_cents: number = get(method, 'attributes.price_amount_cents', 0);
+                        const price_amount_float: number = get(method, 'attributes.price_amount_float', 0);
+                        const price_amount_for_shipment_cents: number = get(
+                            method,
+                            'attributes.price_amount_for_shipment_cents',
+                            0
+                        );
+                        const price_amount_for_shipment_float: number = get(
+                            method,
+                            'attributes.price_amount_for_shipment_float',
+                            0
+                        );
+                        const currency_code: string = get(method, 'attributes.currency_code', '');
+                        const formatted_price_amount: string = get(method, 'attributes.formatted_price_amount', '');
+                        const formatted_price_amount_for_shipment: string = get(
+                            method,
+                            'attributes.formatted_price_amount_for_shipment',
+                            ''
+                        );
+
+                        return {
+                            id,
+                            name,
+                            price_amount_cents,
+                            price_amount_float,
+                            price_amount_for_shipment_cents,
+                            price_amount_for_shipment_float,
+                            currency_code,
+                            formatted_price_amount,
+                            formatted_price_amount_for_shipment,
+                        };
+                    }),
+                };
+            } else {
+                return null;
+            }
+        }
+
+        return null;
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
+
+export async function getDeliveryLeadTimes(accessToken: string): Promise<DeliveryLeadTimes[] | null> {
+    try {
+        const response = await axios.post('/api/getDeliveryLeadTimes', {
+            token: accessToken,
+        });
+
+        if (response) {
+            const deliveryLeadTimes: any | null = get(response, 'data.deliveryLeadTimes', null);
+            const included: any | null = get(response, 'data.included', null);
+
+            if (deliveryLeadTimes) {
+                return deliveryLeadTimes.map((leadTime) => ({
+                    id: leadTime.id,
+                    minHours: leadTime.attributes.min_hours,
+                    maxHours: leadTime.attributes.max_hours,
+                    minDays: leadTime.attributes.min_days,
+                    maxDays: leadTime.attributes.max_days,
+                }));
+            } else {
+                return null;
+            }
+        }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
+
+export function mergeMethodsAndLeadTimes(
+    shippingMethods: ShippingMethods[],
+    leadTimes: DeliveryLeadTimes[]
+): MergedShipmentMethods[] {
+    return shippingMethods.map((method) => {
+        const matchingLeadTime = findLeadTimeIdFromMethodName(method.name, leadTimes);
+
+        return {
+            ...method,
+            leadTimes: matchingLeadTime,
+        };
+    });
+}
+
+function findLeadTimeIdFromMethodName(name: string, leadTimes: DeliveryLeadTimes[]): DeliveryLeadTimes | null {
+    switch (name) {
+        case 'Royal Mail 1st Class':
+            return leadTimes.find((time) => time.maxDays === 2) || null;
+        case 'Royal Mail 2nd Class':
+            return leadTimes.find((time) => time.maxDays === 5) || null;
+        default:
+            return null;
+    }
+}
+
+export async function updateShipmentMethod(
+    accessToken: string,
+    shipmentId: string,
+    methodId: string
+): Promise<boolean> {
+    try {
+        const response = await axios.post('/api/updateShipmentMethod', {
+            token: accessToken,
+            shipmentId,
+            methodId,
+        });
+
+        if (response) {
+            const hasUpdated: boolean = get(response, 'data.hasUpdated', false);
+
+            return hasUpdated;
+        }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return false;
+}
+
+export async function getShipment(accessToken: string, shipmentId: string): Promise<ShipmentsWithMethods | null> {
+    try {
+        const response = await axios.post('/api/getShipment', {
+            token: accessToken,
+            shipmentId,
+        });
+
+        if (response) {
+            const included = get(response, 'data.included', null);
+            const method = included ? included.find((include) => include.type === 'shipping_methods') : null;
+
+            if (method) {
+                const methodId: string = method ? get(method, 'id', '') : '';
+
+                return {
+                    shipmentId,
+                    methodId,
+                };
+            } else {
+                return null;
+            }
+        }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
+
+export async function updatePaymentMethod(accessToken: string, id: string, paymentMethodId: string): Promise<boolean> {
+    try {
+        const response = await axios.post('/api/updatePaymentMethod', {
+            token: accessToken,
+            id,
+            paymentMethodId,
+        });
+
+        if (response) {
+            const hasUpdated: boolean = get(response, 'data.hasUpdated', false);
+
+            return hasUpdated;
+        }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return false;
 }

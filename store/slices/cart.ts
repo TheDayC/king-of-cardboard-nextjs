@@ -12,7 +12,7 @@ const cartSlice = createSlice({
             if (productIndex >= 0) {
                 const newProduct = {
                     ...state.items[productIndex],
-                    amount: (state.items[productIndex].amount += 1),
+                    stock: (state.items[productIndex].stock += 1),
                 };
 
                 state.items[productIndex] = newProduct;
@@ -30,27 +30,34 @@ const cartSlice = createSlice({
         increaseAmount(state, action) {
             const cartIndex = state.items.findIndex((c) => c.id === action.payload.id);
 
-            if (state.items[cartIndex] && state.items[cartIndex].amount < action.payload.stock) {
-                state.items[cartIndex].amount += 1;
+            if (state.items[cartIndex] && state.items[cartIndex].stock < action.payload.stock) {
+                state.items[cartIndex].stock += 1;
             }
         },
         decreaseAmount(state, action) {
             const cartIndex = state.items.findIndex((c) => c.id === action.payload);
 
-            if (state.items[cartIndex] && state.items[cartIndex].amount > 1) {
-                state.items[cartIndex].amount -= 1;
+            if (state.items[cartIndex] && state.items[cartIndex].stock > 1) {
+                state.items[cartIndex].stock -= 1;
             }
         },
-        createOrder(state, action) {
-            state.order = action.payload;
+        setOrder(state, action) {
+            return {
+                ...state,
+                order: action.payload,
+            };
         },
-        updateOrder(state, action) {
-            if (state.order) {
-                state.order = {
-                    ...state.order,
-                    ...action.payload,
-                };
-            }
+        setLineItems(state, action) {
+            return {
+                ...state,
+                items: action.payload,
+            };
+        },
+        setPaymentMethods(state, action) {
+            return {
+                ...state,
+                paymentMethods: action.payload,
+            };
         },
         fetchOrder(state, action) {
             state.shouldFetchOrder = action.payload;
@@ -61,6 +68,14 @@ const cartSlice = createSlice({
     },
 });
 
-export const { addItemToCart, removeItem, increaseAmount, decreaseAmount, createOrder, updateOrder, fetchOrder } =
-    cartSlice.actions;
+export const {
+    addItemToCart,
+    removeItem,
+    increaseAmount,
+    decreaseAmount,
+    setOrder,
+    setLineItems,
+    setPaymentMethods,
+    fetchOrder,
+} = cartSlice.actions;
 export default cartSlice.reducer;

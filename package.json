@@ -19,8 +19,10 @@
         "@commercelayer/js-auth": "^2.0.8",
         "@commercelayer/sdk": "^2.0.7",
         "@reduxjs/toolkit": "^1.6.1",
+        "@stripe/react-stripe-js": "^1.5.0",
+        "@stripe/stripe-js": "^1.18.0",
         "axios": "^0.21.4",
-        "daisyui": "^1.14.0",
+        "daisyui": "^1.14.2",
         "lodash": "^4.17.21",
         "luxon": "^2.0.2",
         "next": "11.1.2",
@@ -30,7 +32,8 @@
         "react-icons": "^4.2.0",
         "react-redux": "^7.2.5",
         "redux-devtools-extension": "^2.13.9",
-        "redux-persist": "^6.0.0"
+        "redux-persist": "^6.0.0",
+        "stripe": "^8.176.0"
     },
     "devDependencies": {
         "@types/axios": "^0.14.0",

@@ -4,32 +4,18 @@ import { useForm } from 'react-hook-form';
 import { get } from 'lodash';
 
 import selector from './selector';
-import { fieldPatternMsgs } from '../../../utils/checkout';
+import { fieldPatternMsgs, updateAddress } from '../../../utils/checkout';
 import { PersonalDetails } from '../../../types/checkout';
-import {
-    setFirstName,
-    setLastName,
-    setEmail,
-    setPhone,
-    setAddressLineOne,
-    setAddressLineTwo,
-    setCity,
-    setPostCode,
-    setCounty,
-    setAllowShippingAddress,
-    setShippingAddressLineOne,
-    setShippingAddressLineTwo,
-    setShippingCity,
-    setShippingPostcode,
-    setShippingCounty,
-    setCurrentStep,
-} from '../../../store/slices/checkout';
+import { setAllowShippingAddress, setCurrentStep, setCustomerDetails } from '../../../store/slices/checkout';
+import { parseCustomerDetails } from '../../../utils/parsers';
+import { fetchOrder } from '../../../store/slices/cart';
 
 const Customer: React.FC = () => {
-    const { currentStep, customerDetails } = useSelector(selector);
+    const { currentStep, customerDetails, order, accessToken } = useSelector(selector);
     const {
         firstName,
         lastName,
+        company,
         email,
         phone,
         addressLineOne,
@@ -55,7 +41,7 @@ const Customer: React.FC = () => {
     const isCurrentStep = currentStep === 0;
     const hasErrors = Object.keys(errors).length > 0;
 
-    const onSubmit = (data: PersonalDetails) => {
+    const onSubmit = async (data: PersonalDetails) => {
         // Set loading in current form.
         setLoading(true);
 
@@ -63,37 +49,33 @@ const Customer: React.FC = () => {
         const allowShipping = get(data, 'allowShippingAddress', false);
         dispatch(setAllowShippingAddress(allowShipping));
 
-        // Dispatch personal and billing details to the redux store.
-        dispatch(setFirstName(get(data, 'firstName', null)));
-        dispatch(setLastName(get(data, 'lastName', null)));
-        dispatch(setEmail(get(data, 'email', null)));
-        dispatch(setPhone(get(data, 'phone', null)));
-        dispatch(setAddressLineOne(get(data, 'billingAddressLineOne', null)));
-        dispatch(setAddressLineTwo(get(data, 'billingAddressLineTwo', null)));
-        dispatch(setCity(get(data, 'billingCity', null)));
-        dispatch(setPostCode(get(data, 'billingPostcode', null)));
-        dispatch(setCounty(get(data, 'billingCounty', null)));
+        // There are quite a few customer details to parse so ship it off to a helper then store.
+        const customerDetails = parseCustomerDetails(data, allowShipping);
+        dispatch(setCustomerDetails(customerDetails));
 
-        // If the user has allowed shipping address dispatch shipping address to redux store.
-        if (allowShipping) {
-            dispatch(setShippingAddressLineOne(get(data, 'shippingAddressLineOne', null)));
-            dispatch(setShippingAddressLineTwo(get(data, 'shippingAddressLineTwo', null)));
-            dispatch(setShippingCity(get(data, 'shippingCity', null)));
-            dispatch(setShippingPostcode(get(data, 'shippingPostcode', null)));
-            dispatch(setShippingCounty(get(data, 'shippingCounty', null)));
+        if (order && accessToken) {
+            // Update billing address details in commerceLayer
+            const hasBillingAddressUpdated = await updateAddress(accessToken, order.id, customerDetails, false);
+
+            if (hasBillingAddressUpdated) {
+                // Update shipping address details in commerceLayer
+                await updateAddress(accessToken, order.id, customerDetails, true);
+            }
+
+            dispatch(fetchOrder(true));
         }
 
         // Remove load barriers.
         setLoading(false);
 
         // Redirect to next stage.
-        // router.push('/checkout/delivery');
         dispatch(setCurrentStep(1));
     };
 
     // Collect errors.
     const firstNameErr = get(errors, 'firstName.message', null);
     const lastNameErr = get(errors, 'lastName.message', null);
+    const companyErr = get(errors, 'company.message', null);
     const emailErr = get(errors, 'email.message', null);
     const mobileErr = get(errors, 'mobile.message', null);
     const billingLineOneErr = get(errors, 'billingAddressLineOne.message', null);
@@ -112,10 +94,10 @@ const Customer: React.FC = () => {
         setAllowShippingAddressInternal(e.target.checked);
     };
 
-    const handleEdit = (e: React.MouseEvent<HTMLInputElement>) => {
-        e.preventDefault();
-
-        dispatch(setCurrentStep(0));
+    const handleEdit = () => {
+        if (!isCurrentStep) {
+            dispatch(setCurrentStep(0));
+        }
     };
 
     return (
@@ -173,6 +155,25 @@ const Customer: React.FC = () => {
                                         {lastNameErr && (
                                             <label className="label">
                                                 <span className="label-text-alt">{lastNameErr}</span>
+                                            </label>
+                                        )}
+                                    </div>
+                                    <div className="form-control">
+                                        <label className="label">
+                                            <span className="label-text">Company</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            placeholder="Company"
+                                            {...register('company', {
+                                                required: false,
+                                                value: company,
+                                            })}
+                                            className={`input input-bordered${companyErr ? ' input-error' : ''}`}
+                                        />
+                                        {companyErr && (
+                                            <label className="label">
+                                                <span className="label-text-alt">{companyErr}</span>
                                             </label>
                                         )}
                                     </div>
