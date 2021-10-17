@@ -1,3 +1,4 @@
+import { Container } from '@mui/material';
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -17,9 +18,9 @@ export const Home: React.FC<CommerceAuthProps> = ({ accessToken, expires }) => {
     return (
         <React.Fragment>
             <Header />
-            <div className="container mx-auto px-16">
+            <Container maxWidth="xl">
                 <ProductGrid useFilters={false} />
-            </div>
+            </Container>
         </React.Fragment>
     );
 };
