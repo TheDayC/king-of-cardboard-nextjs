@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { StripeCardElement, Stripe } from '@stripe/stripe-js';
 import { get } from 'lodash';
+import { Step, StepLabel, StepContent, Button } from '@mui/material';
 
 import selector from './selector';
 import { setCurrentStep } from '../../../store/slices/checkout';
@@ -19,6 +20,7 @@ export const Payment: React.FC = () => {
     const { currentStep, paymentMethods, accessToken, orderId, customerDetails } = useSelector(selector);
     const {
         register,
+        control,
         handleSubmit,
         formState: { errors },
     } = useForm();
@@ -108,31 +110,28 @@ export const Payment: React.FC = () => {
     );
 
     return (
-        <div className={`collapse collapse-${isCurrentStep ? 'open' : 'closed'}`}>
-            <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
-                {!isCurrentStep ? 'Payment - Edit' : 'Payment'}
-            </h3>
-            <div className="collapse-content">
+        <Step>
+            <StepLabel onClick={handleEdit}>{!isCurrentStep ? 'Payment - Edit' : 'Payment'}</StepLabel>
+            <StepContent>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     {paymentMethods &&
                         paymentMethods.map((method) => (
-                            <React.Fragment key={`card-entry-${method.name}`}>
-                                <Method
-                                    id={method.id}
-                                    name={method.name}
-                                    sourceType={method.payment_source_type}
-                                    defaultChecked={paymentMethods.length < 2 ? true : false}
-                                    register={register}
-                                />
-                            </React.Fragment>
+                            <Method
+                                id={method.id}
+                                name={method.name}
+                                sourceType={method.payment_source_type}
+                                defaultChecked={paymentMethods.length < 2 ? true : false}
+                                register={register}
+                                control={control}
+                                key={`card-entry-${method.name}`}
+                            />
                         ))}
-
-                    <button className="btn btn-primary" disabled={!stripe}>
+                    <Button variant="contained" disabled={!stripe}>
                         Place Order
-                    </button>
+                    </Button>
                 </form>
-            </div>
-        </div>
+            </StepContent>
+        </Step>
     );
 };
 

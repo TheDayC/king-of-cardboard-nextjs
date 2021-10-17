@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { get } from 'lodash';
-import { Accordion, Button, Checkbox, Input, Stack, Step, StepContent, StepLabel, Typography } from '@mui/material';
-import { Box } from '@mui/system';
+import { Button, Stack, Step, StepContent, StepLabel } from '@mui/material';
 
 import selector from './selector';
 import { setCurrentStep, setShipmentsWithMethods } from '../../../store/slices/checkout';
@@ -24,7 +23,6 @@ export const Delivery: React.FC = () => {
     const [shipments, setShipments] = useState<FinalShipments | null>(null);
     const [expanded, setExpanded] = useState<string | false>(false);
     const {
-        register,
         control,
         handleSubmit,
         formState: { errors },

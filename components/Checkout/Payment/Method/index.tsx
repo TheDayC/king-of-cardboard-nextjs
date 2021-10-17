@@ -1,5 +1,6 @@
+import { FormControlLabel, Radio } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FieldValues, UseFormRegister } from 'react-hook-form';
+import { Controller, FieldValues, UseFormRegister, Control } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { fetchOrder } from '../../../../store/slices/cart';
@@ -13,9 +14,10 @@ interface MethodProps {
     sourceType: string;
     defaultChecked: boolean;
     register: UseFormRegister<FieldValues>;
+    control: Control<FieldValues, object>; // eslint-disable-line @typescript-eslint/ban-types
 }
 
-export const Method: React.FC<MethodProps> = ({ id, name, sourceType, defaultChecked, register }) => {
+export const Method: React.FC<MethodProps> = ({ id, name, sourceType, defaultChecked, register, control }) => {
     const dispatch = useDispatch();
     const { accessToken, orderId } = useSelector(selector);
     const [showSource, setShowSource] = useState(defaultChecked);
@@ -46,18 +48,21 @@ export const Method: React.FC<MethodProps> = ({ id, name, sourceType, defaultChe
 
     return (
         <div className="form-control" key={`payment-method-${id}`}>
-            <label className="label cursor-pointer">
-                <span className="label-text">{name}</span>
-            </label>
-            <input
-                type="radio"
-                className="radio"
+            <FormControlLabel
                 value={id}
                 defaultChecked={defaultChecked}
-                {...register('paymentMethod', {
-                    required: { value: true, message: 'Required' },
-                })}
-                onChange={handleChange}
+                control={
+                    <Controller
+                        name="firstName"
+                        control={control}
+                        defaultValue=""
+                        render={({ field }) => <Radio {...field} defaultChecked={defaultChecked} />}
+                        rules={{
+                            required: { value: true, message: 'Required' },
+                        }}
+                    />
+                }
+                label={name}
             />
             {showSource && <Source sourceType={sourceType} />}
         </div>
