@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Stepper } from '@mui/material';
 
 import Header from '../../components/Header';
 import Steps from '../../components/Checkout/Steps';
@@ -24,17 +25,11 @@ export const CheckoutPage: React.FC<CommerceAuthProps> = ({ accessToken, expires
             <Header />
             <div className="container mx-auto p-8">
                 <div className="flex flex-col">
-                    <Steps currentStep={currentStep} />
-                    <div className="container mx-auto max-w-lg">
-                        <div className="flex flex-row">
-                            <div className="flex flex-col">
-                                <Customer />
-                                <Delivery />
-                                <Payment />
-                            </div>
-                            <div className="flex">Add summary here!</div>
-                        </div>
-                    </div>
+                    <Stepper>
+                        <Customer />
+                        <Delivery />
+                        <Payment />
+                    </Stepper>
                 </div>
             </div>
         </React.Fragment>
