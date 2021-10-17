@@ -34,7 +34,9 @@ const MyApp: React.FC<MyAppProps> = ({ Component, pageProps, emotionCache = clie
         () => ({
             // The dark mode switch would invoke this method
             toggleColorMode: () => {
-                setMode((prevMode: PaletteMode) => (prevMode === 'light' ? PaletteMode.dark : PaletteMode.light));
+                setMode((prevMode: PaletteMode) =>
+                    prevMode === PaletteMode.light ? PaletteMode.dark : PaletteMode.light
+                );
             },
         }),
         []
