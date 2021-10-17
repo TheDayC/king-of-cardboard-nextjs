@@ -1,3 +1,4 @@
+import { TableCell, TableRow } from '@mui/material';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -12,21 +13,19 @@ export const CartTotals: React.FC = () => {
 
     return (
         <React.Fragment>
-            <tr>
-                <td colSpan={3}>&nbsp;</td>
-                <td>Subtotal</td>
-                <td align="right">{subTotal}</td>
-            </tr>
-            <tr>
-                <td colSpan={3}>&nbsp;</td>
-                <td>Tax</td>
-                <td align="right">{taxes}</td>
-            </tr>
-            <tr>
-                <td colSpan={3}>&nbsp;</td>
-                <td>Total</td>
-                <td align="right">{total}</td>
-            </tr>
+            <TableRow>
+                <TableCell rowSpan={3} />
+                <TableCell colSpan={2}>Subtotal</TableCell>
+                <TableCell align="right">{subTotal}</TableCell>
+            </TableRow>
+            <TableRow>
+                <TableCell>Tax</TableCell>
+                <TableCell align="right">{taxes}</TableCell>
+            </TableRow>
+            <TableRow>
+                <TableCell colSpan={2}>Total</TableCell>
+                <TableCell align="right">{total}</TableCell>
+            </TableRow>
         </React.Fragment>
     );
 };

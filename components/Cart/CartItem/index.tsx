@@ -1,3 +1,4 @@
+import { IconButton, TableCell, TableRow } from '@mui/material';
 import React from 'react';
 import { MdDeleteForever, MdRemoveCircleOutline, MdAddCircleOutline } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
@@ -59,25 +60,25 @@ export const CartItem: React.FC<BasketItemProps> = ({ id, sku, name, unitAmount,
     };
 
     return (
-        <tr>
-            <td className="text-center">
-                <button aria-label="remove item" onClick={handleRemoveItem}>
+        <TableRow>
+            <TableCell className="text-center">
+                <IconButton aria-label="remove item" onClick={handleRemoveItem}>
                     <MdDeleteForever />
-                </button>
-            </td>
-            <td className="text-center">{name}</td>
-            <td className="text-center">{unitAmount}</td>
-            <td className="text-center">
-                <button aria-label="subtract one item" onClick={handleDecreaseAmount}>
+                </IconButton>
+            </TableCell>
+            <TableCell className="text-center">{name}</TableCell>
+            <TableCell className="text-center">{unitAmount}</TableCell>
+            <TableCell className="text-center">
+                <IconButton aria-label="subtract one item" onClick={handleDecreaseAmount}>
                     <MdRemoveCircleOutline />
-                </button>
+                </IconButton>
                 <span className="px-4">{quantity}</span>
-                <button aria-label="add one item" onClick={handleIncreaseAmount}>
+                <IconButton aria-label="add one item" onClick={handleIncreaseAmount}>
                     <MdAddCircleOutline />
-                </button>
-            </td>
-            <td className="text-center">{totalAmount}</td>
-        </tr>
+                </IconButton>
+            </TableCell>
+            <TableCell className="text-center">{totalAmount}</TableCell>
+        </TableRow>
     );
 };
 
