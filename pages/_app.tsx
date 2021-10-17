@@ -7,14 +7,21 @@ import { loadStripe } from '@stripe/stripe-js';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { createTheme } from '@mui/system';
+/* import { createTheme } from '@mui/system'; */
+
+// Import roboto with fontsource
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 
 import createEmotionCache from '../utils/emotion';
 import storeInstance from '../store';
 import AuthProvider from '../context/authProvider';
-import getDesignTokens from '../theme';
+/* import getDesignTokens from '../theme';
 import { PaletteMode } from '../enums/theme';
-import ColorModeContext from '../context/context';
+import ColorModeContext from '../context/context'; */
+import theme from '../theme';
 
 // Called outside of the render to only create once.
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
@@ -29,8 +36,8 @@ interface MyAppProps extends AppProps {
 const MyApp: React.FC<MyAppProps> = ({ Component, pageProps, emotionCache = clientSideEmotionCache }) => {
     const { store, persistor } = storeInstance();
 
-    const [mode, setMode] = useState<PaletteMode>(PaletteMode.light);
-    const colorMode = useMemo(
+    // const [mode, setMode] = useState<PaletteMode>(PaletteMode.light);
+    /* const colorMode = useMemo(
         () => ({
             // The dark mode switch would invoke this method
             toggleColorMode: () => {
@@ -40,10 +47,10 @@ const MyApp: React.FC<MyAppProps> = ({ Component, pageProps, emotionCache = clie
             },
         }),
         []
-    );
+    ); */
 
     // Update the theme only if the mode changes
-    const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
+    // const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 
     return (
         <CacheProvider value={emotionCache}>
@@ -51,13 +58,13 @@ const MyApp: React.FC<MyAppProps> = ({ Component, pageProps, emotionCache = clie
                 <PersistGate loading={null} persistor={persistor}>
                     <AuthProvider>
                         <Elements stripe={stripePromise}>
-                            <ColorModeContext.Provider value={colorMode}>
-                                <ThemeProvider theme={theme}>
-                                    {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-                                    <CssBaseline />
-                                    <Component {...pageProps} />
-                                </ThemeProvider>
-                            </ColorModeContext.Provider>
+                            {/* <ColorModeContext.Provider value={colorMode}> */}
+                            <ThemeProvider theme={theme}>
+                                {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+                                <CssBaseline />
+                                <Component {...pageProps} />
+                            </ThemeProvider>
+                            {/* </ColorModeContext.Provider> */}
                         </Elements>
                     </AuthProvider>
                 </PersistGate>

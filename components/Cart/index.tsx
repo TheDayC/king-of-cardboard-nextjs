@@ -63,9 +63,9 @@ export const Cart: React.FC = () => {
                     </Table>
                 </TableContainer>
             ) : (
-                <p>
+                <Typography>
                     You have no items in your basket, start shopping <Link href="/shop">here</Link>.
-                </p>
+                </Typography>
             )}
         </Stack>
     );
