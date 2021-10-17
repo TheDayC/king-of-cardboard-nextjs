@@ -1,6 +1,9 @@
 import React from 'react';
-import { CommerceLayerClient } from '@commercelayer/sdk';
 
-export const AuthProviderContext = React.createContext<CommerceLayerClient | null>(null);
+interface ColorModeProps {
+    toggleColorMode: () => void;
+}
 
-export default AuthProviderContext;
+export const ColorModeContext = React.createContext<ColorModeProps | null>(null);
+
+export default ColorModeContext;
