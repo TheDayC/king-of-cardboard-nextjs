@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Controller, useForm } from 'react-hook-form';
 import { get } from 'lodash';
 import { Button, Checkbox, Input, Stack, Step, StepContent, StepLabel, Typography } from '@mui/material';
+import { Box } from '@mui/system';
 
 import selector from './selector';
 import { fieldPatternMsgs, updateAddress } from '../../../utils/checkout';
@@ -10,8 +11,6 @@ import { PersonalDetails } from '../../../types/checkout';
 import { setAllowShippingAddress, setCurrentStep, setCustomerDetails } from '../../../store/slices/checkout';
 import { parseCustomerDetails } from '../../../utils/parsers';
 import { fetchOrder } from '../../../store/slices/cart';
-import { Box } from '@mui/system';
-
 const Customer: React.FC = () => {
     const { currentStep, customerDetails, order, accessToken } = useSelector(selector);
     const {

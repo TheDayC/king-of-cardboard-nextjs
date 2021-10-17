@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { get } from 'lodash';
+import { Accordion, Button, Checkbox, Input, Stack, Step, StepContent, StepLabel, Typography } from '@mui/material';
+import { Box } from '@mui/system';
 
 import selector from './selector';
 import { setCurrentStep, setShipmentsWithMethods } from '../../../store/slices/checkout';
@@ -20,6 +22,7 @@ export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
     const { accessToken, currentStep, shipmentsWithMethods, order } = useSelector(selector);
     const [shipments, setShipments] = useState<FinalShipments | null>(null);
+    const [expanded, setExpanded] = useState<string | false>(false);
     const {
         register,
         handleSubmit,
@@ -83,50 +86,77 @@ export const Delivery: React.FC = () => {
         }
     };
 
-    return (
-        <form onSubmit={handleSubmit(handleSelectShippingMethod)}>
-            <div className="flex">
-                <div className={`collapse collapse-${isCurrentStep ? 'open' : 'closed'}`}>
-                    <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
-                        {!hasErrors && !isCurrentStep ? 'Delivery - Edit' : 'Delivery'}
-                    </h3>
-                    <div className="collapse-content">
-                        {shipments &&
-                            shipments.shipments.map((shipment, index) => {
-                                const defaultValue = shipmentsWithMethods
-                                    ? shipmentsWithMethods.find((withMethod) => withMethod.shipmentId === shipment)
-                                    : null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleAccordion = (panel: string) => (event: any, isExpanded: boolean) => {
+        setExpanded(isExpanded ? panel : false);
+    };
 
-                                return (
-                                    <Shipment
-                                        id={shipment}
-                                        shippingMethods={shipments.shippingMethods}
-                                        shipmentCount={index + 1}
-                                        shipmentsTotal={shipments.shipments.length}
-                                        register={register}
-                                        defaultChecked={defaultValue ? defaultValue.methodId : ''}
-                                        key={`shipment-${index}`}
-                                    />
-                                );
-                            })}
-                        <button
-                            type="submit"
-                            className={`btn-sm btn-outline${
-                                hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'
-                            }`}
-                        >
-                            Back to Details
-                        </button>
-                        <button
-                            type="submit"
-                            className={`btn-sm${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
-                        >
-                            Payment
-                        </button>
+    return (
+        <Step>
+            <StepLabel onClick={handleEdit}>{!hasErrors && !isCurrentStep ? 'Delivery - Edit' : 'Delivery'}</StepLabel>
+            <form onSubmit={handleSubmit(handleSelectShippingMethod)}>
+                <StepContent>
+                    {shipments &&
+                        shipments.shipments.map((shipment, index) => {
+                            const defaultValue = shipmentsWithMethods
+                                ? shipmentsWithMethods.find((withMethod) => withMethod.shipmentId === shipment)
+                                : null;
+
+                            return (
+                                <Shipment
+                                    id={shipment}
+                                    shippingMethods={shipments.shippingMethods}
+                                    shipmentCount={index + 1}
+                                    shipmentsTotal={shipments.shipments.length}
+                                    register={register}
+                                    defaultChecked={defaultValue ? defaultValue.methodId : ''}
+                                    key={`shipment-${index}`}
+                                    expanded={expanded}
+                                    handleAccordion={handleAccordion}
+                                />
+                            );
+                        })}
+                </StepContent>
+                <div className="flex">
+                    <div className={`collapse collapse-${isCurrentStep ? 'open' : 'closed'}`}>
+                        <div className="collapse-content">
+                            {shipments &&
+                                shipments.shipments.map((shipment, index) => {
+                                    const defaultValue = shipmentsWithMethods
+                                        ? shipmentsWithMethods.find((withMethod) => withMethod.shipmentId === shipment)
+                                        : null;
+
+                                    return (
+                                        <Shipment
+                                            id={shipment}
+                                            shippingMethods={shipments.shippingMethods}
+                                            shipmentCount={index + 1}
+                                            shipmentsTotal={shipments.shipments.length}
+                                            register={register}
+                                            defaultChecked={defaultValue ? defaultValue.methodId : ''}
+                                            key={`shipment-${index}`}
+                                        />
+                                    );
+                                })}
+                            <button
+                                type="submit"
+                                className={`btn-sm btn-outline${
+                                    hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'
+                                }`}
+                            >
+                                Back to Details
+                            </button>
+                            <button
+                                type="submit"
+                                className={`btn-sm${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
+                            >
+                                Payment
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </Step>
     );
 };
 
