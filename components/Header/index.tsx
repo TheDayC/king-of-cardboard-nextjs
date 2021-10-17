@@ -5,12 +5,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Badge, Tab, Tabs } from '@mui/material';
-import MailIcon from '@mui/icons-material/Mail';
 
 import selector from './selector';
-import styles from './header.module.css';
 import logo from '../../images/logo1x.png';
 import { a11yProps } from '../../utils/tabs';
+import styles from './header.module.css';
 
 export const Header: React.FC = () => {
     const { cartItemCount } = useSelector(selector);
@@ -20,15 +19,13 @@ export const Header: React.FC = () => {
 
     return (
         <div className="navbar mb-4 shadow-md bg-neutral text-neutral-content">
-            <div className="flex-none px-2 mx-2">
-                <div className={styles.logoWrapper}>
-                    <Link href="/" passHref>
-                        <React.Fragment>
-                            <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
-                            <span className="text-lg font-bold">King of Cardboard</span>
-                        </React.Fragment>
-                    </Link>
-                </div>
+            <div className={styles.logoWrapper}>
+                <Link href="/" passHref>
+                    <React.Fragment>
+                        <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
+                        <span className="text-lg font-bold">King of Cardboard</span>
+                    </React.Fragment>
+                </Link>
             </div>
 
             <Tabs value={slug}>

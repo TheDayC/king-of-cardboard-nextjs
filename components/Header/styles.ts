@@ -1,8 +1,10 @@
 import { makeStyles } from '@mui/material';
 
-export default makeStyles(() => ({
+const useStyles = makeStyles(() => ({
     logoWrapper: {
         maxWidth: '100px',
         height: 'auto',
     },
 }));
+
+export default useStyles;
