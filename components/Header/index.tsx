@@ -3,13 +3,20 @@ import { useSelector } from 'react-redux';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { Badge, Tab, Tabs } from '@mui/material';
+import MailIcon from '@mui/icons-material/Mail';
 
 import selector from './selector';
 import styles from './header.module.css';
 import logo from '../../images/logo1x.png';
+import { a11yProps } from '../../utils/tabs';
 
 export const Header: React.FC = () => {
     const { cartItemCount } = useSelector(selector);
+
+    const router = useRouter();
+    const { slug } = router.query;
 
     return (
         <div className="navbar mb-4 shadow-md bg-neutral text-neutral-content">
@@ -23,38 +30,19 @@ export const Header: React.FC = () => {
                     </Link>
                 </div>
             </div>
-            <div className="flex-grow px-2 mx-2">
-                <div className="items-stretch hidden lg:flex">
-                    <Link href="/" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn">Home</button>
-                    </Link>
-                    <Link href="/shop" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn">Shop</button>
-                    </Link>
-                    <Link href="/shop/sports" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn">Sports</button>
-                    </Link>
-                    <Link href="/shop/tcg" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn">TCG</button>
-                    </Link>
-                    <Link href="/breaks" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn">Breaks</button>
-                    </Link>
-                    <Link href="/streaming" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn">Streaming</button>
-                    </Link>
-                </div>
-            </div>
-            <div className="flex-none px-2 mx-2">
-                <button className="btn btn-ghost">
-                    <Link href="/cart" passHref>
-                        <div className="flex justify-start items-center">
-                            <AiOutlineShoppingCart className={styles.cart} />
-                            {cartItemCount > 0 && <div className="badge ml-2 badge-outline">{cartItemCount}</div>}
-                        </div>
-                    </Link>
-                </button>
-            </div>
+
+            <Tabs value={slug}>
+                <Tab label="Home" {...a11yProps(0)} value="/" href="/" component={Link} />
+                <Tab label="Shop" {...a11yProps(1)} value="/shop" href="/shop" component={Link} />
+                <Tab label="Breaks" {...a11yProps(2)} value="/breaks" href="/breaks" component={Link} />
+                <Tab label="Streaming" {...a11yProps(3)} value="/streaming" href="/streaming" component={Link} />
+            </Tabs>
+
+            <Badge badgeContent={cartItemCount} color="success">
+                <Link href="/cart" passHref>
+                    <AiOutlineShoppingCart />
+                </Link>
+            </Badge>
         </div>
     );
 };
