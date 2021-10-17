@@ -25,6 +25,7 @@ export const Delivery: React.FC = () => {
     const [expanded, setExpanded] = useState<string | false>(false);
     const {
         register,
+        control,
         handleSubmit,
         formState: { errors },
     } = useForm();
@@ -108,7 +109,7 @@ export const Delivery: React.FC = () => {
                                     shippingMethods={shipments.shippingMethods}
                                     shipmentCount={index + 1}
                                     shipmentsTotal={shipments.shipments.length}
-                                    register={register}
+                                    control={control}
                                     defaultChecked={defaultValue ? defaultValue.methodId : ''}
                                     key={`shipment-${index}`}
                                     expanded={expanded}
@@ -116,45 +117,12 @@ export const Delivery: React.FC = () => {
                                 />
                             );
                         })}
+                    <Stack>
+                        <Button variant="contained" sx={{ mt: 1, mr: 1 }} disabled={hasErrors}>
+                            Continue
+                        </Button>
+                    </Stack>
                 </StepContent>
-                <div className="flex">
-                    <div className={`collapse collapse-${isCurrentStep ? 'open' : 'closed'}`}>
-                        <div className="collapse-content">
-                            {shipments &&
-                                shipments.shipments.map((shipment, index) => {
-                                    const defaultValue = shipmentsWithMethods
-                                        ? shipmentsWithMethods.find((withMethod) => withMethod.shipmentId === shipment)
-                                        : null;
-
-                                    return (
-                                        <Shipment
-                                            id={shipment}
-                                            shippingMethods={shipments.shippingMethods}
-                                            shipmentCount={index + 1}
-                                            shipmentsTotal={shipments.shipments.length}
-                                            register={register}
-                                            defaultChecked={defaultValue ? defaultValue.methodId : ''}
-                                            key={`shipment-${index}`}
-                                        />
-                                    );
-                                })}
-                            <button
-                                type="submit"
-                                className={`btn-sm btn-outline${
-                                    hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'
-                                }`}
-                            >
-                                Back to Details
-                            </button>
-                            <button
-                                type="submit"
-                                className={`btn-sm${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
-                            >
-                                Payment
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </form>
         </Step>
     );

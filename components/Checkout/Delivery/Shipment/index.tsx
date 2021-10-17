@@ -22,7 +22,7 @@ interface ShipmentProps {
     shipmentsTotal: number;
     control: Control<FieldValues, object>; // eslint-disable-line @typescript-eslint/ban-types
     defaultChecked: string;
-    expanded: string;
+    expanded: string | boolean;
     handleAccordion: (panel: string) => (event: any, isExpanded: boolean) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
