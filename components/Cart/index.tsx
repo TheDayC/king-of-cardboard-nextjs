@@ -53,7 +53,7 @@ export const Cart: React.FC = () => {
                 </div>
             ) : (
                 <p>
-                    You have no items in your basket, start shopping <a href="/shop">here</a>.
+                    You have no items in your basket, start shopping <Link href="/shop">here</Link>.
                 </p>
             )}
         </div>
