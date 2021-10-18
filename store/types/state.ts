@@ -52,6 +52,7 @@ export interface Checkout {
     currentStep: number;
     shipmentsWithMethods: ShipmentsWithMethods[] | null;
     customerDetails: CustomerDetails;
+    hasCompletedOrder: boolean;
 }
 
 export interface CustomerDetails {

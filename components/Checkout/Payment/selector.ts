@@ -15,6 +15,7 @@ const selector = createSelector(
         accessToken: global.accessToken,
         orderId: cart.order ? cart.order.id : null,
         customerDetails,
+        checkoutLoading: global.checkoutLoading,
     })
 );
 

@@ -21,7 +21,7 @@ async function confirmOrder(req: NextApiRequest, res: NextApiResponse): Promise<
             .then((response) => {
                 const status = get(response, 'status', 500);
 
-                res.status(status).json({ hasUpdated: status === 200 ? true : false });
+                res.status(status).json({ hasPlaced: status === 200 ? true : false });
             })
             .catch((error) => {
                 const status = get(error, 'response.status', 500);

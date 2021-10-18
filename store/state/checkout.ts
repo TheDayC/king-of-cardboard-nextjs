@@ -21,6 +21,7 @@ const checkoutInitialState: Checkout = {
         shippingPostcode: null,
         shippingCounty: null,
     },
+    hasCompletedOrder: false,
 };
 
 export default checkoutInitialState;

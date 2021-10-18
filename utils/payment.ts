@@ -35,6 +35,8 @@ export async function confirmOrder(accessToken: string, orderId: string): Promis
 
             return hasPlaced;
         }
+
+        return false;
     } catch (error) {
         console.log('Error: ', error);
     }

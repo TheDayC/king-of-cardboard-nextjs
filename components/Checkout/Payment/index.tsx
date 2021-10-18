@@ -6,17 +6,20 @@ import { StripeCardElement, Stripe } from '@stripe/stripe-js';
 import { get } from 'lodash';
 
 import selector from './selector';
-import { setCurrentStep } from '../../../store/slices/checkout';
+import { setCurrentStep, setHasCompletedOrder } from '../../../store/slices/checkout';
 import Method from './Method';
 import { createPaymentSource } from '../../../utils/commerce';
 import { checkoutOrder, confirmOrder } from '../../../utils/payment';
 import { CustomerDetails } from '../../../store/types/state';
+import { setCheckoutLoading } from '../../../store/slices/global';
+import { fetchOrder } from '../../../store/slices/cart';
 
 export const Payment: React.FC = () => {
     const dispatch = useDispatch();
     const stripe = useStripe();
     const elements = useElements();
-    const { currentStep, paymentMethods, accessToken, orderId, customerDetails } = useSelector(selector);
+    const { currentStep, paymentMethods, accessToken, orderId, customerDetails, checkoutLoading } =
+        useSelector(selector);
     const {
         register,
         handleSubmit,
@@ -43,6 +46,8 @@ export const Payment: React.FC = () => {
             const clientSecret = await createPaymentSource(accessToken, orderId, paymentSourceType);
 
             if (clientSecret) {
+                dispatch(setCheckoutLoading(true));
+
                 // Assuming we've got a secret then confirm the card payment with stripe.
                 const result = await stripe.confirmCardPayment(clientSecret, {
                     payment_method: {
@@ -72,13 +77,20 @@ export const Payment: React.FC = () => {
 
                     // Place the order with commerce layer when the payment status is confirmed with stripe.
                     if (paymentStatus && paymentStatus === 'succeeded') {
-                        const hasBeenConfirmed = confirmOrder(accessToken, orderId);
-                        // TODO: Clear all order state after confirmation.
+                        const hasBeenConfirmed = await confirmOrder(accessToken, orderId);
+
+                        if (hasBeenConfirmed) {
+                            // Set current order as completed.
+                            dispatch(setHasCompletedOrder(true));
+
+                            // Checkout has finished loading
+                            dispatch(setCheckoutLoading(false));
+                        }
                     }
                 }
             }
         },
-        []
+        [dispatch]
     );
 
     const onSubmit = useCallback(
@@ -127,7 +139,10 @@ export const Payment: React.FC = () => {
                                 key={`card-entry-${method.name}`}
                             />
                         ))}
-                    <button className="btn btn-primary" disabled={!stripe}>
+                    <button
+                        className={`btn btn-primary${checkoutLoading && ' loading'}`}
+                        disabled={!stripe || checkoutLoading}
+                    >
                         Place Order
                     </button>
                 </form>
