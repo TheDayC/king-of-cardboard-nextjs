@@ -9,6 +9,7 @@ import { CommerceAuthProps } from '../../types/commerce';
 import selector from './selector';
 import Delivery from '../../components/Checkout/Delivery';
 import Payment from '../../components/Checkout/Payment';
+import Summary from '../../components/Checkout/Summary';
 
 export const CheckoutPage: React.FC<CommerceAuthProps> = ({ accessToken, expires }) => {
     const dispatch = useDispatch();
@@ -27,12 +28,14 @@ export const CheckoutPage: React.FC<CommerceAuthProps> = ({ accessToken, expires
                     <Steps currentStep={currentStep} />
                     <div className="container mx-auto max-w-xxl">
                         <div className="flex flex-row space-x-8">
-                            <div className="flex-1 flex-col">
+                            <div className="flex flex-grow flex-col">
                                 <Customer />
                                 <Delivery />
                                 <Payment />
                             </div>
-                            <div className="flex-1">Add summary here!</div>
+                            <div className="flex-1">
+                                <Summary />
+                            </div>
                         </div>
                     </div>
                 </div>

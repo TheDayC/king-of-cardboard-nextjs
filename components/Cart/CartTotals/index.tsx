@@ -14,18 +14,24 @@ export const CartTotals: React.FC = () => {
         <React.Fragment>
             <tr>
                 <td colSpan={3}>&nbsp;</td>
-                <td>Subtotal</td>
-                <td align="right">{subTotal}</td>
+                <td className="text-sm">Subtotal</td>
+                <td align="right" className="text-sm">
+                    {subTotal}
+                </td>
             </tr>
             <tr>
                 <td colSpan={3}>&nbsp;</td>
-                <td>Tax</td>
-                <td align="right">{taxes}</td>
+                <td className="text-sm">Tax</td>
+                <td align="right" className="text-sm">
+                    {taxes}
+                </td>
             </tr>
             <tr>
                 <td colSpan={3}>&nbsp;</td>
-                <td>Total</td>
-                <td align="right">{total}</td>
+                <td className="text-xl font-semibold">Total</td>
+                <td align="right" className="text-xl font-semibold">
+                    {total}
+                </td>
             </tr>
         </React.Fragment>
     );
