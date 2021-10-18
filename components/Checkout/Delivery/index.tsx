@@ -85,7 +85,11 @@ export const Delivery: React.FC = () => {
     };
 
     return (
-        <div className={`collapse collapse-plus card bordered mb-6 collapse-${isCurrentStep ? 'open' : 'closed'}`}>
+        <div
+            className={`collapse collapse-plus card bordered mb-6 rounded-md collapse-${
+                isCurrentStep ? 'open' : 'closed'
+            }`}
+        >
             <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
                 {!hasErrors && !isCurrentStep ? 'Delivery - Edit' : 'Delivery'}
             </h3>

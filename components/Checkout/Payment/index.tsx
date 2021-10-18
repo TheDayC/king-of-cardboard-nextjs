@@ -108,7 +108,9 @@ export const Payment: React.FC = () => {
     );
 
     return (
-        <div className={`collapse collapse-plus card bordered collapse-${isCurrentStep ? 'open' : 'closed'}`}>
+        <div
+            className={`collapse collapse-plus card bordered rounded-md collapse-${isCurrentStep ? 'open' : 'closed'}`}
+        >
             <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
                 {!isCurrentStep ? 'Payment - Edit' : 'Payment'}
             </h3>

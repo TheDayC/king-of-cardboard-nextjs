@@ -101,7 +101,11 @@ const Customer: React.FC = () => {
     };
 
     return (
-        <div className={`collapse collapse-plus card bordered mb-6 collapse-${isCurrentStep ? 'open' : 'closed'}`}>
+        <div
+            className={`collapse collapse-plus card bordered mb-6 rounded-md collapse-${
+                isCurrentStep ? 'open' : 'closed'
+            }`}
+        >
             <div className="collapse-title text-xl font-medium" onClick={handleEdit}>
                 {!hasErrors && !isCurrentStep ? 'Customer - Edit' : 'Customer'}
             </div>
