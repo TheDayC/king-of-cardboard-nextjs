@@ -70,10 +70,10 @@ export const Shipment: React.FC<ShipmentProps> = ({
                                             />
                                         </div>
                                         <div>
-                                            <h4 className="text-lg">{lineItem.name}</h4>
+                                            <h4 className="text-md">{lineItem.name}</h4>
                                             <p className="text-xs text-base-200">{lineItem.sku_code}</p>
                                         </div>
-                                        <p>Quantity: {lineItem.quantity}</p>
+                                        <p className="text-md">Quantity: {lineItem.quantity}</p>
                                     </div>
                                     <div className="divider"></div>
                                 </React.Fragment>
