@@ -13,6 +13,7 @@ const STRIPE_OPTIONS = {
             '::placeholder': {
                 color: '#cccccc',
             },
+            padding: '2px',
         },
         invalid: {
             color: '#ff5724',
@@ -24,7 +25,13 @@ const STRIPE_OPTIONS = {
 export const Source: React.FC<SourceProps> = ({ sourceType }) => {
     switch (sourceType) {
         case 'stripe_payments':
-            return <CardElement options={STRIPE_OPTIONS} />;
+            return (
+                <div className="card bordered rounded-md">
+                    <div className="card-body p-2 ">
+                        <CardElement options={STRIPE_OPTIONS} />
+                    </div>
+                </div>
+            );
         default:
             return null;
     }

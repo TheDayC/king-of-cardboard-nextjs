@@ -108,7 +108,7 @@ export const Payment: React.FC = () => {
     );
 
     return (
-        <div className={`collapse collapse-${isCurrentStep ? 'open' : 'closed'}`}>
+        <div className={`collapse collapse-plus card bordered collapse-${isCurrentStep ? 'open' : 'closed'}`}>
             <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
                 {!isCurrentStep ? 'Payment - Edit' : 'Payment'}
             </h3>
@@ -116,17 +116,15 @@ export const Payment: React.FC = () => {
                 <form onSubmit={handleSubmit(onSubmit)}>
                     {paymentMethods &&
                         paymentMethods.map((method) => (
-                            <React.Fragment key={`card-entry-${method.name}`}>
-                                <Method
-                                    id={method.id}
-                                    name={method.name}
-                                    sourceType={method.payment_source_type}
-                                    defaultChecked={paymentMethods.length < 2 ? true : false}
-                                    register={register}
-                                />
-                            </React.Fragment>
+                            <Method
+                                id={method.id}
+                                name={method.name}
+                                sourceType={method.payment_source_type}
+                                defaultChecked={paymentMethods.length < 2 ? true : false}
+                                register={register}
+                                key={`card-entry-${method.name}`}
+                            />
                         ))}
-
                     <button className="btn btn-primary" disabled={!stripe}>
                         Place Order
                     </button>

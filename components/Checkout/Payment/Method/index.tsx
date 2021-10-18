@@ -45,20 +45,21 @@ export const Method: React.FC<MethodProps> = ({ id, name, sourceType, defaultChe
     }, [defaultChecked, accessToken, orderId, id, patchPaymentMethodAndFetchOrder, hasUpdatedFromDefault]);
 
     return (
-        <div className="form-control" key={`payment-method-${id}`}>
-            <label className="label cursor-pointer">
+        <div className="form-control mb-6" key={`payment-method-${id}`}>
+            <label className="label cursor-pointer mb-2">
                 <span className="label-text">{name}</span>
+                <input
+                    type="radio"
+                    className="radio"
+                    value={id}
+                    defaultChecked={defaultChecked}
+                    {...register('paymentMethod', {
+                        required: { value: true, message: 'Required' },
+                    })}
+                    onChange={handleChange}
+                />
             </label>
-            <input
-                type="radio"
-                className="radio"
-                value={id}
-                defaultChecked={defaultChecked}
-                {...register('paymentMethod', {
-                    required: { value: true, message: 'Required' },
-                })}
-                onChange={handleChange}
-            />
+
             {showSource && <Source sourceType={sourceType} />}
         </div>
     );
