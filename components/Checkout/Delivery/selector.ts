@@ -8,6 +8,7 @@ const selector = createSelector([selectCheckoutData, selectGlobalData, selectCar
     currentStep: checkout.currentStep,
     shipmentsWithMethods: checkout.shipmentsWithMethods,
     order: cart.order,
+    checkoutLoading: global.checkoutLoading,
 }));
 
 export default selector;

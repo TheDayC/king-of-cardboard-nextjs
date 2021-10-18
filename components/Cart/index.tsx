@@ -29,17 +29,21 @@ export const Cart: React.FC = () => {
                         </thead>
                         <tbody>
                             {items &&
-                                items.map((item) => (
-                                    <CartItem
-                                        id={item.id}
-                                        sku={item.sku_code || null}
-                                        name={item.name || null}
-                                        unitAmount={item.formatted_unit_amount || null}
-                                        totalAmount={item.formatted_total_amount || null}
-                                        quantity={item.quantity || null}
-                                        key={item.name}
-                                    />
-                                ))}
+                                items.map((item) => {
+                                    if (item.sku_code) {
+                                        return (
+                                            <CartItem
+                                                id={item.id}
+                                                sku={item.sku_code || null}
+                                                name={item.name || null}
+                                                unitAmount={item.formatted_unit_amount || null}
+                                                totalAmount={item.formatted_total_amount || null}
+                                                quantity={item.quantity || null}
+                                                key={item.name}
+                                            />
+                                        );
+                                    }
+                                })}
                             <CartTotals />
                             <tr>
                                 <td align="right" colSpan={5}>

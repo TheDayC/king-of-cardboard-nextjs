@@ -9,9 +9,10 @@ import { PersonalDetails } from '../../../types/checkout';
 import { setAllowShippingAddress, setCurrentStep, setCustomerDetails } from '../../../store/slices/checkout';
 import { parseCustomerDetails } from '../../../utils/parsers';
 import { fetchOrder } from '../../../store/slices/cart';
+import { setCheckoutLoading } from '../../../store/slices/global';
 
 const Customer: React.FC = () => {
-    const { currentStep, customerDetails, order, accessToken } = useSelector(selector);
+    const { currentStep, customerDetails, order, accessToken, checkoutLoading } = useSelector(selector);
     const {
         firstName,
         lastName,
@@ -32,7 +33,6 @@ const Customer: React.FC = () => {
     } = customerDetails;
     const dispatch = useDispatch();
     const [allowShippingAddressInternal, setAllowShippingAddressInternal] = useState(allowShippingAddress);
-    const [loading, setLoading] = useState(false);
     const {
         register,
         handleSubmit,
@@ -43,7 +43,7 @@ const Customer: React.FC = () => {
 
     const onSubmit = async (data: PersonalDetails) => {
         // Set loading in current form.
-        setLoading(true);
+        dispatch(setCheckoutLoading(true));
 
         // Fetch allowShipping and also dispatch current state on submission.
         const allowShipping = get(data, 'allowShippingAddress', false);
@@ -60,16 +60,17 @@ const Customer: React.FC = () => {
             if (hasBillingAddressUpdated) {
                 // Update shipping address details in commerceLayer
                 await updateAddress(accessToken, order.id, customerDetails, true);
+
+                // Fetch the order with new details.
+                dispatch(fetchOrder(true));
+
+                // Redirect to next stage.
+                dispatch(setCurrentStep(1));
+
+                // Checkout has finished loading
+                dispatch(setCheckoutLoading(false));
             }
-
-            dispatch(fetchOrder(true));
         }
-
-        // Remove load barriers.
-        setLoading(false);
-
-        // Redirect to next stage.
-        dispatch(setCurrentStep(1));
     };
 
     // Collect errors.
@@ -481,12 +482,18 @@ const Customer: React.FC = () => {
                         </div>
                     </div>
                     <div className="flex justify-end p-4">
-                        <button
-                            type="submit"
-                            className={`btn${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
-                        >
-                            Delivery
-                        </button>
+                        {checkoutLoading ? (
+                            <button type="submit" className={`btn btn-secondary btn-disabled loading`}>
+                                Delivery
+                            </button>
+                        ) : (
+                            <button
+                                type="submit"
+                                className={`btn${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
+                            >
+                                Delivery
+                            </button>
+                        )}
                     </div>
                 </form>
             </div>

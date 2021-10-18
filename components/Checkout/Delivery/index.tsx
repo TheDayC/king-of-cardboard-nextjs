@@ -16,10 +16,11 @@ import {
 import Shipment from './Shipment';
 import { fetchOrder } from '../../../store/slices/cart';
 import { ShipmentsWithMethods } from '../../../store/types/state';
+import { setCheckoutLoading } from '../../../store/slices/global';
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
-    const { accessToken, currentStep, shipmentsWithMethods, order } = useSelector(selector);
+    const { accessToken, currentStep, shipmentsWithMethods, order, checkoutLoading } = useSelector(selector);
     const [shipments, setShipments] = useState<FinalShipments | null>(null);
     const {
         register,
@@ -54,6 +55,7 @@ export const Delivery: React.FC = () => {
 
     const handleSelectShippingMethod = async (data: unknown) => {
         if (shipments) {
+            dispatch(setCheckoutLoading(true));
             // Set shipments with methods for local storage.
             const setShipmentsAndMethods: ShipmentsWithMethods[] = shipments.shipments.map((shipment) => ({
                 shipmentId: shipment,
@@ -69,8 +71,14 @@ export const Delivery: React.FC = () => {
                 if (chosenMethod && accessToken) {
                     updateShipmentMethod(accessToken, shipment, chosenMethod).then((res) => {
                         if (res) {
-                            dispatch(setCurrentStep(2));
+                            // Fetch the order with new details.
                             dispatch(fetchOrder(true));
+
+                            // Redirect to next stage.
+                            dispatch(setCurrentStep(2));
+
+                            // Checkout has finished loading
+                            dispatch(setCheckoutLoading(false));
                         }
                     });
                 }
@@ -113,19 +121,18 @@ export const Delivery: React.FC = () => {
                             );
                         })}
                     <div className="flex justify-end items-center p-4">
-                        {/* <button
-                        type="submit"
-                        className={`btn btn-outline${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-accent'}`}
-                    >
-                            <BsArrowLeftCircle className="inline-block w-6 h-6 mr-2 stroke-current" />
-                        Back to Details
-                    </button> */}
-                        <button
-                            type="submit"
-                            className={`btn ${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
-                        >
-                            Payment
-                        </button>
+                        {checkoutLoading ? (
+                            <button type="submit" className={`btn btn-secondary btn-disabled loading`}>
+                                Payment
+                            </button>
+                        ) : (
+                            <button
+                                type="submit"
+                                className={`btn ${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
+                            >
+                                Payment
+                            </button>
+                        )}
                     </div>
                 </form>
             </div>

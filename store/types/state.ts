@@ -43,7 +43,7 @@ export interface Filters {
 }
 
 export interface Global {
-    loading: boolean;
+    checkoutLoading: boolean;
     accessToken: string | null;
     expires: string | null;
 }

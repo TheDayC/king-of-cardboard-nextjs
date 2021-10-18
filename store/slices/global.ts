@@ -12,11 +12,14 @@ const globalSlice = createSlice({
         setExpires(state, action) {
             state.expires = action.payload;
         },
+        setCheckoutLoading(state, action) {
+            state.checkoutLoading = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addDefaultCase((state) => state);
     },
 });
 
-export const { setAccessToken, setExpires } = globalSlice.actions;
+export const { setAccessToken, setExpires, setCheckoutLoading } = globalSlice.actions;
 export default globalSlice.reducer;

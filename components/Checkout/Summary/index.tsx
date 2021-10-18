@@ -5,17 +5,18 @@ import Image from 'next/image';
 import selector from './selector';
 import styles from './summary.module.css';
 import CartTotals from '../../Cart/CartTotals';
-// import PricingBreakdown from './PricingBreakdown';
+import Loading from '../../Loading';
 
 export const Summary: React.FC = () => {
-    const { order, lineItems } = useSelector(selector);
+    const { order, lineItems, checkoutLoading } = useSelector(selector);
 
     if (!order) {
         return null;
     }
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col relative">
+            <Loading show={checkoutLoading} />
             <div className="flex flex-row w-100 justify-between items-center">
                 <h2 className="text-2xl">Order #{order.number}</h2>
                 <p className="text-xl">{`(${lineItems.length} item${lineItems.length > 1 ? 's' : ''})`}</p>

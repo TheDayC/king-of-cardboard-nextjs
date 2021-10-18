@@ -7,7 +7,8 @@ export const CartTotals: React.FC = () => {
     const { order } = useSelector(selector);
 
     const subTotal = order && order.formatted_subtotal_amount ? order.formatted_subtotal_amount : null;
-    const taxes = order && order.formatted_total_tax_amount ? order.formatted_total_tax_amount : null;
+    // const discount = order && order.formatted_discount_amount ? order.formatted_discount_amount : null;
+    const shipping = order && order.formatted_shipping_amount ? order.formatted_shipping_amount : null;
     const total = order && order.formatted_total_amount_with_taxes ? order.formatted_total_amount_with_taxes : null;
 
     return (
@@ -21,9 +22,9 @@ export const CartTotals: React.FC = () => {
             </tr>
             <tr>
                 <td colSpan={3}>&nbsp;</td>
-                <td className="text-sm">Tax</td>
+                <td className="text-sm">Shipping</td>
                 <td align="right" className="text-sm">
-                    {taxes}
+                    {shipping}
                 </td>
             </tr>
             <tr>
