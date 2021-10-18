@@ -25,14 +25,14 @@ export const CheckoutPage: React.FC<CommerceAuthProps> = ({ accessToken, expires
             <div className="container mx-auto p-8">
                 <div className="flex flex-col">
                     <Steps currentStep={currentStep} />
-                    <div className="container mx-auto max-w-lg">
-                        <div className="flex flex-row">
-                            <div className="flex flex-col">
+                    <div className="container mx-auto max-w-xxl">
+                        <div className="flex flex-row space-x-8">
+                            <div className="flex-1 flex-col">
                                 <Customer />
                                 <Delivery />
                                 <Payment />
                             </div>
-                            <div className="flex">Add summary here!</div>
+                            <div className="flex-1">Add summary here!</div>
                         </div>
                     </div>
                 </div>
