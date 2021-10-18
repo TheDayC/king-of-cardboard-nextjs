@@ -77,3 +77,7 @@ export interface ShipmentsWithMethods {
     shipmentId: string;
     methodId: string;
 }
+
+export interface ShipmentsWithLineItems extends ShipmentsWithMethods {
+    lineItems: string[];
+}

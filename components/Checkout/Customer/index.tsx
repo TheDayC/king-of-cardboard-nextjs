@@ -101,17 +101,17 @@ const Customer: React.FC = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <div className={`collapse collapse-${isCurrentStep ? 'open' : 'closed'}`}>
-                <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
-                    {!hasErrors && !isCurrentStep ? 'Customer - Edit' : 'Customer'}
-                </h3>
-                <div className="collapse-content">
+        <div className={`collapse collapse-plus card bordered mb-6 collapse-${isCurrentStep ? 'open' : 'closed'}`}>
+            <div className="collapse-title text-xl font-medium" onClick={handleEdit}>
+                {!hasErrors && !isCurrentStep ? 'Customer - Edit' : 'Customer'}
+            </div>
+            <div className="collapse-content bg-base-100 p-0">
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex">
                         <div className="flex-grow">
-                            <div className="p-4 lg:p-6 card bordered mb-6">
+                            <div className="card p-4">
                                 <h3 className="card-title">Personal Details</h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-6">
+                                <div className="grid grid-cols-1 gap-2">
                                     <div className="form-control">
                                         <label className="label">
                                             <span className="label-text">First Name</span>
@@ -127,7 +127,9 @@ const Customer: React.FC = () => {
                                                 },
                                                 value: firstName,
                                             })}
-                                            className={`input input-bordered${firstNameErr ? ' input-error' : ''}`}
+                                            className={`input input-sm input-bordered${
+                                                firstNameErr ? ' input-error' : ''
+                                            }`}
                                         />
                                         {firstNameErr && (
                                             <label className="label">
@@ -150,7 +152,9 @@ const Customer: React.FC = () => {
                                                 },
                                                 value: lastName,
                                             })}
-                                            className={`input input-bordered${lastNameErr ? ' input-error' : ''}`}
+                                            className={`input input-sm input-bordered${
+                                                lastNameErr ? ' input-error' : ''
+                                            }`}
                                         />
                                         {lastNameErr && (
                                             <label className="label">
@@ -169,7 +173,9 @@ const Customer: React.FC = () => {
                                                 required: false,
                                                 value: company,
                                             })}
-                                            className={`input input-bordered${companyErr ? ' input-error' : ''}`}
+                                            className={`input input-sm input-bordered${
+                                                companyErr ? ' input-error' : ''
+                                            }`}
                                         />
                                         {companyErr && (
                                             <label className="label">
@@ -192,7 +198,7 @@ const Customer: React.FC = () => {
                                                 },
                                                 value: email,
                                             })}
-                                            className={`input input-bordered${emailErr ? ' input-error' : ''}`}
+                                            className={`input input-sm input-bordered${emailErr ? ' input-error' : ''}`}
                                         />
                                         {emailErr && (
                                             <label className="label">
@@ -215,7 +221,9 @@ const Customer: React.FC = () => {
                                                 },
                                                 value: phone,
                                             })}
-                                            className={`input input-bordered${mobileErr ? ' input-error' : ''}`}
+                                            className={`input input-sm input-bordered${
+                                                mobileErr ? ' input-error' : ''
+                                            }`}
                                         />
                                         {mobileErr && (
                                             <label className="label">
@@ -225,9 +233,9 @@ const Customer: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="p-4 lg:p-6 card bordered mb-6">
+                            <div className="p-4 card">
                                 <h3 className="card-title">Billing Details</h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-4 lg:gap-6">
+                                <div className="grid grid-cols-1 gap-2">
                                     <div className="form-control">
                                         <label className="label">
                                             <span className="label-text">Address Line One</span>
@@ -239,7 +247,9 @@ const Customer: React.FC = () => {
                                                 required: { value: true, message: 'Required' },
                                                 value: addressLineOne,
                                             })}
-                                            className={`input input-bordered${billingLineOneErr ? ' input-error' : ''}`}
+                                            className={`input input-sm input-bordered${
+                                                billingLineOneErr ? ' input-error' : ''
+                                            }`}
                                         />
                                         {billingLineOneErr && (
                                             <label className="label">
@@ -255,7 +265,9 @@ const Customer: React.FC = () => {
                                             type="text"
                                             placeholder="Address Line Two"
                                             {...register('billingAddressLineTwo', { value: addressLineTwo })}
-                                            className={`input input-bordered${billingLineTwoErr ? ' input-error' : ''}`}
+                                            className={`input input-sm input-bordered${
+                                                billingLineTwoErr ? ' input-error' : ''
+                                            }`}
                                         />
                                         {billingLineTwoErr && (
                                             <label className="label">
@@ -274,7 +286,9 @@ const Customer: React.FC = () => {
                                                 required: { value: true, message: 'Required' },
                                                 value: city,
                                             })}
-                                            className={`input input-bordered${billingCityErr ? ' input-error' : ''}`}
+                                            className={`input input-sm input-bordered${
+                                                billingCityErr ? ' input-error' : ''
+                                            }`}
                                         />
                                         {billingCityErr && (
                                             <label className="label">
@@ -297,7 +311,7 @@ const Customer: React.FC = () => {
                                                 },
                                                 value: postcode,
                                             })}
-                                            className={`input input-bordered${
+                                            className={`input input-sm input-bordered${
                                                 billingPostcodeErr ? ' input-error' : ''
                                             }`}
                                         />
@@ -318,7 +332,9 @@ const Customer: React.FC = () => {
                                                 required: { value: true, message: 'Required' },
                                                 value: county,
                                             })}
-                                            className={`input input-bordered${billingCountyErr ? ' input-error' : ''}`}
+                                            className={`input input-sm input-bordered${
+                                                billingCountyErr ? ' input-error' : ''
+                                            }`}
                                         />
                                         {billingCountyErr && (
                                             <label className="label">
@@ -328,7 +344,7 @@ const Customer: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="p-4 lg:p-6 card bordered">
+                            <div className="p-4 card">
                                 <div className="form-control">
                                     <label className="cursor-pointer label">
                                         <span className="label-text">Ship to a different address?</span>
@@ -342,9 +358,11 @@ const Customer: React.FC = () => {
                                         />
                                     </label>
                                 </div>
-                                <h3 className="card-title mt-6">Shipping Details</h3>
-                                {allowShippingAddressInternal && (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-4 lg:gap-6">
+                            </div>
+                            {allowShippingAddressInternal && (
+                                <div className="p-4 card">
+                                    <h3 className="card-title">Shipping Details</h3>
+                                    <div className="grid grid-cols-1 gap-2">
                                         <div className="form-control">
                                             <label className="label">
                                                 <span className="label-text">Address Line One</span>
@@ -356,7 +374,7 @@ const Customer: React.FC = () => {
                                                     required: { value: true, message: 'Required' },
                                                     value: shippingAddressLineOne,
                                                 })}
-                                                className={`input input-bordered${
+                                                className={`input input-sm input-bordered${
                                                     shippingLineOneErr ? ' input-error' : ''
                                                 }`}
                                             />
@@ -376,7 +394,7 @@ const Customer: React.FC = () => {
                                                 {...register('shippingAddressLineTwo', {
                                                     value: shippingAddressLineTwo,
                                                 })}
-                                                className={`input input-bordered${
+                                                className={`input input-sm input-bordered${
                                                     shippingLineTwoErr ? ' input-error' : ''
                                                 }`}
                                             />
@@ -397,7 +415,7 @@ const Customer: React.FC = () => {
                                                     required: { value: true, message: 'Required' },
                                                     value: shippingCity,
                                                 })}
-                                                className={`input input-bordered${
+                                                className={`input input-sm input-bordered${
                                                     shippingCityErr ? ' input-error' : ''
                                                 }`}
                                             />
@@ -422,7 +440,7 @@ const Customer: React.FC = () => {
                                                     },
                                                     value: shippingPostcode,
                                                 })}
-                                                className={`input input-bordered${
+                                                className={`input input-sm input-bordered${
                                                     shippingPostcodeErr ? ' input-error' : ''
                                                 }`}
                                             />
@@ -443,7 +461,7 @@ const Customer: React.FC = () => {
                                                     required: { value: true, message: 'Required' },
                                                     value: shippingCounty,
                                                 })}
-                                                className={`input input-bordered${
+                                                className={`input input-sm input-bordered${
                                                     shippingCountyErr ? ' input-error' : ''
                                                 }`}
                                             />
@@ -454,11 +472,11 @@ const Customer: React.FC = () => {
                                             )}
                                         </div>
                                     </div>
-                                )}
-                            </div>
+                                </div>
+                            )}
                         </div>
                     </div>
-                    <div className="flex justify-end mt-6">
+                    <div className="flex justify-end p-4">
                         <button
                             type="submit"
                             className={`btn${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
@@ -466,9 +484,9 @@ const Customer: React.FC = () => {
                             Delivery
                         </button>
                     </div>
-                </div>
+                </form>
             </div>
-        </form>
+        </div>
     );
 };
 

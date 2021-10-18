@@ -3,7 +3,7 @@ import { get } from 'lodash';
 
 import { AxiosData } from '../types/fetch';
 import { Counties } from '../enums/checkout';
-import { CustomerDetails, ShipmentsWithMethods } from '../store/types/state';
+import { CustomerDetails, ShipmentsWithLineItems, ShipmentsWithMethods } from '../store/types/state';
 import {
     DeliveryLeadTimes,
     MergedShipmentMethods,
@@ -399,7 +399,7 @@ export async function updateShipmentMethod(
     return false;
 }
 
-export async function getShipment(accessToken: string, shipmentId: string): Promise<ShipmentsWithMethods | null> {
+export async function getShipment(accessToken: string, shipmentId: string): Promise<ShipmentsWithLineItems | null> {
     try {
         const response = await axios.post('/api/getShipment', {
             token: accessToken,
@@ -409,14 +409,43 @@ export async function getShipment(accessToken: string, shipmentId: string): Prom
         if (response) {
             const included = get(response, 'data.included', null);
             const method = included ? included.find((include) => include.type === 'shipping_methods') : null;
+            const items = included
+                ? included
+                      .filter((include) => include.type === 'shipment_line_items')
+                      .map((item) => item.attributes.sku_code)
+                : null;
 
-            if (method) {
+            if (method && items) {
                 const methodId: string = method ? get(method, 'id', '') : '';
 
                 return {
                     shipmentId,
                     methodId,
+                    lineItems: items,
                 };
+            } else {
+                return null;
+            }
+        }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
+
+export async function getLineItem(accessToken: string, id: string): Promise<any | null> {
+    try {
+        const response = await axios.post('/api/getLineItem', {
+            token: accessToken,
+            id,
+        });
+
+        if (response) {
+            const items = get(response, 'data.items', null);
+
+            if (items) {
+                return items;
             } else {
                 return null;
             }
