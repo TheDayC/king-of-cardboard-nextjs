@@ -10,10 +10,11 @@ import selector from './selector';
 import Delivery from '../../components/Checkout/Delivery';
 import Payment from '../../components/Checkout/Payment';
 import Summary from '../../components/Checkout/Summary';
+import ConfirmationDetails from '../../components/ConfirmationDetails';
 
 export const CheckoutPage: React.FC<CommerceAuthProps> = ({ accessToken, expires }) => {
     const dispatch = useDispatch();
-    const { currentStep } = useSelector(selector);
+    const { currentStep, hasCompletedOrder } = useSelector(selector);
 
     useEffect(() => {
         dispatch(setAccessToken(accessToken));
@@ -28,11 +29,15 @@ export const CheckoutPage: React.FC<CommerceAuthProps> = ({ accessToken, expires
                     <Steps currentStep={currentStep} />
                     <div className="container mx-auto max-w-xxl">
                         <div className="flex flex-row space-x-8">
-                            <div className="flex flex-grow flex-col">
-                                <Customer />
-                                <Delivery />
-                                <Payment />
-                            </div>
+                            {!hasCompletedOrder ? (
+                                <div className="flex flex-grow flex-col">
+                                    <Customer />
+                                    <Delivery />
+                                    <Payment />
+                                </div>
+                            ) : (
+                                <ConfirmationDetails />
+                            )}
                             <div className="flex-1">
                                 <Summary />
                             </div>

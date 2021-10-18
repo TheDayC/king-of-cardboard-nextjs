@@ -46,6 +46,7 @@ export interface Global {
     checkoutLoading: boolean;
     accessToken: string | null;
     expires: string | null;
+    shouldSetNewOrder: boolean;
 }
 
 export interface Checkout {

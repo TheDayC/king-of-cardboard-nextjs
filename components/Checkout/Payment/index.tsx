@@ -139,12 +139,14 @@ export const Payment: React.FC = () => {
                                 key={`card-entry-${method.name}`}
                             />
                         ))}
-                    <button
-                        className={`btn btn-primary${checkoutLoading && ' loading'}`}
-                        disabled={!stripe || checkoutLoading}
-                    >
-                        Place Order
-                    </button>
+                    <div className="flex justify-end">
+                        <button
+                            className={`btn btn-primary${checkoutLoading ? ' loading' : ''}`}
+                            disabled={!stripe || checkoutLoading}
+                        >
+                            {!checkoutLoading ? 'Place Order' : ''}
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

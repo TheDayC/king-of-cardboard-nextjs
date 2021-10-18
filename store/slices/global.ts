@@ -15,11 +15,14 @@ const globalSlice = createSlice({
         setCheckoutLoading(state, action) {
             state.checkoutLoading = action.payload;
         },
+        setNewOrder(state, action) {
+            state.shouldSetNewOrder = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addDefaultCase((state) => state);
     },
 });
 
-export const { setAccessToken, setExpires, setCheckoutLoading } = globalSlice.actions;
+export const { setAccessToken, setExpires, setCheckoutLoading, setNewOrder } = globalSlice.actions;
 export default globalSlice.reducer;
