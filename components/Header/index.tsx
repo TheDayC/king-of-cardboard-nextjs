@@ -12,7 +12,7 @@ export const Header: React.FC = () => {
     const { cartItemCount } = useSelector(selector);
 
     return (
-        <div className="navbar mb-4 shadow-md bg-neutral text-neutral-content">
+        <div className="navbar shadow-md bg-neutral text-neutral-content">
             <div className="navbar-start">
                 <div className={styles.logoWrapper}>
                     <Link href="/" passHref>

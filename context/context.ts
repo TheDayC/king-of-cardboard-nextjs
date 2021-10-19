@@ -1,6 +1,7 @@
 import React from 'react';
-import { CommerceLayerClient } from '@commercelayer/sdk';
 
-export const AuthProviderContext = React.createContext<CommerceLayerClient | null>(null);
+import { ContentfulPage } from '../types/pages';
 
-export default AuthProviderContext;
+export const PageProviderContext = React.createContext<ContentfulPage[] | null>(null);
+
+export default PageProviderContext;

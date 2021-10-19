@@ -4,7 +4,7 @@ const globalInitialState: Global = {
     checkoutLoading: false,
     accessToken: null,
     expires: null,
-    setNewOrder: false,
+    shouldSetNewOrder: false,
 };
 
 export default globalInitialState;

@@ -7,6 +7,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import storeInstance from '../store';
 import '../styles/globals.css';
 import AuthProvider from '../context/authProvider';
+import PageProvider from '../context/pageProvider';
 
 // Called outside of the render to only create once.
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
@@ -18,9 +19,11 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
         <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
                 <AuthProvider>
-                    <Elements stripe={stripePromise}>
-                        <Component {...pageProps} />
-                    </Elements>
+                    <PageProvider>
+                        <Elements stripe={stripePromise}>
+                            <Component {...pageProps} />
+                        </Elements>
+                    </PageProvider>
                 </AuthProvider>
             </PersistGate>
         </Provider>

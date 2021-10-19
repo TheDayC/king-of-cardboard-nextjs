@@ -1,24 +1,32 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { get } from 'lodash';
+import React from 'react';
+import { useSelector } from 'react-redux';
 
 import Header from '../components/Header';
-import ProductGrid from '../components/ProductGrid';
-import { setAccessToken, setExpires } from '../store/slices/global';
-import { CommerceAuthProps } from '../types/commerce';
+import HeroWithImage from '../components/Hero/withImage';
+import Slider from '../components/Slider';
+import { isOdd } from '../utils';
+import selector from './selector';
 
-export const Home: React.FC<CommerceAuthProps> = ({ accessToken, expires }) => {
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        dispatch(setAccessToken(accessToken));
-        dispatch(setExpires(expires));
-    }, [dispatch, accessToken, expires]);
+export const Home: React.FC = () => {
+    const { page } = useSelector(selector);
+    const sliderItems = get(page, 'sliderCollection.items', null);
+    const heroData = get(page, 'hero', null);
 
     return (
         <React.Fragment>
             <Header />
-            <div className="container mx-auto px-16">
-                <ProductGrid useFilters={false} />
+            <div className="relative">
+                {sliderItems && <Slider items={sliderItems} />}
+                <div className="container mx-auto">
+                    {heroData &&
+                        heroData.map((hero, index: number) => (
+                            <React.Fragment key={`hero-${index}`}>
+                                <HeroWithImage {...hero} shouldReverse={!isOdd(index)} />
+                                {index !== heroData.length && <div className="divider mb-4 before:bg-white"></div>}
+                            </React.Fragment>
+                        ))}
+                </div>
             </div>
         </React.Fragment>
     );

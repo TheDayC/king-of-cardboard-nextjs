@@ -25,6 +25,31 @@ export const PRODUCT_QUERY = `
     }
 `;
 
+export const PAGES_QUERY = `
+    query {
+        pagesCollection {
+            items {
+                title
+                content {
+                    json
+                }
+                sliderCollection {
+                  items {
+                    title
+                    description
+                    contentType
+                    fileName
+                    url
+                    width
+                    height
+                  }
+                }
+                hero
+            }
+        }
+    }
+`;
+
 export async function fetchContent(query: string): Promise<AxiosResponse<AxiosData> | void> {
     try {
         const url = `https://graphql.contentful.com/content/v1/spaces/${process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID}/environments/master`;
