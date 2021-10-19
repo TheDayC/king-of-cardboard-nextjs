@@ -65,10 +65,14 @@ const AuthProvider: React.FC = ({ children }) => {
                 const shipmentData = await getShipments(accessToken, orderId);
 
                 if (items) {
-                    const cartItems = items.map((item) => ({
-                        ...item.attributes,
-                        id: item.id,
-                    }));
+                    // Put fetched line items into cart.items store.
+                    // Ensure sku_code exists to avoid adding shipping or payment methods.
+                    const cartItems = items
+                        .filter((item) => item.attributes.sku_code)
+                        .map((item) => ({
+                            ...item.attributes,
+                            id: item.id,
+                        }));
 
                     dispatch(setLineItems(cartItems));
                 }
@@ -161,28 +165,6 @@ const AuthProvider: React.FC = ({ children }) => {
             createProductCollection(accessToken);
         }
     }, [products, accessToken]);
-
-    /* useIsomorphicLayoutEffect(() => {
-        if (shouldSetNewOrder && accessToken) {
-            // Let the state know we've picked this flag up.
-            dispatch(setNewOrder(false));
-
-            // Reset the product categories.
-            dispatch(resetCategories());
-
-            // Reset the product filters.
-            dispatch(resetFilters());
-
-            // Reset the cart state.
-            dispatch(resetCart());
-            
-            // Reset the checkout data
-            dispatch(resetCheckoutDetails());
-            
-            // Force a new order
-            setShouldCreateOrder(true);
-        }
-    }, [shouldSetNewOrder, accessToken]); */
 
     return <React.Fragment>{children}</React.Fragment>;
 };
