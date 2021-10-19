@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { get } from 'lodash';
+import { BsArrowLeftCircle } from 'react-icons/bs';
 
 import selector from './selector';
 import { setCurrentStep, setShipmentsWithMethods } from '../../../store/slices/checkout';
@@ -15,10 +16,11 @@ import {
 import Shipment from './Shipment';
 import { fetchOrder } from '../../../store/slices/cart';
 import { ShipmentsWithMethods } from '../../../store/types/state';
+import { setCheckoutLoading } from '../../../store/slices/global';
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
-    const { accessToken, currentStep, shipmentsWithMethods, order } = useSelector(selector);
+    const { accessToken, currentStep, shipmentsWithMethods, order, checkoutLoading } = useSelector(selector);
     const [shipments, setShipments] = useState<FinalShipments | null>(null);
     const {
         register,
@@ -52,7 +54,12 @@ export const Delivery: React.FC = () => {
     }, [accessToken, order, fetchAllShipments]);
 
     const handleSelectShippingMethod = async (data: unknown) => {
+        if (hasErrors || checkoutLoading) {
+            return;
+        }
+
         if (shipments) {
+            dispatch(setCheckoutLoading(true));
             // Set shipments with methods for local storage.
             const setShipmentsAndMethods: ShipmentsWithMethods[] = shipments.shipments.map((shipment) => ({
                 shipmentId: shipment,
@@ -68,8 +75,11 @@ export const Delivery: React.FC = () => {
                 if (chosenMethod && accessToken) {
                     updateShipmentMethod(accessToken, shipment, chosenMethod).then((res) => {
                         if (res) {
-                            dispatch(setCurrentStep(2));
+                            // Fetch the order with new details.
                             dispatch(fetchOrder(true));
+
+                            // Redirect to next stage.
+                            dispatch(setCurrentStep(2));
                         }
                     });
                 }
@@ -84,49 +94,46 @@ export const Delivery: React.FC = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit(handleSelectShippingMethod)}>
-            <div className="flex">
-                <div className={`collapse collapse-${isCurrentStep ? 'open' : 'closed'}`}>
-                    <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
-                        {!hasErrors && !isCurrentStep ? 'Delivery - Edit' : 'Delivery'}
-                    </h3>
-                    <div className="collapse-content">
-                        {shipments &&
-                            shipments.shipments.map((shipment, index) => {
-                                const defaultValue = shipmentsWithMethods
-                                    ? shipmentsWithMethods.find((withMethod) => withMethod.shipmentId === shipment)
-                                    : null;
-
-                                return (
-                                    <Shipment
-                                        id={shipment}
-                                        shippingMethods={shipments.shippingMethods}
-                                        shipmentCount={index + 1}
-                                        shipmentsTotal={shipments.shipments.length}
-                                        register={register}
-                                        defaultChecked={defaultValue ? defaultValue.methodId : ''}
-                                        key={`shipment-${index}`}
-                                    />
-                                );
-                            })}
+        <div
+            className={`collapse collapse-plus card bordered mb-6 rounded-md collapse-${
+                isCurrentStep ? 'open' : 'closed'
+            }`}
+        >
+            <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
+                {!hasErrors && !isCurrentStep ? 'Delivery - Edit' : 'Delivery'}
+            </h3>
+            <div className="collapse-content p-0">
+                <form onSubmit={handleSubmit(handleSelectShippingMethod)}>
+                    {shipments &&
+                        shipments.shipments.map((shipment, index) => {
+                            const defaultValue = shipmentsWithMethods
+                                ? shipmentsWithMethods.find((withMethod) => withMethod.shipmentId === shipment)
+                                : null;
+                            return (
+                                <Shipment
+                                    id={shipment}
+                                    shippingMethods={shipments.shippingMethods}
+                                    shipmentCount={index + 1}
+                                    shipmentsTotal={shipments.shipments.length}
+                                    register={register}
+                                    defaultChecked={defaultValue ? defaultValue.methodId : ''}
+                                    key={`shipment-${index}`}
+                                />
+                            );
+                        })}
+                    <div className="flex justify-end items-center p-4">
                         <button
                             type="submit"
-                            className={`btn-sm btn-outline${
-                                hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'
+                            className={`btn ${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}${
+                                checkoutLoading ? ' loading btn-square' : ''
                             }`}
                         >
-                            Back to Details
-                        </button>
-                        <button
-                            type="submit"
-                            className={`btn-sm${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
-                        >
-                            Payment
+                            {checkoutLoading ? '' : 'Payment'}
                         </button>
                     </div>
-                </div>
+                </form>
             </div>
-        </form>
+        </div>
     );
 };
 

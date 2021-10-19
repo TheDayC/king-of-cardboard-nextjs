@@ -8,7 +8,7 @@ async function getShipment(req: NextApiRequest, res: NextApiResponse): Promise<v
         const token = get(req, 'body.token', null);
         const shipmentId = get(req, 'body.shipmentId', null);
         const cl = authClient(token);
-        const include = 'shipping_method,delivery_lead_time';
+        const include = 'shipping_method,delivery_lead_time,shipment_line_items';
 
         cl.get(`/api/shipments/${shipmentId}?include=${include}`)
             .then((response) => {

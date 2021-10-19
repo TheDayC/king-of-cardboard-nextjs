@@ -46,14 +46,12 @@ export const Header: React.FC = () => {
                 </div>
             </div>
             <div className="flex-none px-2 mx-2">
-                <button className="btn btn-ghost">
-                    <Link href="/cart" passHref>
-                        <div className="flex justify-start items-center">
-                            <AiOutlineShoppingCart className={styles.cart} />
-                            {cartItemCount > 0 && <div className="badge ml-2 badge-outline">{cartItemCount}</div>}
-                        </div>
-                    </Link>
-                </button>
+                <Link href="/cart" passHref>
+                    <div className="flex justify-start items-center indicator cursor-pointer rounded-md hover:bg-neutral-focus">
+                        <AiOutlineShoppingCart className={styles.cart} />
+                        {cartItemCount > 0 && <div className="indicator-item badge badge-primary">{cartItemCount}</div>}
+                    </div>
+                </Link>
             </div>
         </div>
     );

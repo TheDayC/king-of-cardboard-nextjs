@@ -11,6 +11,7 @@ const selector = createSelector([selectCartData], (cart) => {
         orderId: cart.order ? cart.order.id : null,
         order: cart.order,
         items,
+        isUpdatingCart: cart.isUpdatingCart,
     };
 });
 

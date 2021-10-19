@@ -50,6 +50,9 @@ const checkoutSlice = createSlice({
                 state.shipmentsWithMethods = [{ shipmentId, methodId }];
             }
         },
+        resetCheckoutDetails() {
+            return checkoutInitialState;
+        },
     },
     extraReducers: (builder) => {
         builder.addDefaultCase((state) => state);
@@ -62,6 +65,7 @@ export const {
     setCustomerDetails,
     setShipmentsWithMethods,
     addShipmentWithMethod,
+    resetCheckoutDetails,
 } = checkoutSlice.actions;
 
 export default checkoutSlice.reducer;

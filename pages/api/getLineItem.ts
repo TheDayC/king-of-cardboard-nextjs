@@ -3,25 +3,18 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import { authClient } from '../../utils/auth';
 
-async function confirmOrder(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+async function getLineItem(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         const token = get(req, 'body.token', null);
         const id = get(req, 'body.id', null);
         const cl = authClient(token);
 
-        cl.patch(`/api/orders/${id}`, {
-            data: {
-                type: 'orders',
-                id,
-                attributes: {
-                    _place: true,
-                },
-            },
-        })
+        cl.get(`/api/line_items/${id}`)
             .then((response) => {
                 const status = get(response, 'status', 500);
+                const { data: items } = get(response, 'data', null);
 
-                res.status(status).json({ hasPlaced: status === 200 ? true : false });
+                res.status(status).json({ items });
             })
             .catch((error) => {
                 const status = get(error, 'response.status', 500);
@@ -35,4 +28,4 @@ async function confirmOrder(req: NextApiRequest, res: NextApiResponse): Promise<
     }
 }
 
-export default confirmOrder;
+export default getLineItem;

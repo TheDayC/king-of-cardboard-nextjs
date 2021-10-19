@@ -7,6 +7,7 @@ const selector = createSelector([selectCheckoutData, selectCartData, selectGloba
     customerDetails: checkout.customerDetails,
     order: cart.order,
     accessToken: global.accessToken,
+    checkoutLoading: global.checkoutLoading,
 }));
 
 export default selector;

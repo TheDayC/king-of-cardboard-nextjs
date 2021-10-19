@@ -1,13 +1,15 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectCartData, selectProductData, selectCheckoutData } from '../../../store/state/selectors';
+import { selectCartData, selectGlobalData, selectConfirmationData } from '../../../store/state/selectors';
 
 const selector = createSelector(
-    [selectCartData, selectProductData, selectCheckoutData],
-    (cart, products, checkout) => ({
-        subTotal: checkout.subTotal,
-        taxes: checkout.taxes,
-        total: checkout.total,
+    [selectCartData, selectGlobalData, selectConfirmationData],
+    (cart, global, confirmation) => ({
+        cartOrder: cart.order,
+        confirmationOrder: confirmation.order,
+        checkoutLoading: global.checkoutLoading,
+        cartItems: cart.items,
+        confirmedItems: confirmation.items,
     })
 );
 

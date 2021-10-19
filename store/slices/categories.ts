@@ -9,11 +9,14 @@ const categoriesSlice = createSlice({
         fetchCategories() {
             // TODO: Fetch Categories
         },
+        resetCategories() {
+            return categoriesInitialState;
+        },
     },
     extraReducers: (builder) => {
         builder.addDefaultCase((state) => state);
     },
 });
 
-export const { fetchCategories } = categoriesSlice.actions;
+export const { fetchCategories, resetCategories } = categoriesSlice.actions;
 export default categoriesSlice.reducer;

@@ -7,6 +7,7 @@ import categoriesInitialState from './categories';
 import productTypeInitialState from './productType';
 import filtersInitialState from './filters';
 import checkoutInitialState from './checkout';
+import confirmationInitialState from './confirmation';
 
 // Function to set our default state.
 export function createInitialState(): IAppState {
@@ -19,5 +20,6 @@ export function createInitialState(): IAppState {
         productType: productTypeInitialState,
         filters: filtersInitialState,
         checkout: checkoutInitialState,
+        confirmation: confirmationInitialState,
     };
 }

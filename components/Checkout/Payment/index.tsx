@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
@@ -6,17 +6,33 @@ import { StripeCardElement, Stripe } from '@stripe/stripe-js';
 import { get } from 'lodash';
 
 import selector from './selector';
-import { setCurrentStep } from '../../../store/slices/checkout';
+import { resetCheckoutDetails, setCurrentStep } from '../../../store/slices/checkout';
 import Method from './Method';
-import { createPaymentSource } from '../../../utils/commerce';
+import { createOrder, createPaymentSource } from '../../../utils/commerce';
 import { checkoutOrder, confirmOrder } from '../../../utils/payment';
-import { CustomerDetails } from '../../../store/types/state';
+import { CartItem, CustomerDetails } from '../../../store/types/state';
+import { setCheckoutLoading } from '../../../store/slices/global';
+import { resetCart, setOrder } from '../../../store/slices/cart';
+import { setConfirmationData } from '../../../store/slices/confirmation';
+import { useRouter } from 'next/router';
+import { Order } from '../../../types/cart';
 
 export const Payment: React.FC = () => {
     const dispatch = useDispatch();
     const stripe = useStripe();
     const elements = useElements();
-    const { currentStep, paymentMethods, accessToken, orderId, customerDetails } = useSelector(selector);
+    const router = useRouter();
+    const {
+        currentStep,
+        paymentMethods,
+        accessToken,
+        orderId,
+        customerDetails,
+        checkoutLoading,
+        order,
+        items,
+        confirmationDetails,
+    } = useSelector(selector);
     const {
         register,
         handleSubmit,
@@ -37,12 +53,20 @@ export const Payment: React.FC = () => {
             stripe: Stripe,
             card: StripeCardElement,
             paymentSourceType: string,
+            order: Order | null,
+            items: CartItem[],
             customerDetails: CustomerDetails
         ) => {
+            if (!stripe || checkoutLoading) {
+                return;
+            }
+
             // Fetch the client secret from Commerce Layer to use with Stripe.
             const clientSecret = await createPaymentSource(accessToken, orderId, paymentSourceType);
 
             if (clientSecret) {
+                dispatch(setCheckoutLoading(true));
+
                 // Assuming we've got a secret then confirm the card payment with stripe.
                 const result = await stripe.confirmCardPayment(clientSecret, {
                     payment_method: {
@@ -72,13 +96,17 @@ export const Payment: React.FC = () => {
 
                     // Place the order with commerce layer when the payment status is confirmed with stripe.
                     if (paymentStatus && paymentStatus === 'succeeded') {
-                        const hasBeenConfirmed = confirmOrder(accessToken, orderId);
-                        // TODO: Clear all order state after confirmation.
+                        const hasBeenConfirmed = await confirmOrder(accessToken, orderId);
+
+                        if (hasBeenConfirmed) {
+                            // Set the confirmation data in the store.
+                            dispatch(setConfirmationData({ order, items, customerDetails }));
+                        }
                     }
                 }
             }
         },
-        []
+        [dispatch]
     );
 
     const onSubmit = useCallback(
@@ -99,16 +127,26 @@ export const Payment: React.FC = () => {
                         stripe,
                         card,
                         paymentMethodData.payment_source_type,
+                        order,
+                        items,
                         customerDetails
                     );
                 }
             }
         },
-        [accessToken, orderId, paymentMethods, stripe, handlePaymentMethod, elements, customerDetails]
+        [accessToken, orderId, paymentMethods, stripe, handlePaymentMethod, elements, order, items, customerDetails]
     );
 
+    useEffect(() => {
+        if (confirmationDetails.order && confirmationDetails.items.length > 0) {
+            router.push('/confirmation');
+        }
+    }, [confirmationDetails]);
+
     return (
-        <div className={`collapse collapse-${isCurrentStep ? 'open' : 'closed'}`}>
+        <div
+            className={`collapse collapse-plus card bordered rounded-md collapse-${isCurrentStep ? 'open' : 'closed'}`}
+        >
             <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
                 {!isCurrentStep ? 'Payment - Edit' : 'Payment'}
             </h3>
@@ -116,20 +154,24 @@ export const Payment: React.FC = () => {
                 <form onSubmit={handleSubmit(onSubmit)}>
                     {paymentMethods &&
                         paymentMethods.map((method) => (
-                            <React.Fragment key={`card-entry-${method.name}`}>
-                                <Method
-                                    id={method.id}
-                                    name={method.name}
-                                    sourceType={method.payment_source_type}
-                                    defaultChecked={paymentMethods.length < 2 ? true : false}
-                                    register={register}
-                                />
-                            </React.Fragment>
+                            <Method
+                                id={method.id}
+                                name={method.name}
+                                sourceType={method.payment_source_type}
+                                defaultChecked={paymentMethods.length < 2 ? true : false}
+                                register={register}
+                                key={`card-entry-${method.name}`}
+                            />
                         ))}
-
-                    <button className="btn btn-primary" disabled={!stripe}>
-                        Place Order
-                    </button>
+                    <div className="flex justify-end">
+                        <button
+                            className={`btn btn-primary${checkoutLoading ? ' loading btn-square' : ''}${
+                                !stripe || checkoutLoading ? ' btn-disabled' : ''
+                            }`}
+                        >
+                            {!checkoutLoading ? 'Place Order' : ''}
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

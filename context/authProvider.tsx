@@ -6,16 +6,21 @@ import { get } from 'lodash';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import selector from './selector';
 import { createOrder, getOrder, getPrices, getStockItems } from '../utils/commerce';
-import { setAccessToken, setExpires } from '../store/slices/global';
-import { fetchOrder as fetchOrderAction, setOrder, setLineItems, setPaymentMethods } from '../store/slices/cart';
+import { setAccessToken, setCheckoutLoading, setExpires } from '../store/slices/global';
+import {
+    fetchOrder as fetchOrderAction,
+    setOrder,
+    setLineItems,
+    setPaymentMethods,
+    setUpdatingCart,
+} from '../store/slices/cart';
 import { fetchProductCollection } from '../utils/products';
 import { PRODUCT_QUERY } from '../utils/content';
 import { addProductCollection } from '../store/slices/products';
 import { rehydration } from '../store';
 import { createToken } from '../utils/auth';
-import { ShipmentsWithMethods } from '../store/types/state';
 import { getShipment, getShipments } from '../utils/checkout';
-import { addShipmentWithMethod, setShipmentsWithMethods } from '../store/slices/checkout';
+import { addShipmentWithMethod } from '../store/slices/checkout';
 
 const AuthProvider: React.FC = ({ children }) => {
     const waitForHydro = async () => {
@@ -58,10 +63,14 @@ const AuthProvider: React.FC = ({ children }) => {
                 const shipmentData = await getShipments(accessToken, orderId);
 
                 if (items) {
-                    const cartItems = items.map((item) => ({
-                        ...item.attributes,
-                        id: item.id,
-                    }));
+                    // Put fetched line items into cart.items store.
+                    // Ensure sku_code exists to avoid adding shipping or payment methods.
+                    const cartItems = items
+                        .filter((item) => item.attributes.sku_code)
+                        .map((item) => ({
+                            ...item.attributes,
+                            id: item.id,
+                        }));
 
                     dispatch(setLineItems(cartItems));
                 }
@@ -87,7 +96,14 @@ const AuthProvider: React.FC = ({ children }) => {
                     });
                 }
 
+                // Set the entire order in the store.
                 dispatch(setOrder(fullOrderData));
+
+                // Ensure the cart isn't updating after the order has been fetched.
+                dispatch(setUpdatingCart(false));
+
+                // Ensure Checkout loading has also reset on a fetched order.
+                dispatch(setCheckoutLoading(false));
             }
         },
         [dispatch]

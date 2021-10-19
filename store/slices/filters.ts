@@ -32,6 +32,9 @@ const filtersSlice = createSlice({
         removeAllCategories(state) {
             state.categories = [];
         },
+        resetFilters() {
+            return filtersInitialState;
+        },
     },
     extraReducers: (builder) => {
         builder.addDefaultCase((state) => state);
@@ -46,5 +49,6 @@ export const {
     addCategory,
     removeCategory,
     removeAllCategories,
+    resetFilters,
 } = filtersSlice.actions;
 export default filtersSlice.reducer;

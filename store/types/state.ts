@@ -12,6 +12,7 @@ export interface IAppState {
     categories: Categories[];
     filters: Filters;
     checkout: Checkout;
+    confirmation: Confirmation;
 }
 
 export interface CartState {
@@ -19,6 +20,7 @@ export interface CartState {
     items: CartItem[];
     paymentMethods: CartPaymentMethod[];
     shouldFetchOrder: boolean;
+    isUpdatingCart: boolean;
 }
 
 export interface CartItem {
@@ -43,9 +45,10 @@ export interface Filters {
 }
 
 export interface Global {
-    loading: boolean;
+    checkoutLoading: boolean;
     accessToken: string | null;
     expires: string | null;
+    shouldSetNewOrder: boolean;
 }
 
 export interface Checkout {
@@ -76,4 +79,14 @@ export interface CustomerDetails {
 export interface ShipmentsWithMethods {
     shipmentId: string;
     methodId: string;
+}
+
+export interface ShipmentsWithLineItems extends ShipmentsWithMethods {
+    lineItems: string[];
+}
+
+export interface Confirmation {
+    order: Order | null;
+    items: CartItem[];
+    customerDetails: CustomerDetails;
 }

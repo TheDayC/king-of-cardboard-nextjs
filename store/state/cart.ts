@@ -5,6 +5,7 @@ const cartInitialState: CartState = {
     items: [],
     paymentMethods: [],
     shouldFetchOrder: true,
+    isUpdatingCart: false,
 };
 
 export default cartInitialState;
