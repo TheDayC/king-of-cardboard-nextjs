@@ -1,8 +1,8 @@
-import { Checkout } from '../types/state';
+import { Confirmation } from '../types/state';
 
-const checkoutInitialState: Checkout = {
-    currentStep: 0,
-    shipmentsWithMethods: null,
+const confirmationInitialState: Confirmation = {
+    order: null,
+    items: [],
     customerDetails: {
         allowShippingAddress: false,
         email: null,
@@ -23,4 +23,4 @@ const checkoutInitialState: Checkout = {
     },
 };
 
-export default checkoutInitialState;
+export default confirmationInitialState;

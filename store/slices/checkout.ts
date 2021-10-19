@@ -50,8 +50,8 @@ const checkoutSlice = createSlice({
                 state.shipmentsWithMethods = [{ shipmentId, methodId }];
             }
         },
-        setHasCompletedOrder(state, action) {
-            state.hasCompletedOrder = action.payload;
+        resetCheckoutDetails() {
+            return checkoutInitialState;
         },
     },
     extraReducers: (builder) => {
@@ -65,7 +65,7 @@ export const {
     setCustomerDetails,
     setShipmentsWithMethods,
     addShipmentWithMethod,
-    setHasCompletedOrder,
+    resetCheckoutDetails,
 } = checkoutSlice.actions;
 
 export default checkoutSlice.reducer;

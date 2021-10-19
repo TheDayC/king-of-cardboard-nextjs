@@ -12,6 +12,7 @@ export interface IAppState {
     categories: Categories[];
     filters: Filters;
     checkout: Checkout;
+    confirmation: Confirmation;
 }
 
 export interface CartState {
@@ -53,7 +54,6 @@ export interface Checkout {
     currentStep: number;
     shipmentsWithMethods: ShipmentsWithMethods[] | null;
     customerDetails: CustomerDetails;
-    hasCompletedOrder: boolean;
 }
 
 export interface CustomerDetails {
@@ -82,4 +82,10 @@ export interface ShipmentsWithMethods {
 
 export interface ShipmentsWithLineItems extends ShipmentsWithMethods {
     lineItems: string[];
+}
+
+export interface Confirmation {
+    order: Order | null;
+    items: CartItem[];
+    customerDetails: CustomerDetails;
 }

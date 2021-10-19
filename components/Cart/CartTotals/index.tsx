@@ -3,8 +3,13 @@ import { useSelector } from 'react-redux';
 
 import selector from './selector';
 
-export const CartTotals: React.FC = () => {
-    const { order } = useSelector(selector);
+interface CartTotalsProps {
+    isConfirmation: boolean;
+}
+
+export const CartTotals: React.FC<CartTotalsProps> = ({ isConfirmation }) => {
+    const { cartOrder, confirmationOrder } = useSelector(selector);
+    const order = isConfirmation ? confirmationOrder : cartOrder;
 
     const subTotal = order && order.formatted_subtotal_amount ? order.formatted_subtotal_amount : null;
     // const discount = order && order.formatted_discount_amount ? order.formatted_discount_amount : null;

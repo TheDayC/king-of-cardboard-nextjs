@@ -7,8 +7,14 @@ import styles from './summary.module.css';
 import CartTotals from '../../Cart/CartTotals';
 import Loading from '../../Loading';
 
-export const Summary: React.FC = () => {
-    const { order, lineItems, checkoutLoading } = useSelector(selector);
+interface SummaryProps {
+    isConfirmation: boolean;
+}
+
+export const Summary: React.FC<SummaryProps> = ({ isConfirmation = false }) => {
+    const { cartOrder, confirmationOrder, checkoutLoading, cartItems, confirmedItems } = useSelector(selector);
+    const lineItems = isConfirmation ? confirmedItems : cartItems;
+    const order = isConfirmation ? confirmationOrder : cartOrder;
 
     if (!order) {
         return null;
@@ -53,7 +59,7 @@ export const Summary: React.FC = () => {
             <div className="overflow-x-auto">
                 <table className="table w-full">
                     <tbody>
-                        <CartTotals />
+                        <CartTotals isConfirmation={isConfirmation} />
                     </tbody>
                 </table>
             </div>

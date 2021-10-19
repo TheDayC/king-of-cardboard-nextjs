@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 
 import selector from './selector';
 import CartItem from './CartItem';
 import CartTotals from './CartTotals';
+import { resetConfirmationDetails } from '../../store/slices/confirmation';
 
 export const Cart: React.FC = () => {
     const { cartItemCount, items } = useSelector(selector);
     const dispatch = useDispatch();
 
     const itemPlural = cartItemCount === 1 ? 'item' : 'items';
+
+    useEffect(() => {
+        dispatch(resetConfirmationDetails());
+    }, []);
 
     return (
         <div className="flex flex-col">
@@ -44,7 +49,7 @@ export const Cart: React.FC = () => {
                                         );
                                     }
                                 })}
-                            <CartTotals />
+                            <CartTotals isConfirmation={false} />
                             <tr>
                                 <td align="right" colSpan={5}>
                                     <Link href="/checkout" passHref>

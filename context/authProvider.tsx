@@ -6,16 +6,23 @@ import { get } from 'lodash';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import selector from './selector';
 import { createOrder, getOrder, getPrices, getStockItems } from '../utils/commerce';
-import { setAccessToken, setExpires } from '../store/slices/global';
-import { fetchOrder as fetchOrderAction, setOrder, setLineItems, setPaymentMethods } from '../store/slices/cart';
+import { setAccessToken, setExpires, setNewOrder } from '../store/slices/global';
+import {
+    fetchOrder as fetchOrderAction,
+    setOrder,
+    setLineItems,
+    setPaymentMethods,
+    resetCart,
+} from '../store/slices/cart';
 import { fetchProductCollection } from '../utils/products';
 import { PRODUCT_QUERY } from '../utils/content';
 import { addProductCollection } from '../store/slices/products';
 import { rehydration } from '../store';
 import { createToken } from '../utils/auth';
-import { ShipmentsWithMethods } from '../store/types/state';
 import { getShipment, getShipments } from '../utils/checkout';
-import { addShipmentWithMethod, setShipmentsWithMethods } from '../store/slices/checkout';
+import { addShipmentWithMethod, resetCheckoutDetails } from '../store/slices/checkout';
+import { resetCategories } from '../store/slices/categories';
+import { resetFilters } from '../store/slices/filters';
 
 const AuthProvider: React.FC = ({ children }) => {
     const waitForHydro = async () => {
@@ -26,7 +33,7 @@ const AuthProvider: React.FC = ({ children }) => {
         waitForHydro();
     }, []);
 
-    const { accessToken, expires, order, products, shouldFetchOrder } = useSelector(selector);
+    const { accessToken, expires, order, products, shouldFetchOrder, shouldSetNewOrder } = useSelector(selector);
     const dispatch = useDispatch();
     const [shouldCreateOrder, setShouldCreateOrder] = useState(true);
 
@@ -154,6 +161,28 @@ const AuthProvider: React.FC = ({ children }) => {
             createProductCollection(accessToken);
         }
     }, [products, accessToken]);
+
+    /* useIsomorphicLayoutEffect(() => {
+        if (shouldSetNewOrder && accessToken) {
+            // Let the state know we've picked this flag up.
+            dispatch(setNewOrder(false));
+
+            // Reset the product categories.
+            dispatch(resetCategories());
+
+            // Reset the product filters.
+            dispatch(resetFilters());
+
+            // Reset the cart state.
+            dispatch(resetCart());
+            
+            // Reset the checkout data
+            dispatch(resetCheckoutDetails());
+            
+            // Force a new order
+            setShouldCreateOrder(true);
+        }
+    }, [shouldSetNewOrder, accessToken]); */
 
     return <React.Fragment>{children}</React.Fragment>;
 };

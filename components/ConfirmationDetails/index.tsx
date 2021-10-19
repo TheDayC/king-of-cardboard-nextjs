@@ -1,24 +1,16 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BsCheck2Circle } from 'react-icons/bs';
 import { IoLocationSharp } from 'react-icons/io5';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import { setNewOrder } from '../../store/slices/global';
 import styles from './confirmation.module.css';
 import selector from './selector';
 
 export const ConfirmationDetails: React.FC = () => {
-    const { customerDetails, shouldSetNewOrder } = useSelector(selector);
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        if (!shouldSetNewOrder) {
-            dispatch(setNewOrder(true));
-        }
-    }, [dispatch, shouldSetNewOrder]);
+    const { customerDetails } = useSelector(selector);
 
     return (
-        <div className="card shadow-md rounded-md mt-8 p-8">
+        <div className="card shadow-md rounded-md p-8">
             <div className="flex justify-center items-center">
                 <BsCheck2Circle className={styles.check} />
             </div>

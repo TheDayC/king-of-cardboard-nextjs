@@ -62,6 +62,9 @@ const cartSlice = createSlice({
         fetchOrder(state, action) {
             state.shouldFetchOrder = action.payload;
         },
+        resetCart() {
+            return cartInitialState;
+        },
     },
     extraReducers: (builder) => {
         builder.addDefaultCase((state) => state);
@@ -77,5 +80,6 @@ export const {
     setLineItems,
     setPaymentMethods,
     fetchOrder,
+    resetCart,
 } = cartSlice.actions;
 export default cartSlice.reducer;

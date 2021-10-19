@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
@@ -6,20 +6,33 @@ import { StripeCardElement, Stripe } from '@stripe/stripe-js';
 import { get } from 'lodash';
 
 import selector from './selector';
-import { setCurrentStep, setHasCompletedOrder } from '../../../store/slices/checkout';
+import { resetCheckoutDetails, setCurrentStep } from '../../../store/slices/checkout';
 import Method from './Method';
-import { createPaymentSource } from '../../../utils/commerce';
+import { createOrder, createPaymentSource } from '../../../utils/commerce';
 import { checkoutOrder, confirmOrder } from '../../../utils/payment';
-import { CustomerDetails } from '../../../store/types/state';
+import { CartItem, CustomerDetails } from '../../../store/types/state';
 import { setCheckoutLoading } from '../../../store/slices/global';
-import { fetchOrder } from '../../../store/slices/cart';
+import { resetCart, setOrder } from '../../../store/slices/cart';
+import { setConfirmationData } from '../../../store/slices/confirmation';
+import { useRouter } from 'next/router';
+import { Order } from '../../../types/cart';
 
 export const Payment: React.FC = () => {
     const dispatch = useDispatch();
     const stripe = useStripe();
     const elements = useElements();
-    const { currentStep, paymentMethods, accessToken, orderId, customerDetails, checkoutLoading } =
-        useSelector(selector);
+    const router = useRouter();
+    const {
+        currentStep,
+        paymentMethods,
+        accessToken,
+        orderId,
+        customerDetails,
+        checkoutLoading,
+        order,
+        items,
+        confirmationDetails,
+    } = useSelector(selector);
     const {
         register,
         handleSubmit,
@@ -33,6 +46,19 @@ export const Payment: React.FC = () => {
         }
     };
 
+    // Create a brand new order and set the id in the store.
+    const generateOrder = useCallback(
+        async (accessToken: string) => {
+            const order = await createOrder(accessToken);
+
+            if (order) {
+                // Add the order to the store.
+                dispatch(setOrder(order));
+            }
+        },
+        [dispatch]
+    );
+
     const handlePaymentMethod = useCallback(
         async (
             accessToken: string,
@@ -40,8 +66,14 @@ export const Payment: React.FC = () => {
             stripe: Stripe,
             card: StripeCardElement,
             paymentSourceType: string,
+            order: Order | null,
+            items: CartItem[],
             customerDetails: CustomerDetails
         ) => {
+            if (!stripe || checkoutLoading) {
+                return;
+            }
+
             // Fetch the client secret from Commerce Layer to use with Stripe.
             const clientSecret = await createPaymentSource(accessToken, orderId, paymentSourceType);
 
@@ -80,11 +112,11 @@ export const Payment: React.FC = () => {
                         const hasBeenConfirmed = await confirmOrder(accessToken, orderId);
 
                         if (hasBeenConfirmed) {
-                            // Set current order as completed.
-                            dispatch(setHasCompletedOrder(true));
+                            // Set the confirmation data in the store.
+                            dispatch(setConfirmationData({ order, items, customerDetails }));
 
-                            // Checkout has finished loading
-                            dispatch(setCheckoutLoading(false));
+                            // Tell the system to generate a new order
+                            generateOrder(accessToken);
                         }
                     }
                 }
@@ -111,13 +143,21 @@ export const Payment: React.FC = () => {
                         stripe,
                         card,
                         paymentMethodData.payment_source_type,
+                        order,
+                        items,
                         customerDetails
                     );
                 }
             }
         },
-        [accessToken, orderId, paymentMethods, stripe, handlePaymentMethod, elements, customerDetails]
+        [accessToken, orderId, paymentMethods, stripe, handlePaymentMethod, elements, order, items, customerDetails]
     );
+
+    useEffect(() => {
+        if (confirmationDetails.order && confirmationDetails.items.length > 0) {
+            router.push('/confirmation');
+        }
+    }, [confirmationDetails]);
 
     return (
         <div
@@ -141,8 +181,9 @@ export const Payment: React.FC = () => {
                         ))}
                     <div className="flex justify-end">
                         <button
-                            className={`btn btn-primary${checkoutLoading ? ' loading' : ''}`}
-                            disabled={!stripe || checkoutLoading}
+                            className={`btn btn-primary${checkoutLoading ? ' loading' : ''}${
+                                !stripe || checkoutLoading ? ' btn-disabled' : ''
+                            }`}
                         >
                             {!checkoutLoading ? 'Place Order' : ''}
                         </button>
