@@ -44,6 +44,7 @@ export const PAGES_QUERY = `
                     height
                   }
                 }
+                hero
             }
         }
     }

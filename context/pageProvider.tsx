@@ -10,19 +10,10 @@ import { fetchPageCollection } from '../utils/pages';
 import { PAGES_QUERY } from '../utils/content';
 
 const PageProvider: React.FC = ({ children }) => {
-    const waitForHydro = async () => {
-        await rehydration();
-    };
-
-    useIsomorphicLayoutEffect(() => {
-        waitForHydro();
-    }, []);
-    const { pages } = useSelector(selector);
     const dispatch = useDispatch();
 
     const fetchPageData = useCallback(async () => {
         const pageData = await fetchPageCollection(PAGES_QUERY);
-        console.log('🚀 ~ file: pageProvider.tsx ~ line 25 ~ fetchPageData ~ pageData', pageData);
 
         if (pageData) {
             dispatch(setPages(pageData));
@@ -32,10 +23,8 @@ const PageProvider: React.FC = ({ children }) => {
 
     // Fetch page data on load and add to state.
     useIsomorphicLayoutEffect(() => {
-        if (pages.length <= 0) {
-            fetchPageData();
-        }
-    }, [pages]);
+        fetchPageData();
+    }, []);
 
     return <React.Fragment>{children}</React.Fragment>;
 };

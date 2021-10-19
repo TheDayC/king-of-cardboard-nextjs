@@ -2,6 +2,7 @@ export interface ContentfulPage {
     title: string;
     content: ContentJSON;
     sliderCollection: SliderCollection;
+    hero: Hero[];
 }
 
 // Setup the page content shape. Should be similar to any rich text field.
@@ -22,7 +23,7 @@ interface Content {
     data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-// Setup the slider collection fields.
+// Type the slider collection fields.
 interface SliderCollection {
     items: SliderImage[];
 }
@@ -35,4 +36,14 @@ export interface SliderImage {
     url: string;
     width: number;
     height: number;
+}
+
+// Type the Hero JSON response.
+interface Hero {
+    title: string;
+    content: string[];
+    type: string;
+    image_url?: string;
+    link?: string;
+    link_title?: string;
 }

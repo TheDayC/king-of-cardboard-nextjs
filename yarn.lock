@@ -62,10 +62,6 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
-"@brainhubeu/react-carousel@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@brainhubeu/react-carousel/-/react-carousel-2.0.4.tgz#9b3d3e9699fca1617530e4cd242d6ef99a671917"
-
 "@eslint/eslintrc@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@eslint/eslintrc/-/eslintrc-1.0.3.tgz#41f08c597025605f672251dcc4e8be66b5ed7366"
@@ -215,12 +211,6 @@
   resolved "https://registry.yarnpkg.com/@types/axios/-/axios-0.14.0.tgz#ec2300fbe7d7dddd7eb9d3abf87999964cafce46"
   dependencies:
     axios "*"
-
-"@types/brainhubeu__react-carousel@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@types/brainhubeu__react-carousel/-/brainhubeu__react-carousel-2.0.4.tgz#3bc99904cbf75a3074ad4bcf68c35daa163fb816"
-  dependencies:
-    "@types/react" "*"
 
 "@types/hoist-non-react-statics@^3.3.0":
   version "3.3.1"
@@ -1110,6 +1100,16 @@ elliptic@^6.5.3:
     inherits "^2.0.4"
     minimalistic-assert "^1.0.1"
     minimalistic-crypto-utils "^1.0.1"
+
+embla-carousel-react@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/embla-carousel-react/-/embla-carousel-react-5.0.1.tgz#91fb27ad92d5cd7a4ba9626dc75f4b5e89bb1ecd"
+  dependencies:
+    embla-carousel "5.0.1"
+
+embla-carousel@5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/embla-carousel/-/embla-carousel-5.0.1.tgz#6c25d889e7287a032b6b31c458481bb648f098d8"
 
 emoji-regex@^8.0.0:
   version "8.0.0"

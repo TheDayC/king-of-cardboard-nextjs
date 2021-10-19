@@ -15,12 +15,14 @@ import {
     setUpdatingCart,
 } from '../store/slices/cart';
 import { fetchProductCollection } from '../utils/products';
-import { PRODUCT_QUERY } from '../utils/content';
+import { PAGES_QUERY, PRODUCT_QUERY } from '../utils/content';
 import { addProductCollection } from '../store/slices/products';
 import { rehydration } from '../store';
 import { createToken } from '../utils/auth';
 import { getShipment, getShipments } from '../utils/checkout';
 import { addShipmentWithMethod } from '../store/slices/checkout';
+import { fetchPageCollection } from '../utils/pages';
+import { setLoadingPages, setPages } from '../store/slices/pages';
 
 const AuthProvider: React.FC = ({ children }) => {
     const waitForHydro = async () => {
