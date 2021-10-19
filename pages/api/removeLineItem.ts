@@ -9,7 +9,8 @@ async function removeLineItem(req: NextApiRequest, res: NextApiResponse): Promis
         const id = get(req, 'body.id', null);
         const cl = authClient(token);
 
-        cl.delete(`/api/line_items/${id}`)
+        return cl
+            .delete(`/api/line_items/${id}`)
             .then((response) => {
                 const status = get(response, 'status', 500);
 

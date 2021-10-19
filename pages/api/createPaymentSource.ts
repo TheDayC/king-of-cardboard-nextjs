@@ -10,20 +10,21 @@ async function createPaymentSource(req: NextApiRequest, res: NextApiResponse): P
         const paymentSourceType = get(req, 'body.paymentSourceType', null);
         const cl = authClient(token);
 
-        cl.post(`/api/${paymentSourceType}`, {
-            data: {
-                type: paymentSourceType,
-                attributes: {},
-                relationships: {
-                    order: {
-                        data: {
-                            type: 'orders',
-                            id,
+        return cl
+            .post(`/api/${paymentSourceType}`, {
+                data: {
+                    type: paymentSourceType,
+                    attributes: {},
+                    relationships: {
+                        order: {
+                            data: {
+                                type: 'orders',
+                                id,
+                            },
                         },
                     },
                 },
-            },
-        })
+            })
             .then((response) => {
                 const status = get(response, 'status', 500);
                 const clientSecret = get(response, 'data.data.attributes.client_secret', null);

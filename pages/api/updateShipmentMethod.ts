@@ -10,20 +10,21 @@ async function updateShipmentMethod(req: NextApiRequest, res: NextApiResponse): 
         const methodId = get(req, 'body.methodId', null);
         const cl = authClient(token);
 
-        cl.patch(`/api/shipments/${shipmentId}`, {
-            data: {
-                type: 'shipments',
-                id: shipmentId,
-                relationships: {
-                    shipping_method: {
-                        data: {
-                            type: 'shipping_methods',
-                            id: methodId,
+        return cl
+            .patch(`/api/shipments/${shipmentId}`, {
+                data: {
+                    type: 'shipments',
+                    id: shipmentId,
+                    relationships: {
+                        shipping_method: {
+                            data: {
+                                type: 'shipping_methods',
+                                id: methodId,
+                            },
                         },
                     },
                 },
-            },
-        })
+            })
             .then((response) => {
                 const status = get(response, 'status', 500);
 

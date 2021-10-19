@@ -9,15 +9,16 @@ async function confirmOrder(req: NextApiRequest, res: NextApiResponse): Promise<
         const id = get(req, 'body.id', null);
         const cl = authClient(token);
 
-        cl.patch(`/api/orders/${id}`, {
-            data: {
-                type: 'orders',
-                id,
-                attributes: {
-                    _place: true,
+        return cl
+            .patch(`/api/orders/${id}`, {
+                data: {
+                    type: 'orders',
+                    id,
+                    attributes: {
+                        _place: true,
+                    },
                 },
-            },
-        })
+            })
             .then((response) => {
                 const status = get(response, 'status', 500);
 

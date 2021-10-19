@@ -8,14 +8,15 @@ async function createOrder(req: NextApiRequest, res: NextApiResponse): Promise<v
         const token = get(req, 'body.token', null);
         const cl = authClient(token);
 
-        cl.post('/api/orders', {
-            data: {
-                type: 'orders',
-                attributes: {
-                    guest: true,
+        return cl
+            .post('/api/orders', {
+                data: {
+                    type: 'orders',
+                    attributes: {
+                        guest: true,
+                    },
                 },
-            },
-        })
+            })
             .then((response) => {
                 const status = get(response, 'status', 500);
                 const { data: order } = get(response, 'data', null);

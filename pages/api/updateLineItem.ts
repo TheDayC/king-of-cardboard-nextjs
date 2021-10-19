@@ -10,15 +10,16 @@ async function updateLineItem(req: NextApiRequest, res: NextApiResponse): Promis
         const quantity = get(req, 'body.quantity', null);
         const cl = authClient(token);
 
-        cl.patch(`/api/line_items/${id}`, {
-            data: {
-                type: 'line_items',
-                id,
-                attributes: {
-                    quantity,
+        return cl
+            .patch(`/api/line_items/${id}`, {
+                data: {
+                    type: 'line_items',
+                    id,
+                    attributes: {
+                        quantity,
+                    },
                 },
-            },
-        })
+            })
             .then((response) => {
                 const status = get(response, 'status', 500);
 
