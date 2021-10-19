@@ -4,6 +4,7 @@
 }
 
 .cart {
+    @apply m-2;
     width: 25px;
     height: auto;
 }
