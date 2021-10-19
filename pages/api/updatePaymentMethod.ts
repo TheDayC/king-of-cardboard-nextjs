@@ -10,20 +10,21 @@ async function updatePaymentMethod(req: NextApiRequest, res: NextApiResponse): P
         const paymentMethodId = get(req, 'body.paymentMethodId', null);
         const cl = authClient(token);
 
-        cl.patch(`/api/orders/${id}`, {
-            data: {
-                type: 'orders',
-                id,
-                relationships: {
-                    payment_method: {
-                        data: {
-                            type: 'payment_methods',
-                            id: paymentMethodId,
+        return cl
+            .patch(`/api/orders/${id}`, {
+                data: {
+                    type: 'orders',
+                    id,
+                    relationships: {
+                        payment_method: {
+                            data: {
+                                type: 'payment_methods',
+                                id: paymentMethodId,
+                            },
                         },
                     },
                 },
-            },
-        })
+            })
             .then((response) => {
                 const status = get(response, 'status', 500);
 

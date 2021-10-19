@@ -8,7 +8,8 @@ async function prices(req: NextApiRequest, res: NextApiResponse): Promise<void> 
         const token = get(req, 'body.token', null);
         const cl = authClient(token);
 
-        cl.get('/api/prices')
+        return cl
+            .get('/api/prices')
             .then((response) => {
                 const status = get(response, 'status', 500);
                 const { data: prices } = get(response, 'data', null);

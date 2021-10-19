@@ -9,7 +9,8 @@ async function getLineItem(req: NextApiRequest, res: NextApiResponse): Promise<v
         const id = get(req, 'body.id', null);
         const cl = authClient(token);
 
-        cl.get(`/api/line_items/${id}`)
+        return cl
+            .get(`/api/line_items/${id}`)
             .then((response) => {
                 const status = get(response, 'status', 500);
                 const { data: items } = get(response, 'data', null);

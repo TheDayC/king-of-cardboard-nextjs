@@ -9,7 +9,8 @@ async function getDeliveryLeadTimes(req: NextApiRequest, res: NextApiResponse): 
         const cl = authClient(token);
         const include = 'shipping_method,stock_location';
 
-        cl.get(`/api/delivery_lead_times?include=${include}`)
+        return cl
+            .get(`/api/delivery_lead_times?include=${include}`)
             .then((response) => {
                 const status = get(response, 'status', 500);
                 const { data: deliveryLeadTimes, included } = get(response, 'data', null);

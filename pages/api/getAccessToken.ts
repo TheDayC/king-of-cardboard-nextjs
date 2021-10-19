@@ -7,11 +7,12 @@ async function getAccessToken(req: NextApiRequest, res: NextApiResponse): Promis
     if (req.method === 'GET' && process.env.ECOM_CLIENT_ID) {
         const cl = authClient();
 
-        cl.post('/oauth/token', {
-            grant_type: 'client_credentials',
-            client_id: process.env.ECOM_CLIENT_ID,
-            scope: 'market:6098',
-        })
+        return cl
+            .post('/oauth/token', {
+                grant_type: 'client_credentials',
+                client_id: process.env.ECOM_CLIENT_ID,
+                scope: 'market:6098',
+            })
             .then((response) => {
                 const token = get(response, 'data.access_token', null);
                 const expires = get(response, 'data.expires_in', null);
@@ -26,6 +27,8 @@ async function getAccessToken(req: NextApiRequest, res: NextApiResponse): Promis
             .catch((error) => {
                 res.status(500).json(error.response);
             });
+    } else {
+        res.status(405).end('Method Not Allowed');
     }
 }
 

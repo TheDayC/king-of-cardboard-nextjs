@@ -21,7 +21,8 @@ async function getOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
             ? `/api/orders/${orderId}?include=${includeJoin}&${orderFields}&${lineItemFields}&${paymentFields}&${shipmentsFields}`
             : `/api/orders/${orderId}`;
 
-        cl.get(apiUrl)
+        return cl
+            .get(apiUrl)
             .then((response) => {
                 const status = get(response, 'status', 500);
                 const { data: order, included } = get(response, 'data', null);

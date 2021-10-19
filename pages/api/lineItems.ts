@@ -10,13 +10,14 @@ async function lineItems(req: NextApiRequest, res: NextApiResponse): Promise<voi
         const relationships = get(req, 'body.relationships', null);
         const cl = authClient(token);
 
-        cl.post('/api/line_items', {
-            data: {
-                type: 'line_items',
-                attributes,
-                relationships,
-            },
-        })
+        return cl
+            .post('/api/line_items', {
+                data: {
+                    type: 'line_items',
+                    attributes,
+                    relationships,
+                },
+            })
             .then((response) => {
                 const status = get(response, 'status', 500);
                 const { data: lineItems } = get(response, 'data', null);
