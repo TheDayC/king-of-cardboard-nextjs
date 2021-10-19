@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 import { get } from 'lodash';
 
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
-import selector from './selector';
+import selector from './authSelector';
 import { createOrder, getOrder, getPrices, getStockItems } from '../utils/commerce';
 import { setAccessToken, setCheckoutLoading, setExpires } from '../store/slices/global';
 import {

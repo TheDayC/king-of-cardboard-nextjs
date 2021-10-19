@@ -1,6 +1,7 @@
 import { Counties } from '../../enums/checkout';
 import { Categories, ProductType } from '../../enums/shop';
 import { Order } from '../../types/cart';
+import { ContentfulPage } from '../../types/pages';
 import { Product } from '../../types/products';
 
 export interface IAppState {
@@ -13,6 +14,7 @@ export interface IAppState {
     filters: Filters;
     checkout: Checkout;
     confirmation: Confirmation;
+    pages: PagesState;
 }
 
 export interface CartState {
@@ -89,4 +91,9 @@ export interface Confirmation {
     order: Order | null;
     items: CartItem[];
     customerDetails: CustomerDetails;
+}
+
+export interface PagesState {
+    isLoadingPages: boolean;
+    pages: ContentfulPage[];
 }
