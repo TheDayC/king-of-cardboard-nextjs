@@ -80,9 +80,6 @@ export const Delivery: React.FC = () => {
 
                             // Redirect to next stage.
                             dispatch(setCurrentStep(2));
-
-                            // Checkout has finished loading
-                            dispatch(setCheckoutLoading(false));
                         }
                     });
                 }

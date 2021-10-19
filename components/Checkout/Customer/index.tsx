@@ -70,9 +70,6 @@ const Customer: React.FC = () => {
 
                 // Redirect to next stage.
                 dispatch(setCurrentStep(1));
-
-                // Checkout has finished loading
-                dispatch(setCheckoutLoading(false));
             }
         }
     };
