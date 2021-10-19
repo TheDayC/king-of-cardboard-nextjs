@@ -43,6 +43,7 @@ export const Cart: React.FC = () => {
                                                 id={item.id}
                                                 sku={item.sku_code || null}
                                                 name={item.name || null}
+                                                image_url={item.image_url || null}
                                                 unitAmount={item.formatted_unit_amount || null}
                                                 totalAmount={item.formatted_total_amount || null}
                                                 quantity={item.quantity || null}
