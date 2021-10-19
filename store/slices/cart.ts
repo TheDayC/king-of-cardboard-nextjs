@@ -27,6 +27,9 @@ const cartSlice = createSlice({
         fetchOrder(state, action) {
             state.shouldFetchOrder = action.payload;
         },
+        setUpdatingCart(state, action) {
+            state.isUpdatingCart = action.payload;
+        },
         resetCart() {
             return cartInitialState;
         },
@@ -36,5 +39,5 @@ const cartSlice = createSlice({
     },
 });
 
-export const { setOrder, setLineItems, setPaymentMethods, fetchOrder, resetCart } = cartSlice.actions;
+export const { setOrder, setLineItems, setPaymentMethods, fetchOrder, resetCart, setUpdatingCart } = cartSlice.actions;
 export default cartSlice.reducer;

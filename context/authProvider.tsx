@@ -6,13 +6,13 @@ import { get } from 'lodash';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import selector from './selector';
 import { createOrder, getOrder, getPrices, getStockItems } from '../utils/commerce';
-import { setAccessToken, setExpires, setNewOrder } from '../store/slices/global';
+import { setAccessToken, setExpires } from '../store/slices/global';
 import {
     fetchOrder as fetchOrderAction,
     setOrder,
     setLineItems,
     setPaymentMethods,
-    resetCart,
+    setUpdatingCart,
 } from '../store/slices/cart';
 import { fetchProductCollection } from '../utils/products';
 import { PRODUCT_QUERY } from '../utils/content';
@@ -20,9 +20,7 @@ import { addProductCollection } from '../store/slices/products';
 import { rehydration } from '../store';
 import { createToken } from '../utils/auth';
 import { getShipment, getShipments } from '../utils/checkout';
-import { addShipmentWithMethod, resetCheckoutDetails } from '../store/slices/checkout';
-import { resetCategories } from '../store/slices/categories';
-import { resetFilters } from '../store/slices/filters';
+import { addShipmentWithMethod } from '../store/slices/checkout';
 
 const AuthProvider: React.FC = ({ children }) => {
     const waitForHydro = async () => {
@@ -33,7 +31,7 @@ const AuthProvider: React.FC = ({ children }) => {
         waitForHydro();
     }, []);
 
-    const { accessToken, expires, order, products, shouldFetchOrder, shouldSetNewOrder } = useSelector(selector);
+    const { accessToken, expires, order, products, shouldFetchOrder } = useSelector(selector);
     const dispatch = useDispatch();
     const [shouldCreateOrder, setShouldCreateOrder] = useState(true);
 
@@ -99,6 +97,7 @@ const AuthProvider: React.FC = ({ children }) => {
                 }
 
                 dispatch(setOrder(fullOrderData));
+                dispatch(setUpdatingCart(false));
             }
         },
         [dispatch]

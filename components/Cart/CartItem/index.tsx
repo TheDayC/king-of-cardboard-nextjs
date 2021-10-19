@@ -2,7 +2,7 @@ import React from 'react';
 import { MdDeleteForever, MdRemoveCircleOutline, MdAddCircleOutline } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchOrder } from '../../../store/slices/cart';
+import { fetchOrder, setUpdatingCart } from '../../../store/slices/cart';
 import { removeLineItem, updateLineItem } from '../../../utils/commerce';
 import selector from './selector';
 
@@ -22,6 +22,7 @@ export const CartItem: React.FC<BasketItemProps> = ({ id, sku, name, unitAmount,
 
     const handleDecreaseAmount = async () => {
         if (accessToken && id && quantity && currentProduct) {
+            dispatch(setUpdatingCart(true));
             const newQuantity = (quantity -= 1);
 
             if (newQuantity > 0) {
@@ -36,6 +37,7 @@ export const CartItem: React.FC<BasketItemProps> = ({ id, sku, name, unitAmount,
 
     const handleIncreaseAmount = async () => {
         if (accessToken && id && quantity && currentProduct) {
+            dispatch(setUpdatingCart(true));
             const newQuantity = (quantity += 1);
 
             if (newQuantity <= currentProduct.stock) {

@@ -20,6 +20,7 @@ export interface CartState {
     items: CartItem[];
     paymentMethods: CartPaymentMethod[];
     shouldFetchOrder: boolean;
+    isUpdatingCart: boolean;
 }
 
 export interface CartItem {

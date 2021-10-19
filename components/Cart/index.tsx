@@ -6,9 +6,10 @@ import selector from './selector';
 import CartItem from './CartItem';
 import CartTotals from './CartTotals';
 import { resetConfirmationDetails } from '../../store/slices/confirmation';
+import Loading from '../Loading';
 
 export const Cart: React.FC = () => {
-    const { cartItemCount, items } = useSelector(selector);
+    const { cartItemCount, items, isUpdatingCart } = useSelector(selector);
     const dispatch = useDispatch();
 
     const itemPlural = cartItemCount === 1 ? 'item' : 'items';
@@ -21,7 +22,8 @@ export const Cart: React.FC = () => {
         <div className="flex flex-col">
             <h1 className="mb-8">{`Your basket (${cartItemCount} ${itemPlural})`}</h1>
             {cartItemCount > 0 ? (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto relative">
+                    <Loading show={isUpdatingCart} />
                     <table className="table w-full">
                         <thead>
                             <tr>
@@ -53,7 +55,9 @@ export const Cart: React.FC = () => {
                             <tr>
                                 <td align="right" colSpan={5}>
                                     <Link href="/checkout" passHref>
-                                        <button className="btn btn-primary btn-lg">Checkout</button>
+                                        <button className={`btn btn-primary btn-lg${isUpdatingCart ? ' loading' : ''}`}>
+                                            {isUpdatingCart ? '' : 'Checkout'}
+                                        </button>
                                     </Link>
                                 </td>
                             </tr>
