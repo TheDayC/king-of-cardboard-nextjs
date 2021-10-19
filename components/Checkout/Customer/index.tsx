@@ -42,6 +42,10 @@ const Customer: React.FC = () => {
     const hasErrors = Object.keys(errors).length > 0;
 
     const onSubmit = async (data: PersonalDetails) => {
+        if (hasErrors || checkoutLoading) {
+            return;
+        }
+
         // Set loading in current form.
         dispatch(setCheckoutLoading(true));
 
@@ -482,18 +486,14 @@ const Customer: React.FC = () => {
                         </div>
                     </div>
                     <div className="flex justify-end p-4">
-                        {checkoutLoading ? (
-                            <button type="submit" className={`btn btn-secondary btn-disabled loading`}>
-                                Delivery
-                            </button>
-                        ) : (
-                            <button
-                                type="submit"
-                                className={`btn${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
-                            >
-                                Delivery
-                            </button>
-                        )}
+                        <button
+                            type="submit"
+                            className={`btn${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}${
+                                checkoutLoading ? ' loading btn-square' : ''
+                            }`}
+                        >
+                            {checkoutLoading ? '' : 'Delivery'}
+                        </button>
                     </div>
                 </form>
             </div>

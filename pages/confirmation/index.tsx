@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 
@@ -7,18 +7,35 @@ import { CommerceAuthProps } from '../../types/commerce';
 import Summary from '../../components/Checkout/Summary';
 import ConfirmationDetails from '../../components/ConfirmationDetails';
 import { setCheckoutLoading } from '../../store/slices/global';
-import { resetCart } from '../../store/slices/cart';
+import { resetCart, setOrder } from '../../store/slices/cart';
 import { resetCheckoutDetails } from '../../store/slices/checkout';
 import selector from './selector';
+import { createOrder } from '../../utils/commerce';
 
 export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
-    const { confirmationOrder } = useSelector(selector);
+    const { confirmationOrder, accessToken } = useSelector(selector);
     const dispatch = useDispatch();
     const router = useRouter();
 
+    // Create a brand new order and set the id in the store.
+    const generateOrder = useCallback(
+        async (accessToken: string) => {
+            const order = await createOrder(accessToken);
+
+            if (order) {
+                // Add the order to the store.
+                dispatch(setOrder(order));
+            }
+        },
+        [dispatch]
+    );
+
     useEffect(() => {
         // Check to see if we've just arrived here from a successful order.
-        if (confirmationOrder) {
+        if (confirmationOrder && accessToken) {
+            // Tell the system to generate a new order
+            generateOrder(accessToken);
+
             // Reset the cart state.
             dispatch(resetCart());
 
@@ -27,10 +44,8 @@ export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
 
             // Checkout has finished loading by moving to the confirmation.
             dispatch(setCheckoutLoading(false));
-        } else {
-            router.push('/');
         }
-    }, []);
+    }, [confirmationOrder, accessToken]);
 
     if (!confirmationOrder) {
         return null;

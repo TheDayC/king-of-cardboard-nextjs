@@ -46,19 +46,6 @@ export const Payment: React.FC = () => {
         }
     };
 
-    // Create a brand new order and set the id in the store.
-    const generateOrder = useCallback(
-        async (accessToken: string) => {
-            const order = await createOrder(accessToken);
-
-            if (order) {
-                // Add the order to the store.
-                dispatch(setOrder(order));
-            }
-        },
-        [dispatch]
-    );
-
     const handlePaymentMethod = useCallback(
         async (
             accessToken: string,
@@ -114,9 +101,6 @@ export const Payment: React.FC = () => {
                         if (hasBeenConfirmed) {
                             // Set the confirmation data in the store.
                             dispatch(setConfirmationData({ order, items, customerDetails }));
-
-                            // Tell the system to generate a new order
-                            generateOrder(accessToken);
                         }
                     }
                 }
@@ -181,7 +165,7 @@ export const Payment: React.FC = () => {
                         ))}
                     <div className="flex justify-end">
                         <button
-                            className={`btn btn-primary${checkoutLoading ? ' loading' : ''}${
+                            className={`btn btn-primary${checkoutLoading ? ' loading btn-square' : ''}${
                                 !stripe || checkoutLoading ? ' btn-disabled' : ''
                             }`}
                         >

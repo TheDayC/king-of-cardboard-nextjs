@@ -6,7 +6,7 @@ import { get } from 'lodash';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import selector from './selector';
 import { createOrder, getOrder, getPrices, getStockItems } from '../utils/commerce';
-import { setAccessToken, setExpires } from '../store/slices/global';
+import { setAccessToken, setCheckoutLoading, setExpires } from '../store/slices/global';
 import {
     fetchOrder as fetchOrderAction,
     setOrder,
@@ -96,8 +96,14 @@ const AuthProvider: React.FC = ({ children }) => {
                     });
                 }
 
+                // Set the entire order in the store.
                 dispatch(setOrder(fullOrderData));
+
+                // Ensure the cart isn't updating after the order has been fetched.
                 dispatch(setUpdatingCart(false));
+
+                // Ensure Checkout loading has also reset on a fetched order.
+                dispatch(setCheckoutLoading(false));
             }
         },
         [dispatch]

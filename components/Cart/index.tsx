@@ -55,7 +55,11 @@ export const Cart: React.FC = () => {
                             <tr>
                                 <td align="right" colSpan={5}>
                                     <Link href="/checkout" passHref>
-                                        <button className={`btn btn-primary btn-lg${isUpdatingCart ? ' loading' : ''}`}>
+                                        <button
+                                            className={`btn btn-primary btn-lg${
+                                                isUpdatingCart ? ' loading btn-square' : ''
+                                            }`}
+                                        >
                                             {isUpdatingCart ? '' : 'Checkout'}
                                         </button>
                                     </Link>

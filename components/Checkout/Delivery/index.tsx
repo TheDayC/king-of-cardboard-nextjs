@@ -54,6 +54,10 @@ export const Delivery: React.FC = () => {
     }, [accessToken, order, fetchAllShipments]);
 
     const handleSelectShippingMethod = async (data: unknown) => {
+        if (hasErrors || checkoutLoading) {
+            return;
+        }
+
         if (shipments) {
             dispatch(setCheckoutLoading(true));
             // Set shipments with methods for local storage.
@@ -121,18 +125,14 @@ export const Delivery: React.FC = () => {
                             );
                         })}
                     <div className="flex justify-end items-center p-4">
-                        {checkoutLoading ? (
-                            <button type="submit" className={`btn btn-secondary btn-disabled loading`}>
-                                Payment
-                            </button>
-                        ) : (
-                            <button
-                                type="submit"
-                                className={`btn ${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}`}
-                            >
-                                Payment
-                            </button>
-                        )}
+                        <button
+                            type="submit"
+                            className={`btn ${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}${
+                                checkoutLoading ? ' loading btn-square' : ''
+                            }`}
+                        >
+                            {checkoutLoading ? '' : 'Payment'}
+                        </button>
                     </div>
                 </form>
             </div>
