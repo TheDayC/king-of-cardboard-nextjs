@@ -60,6 +60,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
     // Handle the page number and set it in local state.
     const handlePageNumber = useCallback(
         (pageNumber: number) => {
+            dispatch(setIsLoadingProducts(true));
             setCurrentPage(pageNumber);
 
             if (accessToken) {
