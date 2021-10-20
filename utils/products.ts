@@ -3,7 +3,7 @@ import { get } from 'lodash';
 import { Categories, ProductType } from '../enums/shop';
 import { Filters } from '../store/types/state';
 import { SkuItem } from '../types/commerce';
-import { ContentfulProduct, Product } from '../types/products';
+import { ContentfulProduct, ContentfulProductResponse, Product } from '../types/products';
 import { fetchContent } from './content';
 
 export function filterProducts(products: Product[], filters: Filters): Product[] {
@@ -50,10 +50,11 @@ export function parseProductCategory(type: string): Categories {
 }
 
 /* FETCHING PRODUCTS - NEW */
-export async function fetchContentfulProducts(limit: number, skip: number): Promise<ContentfulProduct[] | null> {
+export async function fetchContentfulProducts(limit: number, skip: number): Promise<ContentfulProductResponse> {
     const query = `
         query {
             productCollection (limit: ${limit}, skip: ${skip}) {
+                total
                 items {
                     name
                     slug
@@ -86,21 +87,20 @@ export async function fetchContentfulProducts(limit: number, skip: number): Prom
     const productResponse = await fetchContent(query);
 
     if (productResponse) {
+        const total: number = get(productResponse, 'data.data.productCollection.total', 0);
         const productCollection: ContentfulProduct[] | null = get(
             productResponse,
             'data.data.productCollection.items',
             null
         );
 
-        if (productCollection) {
-            return productCollection;
-            //return normaliseProductCollection(productCollection);
-        }
-
-        return null;
+        return {
+            total,
+            productCollection,
+        };
     }
 
-    return null;
+    return { total: 0, productCollection: null };
 }
 
 export function mergeProductData(products: ContentfulProduct[], skuItems: SkuItem[]): Product[] {

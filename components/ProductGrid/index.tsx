@@ -1,54 +1,74 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ceil, divide } from 'lodash';
 
 import selector from './selector';
 import { fetchContentfulProducts, mergeProductData } from '../../utils/products';
 import { getSkus } from '../../utils/commerce';
 import { Product } from '../../types/products';
+import Pagination from '../Pagination';
 
 interface ProductGridProps {
     useFilters: boolean;
 }
 
-const LIMIT = 9;
+const PRODUCTS_PER_PAGE = 1;
 
 export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
-    const { filters, accessToken, currentPage } = useSelector(selector);
+    const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
     const [products, setProducts] = useState<Product[] | null>(null);
+    const [totalProducts, setTotalProducts] = useState<number>(0);
+    const [currentPage, setCurrentPage] = useState<number>(0);
+    const productPageCount = ceil(divide(totalProducts, PRODUCTS_PER_PAGE));
 
     const createProductCollection = useCallback(
         async (accessToken: string, currentPage: number) => {
-            const pageNegative = currentPage - 1;
-
             // First, find our contentful products with links.
             // Use Limit for max products per request.
-            // Multiply the pageNegative (needs to start at 0) by the limit to skip over the same amount of products each time.
-            const foundProducts = await fetchContentfulProducts(LIMIT, pageNegative * LIMIT);
+            // Multiply the currentPage (needs to start at 0) by the limit to skip over the same amount of products each time.
+            const { total, productCollection } = await fetchContentfulProducts(
+                PRODUCTS_PER_PAGE,
+                currentPage * PRODUCTS_PER_PAGE
+            );
 
             // If we find products then move on to fetching by SKU in commerce layer.
-            if (foundProducts) {
-                const sku_codes = foundProducts.map((p) => p.productLink);
+            if (productCollection) {
+                const sku_codes = productCollection.map((p) => p.productLink);
                 const skuItems = await getSkus(accessToken, sku_codes);
 
                 // If we hit some skuItems then put them in the store.
                 if (skuItems) {
-                    const mergedProducts = mergeProductData(foundProducts, skuItems);
+                    const mergedProducts = mergeProductData(productCollection, skuItems);
                     setProducts(mergedProducts);
                 }
             }
+
+            // Set the total number of products for pagination.
+            setTotalProducts(total);
         },
         [dispatch]
     );
 
     // Create the product collection on load.
     useEffect(() => {
-        if (!products && accessToken && currentPage) {
-            createProductCollection(accessToken, currentPage);
+        if (!products && accessToken) {
+            createProductCollection(accessToken, 0);
         }
-    }, [products, accessToken, currentPage]);
+    }, [products, accessToken]);
+
+    const handlePageNumber = useCallback(
+        (pageNumber: number) => {
+            setCurrentPage(pageNumber);
+
+            if (accessToken) {
+                createProductCollection(accessToken, pageNumber);
+            }
+        },
+        [accessToken]
+    );
 
     return (
         <div className="flex-1">
@@ -73,7 +93,12 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
                                         {product.tags && (
                                             <div className="flex flex-row flex-wrap justify-start items-center">
                                                 {product.tags.map((tag) => (
-                                                    <div className="badge m-2 badge-secondary badge-outline">{tag}</div>
+                                                    <div
+                                                        className="badge m-2 badge-secondary badge-outline"
+                                                        key={`tag-${tag}`}
+                                                    >
+                                                        {tag}
+                                                    </div>
                                                 ))}
                                             </div>
                                         )}
@@ -101,6 +126,13 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
                             </div>
                         );
                     })}
+            </div>
+            <div className="flex justify-center">
+                <Pagination
+                    currentPage={currentPage}
+                    pageCount={productPageCount}
+                    handlePageNumber={handlePageNumber}
+                />
             </div>
         </div>
     );

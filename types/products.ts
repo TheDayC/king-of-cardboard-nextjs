@@ -12,6 +12,11 @@ export interface Product {
     compare_amount: string;
 }
 
+export interface ContentfulProductResponse {
+    total: number;
+    productCollection: ContentfulProduct[] | null;
+}
+
 export interface ContentfulProduct {
     name: string;
     slug: string;
