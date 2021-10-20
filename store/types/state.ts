@@ -101,4 +101,5 @@ export interface PagesState {
 
 export interface ShopState {
     currentPage: number;
+    isLoadingProducts: boolean;
 }

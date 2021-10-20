@@ -9,29 +9,33 @@ import { fetchContentfulProducts, mergeProductData } from '../../utils/products'
 import { getSkus } from '../../utils/commerce';
 import { Product } from '../../types/products';
 import Pagination from '../Pagination';
+import { Categories, ProductType } from '../../enums/shop';
+import { setIsLoadingProducts } from '../../store/slices/shop';
 
 interface ProductGridProps {
     useFilters: boolean;
 }
 
-const PRODUCTS_PER_PAGE = 1;
+const PRODUCTS_PER_PAGE = 9;
 
 export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
-    const { accessToken } = useSelector(selector);
+    const { accessToken, filters } = useSelector(selector);
     const dispatch = useDispatch();
     const [products, setProducts] = useState<Product[] | null>(null);
-    const [totalProducts, setTotalProducts] = useState<number>(0);
-    const [currentPage, setCurrentPage] = useState<number>(0);
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
     const productPageCount = ceil(divide(totalProducts, PRODUCTS_PER_PAGE));
 
     const createProductCollection = useCallback(
-        async (accessToken: string, currentPage: number) => {
+        async (accessToken: string, currentPage: number, categories: Categories[], productTypes: ProductType[]) => {
             // First, find our contentful products with links.
             // Use Limit for max products per request.
             // Multiply the currentPage (needs to start at 0) by the limit to skip over the same amount of products each time.
             const { total, productCollection } = await fetchContentfulProducts(
                 PRODUCTS_PER_PAGE,
-                currentPage * PRODUCTS_PER_PAGE
+                currentPage * PRODUCTS_PER_PAGE,
+                categories,
+                productTypes
             );
 
             // If we find products then move on to fetching by SKU in commerce layer.
@@ -43,6 +47,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
                 if (skuItems) {
                     const mergedProducts = mergeProductData(productCollection, skuItems);
                     setProducts(mergedProducts);
+                    dispatch(setIsLoadingProducts(false));
                 }
             }
 
@@ -52,24 +57,31 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
         [dispatch]
     );
 
-    // Create the product collection on load.
-    useEffect(() => {
-        if (!products && accessToken) {
-            createProductCollection(accessToken, 0);
-        }
-    }, [products, accessToken]);
-
     // Handle the page number and set it in local state.
     const handlePageNumber = useCallback(
         (pageNumber: number) => {
             setCurrentPage(pageNumber);
 
             if (accessToken) {
-                createProductCollection(accessToken, pageNumber);
+                createProductCollection(accessToken, pageNumber, filters.categories, filters.productTypes);
             }
         },
-        [accessToken]
+        [accessToken, filters.categories, filters.productTypes]
     );
+
+    // Create the product collection on load.
+    useEffect(() => {
+        if (!products && accessToken) {
+            createProductCollection(accessToken, 0, filters.categories, filters.productTypes);
+        }
+    }, [products, accessToken, filters.categories, filters.productTypes]);
+
+    // Filter the collection.
+    useEffect(() => {
+        if (accessToken) {
+            createProductCollection(accessToken, 0, filters.categories, filters.productTypes);
+        }
+    }, [accessToken, filters.categories, filters.productTypes]);
 
     return (
         <div className="flex-1">
@@ -90,7 +102,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
                                 )}
                                 <div className="justify-between items-center card-body px-6 py-4">
                                     <div className="flex flex-col justify-start items-center">
-                                        <h2 className="card-title text-center">{product.name}</h2>
+                                        <h2 className="card-title text-center text-2xl">{product.name}</h2>
                                         {product.tags && (
                                             <div className="flex flex-row flex-wrap justify-start items-center">
                                                 {product.tags.map((tag) => (
@@ -129,11 +141,13 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
                     })}
             </div>
             <div className="flex justify-center">
-                <Pagination
-                    currentPage={currentPage}
-                    pageCount={productPageCount}
-                    handlePageNumber={handlePageNumber}
-                />
+                {productPageCount > 1 && (
+                    <Pagination
+                        currentPage={currentPage}
+                        pageCount={productPageCount}
+                        handlePageNumber={handlePageNumber}
+                    />
+                )}
             </div>
         </div>
     );

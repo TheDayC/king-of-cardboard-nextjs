@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, join } from 'lodash';
 
 import { Categories, ProductType } from '../enums/shop';
 import { Filters } from '../store/types/state';
@@ -50,10 +50,21 @@ export function parseProductCategory(type: string): Categories {
 }
 
 /* FETCHING PRODUCTS - NEW */
-export async function fetchContentfulProducts(limit: number, skip: number): Promise<ContentfulProductResponse> {
+export async function fetchContentfulProducts(
+    limit: number,
+    skip: number,
+    categories: Categories[],
+    productTypes: ProductType[]
+): Promise<ContentfulProductResponse> {
+    // Chain filters, entire object can't be stringified but arrays can for a quick win.
+    const where = `types_contains_all: ${JSON.stringify(productTypes)}, categories_contains_all: ${JSON.stringify(
+        categories
+    )}`;
+
+    // Piece together query.
     const query = `
         query {
-            productCollection (limit: ${limit}, skip: ${skip}) {
+            productCollection (limit: ${limit}, skip: ${skip}, where: {${where}}) {
                 total
                 items {
                     name
@@ -84,22 +95,28 @@ export async function fetchContentfulProducts(limit: number, skip: number): Prom
         }
     `;
 
+    // Make the contentful request.
     const productResponse = await fetchContent(query);
 
     if (productResponse) {
+        // On a successful request get the total number of items for pagination.
         const total: number = get(productResponse, 'data.data.productCollection.total', 0);
+
+        // On success get the item data for products.
         const productCollection: ContentfulProduct[] | null = get(
             productResponse,
             'data.data.productCollection.items',
             null
         );
 
+        // Return both.
         return {
             total,
             productCollection,
         };
     }
 
+    // Return both defaults if unsuccessful.
     return { total: 0, productCollection: null };
 }
 

@@ -6,6 +6,7 @@ import selector from './selector';
 import { combinedFilters, FilterTypes, ProductType } from '../../../enums/shop';
 import { addCategory, addProductType, removeCategory, removeProductType } from '../../../store/slices/filters';
 import Filter from './Filter';
+import Loading from '../../Loading';
 
 interface FiltersProps {
     category: string | null;
@@ -38,9 +39,9 @@ export const Filters: React.FC<FiltersProps> = ({ category }) => {
     };
 
     return (
-        <div className="flex-1 xl:max-w-lg md:pr-8">
+        <div className="flex md:flex-col md:mr-4 relative">
             {hasProductTypes && (
-                <div className="card bordered mb-4">
+                <div className="card bordered mb-4 rounded-md">
                     <div className="card-body p-4">
                         <h3 className="card-title">Product Types</h3>
                         {productTypes.map((type) => (
@@ -57,7 +58,7 @@ export const Filters: React.FC<FiltersProps> = ({ category }) => {
                 </div>
             )}
             {hasCategories && (
-                <div className="card bordered mb-4">
+                <div className="card bordered mb-4 rounded-md">
                     <div className="card-body p-4">
                         <h3 className="card-title">Categories</h3>
                         {categories.map((cat) => (

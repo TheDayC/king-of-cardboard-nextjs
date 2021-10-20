@@ -9,6 +9,9 @@ const shopSlice = createSlice({
         setPage(state, action) {
             state.currentPage = action.payload;
         },
+        setIsLoadingProducts(state, action) {
+            state.isLoadingProducts = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -17,5 +20,5 @@ const shopSlice = createSlice({
     },
 });
 
-export const { setPage } = shopSlice.actions;
+export const { setPage, setIsLoadingProducts } = shopSlice.actions;
 export default shopSlice.reducer;

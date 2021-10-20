@@ -25,3 +25,9 @@
 .card.image-full:before {
     @apply rounded-md bg-black bg-opacity-90;
 }
+
+.btn.loading.btn-circle.btn-lg:before,
+.btn.loading.btn-circle.btn-xl:before {
+    @apply w-10 h-10;
+    animation: spin 1.2s linear infinite;
+}
