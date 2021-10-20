@@ -59,6 +59,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
         }
     }, [products, accessToken]);
 
+    // Handle the page number and set it in local state.
     const handlePageNumber = useCallback(
         (pageNumber: number) => {
             setCurrentPage(pageNumber);
