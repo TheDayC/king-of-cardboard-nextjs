@@ -2,7 +2,7 @@ import { get } from 'lodash';
 
 import { Categories, ProductType } from '../enums/shop';
 import { Filters } from '../store/types/state';
-import { Price, SkuItem, StockItem } from '../types/commerce';
+import { SkuItem } from '../types/commerce';
 import { ContentfulProduct, Product } from '../types/products';
 import { fetchContent } from './content';
 
@@ -23,63 +23,6 @@ export function filterProducts(products: Product[], filters: Filters): Product[]
             return false;
         }
     });
-}
-
-function normaliseProductCollection(products: ContentfulProduct[]): Product[] {
-    return products.map((p) => {
-        const content = get(p, 'description.json.content', '');
-        const types = get(p, 'types', []);
-        const categories = get(p, 'categories', []);
-        const images = get(p, 'imageCollection.items', []);
-
-        return {
-            id: '',
-            sku: p.productLink,
-            name: p.name,
-            slug: p.slug,
-            price: {
-                formatted_amount: '',
-                currency_code: '',
-                amount_float: 0,
-                amount_cents: 0,
-            },
-            stock: 0,
-            description: content,
-            types: types.map((type) => parseProductType(type)),
-            categories: categories.map((cat) => parseProductCategory(cat)),
-            images,
-        };
-    });
-}
-
-export async function fetchProductCollection(
-    query: string,
-    stockItems: StockItem[] | null,
-    prices: Price[] | null
-): Promise<Product[] | null> {
-    const productResponse = await fetchContent(query);
-
-    if (productResponse) {
-        const productCollection: ContentfulProduct[] | null = get(
-            productResponse,
-            'data.data.productCollection.items',
-            null
-        );
-
-        if (productCollection) {
-            const normalisedCollections = normaliseProductCollection(productCollection);
-
-            if (stockItems && prices) {
-                const products = await hydrateProductCollection(normalisedCollections, stockItems, prices);
-
-                return products;
-            }
-
-            return normalisedCollections;
-        }
-    }
-
-    return null;
 }
 
 export function parseProductType(type: string): ProductType {
@@ -134,6 +77,7 @@ export async function fetchContentfulProducts(limit: number, skip: number): Prom
                         width
                         height
                     }
+                    tags
                 }
             }
         }
@@ -167,12 +111,13 @@ export function mergeProductData(products: ContentfulProduct[], skuItems: SkuIte
         return {
             name: get(product, 'name', ''),
             slug: get(product, 'slug', ''),
-            description: get(product, 'description', null),
             sku_code: get(product, 'productLink', null),
+            description: get(product, 'description', null),
             types: get(product, 'types', []),
             categories: get(product, 'categories', []),
             images: get(product, 'imageCollection', null),
             cardImage: get(product, 'cardImage', null),
+            tags: get(product, 'tags', null),
             amount: get(skuItem, 'amount', ''),
             compare_amount: get(skuItem, 'compare_amount', ''),
         };

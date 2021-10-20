@@ -1,16 +1,4 @@
-import { Categories, ProductType } from '../enums/shop';
-import { SkuItem } from './commerce';
 export interface Product {
-    /* id: string;
-    sku: string;
-    name: string;
-    slug: string;
-    stock: number;
-    description: DescriptionContent[];
-    types: ProductType[] | null;
-    categories: Categories[] | null;
-    images: Image[];
-    price: ProductPrice; */
     name: string;
     slug: string;
     sku_code: string | null;
@@ -19,15 +7,9 @@ export interface Product {
     categories: string[];
     images: ImageCollection | null;
     cardImage: Image | null;
+    tags: string[] | null;
     amount: string;
     compare_amount: string;
-}
-
-interface ProductPrice {
-    formatted_amount: string;
-    currency_code: string;
-    amount_float: number;
-    amount_cents: number;
 }
 
 export interface ContentfulProduct {
