@@ -130,7 +130,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
                                             )}
                                             <span className="text-lg font-bold">{product.amount}</span>
                                         </div>
-                                        <Link href={`/shop/${product.slug}`} passHref>
+                                        <Link href={`/product/${product.slug}`} passHref>
                                             <button className="btn btn-primary btn-sm rounded-md shadow-md w-full">
                                                 View Product
                                             </button>

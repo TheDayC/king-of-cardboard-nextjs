@@ -2,8 +2,8 @@ import { get, join } from 'lodash';
 
 import { Categories, ProductType } from '../enums/shop';
 import { Filters } from '../store/types/state';
-import { SkuItem } from '../types/commerce';
-import { ContentfulProduct, ContentfulProductResponse, Product } from '../types/products';
+import { SkuItem, SkuProduct } from '../types/commerce';
+import { ContentfulProduct, ContentfulProductResponse, Product, SingleProduct } from '../types/products';
 import { fetchContent } from './content';
 
 export function filterProducts(products: Product[], filters: Filters): Product[] {
@@ -69,9 +69,7 @@ export async function fetchContentfulProducts(
                 items {
                     name
                     slug
-                    description {
-                        json
-                    }
+                    description
                     productLink
                     types
                     categories
@@ -120,16 +118,68 @@ export async function fetchContentfulProducts(
     return { total: 0, productCollection: null };
 }
 
+export async function fetchProductBySlug(slug: string): Promise<ContentfulProduct | null> {
+    // Piece together query.
+    const query = `
+        query {
+            productCollection (where: {slug: ${JSON.stringify(slug)}}) {
+                total
+                items {
+                    name
+                    slug
+                    description
+                    productLink
+                    types
+                    categories
+                    imageCollection {
+                        items {
+                            title
+                            description
+                            url
+                        }
+                    }
+                    cardImage {
+                        title
+                        description
+                        url
+                        width
+                        height
+                    }
+                    tags
+                }
+            }
+        }
+    `;
+
+    // Make the contentful request.
+    const productResponse = await fetchContent(query);
+
+    if (productResponse) {
+        // On success get the item data for products.
+        const productCollection: ContentfulProduct[] | null = get(
+            productResponse,
+            'data.data.productCollection.items',
+            null
+        );
+
+        return productCollection ? productCollection[0] : null;
+    }
+
+    // Return both defaults if unsuccessful.
+    return null;
+}
+
 export function mergeProductData(products: ContentfulProduct[], skuItems: SkuItem[]): Product[] {
     return products.map((product) => {
         const { productLink: sku_code } = product;
         const skuItem = skuItems.find((s) => s.sku_code === sku_code) || null;
 
         return {
+            id: get(skuItem, 'id', ''),
             name: get(product, 'name', ''),
             slug: get(product, 'slug', ''),
             sku_code: get(product, 'productLink', null),
-            description: get(product, 'description', null),
+            description: get(product, 'description', ''),
             types: get(product, 'types', []),
             categories: get(product, 'categories', []),
             images: get(product, 'imageCollection', null),
@@ -139,4 +189,22 @@ export function mergeProductData(products: ContentfulProduct[], skuItems: SkuIte
             compare_amount: get(skuItem, 'compare_amount', ''),
         };
     });
+}
+
+export function mergeSkuProductData(product: ContentfulProduct, skuItem: SkuItem, skuData: SkuProduct): SingleProduct {
+    return {
+        id: get(skuItem, 'id', ''),
+        name: get(product, 'name', ''),
+        slug: get(product, 'slug', ''),
+        sku_code: get(product, 'productLink', null),
+        description: get(product, 'description', null),
+        types: get(product, 'types', []),
+        categories: get(product, 'categories', []),
+        images: get(product, 'imageCollection', null),
+        cardImage: get(product, 'cardImage', null),
+        tags: get(product, 'tags', null),
+        amount: get(skuData, 'formatted_amount', null),
+        compare_amount: get(skuData, 'formatted_compare_at_amount', null),
+        inventory: get(skuData, 'inventory', null),
+    };
 }

@@ -31,3 +31,8 @@
     @apply w-10 h-10;
     animation: spin 1.2s linear infinite;
 }
+
+/* This messes with the image zoom */
+#productImages img {
+    max-width: unset !important;
+}

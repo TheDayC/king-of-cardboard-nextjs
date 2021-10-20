@@ -2,7 +2,15 @@ import axios from 'axios';
 import { get } from 'lodash';
 
 import { Order } from '../types/cart';
-import { LineItemAttributes, LineItemRelationships, Price, StockItem, SkuItem } from '../types/commerce';
+import {
+    LineItemAttributes,
+    LineItemRelationships,
+    Price,
+    StockItem,
+    SkuItem,
+    SkuInventory,
+    SkuProduct,
+} from '../types/commerce';
 import { parseOrderData } from './parsers';
 
 export async function createOrder(accessToken: string): Promise<Order | null> {
@@ -92,6 +100,40 @@ export async function getSkus(accessToken: string, sku_codes: string[]): Promise
                     compare_amount,
                 };
             });
+        }
+
+        return null;
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
+
+export async function getSku(accessToken: string, id: string): Promise<SkuProduct | null> {
+    try {
+        const response = await axios.post('/api/getSku', {
+            token: accessToken,
+            id,
+        });
+
+        if (response) {
+            const skuItem = get(response, 'data.skuItem', null);
+            const included = get(response, 'data.included', null);
+
+            const sku_code = get(skuItem, 'attributes.code', '');
+            const inventory = get(skuItem, 'attributes.inventory', '');
+
+            // Find price data
+            const prices = included.find((i) => i.type === 'prices' && i.attributes.sku_code === sku_code);
+            const formatted_amount = get(prices, 'attributes.formatted_amount', '');
+            const formatted_compare_at_amount = get(prices, 'attributes.formatted_compare_at_amount', '');
+
+            return {
+                formatted_amount,
+                formatted_compare_at_amount,
+                inventory,
+            };
         }
 
         return null;

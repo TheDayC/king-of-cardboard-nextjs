@@ -1,15 +1,34 @@
+import { SkuInventory } from './commerce';
+
 export interface Product {
+    id: string;
     name: string;
     slug: string;
     sku_code: string | null;
-    description: Description | null;
+    description: string | null;
     types: string[];
     categories: string[];
     images: ImageCollection | null;
-    cardImage: Image | null;
+    cardImage: ImageItem | null;
     tags: string[] | null;
     amount: string;
     compare_amount: string;
+}
+
+export interface SingleProduct {
+    id: string;
+    name: string;
+    slug: string;
+    sku_code: string | null;
+    description: string | null;
+    types: string[];
+    categories: string[];
+    images: ImageCollection | null;
+    cardImage: ImageItem | null;
+    tags: string[] | null;
+    amount: string | null;
+    compare_amount: string | null;
+    inventory: SkuInventory | null;
 }
 
 export interface ContentfulProductResponse {
@@ -21,15 +40,15 @@ export interface ContentfulProduct {
     name: string;
     slug: string;
     productLink: string;
-    description: Description | null;
+    description: string | null;
     types: string[];
     categories: string[];
     imageCollection: ImageCollection;
-    cardImage: Image;
+    cardImage: ImageItem;
 }
 
 interface ImageCollection {
-    items: Image[];
+    items: ImageItem[];
 }
 
 interface Description {
@@ -49,7 +68,7 @@ export interface DescriptionContent {
     data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export interface Image {
+export interface ImageItem {
     title: string;
     description: string;
     url: string;
