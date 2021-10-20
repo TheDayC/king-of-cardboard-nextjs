@@ -2,7 +2,7 @@ import { get } from 'lodash';
 
 import { Categories, ProductType } from '../enums/shop';
 import { Filters } from '../store/types/state';
-import { Price, StockItem } from '../types/commerce';
+import { Price, SkuItem, StockItem } from '../types/commerce';
 import { ContentfulProduct, Product } from '../types/products';
 import { fetchContent } from './content';
 
@@ -26,51 +26,28 @@ export function filterProducts(products: Product[], filters: Filters): Product[]
 }
 
 function normaliseProductCollection(products: ContentfulProduct[]): Product[] {
-    return products.map((p) => ({
-        id: '',
-        sku: p.productLink,
-        name: p.name,
-        price: {
-            formatted_amount: '',
-            currency_code: '',
-            amount_float: 0,
-            amount_cents: 0,
-        },
-        stock: 0,
-        description: p.description.json.content,
-        types: p.types.map((type) => parseProductType(type)),
-        categories: p.categories.map((cat) => parseProductCategory(cat)),
-        images: p.imageCollection.items,
-    }));
-}
-
-async function hydrateProductCollection(
-    products: Product[],
-    stockItems: StockItem[],
-    prices: Price[]
-): Promise<Product[]> {
-    return products.map((product) => {
-        const { sku } = product;
-        const stock = stockItems.find((s) => s.attributes.sku_code === sku);
-        const price = prices.find((p) => p.attributes.sku_code === sku);
-
-        const stockId = get(stock, 'id', '');
-        const quantity = get(stock, 'attributes.quantity', 0);
-        const formatted_amount = get(price, 'attributes.formatted_amount', '');
-        const currency_code = get(price, 'attributes.currency_code', '');
-        const amount_float = get(price, 'attributes.amount_float', 0);
-        const amount_cents = get(price, 'attributes.amount_cents', 0);
+    return products.map((p) => {
+        const content = get(p, 'description.json.content', '');
+        const types = get(p, 'types', []);
+        const categories = get(p, 'categories', []);
+        const images = get(p, 'imageCollection.items', []);
 
         return {
-            ...product,
-            id: stockId,
-            stock: quantity,
+            id: '',
+            sku: p.productLink,
+            name: p.name,
+            slug: p.slug,
             price: {
-                formatted_amount,
-                currency_code,
-                amount_float,
-                amount_cents,
+                formatted_amount: '',
+                currency_code: '',
+                amount_float: 0,
+                amount_cents: 0,
             },
+            stock: 0,
+            description: content,
+            types: types.map((type) => parseProductType(type)),
+            categories: categories.map((cat) => parseProductCategory(cat)),
+            images,
         };
     });
 }
@@ -127,4 +104,77 @@ export function parseProductCategory(type: string): Categories {
         default:
             return Categories.Other;
     }
+}
+
+/* FETCHING PRODUCTS - NEW */
+export async function fetchContentfulProducts(limit: number, skip: number): Promise<ContentfulProduct[] | null> {
+    const query = `
+        query {
+            productCollection (limit: ${limit}, skip: ${skip}) {
+                items {
+                    name
+                    slug
+                    description {
+                        json
+                    }
+                    productLink
+                    types
+                    categories
+                    imageCollection {
+                        items {
+                            title
+                            description
+                            url
+                        }
+                    }
+                    cardImage {
+                        title
+                        description
+                        url
+                        width
+                        height
+                    }
+                }
+            }
+        }
+    `;
+
+    const productResponse = await fetchContent(query);
+
+    if (productResponse) {
+        const productCollection: ContentfulProduct[] | null = get(
+            productResponse,
+            'data.data.productCollection.items',
+            null
+        );
+
+        if (productCollection) {
+            return productCollection;
+            //return normaliseProductCollection(productCollection);
+        }
+
+        return null;
+    }
+
+    return null;
+}
+
+export function mergeProductData(products: ContentfulProduct[], skuItems: SkuItem[]): Product[] {
+    return products.map((product) => {
+        const { productLink: sku_code } = product;
+        const skuItem = skuItems.find((s) => s.sku_code === sku_code) || null;
+
+        return {
+            name: get(product, 'name', ''),
+            slug: get(product, 'slug', ''),
+            description: get(product, 'description', null),
+            sku_code: get(product, 'productLink', null),
+            types: get(product, 'types', []),
+            categories: get(product, 'categories', []),
+            images: get(product, 'imageCollection', null),
+            cardImage: get(product, 'cardImage', null),
+            amount: get(skuItem, 'amount', ''),
+            compare_amount: get(skuItem, 'compare_amount', ''),
+        };
+    });
 }

@@ -6,16 +6,7 @@ const productsSlice = createSlice({
     name: 'products',
     initialState: productsInitialState,
     reducers: {
-        addProductCollection(state, action) {
-            /* const products = action.payload.map(p => ({
-                sku: p.productLink,
-                name: p.name,
-                description: p.description.json.content,
-                stock: null,
-                types: null,
-                categories: null,
-            })); */
-
+        addSkuItems(state, action) {
             return action.payload;
         },
     },
@@ -26,5 +17,5 @@ const productsSlice = createSlice({
     },
 });
 
-export const { addProductCollection } = productsSlice.actions;
+export const { addSkuItems } = productsSlice.actions;
 export default productsSlice.reducer;

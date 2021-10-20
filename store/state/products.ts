@@ -1,5 +1,5 @@
-import { Product } from '../../types/products';
+import { SkuItem } from '../../types/commerce';
 
-const productsInitialState: Product[] = [];
+const productsInitialState: SkuItem[] = [];
 
 export default productsInitialState;

@@ -29,6 +29,14 @@ interface StockItemAttributes {
     created_at: string;
 }
 
+export interface SkuItem {
+    sku_code: string;
+    image_url: string;
+    name: string;
+    amount: string;
+    compare_amount: string;
+}
+
 export interface Price {
     id: string;
     attributes: PriceAttributes;

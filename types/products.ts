@@ -1,14 +1,26 @@
 import { Categories, ProductType } from '../enums/shop';
+import { SkuItem } from './commerce';
 export interface Product {
-    id: string;
+    /* id: string;
     sku: string;
     name: string;
+    slug: string;
     stock: number;
     description: DescriptionContent[];
     types: ProductType[] | null;
     categories: Categories[] | null;
     images: Image[];
-    price: ProductPrice;
+    price: ProductPrice; */
+    name: string;
+    slug: string;
+    sku_code: string | null;
+    description: Description | null;
+    types: string[];
+    categories: string[];
+    images: ImageCollection | null;
+    cardImage: Image | null;
+    amount: string;
+    compare_amount: string;
 }
 
 interface ProductPrice {
@@ -20,11 +32,13 @@ interface ProductPrice {
 
 export interface ContentfulProduct {
     name: string;
+    slug: string;
     productLink: string;
-    description: Description;
+    description: Description | null;
     types: string[];
     categories: string[];
     imageCollection: ImageCollection;
+    cardImage: Image;
 }
 
 interface ImageCollection {
