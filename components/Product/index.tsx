@@ -1,26 +1,47 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { GlassMagnifier } from 'react-image-magnifiers';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
+import { MdRemoveCircleOutline, MdAddCircleOutline } from 'react-icons/md';
+import { BiErrorCircle } from 'react-icons/bi';
+import { useForm } from 'react-hook-form';
 
 import { ContentfulProduct, ImageItem, SingleProduct } from '../../types/products';
-import { getSkus, getSku } from '../../utils/commerce';
+import { getSkus, getSku, updateLineItem, setLineItem } from '../../utils/commerce';
 import { fetchProductBySlug, mergeSkuProductData } from '../../utils/products';
 import Loading from '../Loading';
 import selector from './selector';
 import styles from './product.module.css';
-import { split } from 'lodash';
+import { get, inRange, isNaN, isNumber, set, split } from 'lodash';
+import { fetchOrder } from '../../store/slices/cart';
 
 interface ProductProps {
     slug: string;
 }
 
 export const Product: React.FC<ProductProps> = ({ slug }) => {
-    const { accessToken } = useSelector(selector);
-    const [product, setProduct] = useState<ContentfulProduct | null>(null);
+    const dispatch = useDispatch();
+    const { accessToken, items, order } = useSelector(selector);
     const [loading, setLoading] = useState(false);
     const [currentImage, setCurrentImage] = useState<ImageItem | null>(null);
     const [currentProduct, setCurrentProduct] = useState<SingleProduct | null>(null);
+    const [chosenQuantity, setChosenQuantity] = useState(1);
+    const [maxQuantity, setMaxQuantity] = useState(1);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setValue,
+        setError,
+    } = useForm();
+    const hasErrors = Object.keys(errors).length > 0;
+    const stock =
+        currentProduct && currentProduct.amount && currentProduct.inventory ? currentProduct.inventory.quantity : 0;
+    const currentLineItem = items && currentProduct ? items.find((c) => c.sku_code === currentProduct.sku_code) : null;
+    const hasExceededStock = currentLineItem ? currentLineItem.quantity >= stock : false;
+
+    // Collect errors.
+    const qtyErr = get(errors, 'qty.message', null);
 
     const fetchProductData = useCallback(async (token: string, productSlug: string) => {
         const productData = await fetchProductBySlug(productSlug);
@@ -37,13 +58,18 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                     const mergedProduct = mergeSkuProductData(productData, skuItems[0], skuItem);
 
                     if (mergedProduct) {
+                        const quantity =
+                            mergedProduct.inventory && mergedProduct.inventory.quantity
+                                ? mergedProduct.inventory.quantity
+                                : 0;
+
+                        setMaxQuantity(quantity);
                         setCurrentProduct(mergedProduct);
                     }
                 }
             }
         }
 
-        setProduct(productData);
         setLoading(false);
     }, []);
 
@@ -60,17 +86,103 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         }
     }, [currentProduct]);
 
+    const handleFieldChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.currentTarget.value;
+        const replacedValue = value.replace(/[^0-9]/g, '');
+
+        setValue('qty', replacedValue, { shouldValidate: true });
+    }, []);
+
+    // Update the qty field when the local state updates.
+    /* useEffect(() => {
+        if (!inRange(chosenQuantity, 1, maxQuantity + 1)) {
+            return;
+        }
+
+        setValue('qty', chosenQuantity, { shouldValidate: true });
+    }, [chosenQuantity]); */
+
+    // Update the qty field when the line item state updates.
+    useEffect(() => {
+        if (!currentLineItem) {
+            return;
+        }
+
+        setChosenQuantity(currentLineItem.quantity);
+    }, [currentLineItem && currentLineItem.quantity]);
+
+    // Handle the form submission.
+    const onSubmit = useCallback(
+        async (data: any) => {
+            const { qty } = data;
+            setLoading(true);
+
+            if (isNaN(qty) || hasErrors || !accessToken || !currentProduct || !order) {
+                setLoading(false);
+                return;
+            }
+
+            if (!inRange(qty, 1, maxQuantity + 1)) {
+                setError('qty', {
+                    type: 'manual',
+                    message: `Quantity must be between 1 and ${maxQuantity}.`,
+                });
+                setLoading(false);
+
+                return;
+            }
+
+            if (hasExceededStock) {
+                setError('qty', {
+                    type: 'manual',
+                    message: `Maximum quantity of ${maxQuantity} is currently in your cart.`,
+                });
+                setLoading(false);
+
+                return;
+            }
+
+            const attributes = {
+                quantity: 1,
+                sku_code: currentProduct.sku_code || '',
+                name: currentProduct.name,
+                image_url: currentImage ? currentImage.url : '',
+                _external_price: false,
+                _update_quantity: true,
+            };
+
+            const relationships = {
+                order: {
+                    data: {
+                        id: order.id,
+                        type: 'orders',
+                    },
+                },
+            };
+
+            const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
+
+            if (hasLineItemUpdated) {
+                setLoading(false);
+                dispatch(fetchOrder(true));
+            }
+        },
+        [hasErrors, accessToken, currentProduct, order, maxQuantity, hasExceededStock]
+    );
+
     if (currentProduct) {
         const description = currentProduct.description ? split(currentProduct.description, '\n\n') : [];
         const shouldShowCompare = currentProduct.amount !== currentProduct.compare_amount;
         const isAvailable = currentProduct.inventory && currentProduct.inventory.available;
         const quantity =
             currentProduct.inventory && currentProduct.inventory.quantity ? currentProduct.inventory.quantity : 0;
+        const isIncreaseDisabled = chosenQuantity >= maxQuantity;
+        const isDecreaseDisabled = chosenQuantity <= 1;
         return (
-            <div className="p-8">
+            <div className="p-8 relative">
+                <Loading show={loading} />
                 <div className="container mx-auto">
                     <div className="flex flex-row space-x-16">
-                        <Loading show={loading} />
                         <div id="productImagesWrapper" className="flex flex-col">
                             {currentImage && (
                                 <div id="productImages" className="flex-1 w-60">
@@ -130,6 +242,39 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                                         <p className="mb-4">{d}</p>
                                     ))}
                                 </div>
+                                <div className="quantity mb-4 flex flex-col justify-center">
+                                    <form onSubmit={handleSubmit(onSubmit)}>
+                                        <div className="flex flex-row justify-start align-center space-x-2">
+                                            <input
+                                                type="text"
+                                                placeholder="0"
+                                                {...register('qty', {
+                                                    required: { value: true, message: 'Must add a quantity.' },
+                                                    valueAsNumber: true,
+                                                })}
+                                                defaultValue={1}
+                                                onChange={handleFieldChange}
+                                                className={`input input-lg rounded-md w-20 input-bordered${
+                                                    qtyErr ? ' input-error' : ''
+                                                }`}
+                                            />
+                                            <button
+                                                aria-label="add to cart"
+                                                className="btn btn-lg btn-primary rounded-md"
+                                            >
+                                                Add to cart
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                                {qtyErr && (
+                                    <div className="alert alert-error rounded-md">
+                                        <div className="flex-1">
+                                            <BiErrorCircle className="w-6 h-6 mx-2 stroke-current" />
+                                            <label>{qtyErr}</label>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
