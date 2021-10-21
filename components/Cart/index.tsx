@@ -9,6 +9,8 @@ import { resetConfirmationDetails } from '../../store/slices/confirmation';
 import Loading from '../Loading';
 import { getSkus } from '../../utils/commerce';
 import { SkuItem } from '../../types/commerce';
+import { CartItem as CartItemType } from '../../store/types/state';
+import { setUpdatingCart } from '../../store/slices/cart';
 
 export const Cart: React.FC = () => {
     const { cartItemCount, items, isUpdatingCart, accessToken } = useSelector(selector);
@@ -17,26 +19,28 @@ export const Cart: React.FC = () => {
 
     const itemPlural = cartItemCount === 1 ? 'item' : 'items';
 
-    const fetchMatchingSkuItems = useCallback(async () => {
-        if (accessToken && items) {
-            const fetchedSkuItems = await getSkus(
-                accessToken,
-                items.map((item) => item.sku_code)
-            );
+    const fetchMatchingSkuItems = useCallback(async (token: string, cartItems: CartItemType[]) => {
+        const fetchedSkuItems = await getSkus(
+            token,
+            cartItems.map((item) => item.sku_code)
+        );
 
-            if (fetchedSkuItems) {
-                setSkuItems(fetchedSkuItems);
-            }
+        if (fetchedSkuItems) {
+            setSkuItems(fetchedSkuItems);
+            dispatch(setUpdatingCart(false));
         }
-    }, [accessToken, items]);
+    }, []);
 
     useEffect(() => {
         dispatch(resetConfirmationDetails());
     }, []);
 
     useEffect(() => {
-        fetchMatchingSkuItems();
-    }, []);
+        if (accessToken && items) {
+            dispatch(setUpdatingCart(true));
+            fetchMatchingSkuItems(accessToken, items);
+        }
+    }, [accessToken, items]);
 
     return (
         <div className="flex flex-col">
