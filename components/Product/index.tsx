@@ -93,16 +93,14 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         setValue('qty', replacedValue, { shouldValidate: true });
     }, []);
 
-    // Update the qty field when the local state updates.
-    /* useEffect(() => {
-        if (!inRange(chosenQuantity, 1, maxQuantity + 1)) {
-            return;
-        }
+    const handleQtyError = useCallback((message: string) => {
+        setError('qty', {
+            type: 'manual',
+            message: message,
+        });
+        setLoading(false);
+    }, []);
 
-        setValue('qty', chosenQuantity, { shouldValidate: true });
-    }, [chosenQuantity]); */
-
-    // Update the qty field when the line item state updates.
     useEffect(() => {
         if (!currentLineItem) {
             return;
@@ -110,6 +108,12 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
 
         setChosenQuantity(currentLineItem.quantity);
     }, [currentLineItem && currentLineItem.quantity]);
+
+    useEffect(() => {
+        if (hasExceededStock) {
+            handleQtyError(`Maximum quantity of ${maxQuantity} is currently in your cart.`);
+        }
+    }, [hasExceededStock]);
 
     // Handle the form submission.
     const onSubmit = useCallback(
@@ -123,22 +127,12 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
             }
 
             if (!inRange(qty, 1, maxQuantity + 1)) {
-                setError('qty', {
-                    type: 'manual',
-                    message: `Quantity must be between 1 and ${maxQuantity}.`,
-                });
-                setLoading(false);
-
+                handleQtyError(`Quantity must be between 1 and ${maxQuantity}.`);
                 return;
             }
 
             if (hasExceededStock) {
-                setError('qty', {
-                    type: 'manual',
-                    message: `Maximum quantity of ${maxQuantity} is currently in your cart.`,
-                });
-                setLoading(false);
-
+                handleQtyError(`Maximum quantity of ${maxQuantity} is currently in your cart.`);
                 return;
             }
 
@@ -176,8 +170,6 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         const isAvailable = currentProduct.inventory && currentProduct.inventory.available;
         const quantity =
             currentProduct.inventory && currentProduct.inventory.quantity ? currentProduct.inventory.quantity : 0;
-        const isIncreaseDisabled = chosenQuantity >= maxQuantity;
-        const isDecreaseDisabled = chosenQuantity <= 1;
         return (
             <div className="p-8 relative">
                 <Loading show={loading} />
@@ -257,10 +249,14 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                                                 className={`input input-lg rounded-md w-20 input-bordered${
                                                     qtyErr ? ' input-error' : ''
                                                 }`}
+                                                disabled={hasExceededStock}
                                             />
                                             <button
                                                 aria-label="add to cart"
-                                                className="btn btn-lg btn-primary rounded-md"
+                                                className={`btn btn-lg rounded-md${
+                                                    hasExceededStock ? ' btn-disabled' : ' btn-primary'
+                                                }`}
+                                                disabled={hasExceededStock}
                                             >
                                                 Add to cart
                                             </button>
