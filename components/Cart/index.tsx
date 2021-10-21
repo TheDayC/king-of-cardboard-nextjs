@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 
@@ -7,15 +7,35 @@ import CartItem from './CartItem';
 import CartTotals from './CartTotals';
 import { resetConfirmationDetails } from '../../store/slices/confirmation';
 import Loading from '../Loading';
+import { getSkus } from '../../utils/commerce';
+import { SkuItem } from '../../types/commerce';
 
 export const Cart: React.FC = () => {
-    const { cartItemCount, items, isUpdatingCart } = useSelector(selector);
+    const { cartItemCount, items, isUpdatingCart, accessToken } = useSelector(selector);
     const dispatch = useDispatch();
+    const [skuItems, setSkuItems] = useState<SkuItem[] | null>(null);
 
     const itemPlural = cartItemCount === 1 ? 'item' : 'items';
 
+    const fetchMatchingSkuItems = useCallback(async () => {
+        if (accessToken && items) {
+            const fetchedSkuItems = await getSkus(
+                accessToken,
+                items.map((item) => item.sku_code)
+            );
+
+            if (fetchedSkuItems) {
+                setSkuItems(fetchedSkuItems);
+            }
+        }
+    }, [accessToken, items]);
+
     useEffect(() => {
         dispatch(resetConfirmationDetails());
+    }, []);
+
+    useEffect(() => {
+        fetchMatchingSkuItems();
     }, []);
 
     return (
@@ -36,21 +56,24 @@ export const Cart: React.FC = () => {
                         </thead>
                         <tbody>
                             {items &&
+                                skuItems &&
                                 items.map((item) => {
-                                    if (item.sku_code) {
-                                        return (
-                                            <CartItem
-                                                id={item.id}
-                                                sku={item.sku_code || null}
-                                                name={item.name || null}
-                                                image_url={item.image_url || null}
-                                                unitAmount={item.formatted_unit_amount || null}
-                                                totalAmount={item.formatted_total_amount || null}
-                                                quantity={item.quantity || null}
-                                                key={item.name}
-                                            />
-                                        );
-                                    }
+                                    const matchingSkuItem =
+                                        skuItems.find((skuItem) => skuItem.sku_code === item.sku_code) || null;
+
+                                    return (
+                                        <CartItem
+                                            id={item.id}
+                                            skuId={matchingSkuItem ? matchingSkuItem.id : null}
+                                            sku={item.sku_code || null}
+                                            name={item.name || null}
+                                            image_url={item.image_url || null}
+                                            unitAmount={item.formatted_unit_amount || null}
+                                            totalAmount={item.formatted_total_amount || null}
+                                            quantity={item.quantity || null}
+                                            key={item.name}
+                                        />
+                                    );
                                 })}
                             <CartTotals isConfirmation={false} />
                             <tr>

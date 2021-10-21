@@ -45,27 +45,20 @@ export interface ContentfulProduct {
     categories: string[];
     imageCollection: ImageCollection;
     cardImage: ImageItem;
+    tags: string[];
+}
+
+export interface ContentfulProductShort {
+    name: string;
+    slug: string;
+    productLink: string;
+    types: string[];
+    categories: string[];
+    cardImage: ImageItem;
 }
 
 interface ImageCollection {
     items: ImageItem[];
-}
-
-interface Description {
-    json: DescriptionJSON;
-}
-
-interface DescriptionJSON {
-    nodeType: string;
-    content: DescriptionContent[];
-    data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-}
-
-export interface DescriptionContent {
-    nodeType: string;
-    value: string;
-    marks: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
-    data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export interface ImageItem {

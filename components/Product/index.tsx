@@ -7,7 +7,7 @@ import { BiErrorCircle } from 'react-icons/bi';
 import { useForm } from 'react-hook-form';
 
 import { ContentfulProduct, ImageItem, SingleProduct } from '../../types/products';
-import { getSkus, getSku, updateLineItem, setLineItem } from '../../utils/commerce';
+import { getSkus, getSkuDetails, updateLineItem, setLineItem } from '../../utils/commerce';
 import { fetchProductBySlug, mergeSkuProductData } from '../../utils/products';
 import Loading from '../Loading';
 import selector from './selector';
@@ -52,7 +52,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
 
             // If we hit some skuItems then put them in the store.
             if (skuItems) {
-                const skuItem = await getSku(token, skuItems[0].id);
+                const skuItem = await getSkuDetails(token, skuItems[0].id);
 
                 if (skuItem) {
                     const mergedProduct = mergeSkuProductData(productData, skuItems[0], skuItem);
@@ -137,7 +137,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
             }
 
             const attributes = {
-                quantity: 1,
+                quantity: qty,
                 sku_code: currentProduct.sku_code || '',
                 name: currentProduct.name,
                 image_url: currentImage ? currentImage.url : '',
@@ -192,8 +192,8 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
 
                             {currentProduct.images && currentProduct.images.items && (
                                 <div className="flex flex-1 flex-row flex-wrap space-x-2 mt-4">
-                                    {currentProduct.images.items.map((image) => (
-                                        <div className={styles.imageContainer}>
+                                    {currentProduct.images.items.map((image, index) => (
+                                        <div className={styles.imageContainer} key={`line-item-${index}`}>
                                             <Image
                                                 src={image.url}
                                                 alt="shipment image"
@@ -230,8 +230,10 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                                         ))}
                                 </div>
                                 <div className="description">
-                                    {description.map((d) => (
-                                        <p className="mb-4">{d}</p>
+                                    {description.map((d, i) => (
+                                        <p className="mb-4" key={`description-${i}`}>
+                                            {d}
+                                        </p>
                                     ))}
                                 </div>
                                 <div className="quantity mb-4 flex flex-col justify-center">

@@ -110,7 +110,7 @@ export async function getSkus(accessToken: string, sku_codes: string[]): Promise
     return null;
 }
 
-export async function getSku(accessToken: string, id: string): Promise<SkuProduct | null> {
+export async function getSkuDetails(accessToken: string, id: string): Promise<SkuProduct | null> {
     try {
         const response = await axios.post('/api/getSku', {
             token: accessToken,

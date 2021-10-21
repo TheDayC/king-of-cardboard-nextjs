@@ -14,11 +14,11 @@ export const Header: React.FC = () => {
     return (
         <div className="navbar shadow-md bg-neutral text-neutral-content">
             <div className="navbar-start">
-                <div className={styles.logoWrapper}>
-                    <Link href="/" passHref>
+                <Link href="/" passHref>
+                    <div className={styles.logoWrapper}>
                         <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
-                    </Link>
-                </div>
+                    </div>
+                </Link>
             </div>
             <div className="navbar-center">
                 <div className="items-stretch hidden lg:flex">

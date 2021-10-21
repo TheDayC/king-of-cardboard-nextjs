@@ -3,7 +3,13 @@ import { get, join } from 'lodash';
 import { Categories, ProductType } from '../enums/shop';
 import { Filters } from '../store/types/state';
 import { SkuItem, SkuProduct } from '../types/commerce';
-import { ContentfulProduct, ContentfulProductResponse, Product, SingleProduct } from '../types/products';
+import {
+    ContentfulProduct,
+    ContentfulProductResponse,
+    ContentfulProductShort,
+    Product,
+    SingleProduct,
+} from '../types/products';
 import { fetchContent } from './content';
 
 export function filterProducts(products: Product[], filters: Filters): Product[] {
@@ -157,6 +163,47 @@ export async function fetchProductBySlug(slug: string): Promise<ContentfulProduc
     if (productResponse) {
         // On success get the item data for products.
         const productCollection: ContentfulProduct[] | null = get(
+            productResponse,
+            'data.data.productCollection.items',
+            null
+        );
+
+        return productCollection ? productCollection[0] : null;
+    }
+
+    // Return both defaults if unsuccessful.
+    return null;
+}
+
+export async function fetchProductByProductLink(productLink: string): Promise<ContentfulProductShort | null> {
+    // Piece together query.
+    const query = `
+        query {
+            productCollection (where: {productLink: ${JSON.stringify(productLink)}}) {
+                items {
+                    name
+                    slug
+                    productLink
+                    types
+                    categories
+                    cardImage {
+                        title
+                        description
+                        url
+                        width
+                        height
+                    }
+                }
+            }
+        }
+    `;
+
+    // Make the contentful request.
+    const productResponse = await fetchContent(query);
+
+    if (productResponse) {
+        // On success get the item data for products.
+        const productCollection: ContentfulProductShort[] | null = get(
             productResponse,
             'data.data.productCollection.items',
             null
