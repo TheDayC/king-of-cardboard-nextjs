@@ -37,6 +37,7 @@ export const CartItem: React.FC<BasketItemProps> = ({
     const [isIncreaseDisabled, setIsIncreaseDisabled] = useState(false);
     const [stock, setStock] = useState(0);
     const [product, setProduct] = useState<ContentfulProductShort | null>(null);
+    const productName = product ? product.name : name;
 
     const fetchCurrentLineItem = async (token: string, skuItemId: string, skuCode: string) => {
         const skuItem = await getSkuDetails(token, skuItemId);
@@ -129,13 +130,19 @@ export const CartItem: React.FC<BasketItemProps> = ({
             </td>
             <td className="text-center">
                 <div className="flex flex-row justify-center items-center space-x-4">
-                    {image_url && (
+                    {product && product.cardImage && (
                         <div className={`${styles.imageContainer}`}>
-                            <Image src={image_url} alt="shipment image" layout="fill" objectFit="scale-down" />
+                            <Image
+                                src={product.cardImage.url}
+                                alt={product.cardImage.description}
+                                title={product.cardImage.title}
+                                layout="fill"
+                                objectFit="scale-down"
+                            />
                         </div>
                     )}
                     <div className="text-left">
-                        <h4 className="text-md">{name || ''}</h4>
+                        <h4 className="text-md">{productName || name}</h4>
                         <p className="text-xs text-base-200">{sku || ''}</p>
                     </div>
                 </div>
