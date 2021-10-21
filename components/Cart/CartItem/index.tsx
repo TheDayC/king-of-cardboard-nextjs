@@ -10,6 +10,7 @@ import selector from './selector';
 import styles from './cartitem.module.css';
 import { fetchProductByProductLink, mergeSkuProductData } from '../../../utils/products';
 import { ContentfulProductShort } from '../../../types/products';
+import { isArray } from 'lodash';
 
 interface BasketItemProps {
     id: string;
@@ -43,7 +44,7 @@ export const CartItem: React.FC<BasketItemProps> = ({
         const skuItem = await getSkuDetails(token, skuItemId);
         const cmsProduct = await fetchProductByProductLink(skuCode);
 
-        if (cmsProduct) {
+        if (cmsProduct && !isArray(cmsProduct)) {
             setProduct(cmsProduct);
         }
 
@@ -51,12 +52,6 @@ export const CartItem: React.FC<BasketItemProps> = ({
             setStock(skuItem.inventory.quantity);
         }
     };
-
-    useEffect(() => {
-        if (accessToken && skuId && sku) {
-            fetchCurrentLineItem(accessToken, skuId, sku);
-        }
-    }, [accessToken, skuId, sku]);
 
     const handleDecreaseAmount = useCallback(async () => {
         // Check if the access token, line item id and quantity are available.
@@ -120,6 +115,18 @@ export const CartItem: React.FC<BasketItemProps> = ({
             }
         }
     };
+
+    useEffect(() => {
+        if (accessToken && skuId && sku) {
+            fetchCurrentLineItem(accessToken, skuId, sku);
+        }
+    }, [accessToken, skuId, sku]);
+
+    useEffect(() => {
+        if (quantity === stock) {
+            setIsIncreaseDisabled(true);
+        }
+    }, [stock]);
 
     return (
         <tr>

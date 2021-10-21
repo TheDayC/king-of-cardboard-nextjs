@@ -1,4 +1,4 @@
-import { get, join } from 'lodash';
+import { get, isArray, join } from 'lodash';
 
 import { Categories, ProductType } from '../enums/shop';
 import { Filters } from '../store/types/state';
@@ -175,11 +175,15 @@ export async function fetchProductBySlug(slug: string): Promise<ContentfulProduc
     return null;
 }
 
-export async function fetchProductByProductLink(productLink: string): Promise<ContentfulProductShort | null> {
+export async function fetchProductByProductLink(
+    productLink: string[] | string
+): Promise<ContentfulProductShort[] | ContentfulProductShort | null> {
+    const productQuery = isArray(productLink) ? 'productLink_in' : 'productLink';
+
     // Piece together query.
     const query = `
         query {
-            productCollection (where: {productLink: ${JSON.stringify(productLink)}}) {
+            productCollection (where: {${productQuery}: ${JSON.stringify(productLink)}}) {
                 items {
                     name
                     slug
@@ -209,7 +213,11 @@ export async function fetchProductByProductLink(productLink: string): Promise<Co
             null
         );
 
-        return productCollection ? productCollection[0] : null;
+        if (isArray(productLink)) {
+            return productCollection ? productCollection : null;
+        } else {
+            return productCollection ? productCollection[0] : null;
+        }
     }
 
     // Return both defaults if unsuccessful.
