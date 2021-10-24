@@ -78,6 +78,7 @@ export async function getSkus(accessToken: string, sku_codes: string[]): Promise
 
         if (response) {
             const skuItems = get(response, 'data.skuItems', null);
+            console.log('🚀 ~ file: commerce.ts ~ line 81 ~ getSkus ~ skuItems', skuItems);
             const included = get(response, 'data.included', null);
 
             return skuItems.map((item: unknown) => {

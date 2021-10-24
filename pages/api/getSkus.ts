@@ -7,13 +7,14 @@ async function getSkus(req: NextApiRequest, res: NextApiResponse): Promise<void>
     if (req.method === 'POST') {
         const token = get(req, 'body.token', null);
         const sku_codes = join(get(req, 'body.sku_codes', []), ',');
+        console.log('🚀 ~ file: getSkus.ts ~ line 10 ~ getSkus ~ sku_codes', sku_codes);
 
         const cl = authClient(token);
         const fields =
             '&fields[skus]=code,image_url,name&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount';
 
         return cl
-            .get(`/api/skus?filter[q][code_in]=${sku_codes}&include=prices&include=prices${fields}`)
+            .get(`/api/skus?filter[q][code_in]=${sku_codes}&include=prices${fields}`)
             .then((response) => {
                 const status = get(response, 'status', 500);
                 const { data: skuItems, included } = get(response, 'data', null);

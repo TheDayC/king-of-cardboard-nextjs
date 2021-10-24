@@ -49,9 +49,10 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         // If we find our product then move on to fetching by SKU in commerce layer.
         if (productData) {
             const skuItems = await getSkus(token, [productData.productLink]);
+            console.log('🚀 ~ file: index.tsx ~ line 52 ~ fetchProductData ~ skuItems', skuItems);
 
             // If we hit some skuItems then put them in the store.
-            if (skuItems) {
+            if (skuItems && skuItems.length > 0) {
                 const skuItem = await getSkuDetails(token, skuItems[0].id);
 
                 if (skuItem) {

@@ -28,6 +28,8 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
 
     const createProductCollection = useCallback(
         async (accessToken: string, currentPage: number, categories: Categories[], productTypes: ProductType[]) => {
+            console.log('🚀 ~ file: index.tsx ~ line 31 ~ productTypes', productTypes);
+            console.log('🚀 ~ file: index.tsx ~ line 31 ~ categories', categories);
             // First, find our contentful products with links.
             // Use Limit for max products per request.
             // Multiply the currentPage (needs to start at 0) by the limit to skip over the same amount of products each time.
