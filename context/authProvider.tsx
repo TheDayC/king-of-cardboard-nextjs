@@ -38,7 +38,7 @@ const AuthProvider: React.FC = ({ children }) => {
     const [shouldCreateOrder, setShouldCreateOrder] = useState(true);
 
     // Create the productCollection and hydrate.
-    const createProductCollection = useCallback(
+    /* const createProductCollection = useCallback(
         async (accessToken: string) => {
             const stockItems = await getStockItems(accessToken);
             const prices = await getPrices(accessToken);
@@ -48,7 +48,7 @@ const AuthProvider: React.FC = ({ children }) => {
         },
         [dispatch]
     );
-
+ */
     // Fetch order with line items.
     const fetchOrder = useCallback(
         async (accessToken: string, orderId: string) => {
@@ -167,11 +167,11 @@ const AuthProvider: React.FC = ({ children }) => {
     }, [order, accessToken, shouldCreateOrder]);
 
     // Create the product collection on load.
-    useIsomorphicLayoutEffect(() => {
+    /* useIsomorphicLayoutEffect(() => {
         if (products.length <= 0 && accessToken) {
             createProductCollection(accessToken);
         }
-    }, [products, accessToken]);
+    }, [products, accessToken]); */
 
     return <React.Fragment>{children}</React.Fragment>;
 };

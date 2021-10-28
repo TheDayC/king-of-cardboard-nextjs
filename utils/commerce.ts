@@ -2,7 +2,7 @@ import axios from 'axios';
 import { get } from 'lodash';
 
 import { Order } from '../types/cart';
-import { LineItemAttributes, LineItemRelationships, Price, StockItem } from '../types/commerce';
+import { LineItemAttributes, LineItemRelationships, Price, StockItem, SkuItem, SkuProduct } from '../types/commerce';
 import { parseOrderData } from './parsers';
 
 export async function createOrder(accessToken: string): Promise<Order | null> {
@@ -26,10 +26,11 @@ export async function createOrder(accessToken: string): Promise<Order | null> {
     return null;
 }
 
-export async function getStockItems(accessToken: string): Promise<StockItem[] | null> {
+export async function getStockItems(accessToken: string, sku_codes: string[]): Promise<StockItem[] | null> {
     try {
         const response = await axios.post('/api/stockItems', {
             token: accessToken,
+            sku_codes,
         });
 
         if (response) {
@@ -53,6 +54,81 @@ export async function getStockItems(accessToken: string): Promise<StockItem[] | 
                 };
             });
         }
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
+
+export async function getSkus(accessToken: string, sku_codes: string[]): Promise<SkuItem[] | null> {
+    try {
+        const response = await axios.post('/api/getSkus', {
+            token: accessToken,
+            sku_codes,
+        });
+
+        if (response) {
+            const skuItems = get(response, 'data.skuItems', null);
+            const included = get(response, 'data.included', null);
+
+            return skuItems.map((item: unknown) => {
+                const id = get(item, 'id', '');
+                const sku_code = get(item, 'attributes.code', '');
+                const image_url = get(item, 'attributes.image_url', '');
+                const name = get(item, 'attributes.name', '');
+
+                // Find price data
+                const prices = included.find((i) => i.type === 'prices' && i.attributes.sku_code === sku_code);
+                const amount = get(prices, 'attributes.formatted_amount', '');
+                const compare_amount = get(prices, 'attributes.formatted_compare_at_amount', '');
+
+                return {
+                    id,
+                    sku_code,
+                    image_url,
+                    name,
+                    amount,
+                    compare_amount,
+                };
+            });
+        }
+
+        return null;
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
+
+export async function getSkuDetails(accessToken: string, id: string): Promise<SkuProduct | null> {
+    try {
+        const response = await axios.post('/api/getSku', {
+            token: accessToken,
+            id,
+        });
+
+        if (response) {
+            const skuItem = get(response, 'data.skuItem', null);
+            const included = get(response, 'data.included', null);
+
+            const sku_code = get(skuItem, 'attributes.code', '');
+            const inventory = get(skuItem, 'attributes.inventory', '');
+
+            // Find price data
+            const prices = included.find((i) => i.type === 'prices' && i.attributes.sku_code === sku_code);
+            const formatted_amount = get(prices, 'attributes.formatted_amount', '');
+            const formatted_compare_at_amount = get(prices, 'attributes.formatted_compare_at_amount', '');
+
+            return {
+                formatted_amount,
+                formatted_compare_at_amount,
+                inventory,
+            };
+        }
+
+        return null;
     } catch (error) {
         console.log('Error: ', error);
     }

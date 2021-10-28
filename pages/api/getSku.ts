@@ -3,22 +3,20 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import { authClient } from '../../utils/auth';
 
-async function stockItems(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+async function getSku(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         const token = get(req, 'body.token', null);
-        const sku_codes = join(get(req, 'body.sku_codes', []), ',');
+        const id = get(req, 'body.id', '');
 
         const cl = authClient(token);
 
         return cl
-            .get(
-                `/api/stock_items?filter[q][code_in]=${sku_codes}&include=prices&fields[stock_items]=code,description,image_url,name`
-            )
+            .get(`/api/skus/${id}?include=prices`)
             .then((response) => {
                 const status = get(response, 'status', 500);
-                const { data: stockItems } = get(response, 'data', null);
+                const { data: skuItem, included } = get(response, 'data', null);
 
-                res.status(status).json({ stockItems });
+                res.status(status).json({ skuItem, included });
             })
             .catch((error) => {
                 const status = get(error, 'response.status', 500);
@@ -32,4 +30,4 @@ async function stockItems(req: NextApiRequest, res: NextApiResponse): Promise<vo
     }
 }
 
-export default stockItems;
+export default getSku;

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { combinedFilters, FilterTypes } from '../../../../enums/shop';
+import { setIsLoadingProducts } from '../../../../store/slices/shop';
 
 interface FilterProps {
     value: combinedFilters;
@@ -11,7 +13,9 @@ interface FilterProps {
 }
 
 export const Filter: React.FC<FilterProps> = ({ value, type, label, checked, changeFilterState }) => {
+    const dispatch = useDispatch();
     const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(setIsLoadingProducts(true));
         changeFilterState(value, type, e.target.checked);
     };
 

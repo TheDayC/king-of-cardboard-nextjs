@@ -1,12 +1,12 @@
 import { Counties } from '../../enums/checkout';
 import { Categories, ProductType } from '../../enums/shop';
 import { Order } from '../../types/cart';
+import { SkuItem } from '../../types/commerce';
 import { ContentfulPage } from '../../types/pages';
-import { Product } from '../../types/products';
 
 export interface IAppState {
     global: Global;
-    products: Product[];
+    products: SkuItem[];
     cart: CartState;
     errors: string | null;
     productType: ProductType[];
@@ -15,6 +15,7 @@ export interface IAppState {
     checkout: Checkout;
     confirmation: Confirmation;
     pages: PagesState;
+    shop: ShopState;
 }
 
 export interface CartState {
@@ -96,4 +97,9 @@ export interface Confirmation {
 export interface PagesState {
     isLoadingPages: boolean;
     pages: ContentfulPage[];
+}
+
+export interface ShopState {
+    currentPage: number;
+    isLoadingProducts: boolean;
 }

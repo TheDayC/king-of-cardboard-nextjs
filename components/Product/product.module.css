@@ -1,0 +1,6 @@
+.imageContainer {
+    @apply rounded-md overflow-hidden;
+    width: 65px;
+    height: 65px;
+    position: relative;
+}
