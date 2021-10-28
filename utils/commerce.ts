@@ -2,15 +2,7 @@ import axios from 'axios';
 import { get } from 'lodash';
 
 import { Order } from '../types/cart';
-import {
-    LineItemAttributes,
-    LineItemRelationships,
-    Price,
-    StockItem,
-    SkuItem,
-    SkuInventory,
-    SkuProduct,
-} from '../types/commerce';
+import { LineItemAttributes, LineItemRelationships, Price, StockItem, SkuItem, SkuProduct } from '../types/commerce';
 import { parseOrderData } from './parsers';
 
 export async function createOrder(accessToken: string): Promise<Order | null> {
@@ -78,7 +70,6 @@ export async function getSkus(accessToken: string, sku_codes: string[]): Promise
 
         if (response) {
             const skuItems = get(response, 'data.skuItems', null);
-            console.log('🚀 ~ file: commerce.ts ~ line 81 ~ getSkus ~ skuItems', skuItems);
             const included = get(response, 'data.included', null);
 
             return skuItems.map((item: unknown) => {

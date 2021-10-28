@@ -7,7 +7,6 @@ async function getSkus(req: NextApiRequest, res: NextApiResponse): Promise<void>
     if (req.method === 'POST') {
         const token = get(req, 'body.token', null);
         const sku_codes = join(get(req, 'body.sku_codes', []), ',');
-        console.log('🚀 ~ file: getSkus.ts ~ line 10 ~ getSkus ~ sku_codes', sku_codes);
 
         const cl = authClient(token);
         const fields =
