@@ -261,5 +261,6 @@ export function mergeSkuProductData(product: ContentfulProduct, skuItem: SkuItem
         amount: get(skuData, 'formatted_amount', null),
         compare_amount: get(skuData, 'formatted_compare_at_amount', null),
         inventory: get(skuData, 'inventory', null),
+        options: get(skuData, 'options', null),
     };
 }

@@ -1,19 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { GlassMagnifier } from 'react-image-magnifiers';
 import { useDispatch, useSelector } from 'react-redux';
-import Image from 'next/image';
-import { MdRemoveCircleOutline, MdAddCircleOutline } from 'react-icons/md';
 import { BiErrorCircle } from 'react-icons/bi';
 import { useForm } from 'react-hook-form';
 
-import { ContentfulProduct, ImageItem, SingleProduct } from '../../types/products';
-import { getSkus, getSkuDetails, updateLineItem, setLineItem } from '../../utils/commerce';
+import { ImageItem, SingleProduct } from '../../types/products';
+import { getSkus, getSkuDetails, setLineItem } from '../../utils/commerce';
 import { fetchProductBySlug, mergeSkuProductData } from '../../utils/products';
 import Loading from '../Loading';
 import selector from './selector';
-import styles from './product.module.css';
-import { get, inRange, isNaN, isNumber, set, split } from 'lodash';
+import { get, inRange, isNaN, split } from 'lodash';
 import { fetchOrder } from '../../store/slices/cart';
+import Images from './Images';
 
 interface ProductProps {
     slug: string;
@@ -175,36 +172,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                 <Loading show={loading} />
                 <div className="container mx-auto">
                     <div className="flex flex-row space-x-16">
-                        <div id="productImagesWrapper" className="flex flex-col">
-                            {currentImage && (
-                                <div id="productImages" className="flex-1 w-60">
-                                    <GlassMagnifier
-                                        imageSrc={currentImage ? currentImage.url : ''}
-                                        imageAlt={currentImage ? currentImage.title : ''}
-                                        allowOverflow
-                                        magnifierSize="50%"
-                                        magnifierBorderSize={5}
-                                        magnifierBorderColor="rgba(255, 255, 255, .5)"
-                                        square={false}
-                                    />
-                                </div>
-                            )}
-
-                            {currentProduct.images && currentProduct.images.items && (
-                                <div className="flex flex-1 flex-row flex-wrap space-x-2 mt-4">
-                                    {currentProduct.images.items.map((image, index) => (
-                                        <div className={styles.imageContainer} key={`line-item-${index}`}>
-                                            <Image
-                                                src={image.url}
-                                                alt="shipment image"
-                                                layout="fill"
-                                                objectFit="cover"
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                        <Images mainImage={currentImage} imageCollection={get(currentProduct, 'images.items', null)} />
                         <div id="productDetails" className="flex-grow">
                             <div className="card rounded-md shadow-lg p-6">
                                 <h1 className="card-title text-xl lg:text-4xl">{currentProduct.name}</h1>
