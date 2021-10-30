@@ -11,6 +11,8 @@ import selector from './selector';
 import { get, inRange, isNaN, split } from 'lodash';
 import { fetchOrder } from '../../store/slices/cart';
 import Images from './Images';
+import Details from './Details';
+import ErrorAlert from '../ErrorAlert';
 
 interface ProductProps {
     slug: string;
@@ -36,9 +38,10 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         currentProduct && currentProduct.amount && currentProduct.inventory ? currentProduct.inventory.quantity : 0;
     const currentLineItem = items && currentProduct ? items.find((c) => c.sku_code === currentProduct.sku_code) : null;
     const hasExceededStock = currentLineItem ? currentLineItem.quantity >= stock : false;
+    const hasOptions = Boolean(currentProduct && currentProduct.options);
 
     // Collect errors.
-    const qtyErr = get(errors, 'qty.message', null);
+    const qtyErr: string | null = get(errors, 'qty.message', null);
 
     const fetchProductData = useCallback(async (token: string, productSlug: string) => {
         const productData = await fetchProductBySlug(productSlug);
@@ -164,7 +167,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
     if (currentProduct) {
         const description = currentProduct.description ? split(currentProduct.description, '\n\n') : [];
         const shouldShowCompare = currentProduct.amount !== currentProduct.compare_amount;
-        const isAvailable = currentProduct.inventory && currentProduct.inventory.available;
+        const isAvailable = Boolean(currentProduct.inventory && currentProduct.inventory.available);
         const quantity =
             currentProduct.inventory && currentProduct.inventory.quantity ? currentProduct.inventory.quantity : 0;
         return (
@@ -173,37 +176,19 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                 <div className="container mx-auto">
                     <div className="flex flex-row space-x-16">
                         <Images mainImage={currentImage} imageCollection={get(currentProduct, 'images.items', null)} />
+
                         <div id="productDetails" className="flex-grow">
                             <div className="card rounded-md shadow-lg p-6">
-                                <h1 className="card-title text-xl lg:text-4xl">{currentProduct.name}</h1>
-                                <div className="flex flex-row">
-                                    {shouldShowCompare && (
-                                        <span className="text-xs line-through text-base-200 mr-2 mt-1">
-                                            {currentProduct.compare_amount}
-                                        </span>
-                                    )}
-                                    <p className="text-xl font-semibold">{currentProduct.amount}</p>
-                                </div>
-                                <div className="flex flex-col mb-2">
-                                    <p className="text-base-200 text-sm text-mb-2">
-                                        {isAvailable ? `In Stock - Quantity ${quantity}` : 'Out of Stock'}
-                                    </p>
-                                </div>
-                                <div className="flex flex-row flex-wrap justify-start items-center mb-4 space-x-2">
-                                    {currentProduct.tags &&
-                                        currentProduct.tags.map((tag) => (
-                                            <div className="badge badge-secondary badge-outline" key={`tag-${tag}`}>
-                                                {tag}
-                                            </div>
-                                        ))}
-                                </div>
-                                <div className="description">
-                                    {description.map((d, i) => (
-                                        <p className="mb-4" key={`description-${i}`}>
-                                            {d}
-                                        </p>
-                                    ))}
-                                </div>
+                                <Details
+                                    name={currentProduct.name}
+                                    amount={currentProduct.amount}
+                                    compareAmount={currentProduct.compare_amount}
+                                    isAvailable={isAvailable}
+                                    shouldShowCompare={shouldShowCompare}
+                                    quantity={quantity}
+                                    tags={currentProduct.tags}
+                                    description={description}
+                                />
                                 <div className="quantity mb-4 flex flex-col justify-center">
                                     <form onSubmit={handleSubmit(onSubmit)}>
                                         <div className="flex flex-row justify-start align-center space-x-2">
@@ -233,14 +218,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                                         </div>
                                     </form>
                                 </div>
-                                {qtyErr && (
-                                    <div className="alert alert-error rounded-md">
-                                        <div className="flex-1">
-                                            <BiErrorCircle className="w-6 h-6 mx-2 stroke-current" />
-                                            <label>{qtyErr}</label>
-                                        </div>
-                                    </div>
-                                )}
+                                <ErrorAlert error={qtyErr} />
                             </div>
                         </div>
                     </div>
