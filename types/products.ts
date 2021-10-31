@@ -58,7 +58,7 @@ export interface ContentfulProductShort {
     cardImage: ImageItem;
 }
 
-interface ImageCollection {
+export interface ImageCollection {
     items: ImageItem[];
 }
 

@@ -16,6 +16,7 @@ export interface IAppState {
     confirmation: Confirmation;
     pages: PagesState;
     shop: ShopState;
+    breaks: BreaksState;
 }
 
 export interface CartState {
@@ -102,4 +103,9 @@ export interface PagesState {
 export interface ShopState {
     currentPage: number;
     isLoadingProducts: boolean;
+}
+
+export interface BreaksState {
+    currentPage: number;
+    isLoadingBreaks: boolean;
 }

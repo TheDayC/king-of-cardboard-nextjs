@@ -10,6 +10,7 @@ import checkoutInitialState from './checkout';
 import confirmationInitialState from './confirmation';
 import pagesInitialState from './pages';
 import shopInitialState from './shop';
+import breaksInitialState from './breaks';
 
 // Function to set our default state.
 export function createInitialState(): IAppState {
@@ -25,5 +26,6 @@ export function createInitialState(): IAppState {
         confirmation: confirmationInitialState,
         pages: pagesInitialState,
         shop: shopInitialState,
+        breaks: breaksInitialState,
     };
 }
