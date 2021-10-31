@@ -19,6 +19,7 @@ export interface ContentfulBreak {
     format: string;
     isLive: boolean;
     isComplete: boolean;
+    vodLink: string;
 }
 
 export interface ContentfulBreakTypes {

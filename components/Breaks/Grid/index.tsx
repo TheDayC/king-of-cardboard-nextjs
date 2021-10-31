@@ -98,6 +98,7 @@ export const Grid: React.FC = () => {
                                     breakDate={b.breakDate}
                                     isLive={b.isLive}
                                     isComplete={b.isComplete}
+                                    vodLink={b.vodLink}
                                     key={b.title}
                                 />
                             );

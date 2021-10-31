@@ -22,6 +22,7 @@ interface BreakProps {
     breakDate: string;
     isLive: boolean;
     isComplete: boolean;
+    vodLink: string;
 }
 
 export const BreakCard: React.FC<BreakProps> = ({
@@ -35,6 +36,7 @@ export const BreakCard: React.FC<BreakProps> = ({
     breakDate,
     isLive,
     isComplete,
+    vodLink,
 }) => {
     const { accessToken } = useSelector(selector);
     const [slotsAvailable, setSlotsAvailable] = useState<number | null>(null);
@@ -105,20 +107,20 @@ export const BreakCard: React.FC<BreakProps> = ({
                         </div>
                     )}
                     {isLive && !isComplete && (
-                        <Link href="https://twitch.tv/dayc" passHref>
+                        <a href="https://twitch.tv/dayc" className="w-full" target="__blank">
                             <div className="flex justify-center items-center w-full bg-gradient-to-r from-accent to-accent-focus p-2 mb-4 text-neutral-content cursor-pointer">
                                 <BsTwitch className="inline mr-2" />
                                 <span className="text-lg">Live</span>
                             </div>
-                        </Link>
+                        </a>
                     )}
                     {isComplete && (
-                        <Link href="https://twitch.tv/dayc" passHref>
+                        <a href={vodLink} className="w-full" target="__blank">
                             <div className="flex justify-center items-center w-full bg-gradient-to-r from-green-300 to-green-500 p-2 mb-4 text-neutral-content cursor-pointer">
                                 <BsFillCheckCircleFill className="inline mr-2" />
                                 <span className="text-lg">Complete</span>
                             </div>
-                        </Link>
+                        </a>
                     )}
                     {tags && (
                         <div className="flex flex-row flex-wrap justify-center items-center w-full space-x-2 px-6">

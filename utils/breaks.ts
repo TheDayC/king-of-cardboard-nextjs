@@ -59,6 +59,7 @@ export async function fetchContentfulBreaks(
                     format
                     isLive
                     isComplete
+                    vodLink
                 }
             }
         }
