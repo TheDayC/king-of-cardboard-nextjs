@@ -105,8 +105,8 @@ interface PriceAttributes {
 export interface LineItemAttributes {
     quantity: number;
     sku_code: string;
-    name: string;
-    image_url: string;
+    name?: string;
+    image_url?: string;
     _external_price: boolean;
     _update_quantity: boolean;
 }

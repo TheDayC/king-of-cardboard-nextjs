@@ -84,7 +84,6 @@ export const Grid: React.FC = () => {
                             const sku_codes = breakSlots
                                 ? breakSlots.filter((bS) => bS).map((bS) => bS.productLink)
                                 : [];
-                            console.log('🚀 ~ file: index.tsx ~ line 103 ~ breaks.map ~ b', b);
 
                             return (
                                 <BreakCard

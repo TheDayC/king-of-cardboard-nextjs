@@ -14,7 +14,8 @@ import Images from './Images';
 import Details from './Details';
 import ErrorAlert from '../ErrorAlert';
 import { fetchBreakBySlug, mergeSkuBreakData } from '../../utils/breaks';
-import { SingleBreak } from '../../types/breaks';
+import { SingleBreak, BreakSlot, ContentfulBreak } from '../../types/breaks';
+import Slots from './Slots';
 
 interface BreakProps {
     slug: string;
@@ -25,7 +26,7 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
     const { accessToken, items, order } = useSelector(selector);
     const [loading, setLoading] = useState(false);
     const [currentImage, setCurrentImage] = useState<ImageItem | null>(null);
-    const [currentBreak, setCurrentBreak] = useState<SingleBreak | null>(null);
+    const [currentBreak, setCurrentBreak] = useState<ContentfulBreak | null>(null);
     const [chosenQuantity, setChosenQuantity] = useState(1);
     const [maxQuantity, setMaxQuantity] = useState(1);
     const {
@@ -36,10 +37,10 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
         setError,
     } = useForm();
     const hasErrors = Object.keys(errors).length > 0;
-    const stock = currentBreak && currentBreak.amount && currentBreak.inventory ? currentBreak.inventory.quantity : 0;
+    /*  const stock = currentBreak && currentBreak.amount && currentBreak.inventory ? currentBreak.inventory.quantity : 0;
     const currentLineItem = items && currentBreak ? items.find((c) => c.sku_code === currentBreak.sku_code) : null;
     const hasExceededStock = currentLineItem ? currentLineItem.quantity >= stock : false;
-    const hasOptions = Boolean(currentBreak && currentBreak.options);
+    const hasOptions = Boolean(currentBreak && currentBreak.options); */
 
     // Collect errors.
     const qtyErr: string | null = get(errors, 'qty.message', null);
@@ -49,26 +50,36 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
 
         // If we find our product then move on to fetching by SKU in commerce layer.
         if (breakData) {
-            const skuItems = await getSkus(token, [breakData.productLink]);
+            setCurrentBreak(breakData);
+            // const slots: BreakSlot[] | null = get(breakData, 'breakSlotsCollection.items', null);
+
+            // if (slots){
+            /*  const sku_codes = slots
+                    ? slots.filter((slot) => slot).map((slot) => slot.productLink)
+                    : [];
+
+                const skuItems = await getSkus(token, sku_codes); */
 
             // If we hit some skuItems then put them in the store.
-            if (skuItems && skuItems.length > 0) {
-                const skuItem = await getSkuDetails(token, skuItems[0].id);
+            /* if (skuItems && skuItems.length > 0) {
+                    const skuItem = await getSkuDetails(token, skuItems[0].id);
 
-                if (skuItem) {
-                    const mergedBreak = mergeSkuBreakData(breakData, skuItems[0], skuItem);
+                    if (skuItem) {
+                        const mergedBreak = mergeSkuBreakData(breakData, skuItems[0], skuItem);
 
-                    if (mergedBreak) {
-                        const quantity =
-                            mergedBreak.inventory && mergedBreak.inventory.quantity
-                                ? mergedBreak.inventory.quantity
-                                : 0;
+                        if (mergedBreak) {
+                            const quantity =
+                                mergedBreak.inventory && mergedBreak.inventory.quantity
+                                    ? mergedBreak.inventory.quantity
+                                    : 0;
 
-                        setMaxQuantity(quantity);
-                        setCurrentBreak(mergedBreak);
+                            setMaxQuantity(quantity);
+                            setCurrentBreak(mergedBreak);
+                        }
                     }
-                }
-            }
+                } */
+            // }
+            /* const skuItems = await getSkus(token, [breakData.productLink]); */
         }
 
         setLoading(false);
@@ -82,8 +93,8 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
 
     // Set first image.
     useEffect(() => {
-        if (currentBreak && currentBreak.images) {
-            setCurrentImage(currentBreak.images.items[0]);
+        if (currentBreak && currentBreak.imagesCollection) {
+            setCurrentImage(currentBreak.imagesCollection.items[0]);
         }
     }, [currentBreak]);
 
@@ -102,24 +113,10 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
         setLoading(false);
     }, []);
 
-    useEffect(() => {
-        if (!currentLineItem) {
-            return;
-        }
-
-        setChosenQuantity(currentLineItem.quantity);
-    }, [currentLineItem && currentLineItem.quantity]);
-
-    useEffect(() => {
-        if (hasExceededStock) {
-            handleQtyError(`Maximum quantity of ${maxQuantity} is currently in your cart.`);
-        }
-    }, [hasExceededStock]);
-
     // Handle the form submission.
     const onSubmit = useCallback(
         async (data: any) => {
-            const { qty } = data;
+            /* const { qty } = data;
             setLoading(true);
 
             if (isNaN(qty) || hasErrors || !accessToken || !currentBreak || !order) {
@@ -129,11 +126,6 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
 
             if (!inRange(qty, 1, maxQuantity + 1)) {
                 handleQtyError(`Quantity must be between 1 and ${maxQuantity}.`);
-                return;
-            }
-
-            if (hasExceededStock) {
-                handleQtyError(`Maximum quantity of ${maxQuantity} is currently in your cart.`);
                 return;
             }
 
@@ -160,17 +152,15 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
             if (hasLineItemUpdated) {
                 setLoading(false);
                 dispatch(fetchOrder(true));
-            }
+            } */
         },
-        [hasErrors, accessToken, currentBreak, order, maxQuantity, hasExceededStock]
+        [hasErrors, accessToken, currentBreak, order, maxQuantity]
     );
 
     if (currentBreak) {
         const description = currentBreak.description ? split(currentBreak.description, '\n\n') : [];
-        const shouldShowCompare = currentBreak.amount !== currentBreak.compare_amount;
-        const isAvailable = Boolean(currentBreak.inventory && currentBreak.inventory.available);
-        const quantity =
-            currentBreak.inventory && currentBreak.inventory.quantity ? currentBreak.inventory.quantity : 0;
+        const slots: BreakSlot[] | null = get(currentBreak, 'breakSlotsCollection.items', null);
+
         return (
             <div className="p-8 relative">
                 <Loading show={loading} />
@@ -180,34 +170,12 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
 
                         <div id="productDetails" className="flex-grow">
                             <div className="card rounded-md shadow-lg bordered p-6">
-                                <Details
-                                    name={currentBreak.title}
-                                    amount={currentBreak.amount}
-                                    compareAmount={currentBreak.compare_amount}
-                                    isAvailable={isAvailable}
-                                    shouldShowCompare={shouldShowCompare}
-                                    quantity={quantity}
-                                    tags={currentBreak.tags}
-                                    description={description}
-                                />
+                                <Details name={currentBreak.title} tags={currentBreak.tags} description={description} />
+                                {slots && <Slots slots={slots} format={currentBreak.format} />}
                                 <div className="quantity mb-4 flex flex-col justify-center">
                                     <form onSubmit={handleSubmit(onSubmit)}>
                                         <div className="flex flex-row justify-start align-center space-x-2">
-                                            <input
-                                                type="text"
-                                                placeholder="0"
-                                                {...register('qty', {
-                                                    required: { value: true, message: 'Must add a quantity.' },
-                                                    valueAsNumber: true,
-                                                })}
-                                                defaultValue={1}
-                                                onChange={handleFieldChange}
-                                                className={`input input-lg rounded-md w-20 input-bordered${
-                                                    qtyErr ? ' input-error' : ''
-                                                }`}
-                                                disabled={hasExceededStock}
-                                            />
-                                            <button
+                                            {/* <button
                                                 aria-label="add to cart"
                                                 className={`btn btn-lg rounded-md${
                                                     hasExceededStock ? ' btn-disabled' : ' btn-primary'
@@ -215,7 +183,7 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
                                                 disabled={hasExceededStock}
                                             >
                                                 Add to cart
-                                            </button>
+                                            </button> */}
                                         </div>
                                     </form>
                                 </div>

@@ -65,3 +65,12 @@ export interface BreakSlot {
     slotIdentifier: string;
     image: ImageItem | null;
 }
+
+export interface BreakSlotWithSku {
+    id: string;
+    name: string;
+    image: ImageItem | null;
+    sku_code: string;
+    amount: string;
+    compare_amount: string;
+}

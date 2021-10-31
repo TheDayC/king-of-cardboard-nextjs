@@ -2,7 +2,9 @@ import { get } from 'lodash';
 
 import {
     Break,
+    BreakSlot,
     BreakSlotsCollection,
+    BreakSlotWithSku,
     ContentfulBreak,
     ContentfulBreaksResponse,
     ContentfulBreakTypes,
@@ -117,7 +119,7 @@ export async function fetchBreakBySlug(slug: string): Promise<ContentfulBreak | 
     // Piece together query.
     const query = `
         query {
-            breaksCollection (where: {slug: ${JSON.stringify(slug)}}) {
+            breaksCollection (limit: 1, skip: 0, where: {slug: ${JSON.stringify(slug)}}) {
                 items {
                     title
                     slug
@@ -150,6 +152,9 @@ export async function fetchBreakBySlug(slug: string): Promise<ContentfulBreak | 
                     breakDate
                     tags
                     format
+                    isLive
+                    isComplete
+                    vodLink
                 }
             }
         }
@@ -169,31 +174,24 @@ export async function fetchBreakBySlug(slug: string): Promise<ContentfulBreak | 
     return null;
 }
 
-export function mergeBreakData(products: ContentfulBreak[], skuItems: SkuItem[]): Break[] {
-    return products.map((product) => {
-        const { productLink: sku_code } = product;
+export function mergeBreakSlotData(breaks: BreakSlot[], skuItems: SkuItem[]): BreakSlotWithSku[] {
+    return breaks.map((breakSlot) => {
+        const { productLink: sku_code } = breakSlot;
         const skuItem = skuItems.find((s) => s.sku_code === sku_code) || null;
 
         const id: string = get(skuItem, 'id', '');
-        const title: string = get(product, 'title', '');
-        const slug: string = get(product, 'slug', '');
-        const description: string | null = get(product, 'description', null);
-        const types: string | null = get(product, 'types', null);
-        const cardImage: ImageItem | null = get(product, 'cardImage', null);
-        const breakSlotsCollection: BreakSlotsCollection | null = get(product, 'breakSlotsCollection', null);
-        const imagesCollection: ImageCollection | null = get(product, 'imagesCollection', null);
-        const tags: string[] | null = get(product, 'tags', null);
+        const name: string = get(breakSlot, 'slotIdentifier', '');
+        const image: ImageItem | null = get(breakSlot, 'image', null);
+        const amount: string = get(skuItem, 'amount', '');
+        const compare_amount: string = get(skuItem, 'compare_amount', '');
 
         return {
             id,
-            title,
-            slug,
+            name,
             sku_code,
-            description,
-            types,
-            cardImage,
-            imagesCollection,
-            tags,
+            image,
+            amount,
+            compare_amount,
         };
     });
 }
