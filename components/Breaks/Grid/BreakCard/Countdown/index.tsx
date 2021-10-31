@@ -1,13 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { ceil, round } from 'lodash';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useSelector } from 'react-redux';
-import { DateTime, Interval } from 'luxon';
-
-import { ImageItem } from '../../../../types/products';
-import selector from './selector';
-import { getSkus } from '../../../../utils/commerce';
+import React, { useEffect, useMemo, useState } from 'react';
+import { round, get } from 'lodash';
+import { DateTime } from 'luxon';
 
 interface BreakProps {
     breakDate: DateTime;
@@ -16,21 +9,42 @@ interface BreakProps {
 export const Countdown: React.FC<BreakProps> = ({ breakDate }) => {
     const [currentDate, setCurrentDate] = useState(DateTime.now().setZone('Europe/London'));
     const duration = currentDate.until(breakDate).toDuration(['days', 'hours', 'minutes', 'seconds']).toObject();
+    const days = get(duration, 'days', 0);
+    const hours = get(duration, 'hours', 0);
+    const minutes = get(duration, 'minutes', 0);
+    const seconds = get(duration, 'seconds', 0);
+    const hasPassed = days <= 0 && hours <= 0 && minutes <= 0 && round(seconds) <= 0;
 
-    useEffect(() => {
-        const interval = setInterval(() => {
+    // Set an interval once.
+    const interval = useMemo(() => {
+        return setInterval(() => {
             setCurrentDate(DateTime.now().setZone('Europe/London'));
         }, 1000);
+    }, []);
 
+    // If the component unloads then clear the interval.
+    useEffect(() => {
         return () => {
             clearInterval(interval);
         };
-    });
+    }, []);
 
-    const daysStyle = { '--value': duration.days } as React.CSSProperties;
-    const hoursStyle = { '--value': duration.hours } as React.CSSProperties;
-    const minutesStyle = { '--value': duration.minutes } as React.CSSProperties;
-    const secondsStyle = { '--value': round(duration.seconds || 0) } as React.CSSProperties;
+    // If the duration has passed then clear the interval.
+    useEffect(() => {
+        if (hasPassed) {
+            clearInterval(interval);
+        }
+    }, [hasPassed]);
+
+    if (hasPassed) {
+        return null;
+    }
+
+    // Set inline styling attributes for the countdown.
+    const daysStyle = { '--value': days } as React.CSSProperties;
+    const hoursStyle = { '--value': hours } as React.CSSProperties;
+    const minutesStyle = { '--value': minutes } as React.CSSProperties;
+    const secondsStyle = { '--value': round(seconds) } as React.CSSProperties;
 
     return (
         <div className="grid grid-flow-col gap-1 text-center auto-cols-max">

@@ -4,11 +4,12 @@ import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { AiFillStar, AiTwotoneCalendar } from 'react-icons/ai';
+import { BsTwitch, BsFillCheckCircleFill } from 'react-icons/bs';
 
 import { ImageItem } from '../../../../types/products';
 import selector from './selector';
 import { getSkus } from '../../../../utils/commerce';
-import Countdown from '../../../Countdown';
+import Countdown from './Countdown';
 
 interface BreakProps {
     cardImage: ImageItem;
@@ -19,6 +20,8 @@ interface BreakProps {
     slotSkus: string[];
     format: string;
     breakDate: string;
+    isLive: boolean;
+    isComplete: boolean;
 }
 
 export const BreakCard: React.FC<BreakProps> = ({
@@ -30,11 +33,14 @@ export const BreakCard: React.FC<BreakProps> = ({
     slotSkus,
     format,
     breakDate,
+    isLive,
+    isComplete,
 }) => {
     const { accessToken } = useSelector(selector);
     const [slotsAvailable, setSlotsAvailable] = useState<number | null>(null);
     const hasSlots = slotsAvailable && slotsAvailable > 0;
     const breakDateLuxon = DateTime.fromISO(breakDate, { zone: 'Europe/London' });
+    const isActive = !isLive && !isComplete;
 
     const fetchSlotSkuData = useCallback(async (token: string, skus: string[]) => {
         const skuData = await getSkus(token, skus);
@@ -64,11 +70,18 @@ export const BreakCard: React.FC<BreakProps> = ({
                         objectFit="scale-down"
                         className="rounded-sm"
                     />
-                    <div className="badge badge-accent absolute -bottom-2 left-0 ml-6 shadow-md">
-                        {hasSlots
-                            ? `${slotsAvailable} ${slotsAvailable > 1 ? 'slots' : 'slot'} available`
-                            : 'Sold Out!'}
-                    </div>
+                    {isActive && (
+                        <div className="badge badge-accent absolute -bottom-2 left-0 ml-6 shadow-md">
+                            {hasSlots
+                                ? `${slotsAvailable} ${slotsAvailable > 1 ? 'slots' : 'slot'} available`
+                                : 'Sold Out!'}
+                        </div>
+                    )}
+                    {isComplete && (
+                        <div className="badge badge-success absolute -bottom-2 left-0 ml-6 shadow-md">
+                            Opened on {breakDateLuxon.toFormat('MMM dd, y')}
+                        </div>
+                    )}
                 </div>
             )}
             <div className="justify-between items-start card-body p-0">
@@ -86,9 +99,27 @@ export const BreakCard: React.FC<BreakProps> = ({
                             </p>
                         </div>
                     </div>
-                    <div className="flex justify-center items-center w-full bg-secondary bg-gradient-to-r from-secondary to-secondary-focus p-2 py-0 mb-4 text-neutral-content">
-                        <Countdown breakDate={breakDateLuxon} />
-                    </div>
+                    {!isLive && !isComplete && (
+                        <div className="flex justify-center items-center w-full bg-secondary bg-gradient-to-r from-secondary to-secondary-focus p-2 py-0 mb-4 text-neutral-content">
+                            <Countdown breakDate={breakDateLuxon} />
+                        </div>
+                    )}
+                    {isLive && !isComplete && (
+                        <Link href="https://twitch.tv/dayc" passHref>
+                            <div className="flex justify-center items-center w-full bg-gradient-to-r from-accent to-accent-focus p-2 mb-4 text-neutral-content cursor-pointer">
+                                <BsTwitch className="inline mr-2" />
+                                <span className="text-lg">Live</span>
+                            </div>
+                        </Link>
+                    )}
+                    {isComplete && (
+                        <Link href="https://twitch.tv/dayc" passHref>
+                            <div className="flex justify-center items-center w-full bg-gradient-to-r from-green-300 to-green-500 p-2 mb-4 text-neutral-content cursor-pointer">
+                                <BsFillCheckCircleFill className="inline mr-2" />
+                                <span className="text-lg">Complete</span>
+                            </div>
+                        </Link>
+                    )}
                     {tags && (
                         <div className="flex flex-row flex-wrap justify-center items-center w-full space-x-2 px-6">
                             {tags.map((tag) => (

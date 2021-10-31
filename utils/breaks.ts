@@ -57,6 +57,8 @@ export async function fetchContentfulBreaks(
                     breakDate
                     tags
                     format
+                    isLive
+                    isComplete
                 }
             }
         }

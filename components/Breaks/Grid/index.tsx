@@ -1,21 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Image from 'next/image';
-import Link from 'next/link';
 import { ceil, divide, get } from 'lodash';
 import { useRouter } from 'next/router';
 
 import selector from './selector';
-import { mergeProductData } from '../../../utils/products';
-import { fetchContentfulBreaks, mergeBreakData } from '../../../utils/breaks';
-import { getSkus } from '../../../utils/commerce';
-import { Product } from '../../../types/products';
+import { fetchContentfulBreaks } from '../../../utils/breaks';
 import Pagination from '../../Pagination';
-import { Categories, ProductType } from '../../../enums/shop';
 import { setIsLoadingProducts } from '../../../store/slices/shop';
-import { Break, BreakSlot, ContentfulBreak } from '../../../types/breaks';
+import { BreakSlot, ContentfulBreak } from '../../../types/breaks';
 import { setIsLoadingBreaks } from '../../../store/slices/breaks';
-import { BiNavigation } from 'react-icons/bi';
 import BreakCard from './BreakCard';
 
 const PER_PAGE = 9;
@@ -91,6 +84,7 @@ export const Grid: React.FC = () => {
                             const sku_codes = breakSlots
                                 ? breakSlots.filter((bS) => bS).map((bS) => bS.productLink)
                                 : [];
+                            console.log('🚀 ~ file: index.tsx ~ line 103 ~ breaks.map ~ b', b);
 
                             return (
                                 <BreakCard
@@ -102,6 +96,8 @@ export const Grid: React.FC = () => {
                                     slotSkus={sku_codes}
                                     format={b.format}
                                     breakDate={b.breakDate}
+                                    isLive={b.isLive}
+                                    isComplete={b.isComplete}
                                     key={b.title}
                                 />
                             );

@@ -17,6 +17,8 @@ export interface ContentfulBreak {
     breakDate: string;
     tags: string[];
     format: string;
+    isLive: boolean;
+    isComplete: boolean;
 }
 
 export interface ContentfulBreakTypes {
