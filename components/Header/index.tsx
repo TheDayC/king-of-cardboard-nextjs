@@ -4,6 +4,7 @@ import { AiOutlineShoppingCart, AiFillHome, AiFillShopping, AiTwotoneCrown } fro
 import { BsFillRecord2Fill } from 'react-icons/bs';
 import Image from 'next/image';
 import Link from 'next/link';
+import netlifyIdentity from 'netlify-identity-widget';
 
 import selector from './selector';
 import styles from './header.module.css';
@@ -11,6 +12,10 @@ import logo from '../../images/logo-full.png';
 
 export const Header: React.FC = () => {
     const { cartItemCount } = useSelector(selector);
+
+    const handleLoginRegister = () => {
+        netlifyIdentity.open();
+    };
 
     return (
         <div className="navbar shadow-md bg-neutral text-neutral-content">
@@ -56,6 +61,7 @@ export const Header: React.FC = () => {
                         {cartItemCount > 0 && <div className="indicator-item badge badge-primary">{cartItemCount}</div>}
                     </div>
                 </Link>
+                <span onClick={handleLoginRegister}>Login / Register</span>
             </div>
         </div>
     );
