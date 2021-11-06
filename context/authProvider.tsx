@@ -29,7 +29,7 @@ const AuthProvider: React.FC = ({ children }) => {
         waitForHydro();
     }, []);
 
-    const { accessToken, expires, order, products, shouldFetchOrder } = useSelector(selector);
+    const { accessToken, expires, order, shouldFetchOrder } = useSelector(selector);
     const dispatch = useDispatch();
     const [shouldCreateOrder, setShouldCreateOrder] = useState(true);
 

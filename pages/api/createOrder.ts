@@ -19,6 +19,8 @@ async function createOrder(req: NextApiRequest, res: NextApiResponse): Promise<v
             })
             .then((response) => {
                 const status = get(response, 'status', 500);
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 const { data: order } = get(response, 'data', null);
 
                 res.status(status).json({ order });

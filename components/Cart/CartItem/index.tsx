@@ -4,8 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
 
 import { fetchOrder, setUpdatingCart } from '../../../store/slices/cart';
-import { addError } from '../../../store/slices/errors';
-import { getSku, getSkuDetails, getSkus, removeLineItem, updateLineItem } from '../../../utils/commerce';
+import { getSkuDetails, getSkus, removeLineItem, updateLineItem } from '../../../utils/commerce';
 import selector from './selector';
 import styles from './cartitem.module.css';
 import { fetchProductByProductLink, mergeSkuProductData } from '../../../utils/products';

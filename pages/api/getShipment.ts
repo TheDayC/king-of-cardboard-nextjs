@@ -14,6 +14,8 @@ async function getShipment(req: NextApiRequest, res: NextApiResponse): Promise<v
             .get(`/api/shipments/${shipmentId}?include=${include}`)
             .then((response) => {
                 const status = get(response, 'status', 500);
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 const { data: shipment, included } = get(response, 'data', null);
 
                 res.status(status).json({ shipment, included });

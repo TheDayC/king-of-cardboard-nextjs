@@ -31,6 +31,8 @@ async function updateAddress(req: NextApiRequest, res: NextApiResponse): Promise
             })
             .then((response) => {
                 const status = get(response, 'status', 500);
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 const { data: addressResponse } = get(response, 'data', null);
 
                 const relationships = isShipping
@@ -65,6 +67,8 @@ async function updateAddress(req: NextApiRequest, res: NextApiResponse): Promise
                         })
                         .then((response) => {
                             const status = get(response, 'status', 500);
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
                             const { data: addressAssociation } = get(response, 'data', null);
 
                             res.status(status).json({ hasUpdated: Boolean(addressAssociation) });

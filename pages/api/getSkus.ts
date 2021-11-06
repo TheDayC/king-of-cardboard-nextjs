@@ -18,6 +18,8 @@ async function getSkus(req: NextApiRequest, res: NextApiResponse): Promise<void>
             )
             .then((response) => {
                 const status = get(response, 'status', 500);
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 const { data: skuItems, included } = get(response, 'data', null);
 
                 res.status(status).json({ skuItems, included });

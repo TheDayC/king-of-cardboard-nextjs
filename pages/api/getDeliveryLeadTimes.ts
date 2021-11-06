@@ -13,6 +13,8 @@ async function getDeliveryLeadTimes(req: NextApiRequest, res: NextApiResponse): 
             .get(`/api/delivery_lead_times?include=${include}`)
             .then((response) => {
                 const status = get(response, 'status', 500);
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 const { data: deliveryLeadTimes, included } = get(response, 'data', null);
 
                 res.status(status).json({ deliveryLeadTimes, included });
