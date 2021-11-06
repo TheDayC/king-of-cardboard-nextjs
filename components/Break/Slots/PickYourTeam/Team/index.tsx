@@ -15,19 +15,10 @@ interface TeamProps {
 }
 
 export const Team: React.FC<TeamProps> = ({ skuItem, setLoading }) => {
-    const { accessToken, order, items } = useSelector(selector);
+    const { accessToken, order, items, shouldFetchOrder } = useSelector(selector);
     const dispatch = useDispatch();
-    const fetchAndMergeSkuDetails = useCallback(async (token: string, id: string) => {
-        const skuDetails = await getSkuDetails(token, id);
-    }, []);
     const shouldShowCompare = skuItem.amount !== skuItem.compare_amount;
     const isInBasket = Boolean(items.find((item) => item.sku_code === skuItem.sku_code));
-
-    useEffect(() => {
-        if (accessToken && skuItem.id) {
-            fetchAndMergeSkuDetails(accessToken, skuItem.id);
-        }
-    }, [accessToken, skuItem.id]);
 
     const handleClick = async () => {
         if (accessToken && order && !isInBasket) {
@@ -51,11 +42,16 @@ export const Team: React.FC<TeamProps> = ({ skuItem, setLoading }) => {
             const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
 
             if (hasLineItemUpdated) {
-                setLoading(false);
                 dispatch(fetchOrder(true));
             }
         }
     };
+
+    useEffect(() => {
+        if (!shouldFetchOrder && isInBasket) {
+            setLoading(false);
+        }
+    }, [shouldFetchOrder, isInBasket]);
 
     return (
         <div

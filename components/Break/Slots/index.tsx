@@ -9,12 +9,14 @@ interface SlotsProps {
 }
 
 export const Slots: React.FC<SlotsProps> = ({ slots, format }) => {
-    switch (format) {
+    /* switch (format) {
         case 'Pick Your Team':
+        case 'Pick Your Team w/ Random':
             return <PickYourTeam slots={slots} />;
         default:
             return null;
-    }
+    } */
+    return <PickYourTeam slots={slots} />;
 };
 
 export default Slots;

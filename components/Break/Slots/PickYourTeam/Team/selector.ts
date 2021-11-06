@@ -6,6 +6,7 @@ const selector = createSelector([selectGlobalData, selectCartData], (global, car
     accessToken: global.accessToken,
     order: cart.order,
     items: cart.items,
+    shouldFetchOrder: cart.shouldFetchOrder,
 }));
 
 export default selector;
