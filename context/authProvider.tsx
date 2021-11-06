@@ -5,7 +5,7 @@ import { get } from 'lodash';
 
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import selector from './authSelector';
-import { createOrder, getOrder, getPrices, getStockItems } from '../utils/commerce';
+import { createOrder, getOrder } from '../utils/commerce';
 import { setAccessToken, setCheckoutLoading, setExpires } from '../store/slices/global';
 import {
     fetchOrder as fetchOrderAction,
@@ -14,15 +14,10 @@ import {
     setPaymentMethods,
     setUpdatingCart,
 } from '../store/slices/cart';
-import { fetchProductCollection } from '../utils/products';
-import { PAGES_QUERY, PRODUCT_QUERY } from '../utils/content';
-import { addProductCollection } from '../store/slices/products';
 import { rehydration } from '../store';
 import { createToken } from '../utils/auth';
 import { getShipment, getShipments } from '../utils/checkout';
 import { addShipmentWithMethod } from '../store/slices/checkout';
-import { fetchPageCollection } from '../utils/pages';
-import { setLoadingPages, setPages } from '../store/slices/pages';
 
 const AuthProvider: React.FC = ({ children }) => {
     const waitForHydro = async () => {
@@ -33,7 +28,7 @@ const AuthProvider: React.FC = ({ children }) => {
         waitForHydro();
     }, []);
 
-    const { accessToken, expires, order, products, shouldFetchOrder } = useSelector(selector);
+    const { accessToken, expires, order, shouldFetchOrder } = useSelector(selector);
     const dispatch = useDispatch();
     const [shouldCreateOrder, setShouldCreateOrder] = useState(true);
 

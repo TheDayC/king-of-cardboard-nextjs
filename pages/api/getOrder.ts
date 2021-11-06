@@ -25,6 +25,8 @@ async function getOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
             .get(apiUrl)
             .then((response) => {
                 const status = get(response, 'status', 500);
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 const { data: order, included } = get(response, 'data', null);
 
                 res.status(status).json({ order, included });

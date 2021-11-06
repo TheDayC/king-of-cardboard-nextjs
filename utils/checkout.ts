@@ -1,17 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosResponse } from 'axios';
 import { get } from 'lodash';
 
 import { AxiosData } from '../types/fetch';
 import { Counties } from '../enums/checkout';
-import { CustomerDetails, ShipmentsWithLineItems, ShipmentsWithMethods } from '../store/types/state';
-import {
-    DeliveryLeadTimes,
-    MergedShipmentMethods,
-    MergedShipments,
-    Shipments,
-    ShippingMethods,
-} from '../types/checkout';
-import { Order } from '../types/cart';
+import { CustomerDetails, ShipmentsWithLineItems } from '../store/types/state';
+import { DeliveryLeadTimes, MergedShipmentMethods, Shipments, ShippingMethods } from '../types/checkout';
 
 function regexEmail(email: string): boolean {
     // eslint-disable-next-line no-useless-escape
@@ -329,10 +323,9 @@ export async function getDeliveryLeadTimes(accessToken: string): Promise<Deliver
 
         if (response) {
             const deliveryLeadTimes: any | null = get(response, 'data.deliveryLeadTimes', null);
-            const included: any | null = get(response, 'data.included', null);
 
             if (deliveryLeadTimes) {
-                return deliveryLeadTimes.map((leadTime) => ({
+                return deliveryLeadTimes.map((leadTime: any) => ({
                     id: leadTime.id,
                     minHours: leadTime.attributes.min_hours,
                     maxHours: leadTime.attributes.max_hours,
@@ -408,11 +401,11 @@ export async function getShipment(accessToken: string, shipmentId: string): Prom
 
         if (response) {
             const included = get(response, 'data.included', null);
-            const method = included ? included.find((include) => include.type === 'shipping_methods') : null;
+            const method = included ? included.find((include: any) => include.type === 'shipping_methods') : null;
             const items = included
                 ? included
-                      .filter((include) => include.type === 'shipment_line_items')
-                      .map((item) => item.attributes.sku_code)
+                      .filter((include: any) => include.type === 'shipment_line_items')
+                      .map((item: any) => item.attributes.sku_code)
                 : null;
 
             if (method && items) {

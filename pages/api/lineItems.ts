@@ -20,6 +20,8 @@ async function lineItems(req: NextApiRequest, res: NextApiResponse): Promise<voi
             })
             .then((response) => {
                 const status = get(response, 'status', 500);
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 const { data: lineItems } = get(response, 'data', null);
 
                 res.status(status).json({ hasUpdated: Boolean(lineItems) });

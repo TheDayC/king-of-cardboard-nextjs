@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types */
 import { get } from 'lodash';
 
 import { Counties } from '../enums/checkout';
 import { CustomerDetails } from '../store/types/state';
 import { Order } from '../types/cart';
 
-export function parseOrderData(order: unknown, included: unknown): Order | null {
+export function parseOrderData(order: any, included: any): Order | null {
     if (order !== null) {
         const id: string = get(order, 'id', '');
         const orderNumber: number = get(order, 'attributes.number', 0);
@@ -33,7 +34,7 @@ export function parseOrderData(order: unknown, included: unknown): Order | null 
             formatted_total_amount_with_taxes,
             line_items,
             included: included
-                ? included.map((include) => {
+                ? included.map((include: any) => {
                       const id: string = get(include, 'id', '');
                       const type: string = get(include, 'type', '');
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
