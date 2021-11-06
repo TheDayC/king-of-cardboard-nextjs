@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { get } from 'lodash';
-import netlifyIdentity from 'netlify-identity-widget';
 
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import selector from './authSelector';
@@ -32,11 +31,6 @@ const AuthProvider: React.FC = ({ children }) => {
     const { accessToken, expires, order, shouldFetchOrder } = useSelector(selector);
     const dispatch = useDispatch();
     const [shouldCreateOrder, setShouldCreateOrder] = useState(true);
-
-    useEffect(() => {
-        // init netlify identity
-        netlifyIdentity.init();
-    }, []);
 
     // Fetch order with line items.
     const fetchOrder = useCallback(

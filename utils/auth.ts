@@ -1,6 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 import { get } from 'lodash';
 import { DateTime } from 'luxon';
+import jwt from 'jsonwebtoken';
+import Cookie from 'js-cookie';
 
 import { CreateToken } from '../types/commerce';
 
@@ -24,6 +26,7 @@ export function authClient(accessToken: string | null = null): AxiosInstance {
     });
 }
 
+// Create commerce layer access token
 export async function createToken(): Promise<CreateToken | null> {
     try {
         const accessDetails = await axios.get('/api/getAccessToken');
@@ -48,4 +51,21 @@ export async function createToken(): Promise<CreateToken | null> {
         token: null,
         expires: null,
     };
+}
+
+export function signUserToken(id: string, email: string): string {
+    const payload = {
+        userId: id,
+        email: email,
+    };
+
+    const options = {
+        expiresIn: 3000,
+    };
+
+    return jwt.sign(payload, process.env.USER_TOKEN_SECRET || '', options);
+}
+
+export function fetchUserToken(): string | undefined {
+    return Cookie.get('token');
 }
