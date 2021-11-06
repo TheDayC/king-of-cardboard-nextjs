@@ -12,6 +12,7 @@ import checkoutReducer from './checkout';
 import confirmationReducer from './confirmation';
 import pagesReducer from './pages';
 import shopReducer from './shop';
+import breaksReducer from './breaks';
 
 const rootReducer = combineReducers<IAppState>({
     global: globalReducer,
@@ -25,6 +26,7 @@ const rootReducer = combineReducers<IAppState>({
     confirmation: confirmationReducer,
     pages: pagesReducer,
     shop: shopReducer,
+    breaks: breaksReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

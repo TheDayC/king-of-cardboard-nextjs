@@ -113,18 +113,32 @@ export async function getSkuDetails(accessToken: string, id: string): Promise<Sk
             const skuItem = get(response, 'data.skuItem', null);
             const included = get(response, 'data.included', null);
 
-            const sku_code = get(skuItem, 'attributes.code', '');
             const inventory = get(skuItem, 'attributes.inventory', '');
 
             // Find price data
-            const prices = included.find((i) => i.type === 'prices' && i.attributes.sku_code === sku_code);
+            const prices = included.find((i) => i.type === 'prices');
             const formatted_amount = get(prices, 'attributes.formatted_amount', '');
             const formatted_compare_at_amount = get(prices, 'attributes.formatted_compare_at_amount', '');
+
+            // options data
+            const sku_options = included.filter((i) => i.type === 'sku_options') || null;
 
             return {
                 formatted_amount,
                 formatted_compare_at_amount,
                 inventory,
+                options: sku_options.map((option) => ({
+                    id: get(option, 'id', ''),
+                    name: get(option, 'attributes.name', ''),
+                    formatted_price_amount: get(option, 'attributes.formatted_price_amount', ''),
+                    description: get(option, 'attributes.description', ''),
+                    reference: get(option, 'attributes.reference', ''),
+                    price_amount_cents: get(option, 'attributes.price_amount_cents', 0),
+                    price_amount_float: get(option, 'attributes.price_amount_float', 0),
+                    sku_code_regex: get(option, 'attributes.sku_code_regex', ''),
+                    delay_days: get(option, 'attributes.delay_days', 0),
+                    delay_hours: get(option, 'attributes.delay_hours', 0),
+                })),
             };
         }
 

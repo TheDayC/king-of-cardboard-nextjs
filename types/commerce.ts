@@ -42,6 +42,7 @@ export interface SkuProduct {
     formatted_amount: string | null;
     formatted_compare_at_amount: string | null;
     inventory: SkuInventory | null;
+    options: SkuOption[];
 }
 
 export interface SkuInventory {
@@ -74,6 +75,19 @@ interface SkuInventoryShippingMethod {
     price_amount_cents: number | null;
 }
 
+export interface SkuOption {
+    id: string;
+    name: string;
+    formatted_price_amount: string;
+    description: string;
+    reference: string;
+    price_amount_cents: number;
+    price_amount_float: number;
+    sku_code_regex: string;
+    delay_days: number;
+    delay_hours: number;
+}
+
 export interface Price {
     id: string;
     attributes: PriceAttributes;
@@ -91,8 +105,8 @@ interface PriceAttributes {
 export interface LineItemAttributes {
     quantity: number;
     sku_code: string;
-    name: string;
-    image_url: string;
+    name?: string;
+    image_url?: string;
     _external_price: boolean;
     _update_quantity: boolean;
 }

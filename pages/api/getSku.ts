@@ -1,4 +1,4 @@
-import { get, join } from 'lodash';
+import { get } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { authClient } from '../../utils/auth';
@@ -11,7 +11,7 @@ async function getSku(req: NextApiRequest, res: NextApiResponse): Promise<void> 
         const cl = authClient(token);
 
         return cl
-            .get(`/api/skus/${id}?include=prices`)
+            .get(`/api/skus/${id}?include=prices,sku_options`)
             .then((response) => {
                 const status = get(response, 'status', 500);
                 const { data: skuItem, included } = get(response, 'data', null);

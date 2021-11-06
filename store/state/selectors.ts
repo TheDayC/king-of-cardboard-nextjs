@@ -10,6 +10,7 @@ import {
     Confirmation,
     PagesState,
     ShopState,
+    BreaksState,
 } from '../types/state';
 
 export const selectGlobalData = (state: IAppState): Global => state.global;
@@ -24,3 +25,4 @@ export const selectCheckoutCustomerData = (state: IAppState): CustomerDetails =>
 export const selectConfirmationData = (state: IAppState): Confirmation => state.confirmation;
 export const selectPageData = (state: IAppState): PagesState => state.pages;
 export const selectShopData = (state: IAppState): ShopState => state.shop;
+export const selectBreaksData = (state: IAppState): BreaksState => state.breaks;

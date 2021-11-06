@@ -1,4 +1,4 @@
-import { SkuInventory } from './commerce';
+import { SkuInventory, SkuOption } from './commerce';
 
 export interface Product {
     id: string;
@@ -29,6 +29,7 @@ export interface SingleProduct {
     amount: string | null;
     compare_amount: string | null;
     inventory: SkuInventory | null;
+    options: SkuOption[] | null;
 }
 
 export interface ContentfulProductResponse {
@@ -57,7 +58,7 @@ export interface ContentfulProductShort {
     cardImage: ImageItem;
 }
 
-interface ImageCollection {
+export interface ImageCollection {
     items: ImageItem[];
 }
 

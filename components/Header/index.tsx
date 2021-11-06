@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { AiOutlineShoppingCart } from 'react-icons/ai';
+import { AiOutlineShoppingCart, AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
+import { BsFillRecord2Fill } from 'react-icons/bs';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -23,22 +24,28 @@ export const Header: React.FC = () => {
             <div className="navbar-center">
                 <div className="items-stretch hidden lg:flex">
                     <Link href="/" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn">Home</button>
+                        <button className="btn btn-ghost btn-sm rounded-btn pl-2 leading-4">
+                            <AiFillHome className="inline-block w-6 h-6 mr-1.5 stroke-current" />
+                            Home
+                        </button>
                     </Link>
                     <Link href="/shop" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn">Shop</button>
-                    </Link>
-                    <Link href="/shop/sports" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn">Sports</button>
-                    </Link>
-                    <Link href="/shop/tcg" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn">TCG</button>
+                        <button className="btn btn-ghost btn-sm rounded-btn pl-2 leading-4">
+                            <AiFillShopping className="inline-block w-6 h-6 mr-1.5 stroke-current" />
+                            Shop
+                        </button>
                     </Link>
                     <Link href="/breaks" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn">Breaks</button>
+                        <button className="btn btn-ghost btn-sm rounded-btn pl-2 leading-4">
+                            <AiTwotoneCrown className="inline-block w-6 h-6 mr-1.5 stroke-current" />
+                            Breaks
+                        </button>
                     </Link>
                     <Link href="/streaming" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn">Streaming</button>
+                        <button className="btn btn-ghost btn-sm rounded-btn pl-2 leading-4">
+                            <BsFillRecord2Fill className="inline-block w-6 h-6 mr-1.5 stroke-current" />
+                            Streaming
+                        </button>
                     </Link>
                 </div>
             </div>

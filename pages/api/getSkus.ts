@@ -13,7 +13,9 @@ async function getSkus(req: NextApiRequest, res: NextApiResponse): Promise<void>
             '&fields[skus]=code,image_url,name&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount';
 
         return cl
-            .get(`/api/skus?filter[q][code_in]=${sku_codes}&include=prices${fields}`)
+            .get(
+                `/api/skus?filter[q][code_in]=${sku_codes}&filter[q][stock_items_quantity_gt]=0&include=prices${fields}`
+            )
             .then((response) => {
                 const status = get(response, 'status', 500);
                 const { data: skuItems, included } = get(response, 'data', null);
