@@ -13,6 +13,8 @@ async function getLineItem(req: NextApiRequest, res: NextApiResponse): Promise<v
             .get(`/api/line_items/${id}`)
             .then((response) => {
                 const status = get(response, 'status', 500);
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 const { data: items } = get(response, 'data', null);
 
                 res.status(status).json({ items });

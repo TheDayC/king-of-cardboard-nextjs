@@ -1,7 +1,6 @@
-import { get, isArray, join } from 'lodash';
+import { get, isArray } from 'lodash';
 
 import { Categories, ProductType } from '../enums/shop';
-import { Filters } from '../store/types/state';
 import { SkuItem, SkuProduct } from '../types/commerce';
 import {
     ContentfulProduct,
@@ -11,25 +10,6 @@ import {
     SingleProduct,
 } from '../types/products';
 import { fetchContent } from './content';
-
-export function filterProducts(products: Product[], filters: Filters): Product[] {
-    return products.filter((p) => {
-        const someTypes =
-            filters.productTypes.length > 0 && p.types
-                ? p.types.some((type) => filters.productTypes.includes(type))
-                : true;
-        const someCats =
-            filters.categories.length > 0 && p.categories
-                ? p.categories.some((cat) => filters.categories.includes(cat))
-                : true;
-
-        if (someTypes && someCats) {
-            return true;
-        } else {
-            return false;
-        }
-    });
-}
 
 export function parseProductType(type: string): ProductType {
     switch (type) {

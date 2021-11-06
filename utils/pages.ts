@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types,@typescript-eslint/ban-ts-comment */
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { get } from 'lodash';
 
@@ -33,8 +34,11 @@ export const useRecursiveTimeout = (callback: any, delay: number): any => {
         const tick = () => {
             if (!isRunning) return clearTimeout(id);
             savedCallback.current();
+            // @ts-ignore
             requestAnimationFrame(() => (id = setTimeout(tick, delay)));
         };
+
+        // @ts-ignore
         requestAnimationFrame(() => (id = setTimeout(tick, delay)));
 
         return () => {

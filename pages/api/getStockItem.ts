@@ -12,6 +12,8 @@ async function stockItems(req: NextApiRequest, res: NextApiResponse): Promise<vo
             .get('/api/stock_items')
             .then((response) => {
                 const status = get(response, 'status', 500);
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 const { data: stockItems } = get(response, 'data', null);
 
                 res.status(status).json({ stockItems });

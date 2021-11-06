@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 import { get } from 'lodash';
 
@@ -79,7 +80,7 @@ export async function getSkus(accessToken: string, sku_codes: string[]): Promise
                 const name = get(item, 'attributes.name', '');
 
                 // Find price data
-                const prices = included.find((i) => i.type === 'prices' && i.attributes.sku_code === sku_code);
+                const prices = included.find((i: any) => i.type === 'prices' && i.attributes.sku_code === sku_code);
                 const amount = get(prices, 'attributes.formatted_amount', '');
                 const compare_amount = get(prices, 'attributes.formatted_compare_at_amount', '');
 
@@ -116,18 +117,18 @@ export async function getSkuDetails(accessToken: string, id: string): Promise<Sk
             const inventory = get(skuItem, 'attributes.inventory', '');
 
             // Find price data
-            const prices = included.find((i) => i.type === 'prices');
+            const prices = included.find((i: any) => i.type === 'prices');
             const formatted_amount = get(prices, 'attributes.formatted_amount', '');
             const formatted_compare_at_amount = get(prices, 'attributes.formatted_compare_at_amount', '');
 
             // options data
-            const sku_options = included.filter((i) => i.type === 'sku_options') || null;
+            const sku_options = included.filter((i: any) => i.type === 'sku_options') || null;
 
             return {
                 formatted_amount,
                 formatted_compare_at_amount,
                 inventory,
-                options: sku_options.map((option) => ({
+                options: sku_options.map((option: any) => ({
                     id: get(option, 'id', ''),
                     name: get(option, 'attributes.name', ''),
                     formatted_price_amount: get(option, 'attributes.formatted_price_amount', ''),
