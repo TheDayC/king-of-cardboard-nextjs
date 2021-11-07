@@ -5,6 +5,7 @@ import { BsFillRecord2Fill } from 'react-icons/bs';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSession, signIn, signOut } from 'next-auth/react';
+import { toSvg } from 'jdenticon';
 import md5 from 'md5';
 
 import selector from './selector';
@@ -15,7 +16,9 @@ export const Header: React.FC = () => {
     const { cartItemCount } = useSelector(selector);
     const { data: session, status } = useSession();
 
-    const handleUserMenu = () => {};
+    const handleLogout = () => {
+        signOut();
+    };
 
     return (
         <div className="navbar shadow-md bg-neutral text-neutral-content">
@@ -63,19 +66,25 @@ export const Header: React.FC = () => {
                 </Link>
                 {status === 'unauthenticated' && <Link href="/login">Login</Link>}
                 {status === 'authenticated' && (
-                    <Link href="/account" passHref>
-                        <div className="avatar cursor-pointer relative">
-                            <div className="rounded-full w-10 h-10 m-1">
-                                <Image
-                                    src={`https://www.gravatar.com/avatar/${md5(session.user?.email || '')}`}
-                                    alt="shipment image"
-                                    layout="fill"
-                                    objectFit="cover"
-                                    className="rounded-full"
-                                />
-                            </div>
+                    <div className="dropdown dropdown-end">
+                        <div className="avatar cursor-pointer relative" tabIndex={0}>
+                            <div
+                                className="rounded-full w-10 h-10 m-1 bg-white"
+                                dangerouslySetInnerHTML={{ __html: toSvg(md5(session?.user?.email || ''), 40) }}
+                            ></div>
                         </div>
-                    </Link>
+                        <ul
+                            tabIndex={0}
+                            className="p-2 shadow menu dropdown-content bg-base-100 rounded-md w-52 text-base-content"
+                        >
+                            <li>
+                                <Link href="/account">Account</Link>
+                            </li>
+                            <li>
+                                <a onClick={handleLogout}>Log Out</a>
+                            </li>
+                        </ul>
+                    </div>
                 )}
             </div>
         </div>
