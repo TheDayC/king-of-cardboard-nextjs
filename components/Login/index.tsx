@@ -6,6 +6,8 @@ import { get } from 'lodash';
 
 import Credentials from './credentials';
 import ErrorAlert from '../ErrorAlert';
+import Google from './google';
+import Twitch from './twitch';
 
 interface LoginProps {
     providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider>;
@@ -23,7 +25,10 @@ export const Login: React.FC<LoginProps> = ({ providers }) => {
                     <ErrorAlert error="Invalid Credentials." />
                 </div>
             )}
-            {credentials && <Credentials signinUrl={credentials.signinUrl} callbackUrl={credentials.callbackUrl} />}
+            {credentials && <Credentials />}
+            <div className="divider">OR</div>
+            <Google />
+            <Twitch />
         </React.Fragment>
     );
 };

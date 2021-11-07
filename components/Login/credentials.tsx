@@ -11,12 +11,7 @@ interface Submit {
     password?: string;
 }
 
-interface CredentialsProps {
-    signinUrl: string;
-    callbackUrl: string;
-}
-
-export const Credentials: React.FC<CredentialsProps> = ({ signinUrl, callbackUrl }) => {
+export const Credentials: React.FC = () => {
     const {
         register,
         handleSubmit,

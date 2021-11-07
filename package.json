@@ -16,6 +16,7 @@
         ]
     },
     "dependencies": {
+        "@next-auth/mongodb-adapter": "^0.0.2-next.285",
         "@reduxjs/toolkit": "^1.6.2",
         "@stripe/react-stripe-js": "^1.6.0",
         "@stripe/stripe-js": "^1.20.2",

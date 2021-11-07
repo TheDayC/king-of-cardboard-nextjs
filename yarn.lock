@@ -123,6 +123,10 @@
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@napi-rs/triples/-/triples-1.0.3.tgz#76d6d0c3f4d16013c61e45dfca5ff1e6c31ae53c"
 
+"@next-auth/mongodb-adapter@^0.0.2-next.285":
+  version "0.0.2-next.285"
+  resolved "https://registry.yarnpkg.com/@next-auth/mongodb-adapter/-/mongodb-adapter-0.0.2-next.285.tgz#67f123404f9dc794f4d8f8d66211eeae7de8274d"
+
 "@next/env@12.0.3":
   version "12.0.3"
   resolved "https://registry.yarnpkg.com/@next/env/-/env-12.0.3.tgz#e676b4d1454d8b6be433a348e99f2b8276ab6cd7"
