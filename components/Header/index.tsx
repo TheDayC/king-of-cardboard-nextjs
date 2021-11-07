@@ -77,10 +77,16 @@ export const Header: React.FC = () => {
                 {status === 'authenticated' && (
                     <div className="dropdown dropdown-end">
                         <div className="avatar cursor-pointer relative" tabIndex={0}>
-                            <div
-                                className="rounded-full w-8 h-8 m-1 bg-white"
-                                dangerouslySetInnerHTML={{ __html: toSvg(md5(session?.user?.email || ''), 32) }}
-                            ></div>
+                            {session?.user?.image ? (
+                                <div className="rounded-full w-8 h-8 m-1 bg-white">
+                                    <img src={session?.user?.image || ''} />
+                                </div>
+                            ) : (
+                                <div
+                                    className="rounded-full w-8 h-8 m-1 bg-white"
+                                    dangerouslySetInnerHTML={{ __html: toSvg(md5(session?.user?.email || ''), 32) }}
+                                ></div>
+                            )}
                         </div>
                         <ul
                             tabIndex={0}

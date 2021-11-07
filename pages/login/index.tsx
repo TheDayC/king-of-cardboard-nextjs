@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { ClientSafeProvider, getProviders, LiteralUnion, getCsrfToken, useSession } from 'next-auth/react';
+import { ClientSafeProvider, getProviders, LiteralUnion, getCsrfToken, useSession, getSession } from 'next-auth/react';
 import { BuiltInProviderType } from 'next-auth/providers';
 import { useRouter } from 'next/router';
 
 import Header from '../../components/Header';
 import Register from '../../components/Register';
 import Login from '../../components/Login';
+import { ServerSideRedirectProps } from '../../types/pages';
 
 interface ServerSideProps {
     props: {
@@ -15,9 +16,19 @@ interface ServerSideProps {
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-export async function getServerSideProps(context: any): Promise<ServerSideProps> {
+export async function getServerSideProps(context: any): Promise<ServerSideProps | ServerSideRedirectProps> {
     const providers = await getProviders();
     const csrfToken = await getCsrfToken(context);
+    const session = await getSession(context);
+
+    if (session) {
+        return {
+            redirect: {
+                permanent: false,
+                destination: '/account',
+            },
+        };
+    }
 
     return {
         props: {
@@ -43,10 +54,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
     const router = useRouter();
 
     if (!providers || !csrfToken) return null;
-
-    if (status === 'authenticated') {
-        router.push('/breaks');
-    }
 
     return (
         <React.Fragment>

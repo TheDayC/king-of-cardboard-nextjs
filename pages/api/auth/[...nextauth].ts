@@ -66,10 +66,10 @@ export default async function auth(req: any, res: any): Promise<any> {
             secret: process.env.JWT_ENCRYPT,
         },
         pages: {
-            signIn: '/login',
+            signIn: '/account',
             signOut: '/login?signedOut=true',
             error: '/login', // Error code passed in query string as ?error=
-            newUser: '/new-user',
+            newUser: '/account',
         },
         callbacks: {
             /* async signIn({ user, account, profile, email, credentials }) {
