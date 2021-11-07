@@ -4,7 +4,8 @@
     cursor: pointer;
 }
 
-.cart {
+.cart,
+.account {
     @apply m-2;
     width: 25px;
     height: auto;

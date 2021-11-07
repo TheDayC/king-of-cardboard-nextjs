@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { get } from 'lodash';
 import axios from 'axios';
-import { AiOutlineUser } from 'react-icons/ai';
+import { AiOutlineUser, AiOutlineSend } from 'react-icons/ai';
 import { MdOutlineMailOutline } from 'react-icons/md';
 import { RiLockPasswordLine } from 'react-icons/ri';
 
@@ -56,10 +56,10 @@ export const Register: React.FC = () => {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="form-control p-4 pb-0 mt-4">
+            <div className="form-control">
                 <label className="input-group input-group-md">
                     <span className="bg-base-200">
-                        <AiOutlineUser />
+                        <AiOutlineUser className="w-5 h-5" />
                     </span>
                     <input
                         type="text"
@@ -77,10 +77,10 @@ export const Register: React.FC = () => {
                     </label>
                 )}
             </div>
-            <div className="form-control p-4 pb-0">
+            <div className="form-control mt-2">
                 <label className="input-group input-group-md">
                     <span className="bg-base-200">
-                        <MdOutlineMailOutline />
+                        <MdOutlineMailOutline className="w-5 h-5" />
                     </span>
                     <input
                         type="text"
@@ -91,18 +91,17 @@ export const Register: React.FC = () => {
                         className={`input input-md input-bordered w-full${emailErr ? ' input-error' : ''}`}
                     />
                 </label>
-                {emailErr ||
-                    (confirmEmailErr && (
-                        <label className="label">
-                            {emailErr && <span className="label-text-alt">{emailErr}</span>}
-                            {confirmEmailErr && <span className="label-text-alt">Email addresses must match.</span>}
-                        </label>
-                    ))}
+                {emailErr && (
+                    <label className="label">
+                        {emailErr && <span className="label-text-alt">{emailErr}</span>}
+                        {confirmEmailErr && <span className="label-text-alt">Email addresses must match.</span>}
+                    </label>
+                )}
             </div>
-            <div className="form-control p-4">
+            <div className="form-control mt-2">
                 <label className="input-group input-group-md">
                     <span className="bg-base-200">
-                        <RiLockPasswordLine />
+                        <RiLockPasswordLine className="w-5 h-5" />
                     </span>
                     <input
                         type="password"
@@ -114,15 +113,14 @@ export const Register: React.FC = () => {
                         className={`input input-md input-bordered w-full${passwordErr ? ' input-error' : ''}`}
                     />
                 </label>
-                {passwordErr ||
-                    (confirmPasswordErr && (
-                        <label className="label">
-                            {passwordErr && <span className="label-text-alt">{passwordErr}</span>}
-                            {confirmPasswordErr && <span className="label-text-alt">Passwords must match.</span>}
-                        </label>
-                    ))}
+                {passwordErr && (
+                    <label className="label">
+                        {passwordErr && <span className="label-text-alt">{passwordErr}</span>}
+                        {confirmPasswordErr && <span className="label-text-alt">Passwords must match.</span>}
+                    </label>
+                )}
             </div>
-            <div className="form-control p-4 pb-0">
+            <div className="form-control mt-6">
                 <button
                     type="submit"
                     className={`btn btn-block w-full${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'}${

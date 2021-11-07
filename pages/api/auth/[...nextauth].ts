@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import bcrypt from 'bcrypt';
 
 import { connectToDatabase } from '../../../middleware/database';
 
@@ -36,9 +37,11 @@ export default NextAuth({
                     const user = await collection.findOne({ emailAddress });
 
                     if (user) {
-                        const { _id, username, emailAddress } = user;
+                        const match = await bcrypt.compare(password, user.password);
 
-                        return { id: _id, username, email: emailAddress };
+                        if (match) {
+                            return { id: user._id, username: user.username, email: user.emailAddress };
+                        }
                     }
                 }
 

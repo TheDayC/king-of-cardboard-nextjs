@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { AiOutlineShoppingCart, AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
+import { AiOutlineShoppingCart, AiFillHome, AiFillShopping, AiTwotoneCrown, AiOutlineUser } from 'react-icons/ai';
 import { BsFillRecord2Fill } from 'react-icons/bs';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -64,13 +64,22 @@ export const Header: React.FC = () => {
                         {cartItemCount > 0 && <div className="indicator-item badge badge-primary">{cartItemCount}</div>}
                     </div>
                 </Link>
-                {status === 'unauthenticated' && <Link href="/login">Login</Link>}
+                {status === 'unauthenticated' && (
+                    <Link href="/login" passHref>
+                        <div className="flex justify-start items-center indicator cursor-pointer rounded-md hover:bg-neutral-focus">
+                            <AiOutlineUser className={styles.account} />
+                            {cartItemCount > 0 && (
+                                <div className="indicator-item badge badge-primary">{cartItemCount}</div>
+                            )}
+                        </div>
+                    </Link>
+                )}
                 {status === 'authenticated' && (
                     <div className="dropdown dropdown-end">
                         <div className="avatar cursor-pointer relative" tabIndex={0}>
                             <div
-                                className="rounded-full w-10 h-10 m-1 bg-white"
-                                dangerouslySetInnerHTML={{ __html: toSvg(md5(session?.user?.email || ''), 40) }}
+                                className="rounded-full w-8 h-8 m-1 bg-white"
+                                dangerouslySetInnerHTML={{ __html: toSvg(md5(session?.user?.email || ''), 32) }}
                             ></div>
                         </div>
                         <ul

@@ -74,8 +74,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
                                         Sign Up
                                     </a>
                                 </div>
-                                {currentTab === Tabs.Login && <Login providers={providers} csrfToken={csrfToken} />}
-                                {currentTab === Tabs.Register && <Register />}
+                                <div className="p-4">
+                                    {currentTab === Tabs.Login && <Login providers={providers} />}
+                                    {currentTab === Tabs.Register && <Register />}
+                                </div>
                             </div>
                         </div>
                     </div>

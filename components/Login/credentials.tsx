@@ -36,10 +36,10 @@ export const Credentials: React.FC<CredentialsProps> = ({ signinUrl, callbackUrl
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="form-control p-4 pb-0 pt-8">
+            <div className="form-control">
                 <label className="input-group input-group-md">
                     <span className="bg-base-200">
-                        <MdOutlineMailOutline />
+                        <MdOutlineMailOutline className="w-5 h-5" />
                     </span>
                     <input
                         type="text"
@@ -56,10 +56,10 @@ export const Credentials: React.FC<CredentialsProps> = ({ signinUrl, callbackUrl
                     </label>
                 )}
             </div>
-            <div className="form-control p-4 pb-0">
+            <div className="form-control mt-2">
                 <label className="input-group input-group-md">
                     <span className="bg-base-200">
-                        <RiLockPasswordLine />
+                        <RiLockPasswordLine className="w-5 h-5" />
                     </span>
                     <input
                         type="password"
@@ -71,12 +71,12 @@ export const Credentials: React.FC<CredentialsProps> = ({ signinUrl, callbackUrl
                     />
                 </label>
             </div>
-            <div className="form-control p-4 pb-2">
+            <div className="form-control mt-6">
                 <button
                     type="submit"
-                    className={`btn mt-4 btn-block rounded-md${
-                        hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'
-                    }${loading ? ' loading btn-square' : ''}`}
+                    className={`btn btn-block rounded-md${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'}${
+                        loading ? ' loading btn-square' : ''
+                    }`}
                 >
                     {loading ? '' : 'Log In'}
                 </button>
