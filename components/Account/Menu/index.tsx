@@ -11,9 +11,6 @@ export const AccountMenu: React.FC = () => {
 
     return (
         <ul className="menu p-4 shadow-lg bg-base-100 rounded-md">
-            <li className="menu-title">
-                <span>Account Menu</span>
-            </li>
             <li className={`${slug === 'details' ? 'bordered' : 'hover-bordered'}`}>
                 <Link href="/account/details" passHref>
                     <a>

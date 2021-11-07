@@ -1,11 +1,11 @@
 import React from 'react';
 import { get } from 'lodash';
+import { useRouter } from 'next/router';
 
 import Details from './Details';
 import Profile from './Profile';
 import OrderHistory from './OrderHistory';
 import Achievements from './Achievements';
-import { useRouter } from 'next/router';
 
 export const Account: React.FC = () => {
     const router = useRouter();
