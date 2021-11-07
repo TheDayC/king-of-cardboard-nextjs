@@ -36,3 +36,11 @@
 #productImages img {
     max-width: unset !important;
 }
+
+.input-group :last-child {
+    @apply rounded-r-md;
+}
+
+.input-group :first-child {
+    @apply rounded-l-md;
+}

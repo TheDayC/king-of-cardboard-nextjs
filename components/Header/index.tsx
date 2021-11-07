@@ -1,9 +1,12 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { AiOutlineShoppingCart, AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
+import { AiOutlineShoppingCart, AiFillHome, AiFillShopping, AiTwotoneCrown, AiOutlineUser } from 'react-icons/ai';
 import { BsFillRecord2Fill } from 'react-icons/bs';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSession, signIn, signOut } from 'next-auth/react';
+import { toSvg } from 'jdenticon';
+import md5 from 'md5';
 
 import selector from './selector';
 import styles from './header.module.css';
@@ -11,6 +14,11 @@ import logo from '../../images/logo-full.png';
 
 export const Header: React.FC = () => {
     const { cartItemCount } = useSelector(selector);
+    const { data: session, status } = useSession();
+
+    const handleLogout = () => {
+        signOut();
+    };
 
     return (
         <div className="navbar shadow-md bg-neutral text-neutral-content">
@@ -56,6 +64,43 @@ export const Header: React.FC = () => {
                         {cartItemCount > 0 && <div className="indicator-item badge badge-primary">{cartItemCount}</div>}
                     </div>
                 </Link>
+                {status === 'unauthenticated' && (
+                    <Link href="/login" passHref>
+                        <div className="flex justify-start items-center indicator cursor-pointer rounded-md hover:bg-neutral-focus">
+                            <AiOutlineUser className={styles.account} />
+                            {cartItemCount > 0 && (
+                                <div className="indicator-item badge badge-primary">{cartItemCount}</div>
+                            )}
+                        </div>
+                    </Link>
+                )}
+                {status === 'authenticated' && (
+                    <div className="dropdown dropdown-end">
+                        <div className="avatar cursor-pointer relative" tabIndex={0}>
+                            {session?.user?.image ? (
+                                <div className="rounded-full w-8 h-8 m-1 bg-white">
+                                    <img src={session?.user?.image || ''} />
+                                </div>
+                            ) : (
+                                <div
+                                    className="rounded-full w-8 h-8 m-1 bg-white"
+                                    dangerouslySetInnerHTML={{ __html: toSvg(md5(session?.user?.email || ''), 32) }}
+                                ></div>
+                            )}
+                        </div>
+                        <ul
+                            tabIndex={0}
+                            className="p-2 shadow menu dropdown-content bg-base-100 rounded-md w-52 text-base-content"
+                        >
+                            <li>
+                                <Link href="/account">Account</Link>
+                            </li>
+                            <li>
+                                <a onClick={handleLogout}>Log Out</a>
+                            </li>
+                        </ul>
+                    </div>
+                )}
             </div>
         </div>
     );

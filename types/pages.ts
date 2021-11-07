@@ -47,3 +47,10 @@ interface Hero {
     link?: string;
     link_title?: string;
 }
+
+export interface ServerSideRedirectProps {
+    redirect: {
+        permanent: boolean;
+        destination: string;
+    };
+}

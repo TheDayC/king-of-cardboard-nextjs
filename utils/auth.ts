@@ -24,6 +24,7 @@ export function authClient(accessToken: string | null = null): AxiosInstance {
     });
 }
 
+// Create commerce layer access token
 export async function createToken(): Promise<CreateToken | null> {
     try {
         const accessDetails = await axios.get('/api/getAccessToken');

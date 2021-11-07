@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { get } from 'lodash';
@@ -32,18 +32,6 @@ const AuthProvider: React.FC = ({ children }) => {
     const dispatch = useDispatch();
     const [shouldCreateOrder, setShouldCreateOrder] = useState(true);
 
-    // Create the productCollection and hydrate.
-    /* const createProductCollection = useCallback(
-        async (accessToken: string) => {
-            const stockItems = await getStockItems(accessToken);
-            const prices = await getPrices(accessToken);
-            const products = await fetchProductCollection(PRODUCT_QUERY, stockItems, prices);
-
-            dispatch(addProductCollection(products));
-        },
-        [dispatch]
-    );
- */
     // Fetch order with line items.
     const fetchOrder = useCallback(
         async (accessToken: string, orderId: string) => {

@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { StripeCardElement, Stripe } from '@stripe/stripe-js';
 import { get } from 'lodash';
+import { useRouter } from 'next/router';
 
 import selector from './selector';
 import { resetCheckoutDetails, setCurrentStep } from '../../../store/slices/checkout';
@@ -14,7 +15,6 @@ import { CartItem, CustomerDetails } from '../../../store/types/state';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import { resetCart, setOrder } from '../../../store/slices/cart';
 import { setConfirmationData } from '../../../store/slices/confirmation';
-import { useRouter } from 'next/router';
 import { Order } from '../../../types/cart';
 
 export const Payment: React.FC = () => {

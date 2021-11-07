@@ -3,6 +3,11 @@ module.exports = {
     darkMode: false, // or 'media' or 'class'
     theme: {
         extend: {},
+        backgroundColor: (theme) => ({
+            ...theme('colors'),
+            twitch: '#9146FF',
+            'twitch-dark': '#772CE8',
+        }),
     },
     variants: {
         extend: {},
