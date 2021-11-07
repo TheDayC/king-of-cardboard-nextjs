@@ -7,6 +7,7 @@ import Header from '../../components/Header';
 import Register from '../../components/Register';
 import Login from '../../components/Login';
 import { ServerSideRedirectProps } from '../../types/pages';
+import { Tabs } from '../../enums/auth';
 
 interface ServerSideProps {
     props: {
@@ -43,13 +44,9 @@ interface LoginPageProps {
     csrfToken?: string;
 }
 
-enum Tabs {
-    Login = 'login',
-    Register = 'register',
-}
-
 export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) => {
     const [currentTab, setCurrentTab] = useState(Tabs.Login);
+    const [regSuccess, setRegSuccess] = useState(false);
     const { data: session, status } = useSession();
     const router = useRouter();
 
@@ -82,8 +79,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
                                     </a>
                                 </div>
                                 <div className="p-4">
-                                    {currentTab === Tabs.Login && <Login providers={providers} />}
-                                    {currentTab === Tabs.Register && <Register />}
+                                    {currentTab === Tabs.Login && (
+                                        <Login providers={providers} showRegistrationSuccess={regSuccess} />
+                                    )}
+                                    {currentTab === Tabs.Register && (
+                                        <Register setCurrentTab={setCurrentTab} setRegSuccess={setRegSuccess} />
+                                    )}
                                 </div>
                             </div>
                         </div>
