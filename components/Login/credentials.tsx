@@ -2,19 +2,21 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { get } from 'lodash';
 import axios from 'axios';
+import { MdOutlineMailOutline } from 'react-icons/md';
+import { RiLockPasswordLine } from 'react-icons/ri';
+import { signIn } from 'next-auth/react';
 
 interface Submit {
-    username?: string;
+    emailAddress?: string;
     password?: string;
 }
 
 interface CredentialsProps {
     signinUrl: string;
     callbackUrl: string;
-    csrfToken: string;
 }
 
-export const Credentials: React.FC<CredentialsProps> = ({ signinUrl, callbackUrl, csrfToken }) => {
+export const Credentials: React.FC<CredentialsProps> = ({ signinUrl, callbackUrl }) => {
     const {
         register,
         handleSubmit,
@@ -24,57 +26,60 @@ export const Credentials: React.FC<CredentialsProps> = ({ signinUrl, callbackUrl
     const hasErrors = Object.keys(errors).length > 0;
 
     const onSubmit = async (data: Submit) => {
-        const { username, password } = data;
+        const { emailAddress, password } = data;
 
-        const response = await axios.post('/api/auth/callback/credentials', {
-            username,
-            password,
-            csrfToken,
-        });
+        signIn('credentials', { emailAddress, password });
     };
 
-    const usernameErr = get(errors, 'username.message', null);
+    const emailErr = get(errors, 'emailAddress.message', null);
     const passwordErr = get(errors, 'password.message', null);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col w-full justify-center items-center">
-                <div className="flex flex-col w-1/4">
+            <div className="form-control p-4 pb-0 pt-8">
+                <label className="input-group input-group-md">
+                    <span className="bg-base-200">
+                        <MdOutlineMailOutline />
+                    </span>
                     <input
                         type="text"
-                        placeholder="Username"
-                        {...register('username', {
-                            required: { value: true, message: 'Username required' },
+                        placeholder="Email Address"
+                        {...register('emailAddress', {
+                            required: { value: true, message: 'Email address required' },
                         })}
-                        className={`input input-sm mb-4 input-bordered${usernameErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered w-full${emailErr ? ' input-error' : ''}`}
                     />
-                    {usernameErr && (
-                        <label className="label">
-                            <span className="label-text-alt">{usernameErr}</span>
-                        </label>
-                    )}
+                </label>
+                {emailErr && (
+                    <label className="label">
+                        <span className="label-text-alt">{emailErr}</span>
+                    </label>
+                )}
+            </div>
+            <div className="form-control p-4 pb-0">
+                <label className="input-group input-group-md">
+                    <span className="bg-base-200">
+                        <RiLockPasswordLine />
+                    </span>
                     <input
                         type="password"
                         placeholder="Password"
                         {...register('password', {
                             required: { value: true, message: 'Password required' },
                         })}
-                        className={`input input-sm mb-4 input-bordered${passwordErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered w-full${passwordErr ? ' input-error' : ''}`}
                     />
-                    {passwordErr && (
-                        <label className="label">
-                            <span className="label-text-alt">{passwordErr}</span>
-                        </label>
-                    )}
-                    <button
-                        type="submit"
-                        className={`btn${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}${
-                            loading ? ' loading btn-square' : ''
-                        }`}
-                    >
-                        {loading ? '' : 'Sign In'}
-                    </button>
-                </div>
+                </label>
+            </div>
+            <div className="form-control p-4 pb-2">
+                <button
+                    type="submit"
+                    className={`btn mt-4 btn-block rounded-md${
+                        hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'
+                    }${loading ? ' loading btn-square' : ''}`}
+                >
+                    {loading ? '' : 'Log In'}
+                </button>
             </div>
         </form>
     );

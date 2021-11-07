@@ -4,6 +4,8 @@ import { AiOutlineShoppingCart, AiFillHome, AiFillShopping, AiTwotoneCrown } fro
 import { BsFillRecord2Fill } from 'react-icons/bs';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSession, signIn, signOut } from 'next-auth/react';
+import md5 from 'md5';
 
 import selector from './selector';
 import styles from './header.module.css';
@@ -11,6 +13,9 @@ import logo from '../../images/logo-full.png';
 
 export const Header: React.FC = () => {
     const { cartItemCount } = useSelector(selector);
+    const { data: session, status } = useSession();
+
+    const handleUserMenu = () => {};
 
     return (
         <div className="navbar shadow-md bg-neutral text-neutral-content">
@@ -56,6 +61,22 @@ export const Header: React.FC = () => {
                         {cartItemCount > 0 && <div className="indicator-item badge badge-primary">{cartItemCount}</div>}
                     </div>
                 </Link>
+                {status === 'unauthenticated' && <Link href="/login">Login</Link>}
+                {status === 'authenticated' && (
+                    <Link href="/account" passHref>
+                        <div className="avatar cursor-pointer relative">
+                            <div className="rounded-full w-10 h-10 m-1">
+                                <Image
+                                    src={`https://www.gravatar.com/avatar/${md5(session.user?.email || '')}`}
+                                    alt="shipment image"
+                                    layout="fill"
+                                    objectFit="cover"
+                                    className="rounded-full"
+                                />
+                            </div>
+                        </div>
+                    </Link>
+                )}
             </div>
         </div>
     );

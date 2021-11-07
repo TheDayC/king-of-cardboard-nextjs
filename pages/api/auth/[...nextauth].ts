@@ -17,7 +17,7 @@ export default NextAuth({
             // e.g. domain, username, password, 2FA token, etc.
             // You can pass any HTML attribute to the <input> tag through the object.
             credentials: {
-                username: { label: 'Username', type: 'text' },
+                emailAddress: { label: 'Email Address', type: 'text', placeholder: 'Email' },
                 password: { label: 'Password', type: 'password' },
             },
             async authorize(credentials, req) {
@@ -28,20 +28,20 @@ export default NextAuth({
                 // You can also use the `req` object to obtain additional parameters
                 // (i.e., the request IP address)
 
-                try {
-                    const { db } = await connectToDatabase();
-                } catch (err) {}
-                const res = await fetch('/api/authCreds', {
-                    method: 'POST',
-                    body: JSON.stringify(credentials),
-                    headers: { 'Content-Type': 'application/json' },
-                });
-                const user = await res.json();
+                const { emailAddress, password } = JSON.parse(JSON.stringify(credentials));
+                const { db } = await connectToDatabase();
+                const collection = db.collection('users');
 
-                // If no error and we have user data, return it
-                if (res.ok && user) {
-                    return user;
+                if (emailAddress && password) {
+                    const user = await collection.findOne({ emailAddress });
+
+                    if (user) {
+                        const { _id, username, emailAddress } = user;
+
+                        return { id: _id, username, email: emailAddress };
+                    }
                 }
+
                 // Return null if user data could not be retrieved
                 return null;
             },
@@ -52,4 +52,29 @@ export default NextAuth({
         }),
         // ...add more providers here
     ],
+    secret: process.env.JWT_SECRET,
+    jwt: {
+        secret: process.env.JWT_ENCRYPT,
+    },
+    pages: {
+        signIn: '/login',
+        signOut: '/login?signedOut=true',
+        error: '/login', // Error code passed in query string as ?error=
+        newUser: '/new-user',
+    },
+    callbacks: {
+        /* async signIn({ user, account, profile, email, credentials }) {
+            console.log("🚀 ~ file: [...nextauth].ts ~ line 66 ~ signIn ~ credentials", credentials)
+            return true
+        },
+        async redirect({ url, baseUrl }) {
+            return baseUrl
+        },
+        async session({ session, user, token }) {
+            return session
+        },
+        async jwt({ token, user, account, profile, isNewUser }) {
+            return token
+        }, */
+    },
 });
