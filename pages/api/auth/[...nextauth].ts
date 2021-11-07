@@ -65,6 +65,9 @@ export default async function auth(req: any, res: any): Promise<any> {
         jwt: {
             secret: process.env.JWT_ENCRYPT,
         },
+        session: {
+            jwt: true,
+        },
         pages: {
             signIn: '/account',
             signOut: '/login?signedOut=true',
