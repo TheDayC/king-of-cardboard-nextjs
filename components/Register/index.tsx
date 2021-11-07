@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { get } from 'lodash';
 import axios from 'axios';
-import { AiOutlineUser, AiOutlineSend } from 'react-icons/ai';
+import { useRouter } from 'next/router';
+import { AiOutlineUser } from 'react-icons/ai';
 import { MdOutlineMailOutline } from 'react-icons/md';
 import { RiLockPasswordLine } from 'react-icons/ri';
+
+import ErrorAlert from '../ErrorAlert';
+import { Tabs } from '../../enums/auth';
 
 interface Submit {
     username?: string;
@@ -18,7 +22,12 @@ interface Submit {
 const USER_PATTERN = /^[a-zA-Z]{4,}$/;
 const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-export const Register: React.FC = () => {
+interface RegisterProps {
+    setCurrentTab(tab: Tabs): void;
+    setRegSuccess(regSuccess: boolean): void;
+}
+
+export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess }) => {
     const {
         register,
         handleSubmit,
@@ -27,10 +36,11 @@ export const Register: React.FC = () => {
     } = useForm();
     const [loading, setLoading] = useState(false);
     const hasErrors = Object.keys(errors).length > 0;
-    const emailAddress = watch('emailAddress', ''); // Watch email field for changes.
-    const password = watch('password', ''); // Watch password field for changes.
+    const router = useRouter();
+    const error: string = get(router, 'query.error', '');
 
     const onSubmit = async (data: Submit) => {
+        setLoading(true);
         const { username, emailAddress, password } = data;
 
         try {
@@ -39,7 +49,15 @@ export const Register: React.FC = () => {
                 emailAddress,
                 password,
             });
+
+            if (response) {
+                setCurrentTab(Tabs.Login);
+                setLoading(false);
+                setRegSuccess(true);
+            }
         } catch (error) {
+            setLoading(false);
+            setRegSuccess(false);
             if (axios.isAxiosError(error)) {
                 console.log('🚀 ~ file: index.tsx ~ line 50 ~ onSubmit ~ error', error);
             } else {
@@ -56,6 +74,11 @@ export const Register: React.FC = () => {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
+            {error && (
+                <div className="mb-6">
+                    <ErrorAlert error="Invalid Credentials." />
+                </div>
+            )}
             <div className="form-control">
                 <label className="input-group input-group-md">
                     <span className="bg-base-200">
