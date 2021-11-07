@@ -34,7 +34,7 @@ export default async function auth(req: any, res: any): Promise<any> {
 
                     const { emailAddress, password } = JSON.parse(JSON.stringify(credentials));
                     const { db } = await connectToDatabase();
-                    const collection = db.collection('users');
+                    const collection = db.collection('credentials');
 
                     if (emailAddress && password) {
                         const user = await collection.findOne({ emailAddress });
@@ -75,11 +75,24 @@ export default async function auth(req: any, res: any): Promise<any> {
             newUser: '/account',
         },
         callbacks: {
-            /* async signIn({ user, account, profile, email, credentials }) {
-            console.log("🚀 ~ file: [...nextauth].ts ~ line 66 ~ signIn ~ credentials", credentials)
-            return true
-        },
-        async redirect({ url, baseUrl }) {
+            async signIn({ user, account, profile, email, credentials }) {
+                if (!credentials) {
+                    const { db } = await connectToDatabase();
+                    const collection = db.collection('credentials');
+                    const creds = await collection.findOne({ emailAddress: user.email });
+
+                    if (!creds) {
+                        const userDocument = {
+                            username: user.name,
+                            emailAddress: user.email,
+                        };
+
+                        await collection.insertOne(userDocument);
+                    }
+                }
+                return true;
+            },
+            /* async redirect({ url, baseUrl }) {
             return baseUrl
         },
         async session({ session, user, token }) {

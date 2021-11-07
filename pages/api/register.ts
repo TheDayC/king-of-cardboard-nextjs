@@ -11,10 +11,12 @@ async function register(req: NextApiRequest, res: NextApiResponse): Promise<void
         const password = get(req, 'body.password', '');
 
         const { db } = await connectToDatabase();
-        const collection = db.collection('users');
-        const user = await collection.findOne({ emailAddress });
+        const credsCollection = db.collection('credentials');
+        const usersCollection = db.collection('users');
+        const creds = await credsCollection.findOne({ emailAddress });
+        const user = await usersCollection.findOne({ emailAddress });
 
-        if (user) {
+        if (creds || user) {
             res.status(403).json({ response: 'Email already assigned to a user' });
         } else {
             const hash = await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS || '1'));
@@ -24,10 +26,9 @@ async function register(req: NextApiRequest, res: NextApiResponse): Promise<void
                     username,
                     emailAddress,
                     password: hash,
-                    authType: 'credentials',
                 };
 
-                const createdUser = await collection.insertOne(userDocument);
+                const createdUser = await credsCollection.insertOne(userDocument);
 
                 if (createdUser) {
                     res.status(200).json({ success: true, data: createdUser });
