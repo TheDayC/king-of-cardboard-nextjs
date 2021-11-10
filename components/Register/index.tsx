@@ -69,8 +69,8 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
     const usernameErr = get(errors, 'username.message', null);
     const emailErr = get(errors, 'emailAddress.message', null);
     const confirmEmailErr = get(errors, 'confirmEmailAddress.message', null);
-    const passwordErr = get(errors, 'emailAddress.message', null);
-    const confirmPasswordErr = get(errors, 'confirmEmailAddress.message', null);
+    const passwordErr = get(errors, 'password.message', null);
+    const confirmPasswordErr = get(errors, 'confirmPassword.message', null);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
