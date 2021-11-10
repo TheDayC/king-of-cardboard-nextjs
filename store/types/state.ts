@@ -3,6 +3,7 @@ import { Categories, ProductType } from '../../enums/shop';
 import { Order } from '../../types/cart';
 import { SkuItem } from '../../types/commerce';
 import { ContentfulPage } from '../../types/pages';
+import { SocialMedia } from '../../types/profile';
 
 export interface IAppState {
     global: Global;
@@ -17,6 +18,7 @@ export interface IAppState {
     pages: PagesState;
     shop: ShopState;
     breaks: BreaksState;
+    account: AccountState;
 }
 
 export interface CartState {
@@ -108,4 +110,8 @@ export interface ShopState {
 export interface BreaksState {
     currentPage: number;
     isLoadingBreaks: boolean;
+}
+
+export interface AccountState {
+    socialMedia: SocialMedia;
 }

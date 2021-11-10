@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { parseAsString, safelyParse } from '../../../../utils/parsers';
+import { parseAsSocialMedia, parseAsString, safelyParse } from '../../../../utils/parsers';
 import SuccessAlert from '../../../SuccessAlert';
+import { setSocialMedia } from '../../../../store/slices/account';
+import selector from './selector';
 
 interface SubmitData {
     instagram: string;
@@ -16,14 +18,17 @@ interface SubmitData {
 }
 
 export const SocialMediaLinks: React.FC = () => {
+    const { socialMedia: savedSocialMedia } = useSelector(selector);
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
     } = useForm();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState<string | null>(null);
     const { data: session } = useSession();
+    const dispatch = useDispatch();
 
     const hasErrors = Object.keys(errors).length > 0;
     const instagramErr = safelyParse(errors, 'instagram.message', parseAsString, null);
@@ -62,6 +67,34 @@ export const SocialMediaLinks: React.FC = () => {
             }
         }
     };
+
+    const fetchSocialMedia = useCallback(async () => {
+        const response = await axios.post('/api/account/getSocialMedia', {
+            emailAddress,
+        });
+
+        if (response) {
+            const socialMedia = safelyParse(response, 'data.socialMedia', parseAsSocialMedia, null);
+
+            if (socialMedia) {
+                dispatch(setSocialMedia(socialMedia));
+            }
+        }
+    }, [emailAddress]);
+
+    useEffect(() => {
+        fetchSocialMedia();
+    }, []);
+
+    useEffect(() => {
+        if (savedSocialMedia) {
+            setValue('instagram', savedSocialMedia.instagram);
+            setValue('twitter', savedSocialMedia.twitter);
+            setValue('twitch', savedSocialMedia.twitch);
+            setValue('youtube', savedSocialMedia.youtube);
+            setValue('ebay', savedSocialMedia.ebay);
+        }
+    }, [savedSocialMedia]);
 
     return (
         <React.Fragment>

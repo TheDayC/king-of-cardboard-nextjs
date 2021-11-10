@@ -4,7 +4,7 @@ import { get } from 'lodash';
 import { Counties } from '../enums/checkout';
 import { CustomerDetails } from '../store/types/state';
 import { Order } from '../types/cart';
-import { isString, isNumber, isBoolean, isArray } from './typeguards';
+import { isString, isNumber, isBoolean, isArray, isSocialMedia } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 
 export function parseOrderData(order: any, included: any): Order | null {
@@ -154,3 +154,4 @@ export const parseAsString = parseAsType(isString);
 export const parseAsNumber = parseAsType(isNumber);
 export const parseAsBoolean = parseAsType(isBoolean);
 export const parseAsArray = parseAsType(isArray);
+export const parseAsSocialMedia = parseAsType(isSocialMedia);

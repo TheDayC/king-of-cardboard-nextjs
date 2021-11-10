@@ -1,4 +1,5 @@
 import { ITypeGuard } from '../types/parsers';
+import { SocialMedia } from '../types/profile';
 
 export function isString(candidate: unknown): candidate is string {
     return typeof candidate === 'string';
@@ -26,4 +27,8 @@ export function isEnumMember<E>(enumToTest: E): ITypeGuard<E[keyof E]> {
 
         return members.includes(candidate);
     };
+}
+
+export function isSocialMedia(candidate: unknown): candidate is SocialMedia {
+    return isNotNullOrUndefined<object>(candidate) && 'instagram' in candidate;
 }

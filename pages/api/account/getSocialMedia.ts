@@ -12,7 +12,10 @@ async function getSocialMedia(req: NextApiRequest, res: NextApiResponse): Promis
         const profile = await profileCollection.findOne({ emailAddress });
 
         if (profile) {
-            res.status(200).json({ success: true, data: profile });
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { emailAddress: email, _id, ...socialMedia } = profile;
+
+            res.status(200).json({ success: true, socialMedia });
         } else {
             res.status(403).json({ success: false, message: 'Could not find profile.' });
         }
