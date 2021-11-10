@@ -15,7 +15,7 @@ let rehydrationFailed;
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['cart', 'checkout', 'global', 'confirmation', 'pages'],
+    whitelist: ['cart', 'checkout', 'global', 'confirmation', 'pages', 'breaks', 'account'],
 };
 
 const rehydrationPromise = new Promise((resolve, reject) => {

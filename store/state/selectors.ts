@@ -11,6 +11,7 @@ import {
     PagesState,
     ShopState,
     BreaksState,
+    AccountState,
 } from '../types/state';
 
 export const selectGlobalData = (state: IAppState): Global => state.global;
@@ -26,3 +27,4 @@ export const selectConfirmationData = (state: IAppState): Confirmation => state.
 export const selectPageData = (state: IAppState): PagesState => state.pages;
 export const selectShopData = (state: IAppState): ShopState => state.shop;
 export const selectBreaksData = (state: IAppState): BreaksState => state.breaks;
+export const selectAccountData = (state: IAppState): AccountState => state.account;

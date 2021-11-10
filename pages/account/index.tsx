@@ -36,10 +36,10 @@ export const AccountPage: React.FC = () => {
             <div className="flex p-4 relative">
                 <div className="container mx-auto">
                     <div className="flex flex-row w-full justify-start items-start">
-                        <div className="w-1/3">
+                        <div className="w-1/4">
                             <AccountMenu />
                         </div>
-                        <div className="flex flex-col py-4 px-8">{content && <Content content={content} />}</div>
+                        <div className="flex flex-col py-4 px-8 w-3/4">{content && <Content content={content} />}</div>
                     </div>
                 </div>
             </div>
