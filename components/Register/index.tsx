@@ -9,6 +9,7 @@ import { RiLockPasswordLine } from 'react-icons/ri';
 
 import ErrorAlert from '../ErrorAlert';
 import { Tabs } from '../../enums/auth';
+import { parseAsString, safelyParse } from '../../utils/parsers';
 
 interface Submit {
     username?: string;
@@ -66,11 +67,11 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
         }
     };
 
-    const usernameErr = get(errors, 'username.message', null);
-    const emailErr = get(errors, 'emailAddress.message', null);
-    const confirmEmailErr = get(errors, 'confirmEmailAddress.message', null);
-    const passwordErr = get(errors, 'password.message', null);
-    const confirmPasswordErr = get(errors, 'confirmPassword.message', null);
+    const usernameErr = safelyParse(errors, 'username.message', parseAsString, null);
+    const emailErr = safelyParse(errors, 'emailAddress.message', parseAsString, null);
+    const confirmEmailErr = safelyParse(errors, 'confirmEmailAddress.message', parseAsString, null);
+    const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
+    const confirmPasswordErr = safelyParse(errors, 'confirmPassword.message', parseAsString, null);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>

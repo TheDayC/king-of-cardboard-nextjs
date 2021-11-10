@@ -57,7 +57,7 @@ export const UpdateUsername: React.FC = () => {
 
     return (
         <React.Fragment>
-            <div className="text-sm">
+            <div className="text-xs text-error">
                 <p>Usernames must:</p>
                 <ul className="list-disc list-inside pl-6 mb-4">
                     <li>Contain a minimum of 4 characters.</li>

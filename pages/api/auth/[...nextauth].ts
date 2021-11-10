@@ -78,8 +78,11 @@ export default async function auth(req: any, res: any): Promise<any> {
             async signIn({ user, account, profile, email, credentials }) {
                 if (!credentials) {
                     const { db } = await connectToDatabase();
-                    const collection = db.collection('credentials');
-                    const creds = await collection.findOne({ emailAddress: user.email });
+                    const credsCollection = db.collection('credentials');
+                    const profileCollection = db.collection('profile');
+
+                    const creds = await credsCollection.findOne({ emailAddress: user.email });
+                    const profile = await profileCollection.findOne({ emailAddress: user.email });
 
                     if (!creds) {
                         const userDocument = {
@@ -87,7 +90,20 @@ export default async function auth(req: any, res: any): Promise<any> {
                             emailAddress: user.email,
                         };
 
-                        await collection.insertOne(userDocument);
+                        await credsCollection.insertOne(userDocument);
+                    }
+
+                    if (!profile) {
+                        const profileDocument = {
+                            emailAddress: user.email,
+                            instagram: '',
+                            twitter: '',
+                            twitch: '',
+                            youtube: '',
+                            ebay: '',
+                        };
+
+                        await profileCollection.insertOne(profileDocument);
                     }
                 }
                 return true;

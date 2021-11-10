@@ -62,7 +62,7 @@ export const UpdatePassword: React.FC = () => {
 
     return (
         <React.Fragment>
-            <div className="text-sm">
+            <div className="text-xs text-error">
                 <p>Passwords must:</p>
                 <ul className="list-disc list-inside pl-6 mb-4">
                     <li>Contain at least 8 characters</li>
