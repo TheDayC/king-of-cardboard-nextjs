@@ -1,12 +1,16 @@
 import React from 'react';
-import { getSession, useSession } from 'next-auth/react';
+import { getSession } from 'next-auth/react';
 import { get } from 'lodash';
 import Error from 'next/error';
+import { useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
 
 import AccountMenu from '../../components/Account/Menu';
 import Header from '../../components/Header';
 import { ServerSideRedirectProps } from '../../types/pages';
 import Account from '../../components/Account';
+import selector from './slugSelector';
+import Content from '../../components/Content';
 
 const slugs = ['details', 'profile', 'orderHistory', 'achievements'];
 
@@ -17,6 +21,7 @@ export async function getServerSideProps(context: any): Promise<ServerSideRedire
 
     const errorCode = slugs.includes(slug) ? false : 404;
 
+    // If session hasn't been established redirect to the login page.
     if (!session) {
         return {
             redirect: {
@@ -26,6 +31,7 @@ export async function getServerSideProps(context: any): Promise<ServerSideRedire
         };
     }
 
+    // If we're signed in then decide whether we should show the page or 404.
     return {
         props: { errorCode },
     };
@@ -36,11 +42,18 @@ interface AccountSubPageProps {
 }
 
 export const AccountSubPage: React.FC<AccountSubPageProps> = ({ errorCode }) => {
+    const { pages } = useSelector(selector);
+    const router = useRouter();
+    const slug: string = get(router, 'query.slug', '');
+    const page = pages.find((page) => page.title.toLowerCase() === slug);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const content: any[] | null = get(page, 'content.json.content', null);
+
+    // Show error page if a code is provided.
     if (errorCode && typeof errorCode === 'number') {
         return <Error statusCode={errorCode} />;
     }
-
-    const { data: session, status } = useSession();
 
     return (
         <React.Fragment>
@@ -49,7 +62,10 @@ export const AccountSubPage: React.FC<AccountSubPageProps> = ({ errorCode }) => 
                 <div className="container mx-auto">
                     <div className="flex flex-row w-full justify-start items-start">
                         <AccountMenu />
-                        <Account />
+                        <div className="flex flex-col py-4 px-8">
+                            {content && <Content content={content} />}
+                            <Account slug={slug} />
+                        </div>
                     </div>
                 </div>
             </div>

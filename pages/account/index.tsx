@@ -29,7 +29,6 @@ export const AccountPage: React.FC = () => {
     const { page } = useSelector(selector);
     const { data: session, status } = useSession();
     const content: any[] | null = get(page, 'content.json.content', null);
-    console.log('🚀 ~ file: index.tsx ~ line 31 ~ content', content);
 
     return (
         <React.Fragment>
