@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { get } from 'lodash';
@@ -14,20 +14,12 @@ import {
     setPaymentMethods,
     setUpdatingCart,
 } from '../store/slices/cart';
-import { rehydration } from '../store';
+// import { rehydration } from '../store';
 import { createToken } from '../utils/auth';
 import { getShipment, getShipments } from '../utils/checkout';
 import { addShipmentWithMethod } from '../store/slices/checkout';
 
 const AuthProvider: React.FC = ({ children }) => {
-    const waitForHydro = async () => {
-        await rehydration();
-    };
-
-    useIsomorphicLayoutEffect(() => {
-        waitForHydro();
-    }, []);
-
     const { accessToken, expires, order, shouldFetchOrder } = useSelector(selector);
     const dispatch = useDispatch();
     const [shouldCreateOrder, setShouldCreateOrder] = useState(true);

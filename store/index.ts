@@ -1,16 +1,11 @@
-import { createStore, applyMiddleware } from 'redux';
+import { configureStore, ThunkAction } from '@reduxjs/toolkit';
+import { Action } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import thunk from 'redux-thunk';
-import { composeWithDevTools } from 'redux-devtools-extension';
+import thunkMiddleware from 'redux-thunk';
+import { createWrapper } from 'next-redux-wrapper';
 
 import rootReducer from './slices';
-import { createInitialState } from './state';
-
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-ignore
-let rehydrationComplete;
-let rehydrationFailed;
 
 const persistConfig = {
     key: 'root',
@@ -18,32 +13,33 @@ const persistConfig = {
     whitelist: ['cart', 'checkout', 'global', 'confirmation', 'pages', 'breaks', 'account'],
 };
 
-const rehydrationPromise = new Promise((resolve, reject) => {
-    rehydrationComplete = resolve;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    rehydrationFailed = reject;
-});
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function rehydration(): Promise<any> {
-    return rehydrationPromise;
-}
-
-const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-const storeInstance = () => {
-    // Create our store and allow thunks for future development if required.
-    const store = createStore(persistedReducer, createInitialState(), composeWithDevTools(applyMiddleware(thunk)));
-    const persistor = persistStore(store, null, () => {
-        // @ts-ignore
-        rehydrationComplete();
+const makeConfiguredStore = (rootReducer: any) =>
+    configureStore({
+        reducer: rootReducer,
+        middleware: [thunkMiddleware],
+        devTools: true,
     });
 
-    return {
-        store,
-        persistor,
-    };
+const makeStore = () => {
+    const isServer = typeof window === 'undefined';
+
+    if (isServer) {
+        return makeConfiguredStore(rootReducer);
+    } else {
+        const persistedReducer = persistReducer(persistConfig, rootReducer);
+        const store = makeConfiguredStore(persistedReducer);
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        store.__persistor = persistStore(store); // Nasty hack
+
+        return store;
+    }
 };
 
-export default storeInstance;
+export type AppStore = ReturnType<typeof makeStore>;
+export type AppState = ReturnType<AppStore['getState']>;
+export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, Action>;
+
+export const wrapper = createWrapper<AppStore>(makeStore, { debug: true });

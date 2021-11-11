@@ -68,23 +68,28 @@ export const SocialMediaLinks: React.FC = () => {
         }
     };
 
-    const fetchSocialMedia = useCallback(async () => {
-        const response = await axios.post('/api/account/getSocialMedia', {
-            emailAddress,
-        });
+    const fetchSocialMedia = useCallback(
+        async (email: string) => {
+            const response = await axios.post('/api/account/getSocialMedia', {
+                emailAddress: email,
+            });
 
-        if (response) {
-            const socialMedia = safelyParse(response, 'data.socialMedia', parseAsSocialMedia, null);
+            if (response) {
+                const socialMedia = safelyParse(response, 'data.socialMedia', parseAsSocialMedia, null);
 
-            if (socialMedia) {
-                dispatch(setSocialMedia(socialMedia));
+                if (socialMedia) {
+                    dispatch(setSocialMedia(socialMedia));
+                }
             }
-        }
-    }, [emailAddress]);
+        },
+        [emailAddress]
+    );
 
     useEffect(() => {
-        fetchSocialMedia();
-    }, []);
+        if (emailAddress) {
+            fetchSocialMedia(emailAddress);
+        }
+    }, [emailAddress]);
 
     useEffect(() => {
         if (savedSocialMedia) {
