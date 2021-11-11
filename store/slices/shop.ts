@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { HYDRATE } from 'next-redux-wrapper';
 
 import shopInitialState from '../state/shop';
 
@@ -13,10 +14,14 @@ const shopSlice = createSlice({
             state.isLoadingProducts = action.payload;
         },
     },
-    extraReducers: (builder) => {
-        builder
-            // and provide a default case if no other handlers matched
-            .addDefaultCase((state) => state);
+    extraReducers: {
+        [HYDRATE]: (state, action) => {
+            console.log('HYDRATE', state, action.payload);
+            return {
+                ...state,
+                ...action.payload.subject,
+            };
+        },
     },
 });
 

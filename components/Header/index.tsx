@@ -66,11 +66,8 @@ export const Header: React.FC = () => {
                 </Link>
                 {status === 'unauthenticated' && (
                     <Link href="/login" passHref>
-                        <div className="flex justify-start items-center indicator cursor-pointer rounded-md hover:bg-neutral-focus">
+                        <div className="flex justify-start items-center cursor-pointer rounded-md hover:bg-neutral-focus">
                             <AiOutlineUser className={styles.account} />
-                            {cartItemCount > 0 && (
-                                <div className="indicator-item badge badge-primary">{cartItemCount}</div>
-                            )}
                         </div>
                     </Link>
                 )}
