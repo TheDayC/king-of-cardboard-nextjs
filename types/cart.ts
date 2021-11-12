@@ -1,3 +1,4 @@
+import { CommerceLayerObject } from './api';
 import { Product } from './products';
 
 export interface FullCartItem extends Product {
@@ -25,5 +26,5 @@ export interface Order {
 export interface IncludedData {
     id: string;
     type: string;
-    attributes: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    attributes: CommerceLayerObject | null;
 }

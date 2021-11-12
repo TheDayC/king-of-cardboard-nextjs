@@ -1,15 +1,14 @@
 import axios from 'axios';
-import { get } from 'lodash';
 
-import { Order } from '../types/cart';
-import { parseOrderData } from './parsers';
+import { GetOrders } from '../types/account';
+import { parseAsCommerceResponseArray, safelyParse } from './parsers';
 
 export async function getOrders(
     accessToken: string,
     emailAddress: string,
     pageSize: number,
     page: number
-): Promise<Order | null> {
+): Promise<GetOrders | null> {
     try {
         const response = await axios.post('/api/account/getOrders', {
             token: accessToken,
@@ -19,10 +18,10 @@ export async function getOrders(
         });
 
         if (response) {
-            const order: any[] | null = get(response, 'data.order', null);
-            const included: any[] | null = get(response, 'data.included', null);
+            const orders = safelyParse(response, 'data.orders', parseAsCommerceResponseArray, null);
+            const included = safelyParse(response, 'data.included', parseAsCommerceResponseArray, null);
 
-            return parseOrderData(order, included);
+            return { orders, included };
         }
 
         return null;

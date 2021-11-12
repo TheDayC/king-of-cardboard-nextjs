@@ -1,3 +1,4 @@
+import { CommerceLayerObject, CommerceLayerResponse } from '../types/api';
 import { ITypeGuard } from '../types/parsers';
 import { SocialMedia } from '../types/profile';
 
@@ -31,4 +32,20 @@ export function isEnumMember<E>(enumToTest: E): ITypeGuard<E[keyof E]> {
 
 export function isSocialMedia(candidate: unknown): candidate is SocialMedia {
     return isNotNullOrUndefined<object>(candidate) && 'instagram' in candidate;
+}
+
+export function isCommerceResponse(candidate: unknown): candidate is CommerceLayerResponse {
+    return isNotNullOrUndefined<object>(candidate) && 'type' in candidate;
+}
+
+export function isCommerceResponseArray(candidate: unknown): candidate is CommerceLayerResponse[] {
+    return isArray(candidate) && isCommerceResponse(candidate[0]);
+}
+
+export function isArrayOfStrings(candidate: unknown): candidate is string[] {
+    return isArray(candidate) && typeof candidate[0] === 'string';
+}
+
+export function isAttributes(candidate: unknown): candidate is CommerceLayerObject {
+    return isNotNullOrUndefined<object>(candidate) && 'sku_code' in candidate;
 }

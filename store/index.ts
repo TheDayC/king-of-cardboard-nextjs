@@ -10,7 +10,7 @@ import rootReducer from './slices';
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['cart', 'checkout', 'global', 'confirmation', 'pages', 'breaks', 'account'],
+    whitelist: ['cart', 'checkout', 'global', 'confirmation', 'pages'],
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

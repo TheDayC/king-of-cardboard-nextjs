@@ -9,20 +9,28 @@ async function getOrders(req: NextApiRequest, res: NextApiResponse): Promise<voi
         const token = safelyParse(req, 'body.token', parseAsString, null);
         const emailAddress = safelyParse(req, 'body.emailAddress', parseAsString, null);
         const pageSize = safelyParse(req, 'body.pageSize', parseAsString, '5');
-        const page = safelyParse(req, 'body.page', parseAsString, '0');
+        const page = safelyParse(req, 'body.page', parseAsString, '1');
+        const include = 'line_items,available_payment_methods,payment_method';
+        const orderFields =
+            'fields[orders]=number,skus_count,formatted_subtotal_amount,formatted_discount_amount,formatted_shipping_amount,formatted_total_tax_amount,formatted_gift_card_amount,formatted_total_amount_with_taxes,formatted_adjustment_amount,line_items,shipments_count';
+        const lineItemFields =
+            'fields[line_items]=item_type,image_url,name,sku_code,formatted_unit_amount,quantity,formatted_total_amount';
+        const paymentFields = 'fields[payment_methods]=name,payment_source_type';
+        const shipmentsFields = 'fields[shipments]=id,status,currency_code,cost_amount_cents';
 
         const cl = authClient(token);
 
         return cl
-            .get(`api/orders?filter[q][email_eq]=${emailAddress}&page[size]=${pageSize}&page[number]=${page}`)
+            .get(
+                `/api/orders?filter[q][email_eq]=${emailAddress}&page[size]=${pageSize}&page[number]=${page}&include=${include}&${orderFields}&${lineItemFields}&${paymentFields}&${shipmentsFields}`
+            )
             .then((response) => {
                 const status = safelyParse(response, 'status', parseAsNumber, 500);
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
-                const orders = get(response, 'data.data', null);
-                console.log('🚀 ~ file: getOrders.ts ~ line 23 ~ .then ~ orders', orders);
+                const { data: orders, included } = get(response, 'data', null);
 
-                res.status(status).json({ orders });
+                res.status(status).json({ orders, included });
             })
             .catch((error) => {
                 const status = safelyParse(error, 'response.status', parseAsNumber, 500);

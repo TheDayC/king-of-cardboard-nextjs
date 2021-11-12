@@ -4,25 +4,63 @@ import { get } from 'lodash';
 import { Counties } from '../enums/checkout';
 import { CustomerDetails } from '../store/types/state';
 import { Order } from '../types/cart';
-import { isString, isNumber, isBoolean, isArray, isSocialMedia } from './typeguards';
+import {
+    isString,
+    isNumber,
+    isBoolean,
+    isArray,
+    isSocialMedia,
+    isCommerceResponse,
+    isCommerceResponseArray,
+    isArrayOfStrings,
+    isCommerceLayerObject,
+    isAttributes,
+    isEnumMember,
+} from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 
 export function parseOrderData(order: any, included: any): Order | null {
     if (order !== null) {
-        const id: string = get(order, 'id', '');
-        const orderNumber: number = get(order, 'attributes.number', 0);
-        const sku_count: number = get(order, 'attributes.sku_count', 0);
-        const formatted_subtotal_amount: string = get(order, 'attributes.formatted_subtotal_amount', '£0.00');
-        const formatted_discount_amount: string = get(order, 'attributes.formatted_discount_amount', '£0.00');
-        const formatted_shipping_amount: string = get(order, 'attributes.formatted_shipping_amount', '£0.00');
-        const formatted_total_tax_amount: string = get(order, 'attributes.formatted_total_tax_amount', '£0.00');
-        const formatted_gift_card_amount: string = get(order, 'attributes.formatted_gift_card_amount', '£0.00');
-        const formatted_total_amount_with_taxes: string = get(
+        const id = safelyParse(order, 'id', parseAsString, '');
+        const orderNumber = safelyParse(order, 'attributes.number', parseAsNumber, 0);
+        const sku_count = safelyParse(order, 'attributes.sku_count', parseAsNumber, 0);
+        const formatted_subtotal_amount = safelyParse(
             order,
-            'attributes.formatted_total_amount_with_taxes',
+            'attributes.formatted_subtotal_amount',
+            parseAsString,
             '£0.00'
         );
-        const line_items: string[] = get(order, 'attributes.line_items', []);
+        const formatted_discount_amount = safelyParse(
+            order,
+            'attributes.formatted_discount_amount',
+            parseAsString,
+            '£0.00'
+        );
+        const formatted_shipping_amount = safelyParse(
+            order,
+            'attributes.formatted_shipping_amount',
+            parseAsString,
+            '£0.00'
+        );
+        const formatted_total_tax_amount = safelyParse(
+            order,
+            'attributes.formatted_total_tax_amount',
+            parseAsString,
+            '£0.00'
+        );
+        const formatted_gift_card_amount = safelyParse(
+            order,
+            'attributes.formatted_gift_card_amount',
+            parseAsString,
+            '£0.00'
+        );
+        const formatted_total_amount_with_taxes = safelyParse(
+            order,
+            'attributes.formatted_total_amount_with_taxes',
+            parseAsString,
+            '£0.00'
+        );
+        const line_items = safelyParse(order, 'attributes.line_items', parseAsArrayOfStrings, [] as string[]);
 
         return {
             id,
@@ -36,11 +74,10 @@ export function parseOrderData(order: any, included: any): Order | null {
             formatted_total_amount_with_taxes,
             line_items,
             included: included
-                ? included.map((include: any) => {
-                      const id: string = get(include, 'id', '');
-                      const type: string = get(include, 'type', '');
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      const attributes: any = get(include, 'attributes', null);
+                ? included.map((include: unknown) => {
+                      const id = safelyParse(include, 'id', parseAsString, '');
+                      const type = safelyParse(include, 'type', parseAsString, '');
+                      const attributes = safelyParse(include, 'attributes', parseAsAttributes, null);
 
                       return {
                           id,
@@ -56,26 +93,26 @@ export function parseOrderData(order: any, included: any): Order | null {
 }
 
 export function parseCustomerDetails(data: unknown, allowShipping: boolean): CustomerDetails {
-    const firstName: string | null = get(data, 'firstName', null);
-    const lastName: string | null = get(data, 'lastName', null);
-    const company: string | null = get(data, 'company', null);
-    const email: string | null = get(data, 'email', null);
-    const phone: string | null = get(data, 'phone', null);
-    const addressLineOne: string | null = get(data, 'billingAddressLineOne', null);
-    const addressLineTwo: string | null = get(data, 'billingAddressLineTwo', null);
-    const city: string | null = get(data, 'billingCity', null);
-    const postcode: string | null = get(data, 'billingPostcode', null);
-    const county: Counties | null = get(data, 'billingCounty', null);
+    const firstName = safelyParse(data, 'firstName', parseAsString, null);
+    const lastName = safelyParse(data, 'lastName', parseAsString, null);
+    const company = safelyParse(data, 'company', parseAsString, null);
+    const email = safelyParse(data, 'email', parseAsString, null);
+    const phone = safelyParse(data, 'phone', parseAsString, null);
+    const addressLineOne = safelyParse(data, 'billingAddressLineOne', parseAsString, null);
+    const addressLineTwo = safelyParse(data, 'billingAddressLineTwo', parseAsString, null);
+    const city = safelyParse(data, 'billingCity', parseAsString, null);
+    const postcode = safelyParse(data, 'billingPostcode', parseAsString, null);
+    const county = safelyParse(data, 'billingCounty', parseAsCounties, null);
 
-    const shippingAddressLineOne: string | null = allowShipping
-        ? get(data, 'shippingAddressLineOne', null)
+    const shippingAddressLineOne = allowShipping
+        ? safelyParse(data, 'shippingAddressLineOne', parseAsString, null)
         : addressLineOne;
-    const shippingAddressLineTwo: string | null = allowShipping
-        ? get(data, 'shippingAddressLineTwo', null)
+    const shippingAddressLineTwo = allowShipping
+        ? safelyParse(data, 'shippingAddressLineTwo', parseAsString, null)
         : addressLineTwo;
-    const shippingCity: string | null = allowShipping ? get(data, 'shippingCity', null) : city;
-    const shippingPostcode: string | null = allowShipping ? get(data, 'shippingPostcode', null) : postcode;
-    const shippingCounty: Counties | null = allowShipping ? get(data, 'shippingCounty', null) : county;
+    const shippingCity = allowShipping ? safelyParse(data, 'shippingCity', parseAsString, null) : city;
+    const shippingPostcode = allowShipping ? safelyParse(data, 'shippingPostcode', parseAsString, null) : postcode;
+    const shippingCounty = allowShipping ? safelyParse(data, 'shippingCounty', parseAsCounties, null) : county;
 
     return {
         firstName,
@@ -154,4 +191,9 @@ export const parseAsString = parseAsType(isString);
 export const parseAsNumber = parseAsType(isNumber);
 export const parseAsBoolean = parseAsType(isBoolean);
 export const parseAsArray = parseAsType(isArray);
+export const parseAsArrayOfStrings = parseAsType(isArrayOfStrings);
 export const parseAsSocialMedia = parseAsType(isSocialMedia);
+export const parseAsCommerceResponse = parseAsType(isCommerceResponse);
+export const parseAsCommerceResponseArray = parseAsType(isCommerceResponseArray);
+export const parseAsAttributes = parseAsType(isAttributes);
+export const parseAsCounties = parseAsType(isEnumMember(Counties));

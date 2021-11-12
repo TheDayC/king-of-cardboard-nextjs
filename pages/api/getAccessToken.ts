@@ -11,6 +11,7 @@ async function getAccessToken(req: NextApiRequest, res: NextApiResponse): Promis
             .post('/oauth/token', {
                 grant_type: 'client_credentials',
                 client_id: process.env.ECOM_CLIENT_ID,
+                client_secret: process.env.ECOM_CLIENT_SECRET,
                 scope: 'market:6098',
             })
             .then((response) => {
