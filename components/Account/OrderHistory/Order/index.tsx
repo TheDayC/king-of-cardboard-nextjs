@@ -30,18 +30,18 @@ export const Order: React.FC<OrderProps> = ({
                 </h3>
                 <div className="flex flex-row mb-2">
                     <div className="flex flex-row justify-center items-center mr-4">
-                        <div className={`rounded-full w-3 h-3 bg-${statusColour(status)}-500 mr-2`}></div>
-                        <p>{status}</p>
+                        <div className={`rounded-full w-3 h-3 bg-${statusColour(status)}-400 mr-2`}></div>
+                        <p className="capitalize">{status}</p>
                     </div>
                     <div className="flex flex-row justify-center items-center mr-4">
-                        <div className={`rounded-full w-3 h-3 bg-${paymentStatusColour(paymentStatus)}-500 mr-2`}></div>
-                        <p>{paymentStatus}</p>
+                        <div className={`rounded-full w-3 h-3 bg-${paymentStatusColour(paymentStatus)}-400 mr-2`}></div>
+                        <p className="capitalize">{paymentStatus}</p>
                     </div>
                     <div className="flex flex-row justify-center items-center mr-4">
                         <div
-                            className={`rounded-full w-3 h-3 bg-${fulfillmentStatusColour(fulfillmentStatus)}-500 mr-2`}
+                            className={`rounded-full w-3 h-3 bg-${fulfillmentStatusColour(fulfillmentStatus)}-400 mr-2`}
                         ></div>
-                        <p>{fulfillmentStatus}</p>
+                        <p className="capitalize">{fulfillmentStatus}</p>
                     </div>
                 </div>
                 <div className="flex flex-row">

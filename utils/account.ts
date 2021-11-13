@@ -42,7 +42,7 @@ export function statusColour(status: string): string {
         case 'cancelled':
             return 'red';
         default:
-            return 'blue';
+            return 'gray';
     }
 }
 
@@ -56,7 +56,7 @@ export function paymentStatusColour(status: string): string {
         case 'refunded':
             return 'red';
         default:
-            return 'blue';
+            return 'gray';
     }
 }
 
@@ -67,6 +67,6 @@ export function fulfillmentStatusColour(status: string): string {
         case 'in_progress':
             return 'yellow';
         default:
-            return 'blue';
+            return 'gray';
     }
 }

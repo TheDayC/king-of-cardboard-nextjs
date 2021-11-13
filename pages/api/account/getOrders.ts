@@ -17,7 +17,7 @@ async function getOrders(req: NextApiRequest, res: NextApiResponse): Promise<voi
 
         return cl
             .get(
-                `/api/orders?filter[q][email_eq]=${emailAddress}&page[size]=${pageSize}&page[number]=${page}&${orderFields}`
+                `/api/orders?filter[q][email_eq]=${emailAddress}&filter[q][status_not_eq]=draft&page[size]=${pageSize}&page[number]=${page}&${orderFields}`
             )
             .then((response) => {
                 const status = safelyParse(response, 'status', parseAsNumber, 500);
