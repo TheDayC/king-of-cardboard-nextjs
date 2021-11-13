@@ -56,7 +56,7 @@ export function isArrayOfStrings(candidate: unknown): candidate is string[] {
 }
 
 export function isAttributes(candidate: unknown): candidate is CommerceLayerObject {
-    return isNotNullOrUndefined<object>(candidate) && 'sku_code' in candidate;
+    return isNotNullOrUndefined<object>(candidate) && 'name' in candidate;
 }
 
 export function isLineItemRelationship(candidate: unknown): candidate is CommerceLayerLineItemRelationship {
