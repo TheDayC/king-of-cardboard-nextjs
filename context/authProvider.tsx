@@ -55,7 +55,7 @@ const AuthProvider: React.FC = ({ children }) => {
                     // Put fetched line items into cart.items store.
                     // Ensure sku_code exists to avoid adding shipping or payment methods.
                     const cartItems = items
-                        .filter((item) => item.attributes.sku_code)
+                        .filter((item) => (item.attributes ? item.attributes.sku_code : ''))
                         .map((item) => ({
                             ...item.attributes,
                             id: item.id,
@@ -146,13 +146,6 @@ const AuthProvider: React.FC = ({ children }) => {
             setShouldCreateOrder(false);
         }
     }, [order, accessToken, shouldCreateOrder]);
-
-    // Create the product collection on load.
-    /* useIsomorphicLayoutEffect(() => {
-        if (products.length <= 0 && accessToken) {
-            createProductCollection(accessToken);
-        }
-    }, [products, accessToken]); */
 
     return <React.Fragment>{children}</React.Fragment>;
 };

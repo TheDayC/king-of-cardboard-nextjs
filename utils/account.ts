@@ -31,3 +31,42 @@ export async function getOrders(
 
     return null;
 }
+
+export function statusColour(status: string): string {
+    switch (status) {
+        case 'approved':
+            return 'green';
+        case 'placed':
+        case 'pending':
+            return 'yellow';
+        case 'cancelled':
+            return 'red';
+        default:
+            return 'blue';
+    }
+}
+
+export function paymentStatusColour(status: string): string {
+    switch (status) {
+        case 'paid':
+            return 'green';
+        case 'authorized':
+            return 'yellow';
+        case 'voided':
+        case 'refunded':
+            return 'red';
+        default:
+            return 'blue';
+    }
+}
+
+export function fulfillmentStatusColour(status: string): string {
+    switch (status) {
+        case 'fulfilled':
+            return 'green';
+        case 'in_progress':
+            return 'yellow';
+        default:
+            return 'blue';
+    }
+}

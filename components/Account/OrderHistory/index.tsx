@@ -3,9 +3,11 @@ import { useSession } from 'next-auth/react';
 import { useSelector } from 'react-redux';
 
 import selector from './selector';
-import { parseAsString, safelyParse } from '../../../utils/parsers';
+import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 import { getOrders } from '../../../utils/account';
 import { CommerceLayerResponse } from '../../../types/api';
+import Order from './Order';
+import Loading from '../../Loading';
 
 export const OrderHistory: React.FC = () => {
     const { accessToken } = useSelector(selector);
@@ -30,7 +32,32 @@ export const OrderHistory: React.FC = () => {
         }
     }, [accessToken, emailAddress]);
 
-    return <h1>OrderHistory</h1>;
+    return (
+        <React.Fragment>
+            <h1 className="text-3xl mb-6">Order History</h1>
+            {orders ? (
+                orders.map((order, i) => (
+                    <Order
+                        orderNumber={safelyParse(order, 'attributes.number', parseAsNumber, null)}
+                        status={safelyParse(order, 'attributes.status', parseAsString, 'draft')}
+                        paymentStatus={safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid')}
+                        fulfillmentStatus={safelyParse(
+                            order,
+                            'attributes.fulfillment_status',
+                            parseAsString,
+                            'unfulfilled'
+                        )}
+                        itemCount={safelyParse(order, 'attributes.skus_count', parseAsNumber, 0)}
+                        shipmentsCount={safelyParse(order, 'attributes.shipments_count', parseAsNumber, 0)}
+                        total={safelyParse(order, 'attributes.formatted_total_amount_with_taxes', parseAsString, '')}
+                        key={`order-${i}`}
+                    />
+                ))
+            ) : (
+                <Loading show />
+            )}
+        </React.Fragment>
+    );
 };
 
 export default OrderHistory;
