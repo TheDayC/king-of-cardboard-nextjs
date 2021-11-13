@@ -2,11 +2,13 @@ import { get } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { authClient } from '../../utils/auth';
+import { parseAsString, safelyParse } from '../../utils/parsers';
 
 async function confirmOrder(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
-        const token = get(req, 'body.token', null);
-        const id = get(req, 'body.id', null);
+        const token = safelyParse(req, 'body.token', parseAsString, null);
+        const id = safelyParse(req, 'body.id', parseAsString, null);
+        const attribute = safelyParse(req, 'body.attribute', parseAsString, '_place');
         const cl = authClient(token);
 
         return cl
@@ -15,7 +17,7 @@ async function confirmOrder(req: NextApiRequest, res: NextApiResponse): Promise<
                     type: 'orders',
                     id,
                     attributes: {
-                        _place: true,
+                        [attribute]: true,
                     },
                 },
             })
