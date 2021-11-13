@@ -8,21 +8,43 @@ import { getOrders } from '../../../utils/account';
 import { CommerceLayerResponse } from '../../../types/api';
 import Order from './Order';
 import Loading from '../../Loading';
+import Pagination from '../../Pagination';
+
+const ORDERS_PER_PAGE = 5;
 
 export const OrderHistory: React.FC = () => {
     const { accessToken } = useSelector(selector);
     const { data: session } = useSession();
     const [orders, setOrders] = useState<CommerceLayerResponse[] | null>(null);
+    const [pageCount, setPageCount] = useState<number | null>(null);
+    const [currentPage, setCurrentPage] = useState(0);
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
 
-    const fetchOrderHistory = async (token: string, email: string) => {
-        const response = await getOrders(token, email, 5, 1);
+    const fetchOrderHistory = async (
+        token: string,
+        email: string,
+        page: number = 0,
+        perPage: number = ORDERS_PER_PAGE
+    ) => {
+        const response = await getOrders(token, email, perPage, page + 1);
 
         if (response) {
-            const { orders: responseOrders } = response;
-            console.log('🚀 ~ file: index.tsx ~ line 22 ~ fetchOrderHistory ~ response', response);
+            const { orders: responseOrders, meta } = response;
 
             setOrders(responseOrders);
+
+            if (meta) {
+                setPageCount(meta.page_count);
+            }
+
+            setCurrentPage(page);
+        }
+    };
+
+    const handlePageNumber = (nextPage: number) => {
+        if (accessToken && emailAddress) {
+            setOrders(null);
+            fetchOrderHistory(accessToken, emailAddress, nextPage);
         }
     };
 
@@ -56,6 +78,9 @@ export const OrderHistory: React.FC = () => {
                 ))
             ) : (
                 <Loading show />
+            )}
+            {pageCount && pageCount > 1 && (
+                <Pagination currentPage={currentPage} pageCount={pageCount} handlePageNumber={handlePageNumber} />
             )}
         </React.Fragment>
     );

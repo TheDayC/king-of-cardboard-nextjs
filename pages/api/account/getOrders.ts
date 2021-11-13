@@ -8,8 +8,8 @@ async function getOrders(req: NextApiRequest, res: NextApiResponse): Promise<voi
     if (req.method === 'POST') {
         const token = safelyParse(req, 'body.token', parseAsString, null);
         const emailAddress = safelyParse(req, 'body.emailAddress', parseAsString, null);
-        const pageSize = safelyParse(req, 'body.pageSize', parseAsString, '5');
-        const page = safelyParse(req, 'body.page', parseAsString, '1');
+        const pageSize = safelyParse(req, 'body.pageSize', parseAsNumber, 5);
+        const page = safelyParse(req, 'body.page', parseAsNumber, 1);
         const orderFields =
             'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount_with_taxes,shipments_count,placed_at';
 
@@ -23,9 +23,9 @@ async function getOrders(req: NextApiRequest, res: NextApiResponse): Promise<voi
                 const status = safelyParse(response, 'status', parseAsNumber, 500);
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
-                const { data: orders } = get(response, 'data', null);
+                const { data: orders, meta } = get(response, 'data', null);
 
-                res.status(status).json({ orders });
+                res.status(status).json({ orders, meta });
             })
             .catch((error) => {
                 const status = safelyParse(error, 'response.status', parseAsNumber, 500);

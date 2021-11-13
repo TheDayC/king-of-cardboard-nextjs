@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types */
-import { get } from 'lodash';
-
 import { Counties } from '../enums/checkout';
 import { CustomerDetails } from '../store/types/state';
 import { Order } from '../types/cart';
@@ -13,9 +11,9 @@ import {
     isCommerceResponse,
     isCommerceResponseArray,
     isArrayOfStrings,
-    isCommerceLayerObject,
     isAttributes,
     isEnumMember,
+    isCommerceMeta,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 
@@ -195,5 +193,6 @@ export const parseAsArrayOfStrings = parseAsType(isArrayOfStrings);
 export const parseAsSocialMedia = parseAsType(isSocialMedia);
 export const parseAsCommerceResponse = parseAsType(isCommerceResponse);
 export const parseAsCommerceResponseArray = parseAsType(isCommerceResponseArray);
+export const parseAsCommerceMeta = parseAsType(isCommerceMeta);
 export const parseAsAttributes = parseAsType(isAttributes);
 export const parseAsCounties = parseAsType(isEnumMember(Counties));

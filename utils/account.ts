@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { GetOrders } from '../types/account';
-import { parseAsCommerceResponseArray, safelyParse } from './parsers';
+import { parseAsCommerceResponseArray, safelyParse, parseAsCommerceMeta } from './parsers';
 
 export async function getOrders(
     accessToken: string,
@@ -20,8 +20,9 @@ export async function getOrders(
         if (response) {
             const orders = safelyParse(response, 'data.orders', parseAsCommerceResponseArray, null);
             const included = safelyParse(response, 'data.included', parseAsCommerceResponseArray, null);
+            const meta = safelyParse(response, 'data.meta', parseAsCommerceMeta, null);
 
-            return { orders, included };
+            return { orders, included, meta };
         }
 
         return null;

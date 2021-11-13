@@ -30,7 +30,9 @@ export const Order: React.FC<OrderProps> = ({
         <div className="card card-side bordered rounded-md mb-4">
             <div className="card-body p-4">
                 <h3 className="card-title mb-2">
-                    {orderNumber && <Link href={`/account/orderHistory/${orderNumber}`}>{`#${orderNumber}`}</Link>}
+                    {orderNumber && (
+                        <Link href={`/account/orderHistory/${orderNumber}`}>{`Order #${orderNumber}`}</Link>
+                    )}
                 </h3>
                 <div className="flex flex-row mb-2">
                     <p className="text-xs text-gray-400">{placedAtDate.toFormat('MMM dd, y')}</p>

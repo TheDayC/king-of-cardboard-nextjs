@@ -1,4 +1,4 @@
-import { CommerceLayerObject, CommerceLayerResponse } from '../types/api';
+import { CommerceLayerMeta, CommerceLayerObject, CommerceLayerResponse } from '../types/api';
 import { ITypeGuard } from '../types/parsers';
 import { SocialMedia } from '../types/profile';
 
@@ -40,6 +40,10 @@ export function isCommerceResponse(candidate: unknown): candidate is CommerceLay
 
 export function isCommerceResponseArray(candidate: unknown): candidate is CommerceLayerResponse[] {
     return isArray(candidate) && isCommerceResponse(candidate[0]);
+}
+
+export function isCommerceMeta(candidate: unknown): candidate is CommerceLayerMeta {
+    return isNotNullOrUndefined<object>(candidate) && 'page_count' in candidate;
 }
 
 export function isArrayOfStrings(candidate: unknown): candidate is string[] {

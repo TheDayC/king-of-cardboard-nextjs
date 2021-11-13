@@ -15,3 +15,8 @@ export interface CommerceLayerResponse {
 export interface CommerceLayerObject {
     [key: string]: string;
 }
+
+export interface CommerceLayerMeta {
+    record_count: number;
+    page_count: number;
+}
