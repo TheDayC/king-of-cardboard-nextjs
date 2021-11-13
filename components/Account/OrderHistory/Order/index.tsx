@@ -13,6 +13,7 @@ interface OrderProps {
     shipmentsCount: number;
     total: string;
     placedAt: string;
+    updatedAt: string;
 }
 
 export const Order: React.FC<OrderProps> = ({
@@ -24,8 +25,11 @@ export const Order: React.FC<OrderProps> = ({
     shipmentsCount,
     total,
     placedAt,
+    updatedAt,
 }) => {
     const placedAtDate = DateTime.fromISO(placedAt, { zone: 'Europe/London' });
+    const updatedAtDate = DateTime.fromISO(updatedAt, { zone: 'Europe/London' });
+
     return (
         <div className="card card-side bordered rounded-md mb-4">
             <div className="card-body p-4">
@@ -35,7 +39,8 @@ export const Order: React.FC<OrderProps> = ({
                     )}
                 </h3>
                 <div className="flex flex-row mb-2">
-                    <p className="text-xs text-gray-400">{placedAtDate.toFormat('MMM dd, y')}</p>
+                    <p className="text-xs text-gray-400">Placed on: {placedAtDate.toFormat('MMM dd, y')}</p>
+                    <p className="text-xs text-gray-400 ml-2">Updated on: {updatedAtDate.toFormat('MMM dd, y')}</p>
                 </div>
                 <div className="flex flex-row mb-2">
                     <p className="text-xs text-gray-400 mr-2">

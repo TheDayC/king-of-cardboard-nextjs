@@ -73,6 +73,7 @@ export const OrderHistory: React.FC = () => {
                         shipmentsCount={safelyParse(order, 'attributes.shipments_count', parseAsNumber, 0)}
                         total={safelyParse(order, 'attributes.formatted_total_amount_with_taxes', parseAsString, '')}
                         placedAt={safelyParse(order, 'attributes.placed_at', parseAsString, '')}
+                        updatedAt={safelyParse(order, 'attributes.updated_at', parseAsString, '')}
                         key={`order-${i}`}
                     />
                 ))

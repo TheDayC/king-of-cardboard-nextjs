@@ -11,7 +11,7 @@ async function getOrders(req: NextApiRequest, res: NextApiResponse): Promise<voi
         const pageSize = safelyParse(req, 'body.pageSize', parseAsNumber, 5);
         const page = safelyParse(req, 'body.page', parseAsNumber, 1);
         const orderFields =
-            'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount_with_taxes,shipments_count,placed_at';
+            'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount_with_taxes,shipments_count,placed_at,updated_at';
 
         const cl = authClient(token);
 
