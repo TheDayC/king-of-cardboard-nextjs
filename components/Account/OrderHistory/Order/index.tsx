@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { DateTime } from 'luxon';
 
 import { statusColour, paymentStatusColour, fulfillmentStatusColour } from '../../../../utils/account';
 
@@ -11,6 +12,7 @@ interface OrderProps {
     itemCount: number;
     shipmentsCount: number;
     total: string;
+    placedAt: string;
 }
 
 export const Order: React.FC<OrderProps> = ({
@@ -21,13 +23,26 @@ export const Order: React.FC<OrderProps> = ({
     itemCount,
     shipmentsCount,
     total,
+    placedAt,
 }) => {
+    const placedAtDate = DateTime.fromISO(placedAt, { zone: 'Europe/London' });
     return (
         <div className="card card-side bordered rounded-md mb-4">
             <div className="card-body p-4">
-                <h3 className="card-title">
+                <h3 className="card-title mb-2">
                     {orderNumber && <Link href={`/account/orderHistory/${orderNumber}`}>{`#${orderNumber}`}</Link>}
                 </h3>
+                <div className="flex flex-row mb-2">
+                    <p className="text-xs text-gray-400">{placedAtDate.toFormat('MMM dd, y')}</p>
+                </div>
+                <div className="flex flex-row mb-2">
+                    <p className="text-xs text-gray-400 mr-2">
+                        <b>Items:</b> {itemCount}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                        <b>Shipments:</b> {shipmentsCount}
+                    </p>
+                </div>
                 <div className="flex flex-row mb-2">
                     <div className="flex flex-row justify-center items-center mr-4">
                         <div className={`rounded-full w-3 h-3 bg-${statusColour(status)}-400 mr-2`}></div>
@@ -45,15 +60,7 @@ export const Order: React.FC<OrderProps> = ({
                     </div>
                 </div>
                 <div className="flex flex-row">
-                    <p>
-                        <b>Items:</b> {itemCount}
-                    </p>
-                    <span className="mx-2">-</span>
-                    <p>
-                        <b>Shipments:</b> {shipmentsCount}
-                    </p>
-                    <span className="mx-2">-</span>
-                    <p>
+                    <p className="text-xl">
                         <b>Total:</b> {total}
                     </p>
                 </div>

@@ -11,13 +11,13 @@ async function getOrders(req: NextApiRequest, res: NextApiResponse): Promise<voi
         const pageSize = safelyParse(req, 'body.pageSize', parseAsString, '5');
         const page = safelyParse(req, 'body.page', parseAsString, '1');
         const orderFields =
-            'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount_with_taxes,shipments_count';
+            'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount_with_taxes,shipments_count,placed_at';
 
         const cl = authClient(token);
 
         return cl
             .get(
-                `/api/orders?filter[q][email_eq]=${emailAddress}&filter[q][status_not_eq]=draft&page[size]=${pageSize}&page[number]=${page}&${orderFields}`
+                `/api/orders?filter[q][email_eq]=${emailAddress}&filter[q][status_not_in]=draft,pending&page[size]=${pageSize}&page[number]=${page}&${orderFields}`
             )
             .then((response) => {
                 const status = safelyParse(response, 'status', parseAsNumber, 500);
