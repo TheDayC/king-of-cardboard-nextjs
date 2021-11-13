@@ -18,6 +18,7 @@ import {
 import { createToken } from '../utils/auth';
 import { getShipment, getShipments } from '../utils/checkout';
 import { addShipmentWithMethod } from '../store/slices/checkout';
+import { safelyParse } from '../utils/parsers';
 
 const AuthProvider: React.FC = ({ children }) => {
     const { accessToken, expires, order, shouldFetchOrder } = useSelector(selector);
@@ -110,11 +111,12 @@ const AuthProvider: React.FC = ({ children }) => {
     useIsomorphicLayoutEffect(() => {
         if (!accessToken) {
             createToken().then((res) => {
-                const token = get(res, 'token', null);
-                const expires = get(res, 'expires', null);
+                if (res) {
+                    const { token, expires } = res;
 
-                dispatch(setAccessToken(token));
-                dispatch(setExpires(expires));
+                    dispatch(setAccessToken(token));
+                    dispatch(setExpires(expires));
+                }
             });
         }
     }, [accessToken]);
