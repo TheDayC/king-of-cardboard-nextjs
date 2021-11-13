@@ -34,7 +34,7 @@ export async function createToken(): Promise<CreateToken | null> {
             const token = safelyParse(accessDetails, 'data.token', parseAsString, null);
             const expires = safelyParse(accessDetails, 'data.expires', parseAsNumber, null);
             const expiresIso = expires
-                ? DateTime.now().setZone('Europe/London').plus({ minutes: expires }).toISO()
+                ? DateTime.now().setZone('Europe/London').plus({ seconds: expires }).toISO()
                 : null;
 
             return {

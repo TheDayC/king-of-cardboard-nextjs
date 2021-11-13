@@ -25,6 +25,17 @@ const AuthProvider: React.FC = ({ children }) => {
     const dispatch = useDispatch();
     const [shouldCreateOrder, setShouldCreateOrder] = useState(true);
 
+    const fetchToken = useCallback(async () => {
+        const res = await createToken();
+
+        if (res) {
+            const { token, expires } = res;
+
+            dispatch(setAccessToken(token));
+            dispatch(setExpires(expires));
+        }
+    }, []);
+
     // Fetch order with line items.
     const fetchOrder = useCallback(
         async (accessToken: string, orderId: string) => {
@@ -110,14 +121,7 @@ const AuthProvider: React.FC = ({ children }) => {
     // If accessToken doesn't exist create a new one.
     useIsomorphicLayoutEffect(() => {
         if (!accessToken) {
-            createToken().then((res) => {
-                if (res) {
-                    const { token, expires } = res;
-
-                    dispatch(setAccessToken(token));
-                    dispatch(setExpires(expires));
-                }
-            });
+            fetchToken();
         }
     }, [accessToken]);
 
@@ -130,7 +134,7 @@ const AuthProvider: React.FC = ({ children }) => {
 
             // Check to see where our current token has expired.
             if (expiryDate < currentDate) {
-                createToken();
+                fetchToken();
             }
         }
     }, [accessToken, expires]);
