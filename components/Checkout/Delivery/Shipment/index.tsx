@@ -62,12 +62,14 @@ export const Shipment: React.FC<ShipmentProps> = ({
                                 <React.Fragment key={`checkout-line-item-${lineItem.sku_code}`}>
                                     <div className="flex flex-row justify-between items-center px-4">
                                         <div className={`${styles.imageContainer}`}>
-                                            <Image
-                                                src={lineItem.image_url}
-                                                alt="shipment image"
-                                                layout="fill"
-                                                objectFit="scale-down"
-                                            />
+                                            {lineItem.image_url && (
+                                                <Image
+                                                    src={lineItem.image_url}
+                                                    alt="shipment image"
+                                                    layout="fill"
+                                                    objectFit="scale-down"
+                                                />
+                                            )}
                                         </div>
                                         <div>
                                             <h4 className="text-md">{lineItem.name}</h4>

@@ -1,4 +1,9 @@
-import { CommerceLayerMeta, CommerceLayerObject, CommerceLayerResponse } from '../types/api';
+import {
+    CommerceLayerLineItemRelationship,
+    CommerceLayerMeta,
+    CommerceLayerObject,
+    CommerceLayerResponse,
+} from '../types/api';
 import { ITypeGuard } from '../types/parsers';
 import { SocialMedia } from '../types/profile';
 
@@ -52,4 +57,12 @@ export function isArrayOfStrings(candidate: unknown): candidate is string[] {
 
 export function isAttributes(candidate: unknown): candidate is CommerceLayerObject {
     return isNotNullOrUndefined<object>(candidate) && 'sku_code' in candidate;
+}
+
+export function isLineItemRelationship(candidate: unknown): candidate is CommerceLayerLineItemRelationship {
+    return isNotNullOrUndefined<object>(candidate) && 'id' in candidate;
+}
+
+export function isArrayOfLineItemRelationships(candidate: unknown): candidate is CommerceLayerLineItemRelationship[] {
+    return isArray(candidate) && isLineItemRelationship(candidate[0]);
 }

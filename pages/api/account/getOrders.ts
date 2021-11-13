@@ -15,7 +15,7 @@ async function getOrders(req: NextApiRequest, res: NextApiResponse): Promise<voi
         const pagination = `page[size]=${pageSize}&page[number]=${page}`;
         const sort = 'sort=-created_at,number';
         const orderFields =
-            'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount_with_taxes,shipments_count,placed_at,updated_at';
+            'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount_with_taxes,shipments_count,placed_at,updated_at,line_items';
         const include = 'line_items';
         const lineItemFields = 'fields[line_items]=id,sku_code,image_url,quantity';
 

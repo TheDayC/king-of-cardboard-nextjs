@@ -3,12 +3,13 @@ import { useSession } from 'next-auth/react';
 import { useSelector } from 'react-redux';
 
 import selector from './selector';
-import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
+import { parseAsArrayOfLineItemRelationships, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 import { getOrders } from '../../../utils/account';
 import { CommerceLayerResponse } from '../../../types/api';
 import Order from './Order';
 import Loading from '../../Loading';
 import Pagination from '../../Pagination';
+import { OrderHistoryLineItem } from '../../../types/account';
 
 const ORDERS_PER_PAGE = 5;
 
@@ -16,6 +17,7 @@ export const OrderHistory: React.FC = () => {
     const { accessToken } = useSelector(selector);
     const { data: session } = useSession();
     const [orders, setOrders] = useState<CommerceLayerResponse[] | null>(null);
+    const [included, setIncluded] = useState<CommerceLayerResponse[] | null>(null);
     const [pageCount, setPageCount] = useState<number | null>(null);
     const [currentPage, setCurrentPage] = useState(0);
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
@@ -29,9 +31,10 @@ export const OrderHistory: React.FC = () => {
         const response = await getOrders(token, email, perPage, page + 1);
 
         if (response) {
-            const { orders: responseOrders, meta } = response;
+            const { orders: responseOrders, included: responseIncluded, meta } = response;
 
             setOrders(responseOrders);
+            setIncluded(responseIncluded);
 
             if (meta) {
                 setPageCount(meta.page_count);
@@ -57,26 +60,53 @@ export const OrderHistory: React.FC = () => {
     return (
         <React.Fragment>
             <h1 className="text-3xl mb-6">Order History</h1>
-            {orders ? (
-                orders.map((order, i) => (
-                    <Order
-                        orderNumber={safelyParse(order, 'attributes.number', parseAsNumber, null)}
-                        status={safelyParse(order, 'attributes.status', parseAsString, 'draft')}
-                        paymentStatus={safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid')}
-                        fulfillmentStatus={safelyParse(
-                            order,
-                            'attributes.fulfillment_status',
-                            parseAsString,
-                            'unfulfilled'
-                        )}
-                        itemCount={safelyParse(order, 'attributes.skus_count', parseAsNumber, 0)}
-                        shipmentsCount={safelyParse(order, 'attributes.shipments_count', parseAsNumber, 0)}
-                        total={safelyParse(order, 'attributes.formatted_total_amount_with_taxes', parseAsString, '')}
-                        placedAt={safelyParse(order, 'attributes.placed_at', parseAsString, '')}
-                        updatedAt={safelyParse(order, 'attributes.updated_at', parseAsString, '')}
-                        key={`order-${i}`}
-                    />
-                ))
+            {orders && included ? (
+                orders.map((order, i) => {
+                    const lineItems = safelyParse(
+                        order,
+                        'relationships.line_items.data',
+                        parseAsArrayOfLineItemRelationships,
+                        null
+                    );
+                    const mergedLineItems: OrderHistoryLineItem[] | null = lineItems
+                        ? lineItems.map((lineItem) => {
+                              const includedLineItem = included.filter((include) => include.id === lineItem.id);
+
+                              return {
+                                  ...lineItem,
+                                  sku_code: safelyParse(includedLineItem, 'attributes.sku_code', parseAsString, null),
+                                  quantity: safelyParse(includedLineItem, 'attributes.quantity', parseAsNumber, 0),
+                                  image_url: safelyParse(includedLineItem, 'attributes.image_url', parseAsString, null),
+                              };
+                          })
+                        : null;
+
+                    return (
+                        <Order
+                            orderNumber={safelyParse(order, 'attributes.number', parseAsNumber, null)}
+                            status={safelyParse(order, 'attributes.status', parseAsString, 'draft')}
+                            paymentStatus={safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid')}
+                            fulfillmentStatus={safelyParse(
+                                order,
+                                'attributes.fulfillment_status',
+                                parseAsString,
+                                'unfulfilled'
+                            )}
+                            itemCount={safelyParse(order, 'attributes.skus_count', parseAsNumber, 0)}
+                            shipmentsCount={safelyParse(order, 'attributes.shipments_count', parseAsNumber, 0)}
+                            total={safelyParse(
+                                order,
+                                'attributes.formatted_total_amount_with_taxes',
+                                parseAsString,
+                                ''
+                            )}
+                            placedAt={safelyParse(order, 'attributes.placed_at', parseAsString, '')}
+                            updatedAt={safelyParse(order, 'attributes.updated_at', parseAsString, '')}
+                            lineItems={mergedLineItems}
+                            key={`order-${i}`}
+                        />
+                    );
+                })
             ) : (
                 <Loading show />
             )}

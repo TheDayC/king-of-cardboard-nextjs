@@ -20,3 +20,8 @@ export interface CommerceLayerMeta {
     record_count: number;
     page_count: number;
 }
+
+export interface CommerceLayerLineItemRelationship {
+    id: string;
+    type: string;
+}
