@@ -10,22 +10,26 @@ async function getOrders(req: NextApiRequest, res: NextApiResponse): Promise<voi
         const emailAddress = safelyParse(req, 'body.emailAddress', parseAsString, null);
         const pageSize = safelyParse(req, 'body.pageSize', parseAsNumber, 5);
         const page = safelyParse(req, 'body.page', parseAsNumber, 1);
+
+        const filters = `filter[q][email_eq]=${emailAddress}&filter[q][status_not_in]=draft,pending`;
+        const pagination = `page[size]=${pageSize}&page[number]=${page}`;
+        const sort = 'sort=-created_at,number';
         const orderFields =
             'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount_with_taxes,shipments_count,placed_at,updated_at';
+        const include = 'line_items';
+        const lineItemFields = 'fields[line_items]=id,sku_code,image_url,quantity';
 
         const cl = authClient(token);
 
         return cl
-            .get(
-                `/api/orders?filter[q][email_eq]=${emailAddress}&filter[q][status_not_in]=draft,pending&page[size]=${pageSize}&page[number]=${page}&${orderFields}`
-            )
+            .get(`/api/orders?${filters}&${sort}&${pagination}&${orderFields}&include=${include}&${lineItemFields}`)
             .then((response) => {
                 const status = safelyParse(response, 'status', parseAsNumber, 500);
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
-                const { data: orders, meta } = get(response, 'data', null);
+                const { data: orders, included, meta } = get(response, 'data', null);
 
-                res.status(status).json({ orders, meta });
+                res.status(status).json({ orders, included, meta });
             })
             .catch((error) => {
                 const status = safelyParse(error, 'response.status', parseAsNumber, 500);
