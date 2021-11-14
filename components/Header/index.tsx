@@ -1,20 +1,23 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AiOutlineShoppingCart, AiFillHome, AiFillShopping, AiTwotoneCrown, AiOutlineUser } from 'react-icons/ai';
 import { BsFillRecord2Fill } from 'react-icons/bs';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { toSvg } from 'jdenticon';
 import md5 from 'md5';
 
 import selector from './selector';
 import styles from './header.module.css';
 import logo from '../../images/logo-full.png';
+import Rewards from './Rewards';
+import { parseAsString, safelyParse } from '../../utils/parsers';
 
 export const Header: React.FC = () => {
     const { cartItemCount } = useSelector(selector);
     const { data: session, status } = useSession();
+    const email = useMemo(() => safelyParse(session, 'user.email', parseAsString, null), [session]);
 
     const handleLogout = () => {
         signOut();
@@ -58,6 +61,7 @@ export const Header: React.FC = () => {
                 </div>
             </div>
             <div className="navbar-end">
+                {status === 'authenticated' && <Rewards emailAddress={email} />}
                 <Link href="/cart" passHref>
                     <div className="flex justify-start items-center indicator cursor-pointer rounded-md hover:bg-neutral-focus">
                         <AiOutlineShoppingCart className={styles.cart} />

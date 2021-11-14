@@ -8,10 +8,8 @@ import { parseAsString, safelyParse } from '../../../utils/parsers';
 
 export const AccountMenu: React.FC = () => {
     const router = useRouter();
-    console.log('🚀 ~ file: index.tsx ~ line 11 ~ router', router.query);
     const slug = safelyParse(router, 'query.slug', parseAsString, null);
     const orderNumber = safelyParse(router, 'query.orderNumber', parseAsString, null);
-    console.log('🚀 ~ file: index.tsx ~ line 14 ~ orderNumber', orderNumber);
 
     return (
         <ul className="menu p-4 shadow-lg bg-base-100 rounded-md">
