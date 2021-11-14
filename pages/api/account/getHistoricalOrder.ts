@@ -4,25 +4,24 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 import { authClient } from '../../../utils/auth';
 
-async function getOrders(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+async function getHistoricalOrders(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         const token = safelyParse(req, 'body.token', parseAsString, null);
         const emailAddress = safelyParse(req, 'body.emailAddress', parseAsString, null);
-        const pageSize = safelyParse(req, 'body.pageSize', parseAsNumber, 5);
-        const page = safelyParse(req, 'body.page', parseAsNumber, 1);
+        const orderNumber = safelyParse(req, 'body.orderNumber', parseAsString, null);
 
-        const filters = `filter[q][email_eq]=${emailAddress}&filter[q][status_not_in]=draft,pending`;
-        const pagination = `page[size]=${pageSize}&page[number]=${page}`;
-        const sort = 'sort=-created_at,number';
+        const filters = `filter[q][number_eq]=${orderNumber}&filter[q][email_eq]=${emailAddress}`;
         const orderFields =
-            'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount_with_taxes,shipments_count,placed_at,updated_at,line_items';
-        const include = 'line_items';
+            'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount_with_taxes,shipments_count,placed_at,updated_at,line_items,shipping_address,billing_address,payment_source_details';
+        const include = 'line_items,shipping_address,billing_address';
         const lineItemFields = 'fields[line_items]=id,sku_code,image_url,quantity';
+        const addressFields =
+            'fields[addresses]=id,name,first_name,last_name,company,line_1,line_2,city,zip_code,state_code,country_code,phone';
 
         const cl = authClient(token);
 
         return cl
-            .get(`/api/orders?${filters}&${sort}&${pagination}&${orderFields}&include=${include}&${lineItemFields}`)
+            .get(`/api/orders?${filters}&${orderFields}&include=${include}&${lineItemFields}&${addressFields}`)
             .then((response) => {
                 const status = safelyParse(response, 'status', parseAsNumber, 500);
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -43,4 +42,4 @@ async function getOrders(req: NextApiRequest, res: NextApiResponse): Promise<voi
     }
 }
 
-export default getOrders;
+export default getHistoricalOrders;

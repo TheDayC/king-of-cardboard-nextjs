@@ -1,3 +1,4 @@
+import { OrderHistoryAddress, OrderHistoryPaymentMethod } from '../types/account';
 import {
     CommerceLayerLineItemRelationship,
     CommerceLayerMeta,
@@ -65,4 +66,12 @@ export function isLineItemRelationship(candidate: unknown): candidate is Commerc
 
 export function isArrayOfLineItemRelationships(candidate: unknown): candidate is CommerceLayerLineItemRelationship[] {
     return isArray(candidate) && isLineItemRelationship(candidate[0]);
+}
+
+export function isHistoricalAddress(candidate: unknown): candidate is OrderHistoryAddress {
+    return isNotNullOrUndefined<object>(candidate) && 'line_1' in candidate;
+}
+
+export function isPaymentMethodDetails(candidate: unknown): candidate is OrderHistoryPaymentMethod {
+    return isNotNullOrUndefined<object>(candidate) && 'brand' in candidate;
 }

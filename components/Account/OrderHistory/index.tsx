@@ -4,9 +4,9 @@ import { useSelector } from 'react-redux';
 
 import selector from './selector';
 import { parseAsArrayOfLineItemRelationships, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
-import { getOrders } from '../../../utils/account';
+import { getHistoricalOrders } from '../../../utils/account';
 import { CommerceLayerResponse } from '../../../types/api';
-import Order from './Order';
+import ShortOrder from './ShortOrder';
 import Loading from '../../Loading';
 import Pagination from '../../Pagination';
 import { OrderHistoryLineItem } from '../../../types/account';
@@ -28,7 +28,7 @@ export const OrderHistory: React.FC = () => {
         page: number = 0,
         perPage: number = ORDERS_PER_PAGE
     ) => {
-        const response = await getOrders(token, email, perPage, page + 1);
+        const response = await getHistoricalOrders(token, email, perPage, page + 1);
 
         if (response) {
             const { orders: responseOrders, included: responseIncluded, meta } = response;
@@ -82,7 +82,7 @@ export const OrderHistory: React.FC = () => {
                         : null;
 
                     return (
-                        <Order
+                        <ShortOrder
                             orderNumber={safelyParse(order, 'attributes.number', parseAsNumber, null)}
                             status={safelyParse(order, 'attributes.status', parseAsString, 'draft')}
                             paymentStatus={safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid')}

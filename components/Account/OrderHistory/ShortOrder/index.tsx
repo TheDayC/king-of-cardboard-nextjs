@@ -19,7 +19,7 @@ interface OrderProps {
     lineItems: OrderHistoryLineItem[] | null;
 }
 
-export const Order: React.FC<OrderProps> = ({
+export const ShortOrder: React.FC<OrderProps> = ({
     orderNumber,
     status,
     paymentStatus,
@@ -39,7 +39,11 @@ export const Order: React.FC<OrderProps> = ({
             <div className="card-body p-4">
                 <div className="flex flex-row justify-between items-center">
                     <div className="flex flex-col">
-                        <h3 className="card-title mb-2">{`Order #${orderNumber}`}</h3>
+                        <h3 className="card-title mb-2">
+                            {orderNumber && (
+                                <Link href={`/account/orderHistory/${orderNumber}`}>{`Order #${orderNumber}`}</Link>
+                            )}
+                        </h3>
                         <div className="flex flex-row mb-2">
                             <p className="text-xs text-gray-400">Placed on: {placedAtDate.toFormat('MMM dd, y')}</p>
                             <p className="text-xs text-gray-400 ml-2">
@@ -55,17 +59,20 @@ export const Order: React.FC<OrderProps> = ({
                             </p>
                         </div>
                         <div className="flex flex-row mb-2">
-                            <div className="flex flex-row justify-center items-center mr-4">
+                            <div className="flex flex-row justify-center items-center mr-6">
+                                <h3 className="text-lg mr-2">Order:</h3>
                                 <div className={`rounded-full w-3 h-3 bg-${statusColour(status)}-400 mr-2`}></div>
                                 <p className="capitalize">{status}</p>
                             </div>
-                            <div className="flex flex-row justify-center items-center mr-4">
+                            <div className="flex flex-row justify-center items-center mr-6">
+                                <h3 className="text-lg mr-2">Payment:</h3>
                                 <div
                                     className={`rounded-full w-3 h-3 bg-${paymentStatusColour(paymentStatus)}-400 mr-2`}
                                 ></div>
                                 <p className="capitalize">{paymentStatus}</p>
                             </div>
                             <div className="flex flex-row justify-center items-center mr-4">
+                                <h3 className="text-lg mr-2">Payment:</h3>
                                 <div
                                     className={`rounded-full w-3 h-3 bg-${fulfillmentStatusColour(
                                         fulfillmentStatus
@@ -104,4 +111,4 @@ export const Order: React.FC<OrderProps> = ({
     );
 };
 
-export default Order;
+export default ShortOrder;

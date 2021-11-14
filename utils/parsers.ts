@@ -15,6 +15,8 @@ import {
     isEnumMember,
     isCommerceMeta,
     isArrayOfLineItemRelationships,
+    isHistoricalAddress,
+    isPaymentMethodDetails,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 
@@ -198,3 +200,5 @@ export const parseAsCommerceMeta = parseAsType(isCommerceMeta);
 export const parseAsAttributes = parseAsType(isAttributes);
 export const parseAsCounties = parseAsType(isEnumMember(Counties));
 export const parseAsArrayOfLineItemRelationships = parseAsType(isArrayOfLineItemRelationships);
+export const parseAsHistoricalAddress = parseAsType(isHistoricalAddress);
+export const parseAsPaymentMethodDetails = parseAsType(isPaymentMethodDetails);
