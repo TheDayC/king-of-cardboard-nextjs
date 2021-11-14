@@ -18,6 +18,8 @@ import {
     isHistoricalAddress,
     isPaymentMethodDetails,
     isAxiosError,
+    isObjective,
+    isArrayOfObjectives,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 
@@ -204,3 +206,5 @@ export const parseAsArrayOfLineItemRelationships = parseAsType(isArrayOfLineItem
 export const parseAsHistoricalAddress = parseAsType(isHistoricalAddress);
 export const parseAsPaymentMethodDetails = parseAsType(isPaymentMethodDetails);
 export const parseAsAxiosError = parseAsType(isAxiosError);
+export const parseAsObjective = parseAsType(isObjective);
+export const parseAsArrayOfObjectives = parseAsType(isArrayOfObjectives);

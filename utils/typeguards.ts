@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { OrderHistoryAddress, OrderHistoryPaymentMethod } from '../types/account';
+import { Objective } from '../types/achievements';
 import {
     CommerceLayerLineItemRelationship,
     CommerceLayerMeta,
@@ -79,4 +80,12 @@ export function isPaymentMethodDetails(candidate: unknown): candidate is OrderHi
 
 export function isAxiosError(candidate: unknown): candidate is AxiosError {
     return isNotNullOrUndefined<object>(candidate) && axios.isAxiosError(candidate);
+}
+
+export function isObjective(candidate: unknown): candidate is Objective {
+    return isNotNullOrUndefined<object>(candidate) && 'rewardIncrement' in candidate;
+}
+
+export function isArrayOfObjectives(candidate: unknown): candidate is Objective[] {
+    return isArray(candidate) && isObjective(candidate[0]);
 }
