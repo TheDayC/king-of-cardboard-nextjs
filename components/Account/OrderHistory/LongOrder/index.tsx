@@ -1,5 +1,4 @@
 import React from 'react';
-import Image from 'next/image';
 import { DateTime } from 'luxon';
 import { IoLocationSharp } from 'react-icons/io5';
 
@@ -18,6 +17,9 @@ interface OrderProps {
     fulfillmentStatus: string;
     itemCount: number;
     shipmentsCount: number;
+    subTotal: string;
+    shippingTotal: string;
+    discountTotal: string;
     total: string;
     placedAt: string;
     updatedAt: string;
@@ -34,6 +36,9 @@ export const LongOrder: React.FC<OrderProps> = ({
     fulfillmentStatus,
     itemCount,
     shipmentsCount,
+    subTotal,
+    shippingTotal,
+    discountTotal,
     total,
     placedAt,
     updatedAt,
@@ -160,7 +165,16 @@ export const LongOrder: React.FC<OrderProps> = ({
                         </React.Fragment>
                     ))}
             </div>
-            <div className="flex flex-row justify-end">
+            <div className="flex flex-col justify-end items-end">
+                <p className="text-md mb-2">
+                    <b>Shipping:</b> {shippingTotal}
+                </p>
+                <p className="text-md mb-2">
+                    <b>Discount:</b> {discountTotal}
+                </p>
+                <p className="text-md mb-4">
+                    <b>Subtotal:</b> {subTotal}
+                </p>
                 <p className="text-3xl">
                     <b>Total:</b> {total}
                 </p>

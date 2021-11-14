@@ -12,7 +12,7 @@ async function getHistoricalOrders(req: NextApiRequest, res: NextApiResponse): P
 
         const filters = `filter[q][number_eq]=${orderNumber}&filter[q][email_eq]=${emailAddress}`;
         const orderFields =
-            'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount_with_taxes,shipments_count,placed_at,updated_at,line_items,shipping_address,billing_address,payment_source_details';
+            'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount,formatted_subtotal_amount,formatted_shipping_amount,formatted_discount_amount,shipments_count,placed_at,updated_at,line_items,shipping_address,billing_address,payment_source_details';
         const include = 'line_items,shipping_address,billing_address,shipments';
         const lineItemFields = 'fields[line_items]=id,sku_code,image_url,quantity';
         const addressFields =
