@@ -72,7 +72,7 @@ export const ShortOrder: React.FC<OrderProps> = ({
                                 <p className="capitalize">{paymentStatus}</p>
                             </div>
                             <div className="flex flex-row justify-center items-center mr-4">
-                                <h3 className="text-lg mr-2">Payment:</h3>
+                                <h3 className="text-lg mr-2">Fulfillment:</h3>
                                 <div
                                     className={`rounded-full w-3 h-3 bg-${fulfillmentStatusColour(
                                         fulfillmentStatus
