@@ -59,8 +59,9 @@ export const OrderHistory: React.FC = () => {
 
     return (
         <React.Fragment>
+            <Loading show={Boolean(!orders || !included)} />
             <h1 className="text-3xl mb-6">Order History</h1>
-            {orders && included ? (
+            {orders &&
                 orders.map((order, i) => {
                     const lineItems = safelyParse(
                         order,
@@ -70,7 +71,8 @@ export const OrderHistory: React.FC = () => {
                     );
                     const mergedLineItems: OrderHistoryLineItem[] | null = lineItems
                         ? lineItems.map((lineItem) => {
-                              const includedLineItem = included.filter((include) => include.id === lineItem.id);
+                              const includedLineItem =
+                                  included && included.filter((include) => include.id === lineItem.id);
 
                               return {
                                   ...lineItem,
@@ -106,10 +108,7 @@ export const OrderHistory: React.FC = () => {
                             key={`order-${i}`}
                         />
                     );
-                })
-            ) : (
-                <Loading show />
-            )}
+                })}
             {pageCount && pageCount > 1 && (
                 <Pagination currentPage={currentPage} pageCount={pageCount} handlePageNumber={handlePageNumber} />
             )}

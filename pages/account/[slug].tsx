@@ -64,7 +64,7 @@ export const AccountSubPage: React.FC<AccountSubPageProps> = ({ errorCode }) => 
                         <div className="w-1/4">
                             <AccountMenu />
                         </div>
-                        <div className="flex flex-col py-4 px-8 w-3/4">
+                        <div className="flex flex-col py-4 px-8 w-3/4 relative">
                             {content && <Content content={content} />}
                             <Account slug={slug} />
                         </div>

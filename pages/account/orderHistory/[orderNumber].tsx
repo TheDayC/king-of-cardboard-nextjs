@@ -20,6 +20,7 @@ import { OrderHistoryLineItem, OrderHistoryLineItemWithSkuData } from '../../../
 import LongOrder from '../../../components/Account/OrderHistory/LongOrder';
 import { getSkus } from '../../../utils/commerce';
 import { SkuItem } from '../../../types/commerce';
+import Loading from '../../../components/Loading';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -189,7 +190,8 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
                         <div className="w-1/4">
                             <AccountMenu />
                         </div>
-                        <div className="flex flex-col py-4 px-8 w-3/4">
+                        <div className="flex flex-col py-4 px-8 w-3/4 relative">
+                            <Loading show={Boolean(!order || !lineItems)} />
                             <LongOrder
                                 orderNumber={orderNumber}
                                 status={status}
