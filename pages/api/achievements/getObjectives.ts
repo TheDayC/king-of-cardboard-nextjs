@@ -6,13 +6,23 @@ import { parseAsArrayOfStrings, parseAsNumber, parseAsString, safelyParse } from
 async function getObjectives(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         try {
-            const category = safelyParse(req, 'body.category', parseAsString, null);
+            const categories = safelyParse(req, 'body.categories', parseAsString, null);
+            const types = safelyParse(req, 'body.types', parseAsString, null);
 
             const { db } = await connectToDatabase();
-            const objectivesCollection = db.collection('objectives').find({ category });
+            const objectivesCollection = db.collection('objectives');
+            const objectivesDocument = objectivesCollection.find({
+                category: { $in: categories },
+                types: { $in: types },
+            });
 
-            if (objectivesCollection) {
-                res.status(200).json({ objectives: objectivesCollection });
+            if (objectivesDocument) {
+                console.log(
+                    '🚀 ~ file: getObjectives.ts ~ line 17 ~ getObjectives ~ objectivesDocument',
+                    objectivesDocument
+                );
+
+                res.status(200).json({ objectives: objectivesDocument });
             } else {
                 res.status(404).json({ objectives: [] });
             }

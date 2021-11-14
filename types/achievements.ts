@@ -1,4 +1,4 @@
-interface ObjectId {
+export interface ObjectId {
     $oid: string;
 }
 
@@ -7,6 +7,13 @@ export interface Objective {
     name: string;
     min: number;
     max: number;
-    rewardIncrement: number;
+    reward: number;
+    milestone: number;
+    milestoneMultiplier: number;
     category: string;
+}
+
+export interface Achievement {
+    id: ObjectId;
+    current: number;
 }

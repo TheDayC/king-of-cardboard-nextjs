@@ -16,6 +16,10 @@ import { setCheckoutLoading } from '../../../store/slices/global';
 import { resetCart, setOrder } from '../../../store/slices/cart';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import { Order } from '../../../types/cart';
+import Achievements from '../../../services/achievments';
+import { useSession } from 'next-auth/react';
+import { parseAsString, safelyParse } from '../../../utils/parsers';
+import { Session } from 'next-auth';
 
 export const Payment: React.FC = () => {
     const dispatch = useDispatch();
@@ -38,6 +42,8 @@ export const Payment: React.FC = () => {
         handleSubmit,
         formState: { errors },
     } = useForm();
+    const { data: session } = useSession();
+    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
     const isCurrentStep = currentStep === 2;
 
     const handleEdit = () => {
@@ -55,7 +61,8 @@ export const Payment: React.FC = () => {
             paymentSourceType: string,
             order: Order | null,
             items: CartItem[],
-            customerDetails: CustomerDetails
+            customerDetails: CustomerDetails,
+            currentSession: Session | null
         ) => {
             if (!stripe || checkoutLoading) {
                 return;
@@ -100,6 +107,41 @@ export const Payment: React.FC = () => {
                         if (hasBeenConfirmed) {
                             // Set the confirmation data in the store.
                             dispatch(setConfirmationData({ order, items, customerDetails }));
+
+                            // Figure out achievement progress now that the order has been confirmed.
+                            if (currentSession) {
+                                const achievements = new Achievements(currentSession, accessToken);
+                                items.forEach((item) => {
+                                    const { categories, types } = item.metadata;
+                                    achievements.fetchObjectives(categories, types);
+
+                                    if (achievements.objectives) {
+                                        achievements.objectives.forEach((objective) => {
+                                            const {
+                                                _id,
+                                                min,
+                                                max,
+                                                milestone,
+                                                reward,
+                                                milestoneMultiplier: multiplier,
+                                            } = objective;
+
+                                            // Increment the achievement based on the objective found.
+                                            achievements.incrementAchievement(
+                                                _id,
+                                                min,
+                                                max,
+                                                reward,
+                                                milestone,
+                                                multiplier
+                                            );
+                                        });
+
+                                        // Update achievements and points once all increments have been achieved.
+                                        achievements.updateAchievements();
+                                    }
+                                });
+                            }
                         }
                     }
                 }
@@ -128,12 +170,24 @@ export const Payment: React.FC = () => {
                         paymentMethodData.payment_source_type,
                         order,
                         items,
-                        customerDetails
+                        customerDetails,
+                        session
                     );
                 }
             }
         },
-        [accessToken, orderId, paymentMethods, stripe, handlePaymentMethod, elements, order, items, customerDetails]
+        [
+            accessToken,
+            orderId,
+            paymentMethods,
+            stripe,
+            handlePaymentMethod,
+            elements,
+            order,
+            items,
+            customerDetails,
+            session,
+        ]
     );
 
     useEffect(() => {

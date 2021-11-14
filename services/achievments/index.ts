@@ -1,27 +1,130 @@
 import axios from 'axios';
 import { Session } from 'next-auth';
 
-import { Objective } from '../../types/achievements';
-import { parseAsArrayOfObjectives, parseAsString, safelyParse } from '../../utils/parsers';
+import { Achievement, ObjectId, Objective } from '../../types/achievements';
+import { parseAsArrayOfAchievements, parseAsArrayOfObjectives, parseAsString, safelyParse } from '../../utils/parsers';
 
 class Achievements {
-    readonly _email: string | null = null;
-    readonly _accessToken: string | null = null;
-    private _achievementIds: string[] | null = null;
+    private _email: string | null = null;
+    private _accessToken: string | null = null;
+    private _objectives: Objective[] | null = null;
+    private _achievements: Achievement[] | null = null;
+    private _giftCardId: string | null = null;
+    private _points: number = 0;
 
     constructor(session: Session, accessToken: string) {
         this._email = safelyParse(session, 'user.email', parseAsString, null);
         this._accessToken = accessToken;
+
+        this.fetchAchievments();
     }
 
-    public async fetchObjectives(category: string): Promise<Objective[] | null> {
-        const response = await axios.post('/api/achievements/getObjectives', { category });
+    private hasReachedMinThreshold(current: number, min: number): boolean {
+        return current === min;
+    }
+
+    private hasExceededMaxThreshold(current: number, max: number): boolean {
+        return current > max;
+    }
+
+    private hasReachedMilestone(current: number, milestone: number): boolean {
+        return current % milestone === 0;
+    }
+
+    private async fetchAchievments(): Promise<void> {
+        const response = await axios.post('/api/achievements/getAchievements', { emailAddress: this._email });
 
         if (response) {
-            return safelyParse(response, 'data.objectives', parseAsArrayOfObjectives, null);
+            this._giftCardId = safelyParse(response, 'data.giftCardId', parseAsString, null);
+            this._achievements = safelyParse(response, 'data.achievements', parseAsArrayOfAchievements, null);
+        } else {
+            this._achievements = null;
+            this._giftCardId = null;
         }
+    }
 
-        return null;
+    public async fetchObjectives(categories: string[], types: string[]): Promise<void> {
+        const response = await axios.post('/api/achievements/getObjectives', { categories, types });
+
+        if (response) {
+            this._objectives = safelyParse(response, 'data.objectives', parseAsArrayOfObjectives, null);
+        } else {
+            this._objectives = null;
+        }
+    }
+
+    public async updateAchievements(): Promise<void> {
+        const response = await axios.post('/api/achievements/updateAchievements', {
+            emailAddress: this._email,
+            achievments: this._achievements,
+        });
+
+        if (response) {
+            await axios.post('/api/achievements/updateGiftCardBalance', {
+                token: this._accessToken,
+                giftCardId: this._giftCardId,
+                points: this._points,
+            });
+        }
+    }
+
+    public incrementAchievement(
+        id: ObjectId,
+        min: number,
+        max: number,
+        reward: number,
+        milestone: number,
+        multiplier: number
+    ): void {
+        if (this._achievements) {
+            const achievementIndex = this._achievements.findIndex((achievement) => achievement.id === id) || null;
+
+            if (achievementIndex) {
+                // If the current achievement already exists then increment the count.
+                const currentAchievement = this._achievements[achievementIndex];
+                const current = currentAchievement.current + 1;
+
+                // For milestones we want to give a slightly larger reward.
+                const milestoneReward = reward * multiplier;
+
+                // If we've not exceeded the max on the current increment then dish out points.
+                if (!this.hasExceededMaxThreshold(current, max)) {
+                    // Update the achievement array with our new total.
+                    this._achievements[achievementIndex] = {
+                        ...currentAchievement,
+                        current,
+                    };
+
+                    // Check to see if we've hit our min threshold.
+                    if (this.hasReachedMinThreshold(current, min)) {
+                        this._points = this._points + milestoneReward;
+                    } else if (this.hasReachedMilestone(current, milestone)) {
+                        // Check if we've reached a milestone.
+                        this._points = this._points + milestoneReward;
+                    } else {
+                        // Apply basic reward.
+                        this._points = this._points + reward;
+                    }
+                }
+            } else {
+                const current = 1;
+
+                this._achievements.push({ id, current });
+
+                // Check to see if we've hit our min threshold.
+                if (this.hasReachedMinThreshold(current, min)) {
+                    this._points = this._points + reward;
+                }
+            }
+        }
+    }
+
+    get objectives(): Objective[] | null {
+        return this._objectives;
+    }
+
+    get achievements(): Achievement[] | null {
+        return this._achievements;
     }
 }
 

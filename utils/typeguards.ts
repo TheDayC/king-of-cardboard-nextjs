@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { OrderHistoryAddress, OrderHistoryPaymentMethod } from '../types/account';
-import { Objective } from '../types/achievements';
+import { Achievement, Objective } from '../types/achievements';
 import {
     CommerceLayerLineItemRelationship,
     CommerceLayerMeta,
@@ -88,4 +88,12 @@ export function isObjective(candidate: unknown): candidate is Objective {
 
 export function isArrayOfObjectives(candidate: unknown): candidate is Objective[] {
     return isArray(candidate) && isObjective(candidate[0]);
+}
+
+export function isAchievement(candidate: unknown): candidate is Achievement {
+    return isNotNullOrUndefined<object>(candidate) && 'current' in candidate;
+}
+
+export function isArrayOfAchievements(candidate: unknown): candidate is Achievement[] {
+    return isArray(candidate) && isAchievement(candidate[0]);
 }

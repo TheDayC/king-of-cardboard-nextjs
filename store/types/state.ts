@@ -37,6 +37,10 @@ export interface CartItem {
     formatted_unit_amount: string;
     formatted_total_amount: string;
     image_url: string;
+    metadata: {
+        categories: string[];
+        types: string[];
+    };
 }
 
 export interface CartPaymentMethod {
