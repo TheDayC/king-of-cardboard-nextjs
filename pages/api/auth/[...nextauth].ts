@@ -6,6 +6,8 @@ import bcrypt from 'bcrypt';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 
 import { connectToDatabase } from '../../../middleware/database';
+import { parseAsString, safelyParse } from '../../../utils/parsers';
+import { authClient } from '../../../utils/auth';
 
 export default async function auth(req: any, res: any): Promise<any> {
     return await NextAuth(req, res, {
@@ -112,6 +114,68 @@ export default async function auth(req: any, res: any): Promise<any> {
 
                     // Set up achievements document if the user hasn't logged in before.
                     if (!achievements) {
+                        const tokenRes = await authClient().post('/oauth/token', {
+                            grant_type: 'client_credentials',
+                            client_id: process.env.ECOM_CLIENT_ID,
+                            client_secret: process.env.ECOM_CLIENT_SECRET,
+                            scope: 'market:6098',
+                        });
+                        const token = safelyParse(tokenRes, 'data.access_token', parseAsString, null);
+
+                        if (token) {
+                            const cl = authClient(token);
+
+                            // Send a post requet to setup a draft gift card.
+                            const draftGiftCard = await cl.post('/api/gift_cards', {
+                                data: {
+                                    type: 'gift_cards',
+                                    attributes: {
+                                        currency_code: 'GBP',
+                                        balance_cents: 0,
+                                        single_use: false,
+                                        rechargeable: true,
+                                        recipient_email: user.email,
+                                        reference: `${user.email}-reward-card`,
+                                    },
+                                },
+                            });
+
+                            // Find the gift card id.
+                            const giftCardId = safelyParse(draftGiftCard, 'data.data.id', parseAsString, null);
+
+                            if (giftCardId) {
+                                // If the gift card id exists then purchase it.
+                                const purchasedGiftCard = await cl.patch(`/api/gift_cards/${giftCardId}`, {
+                                    data: {
+                                        type: 'gift_cards',
+                                        id: giftCardId,
+                                        attributes: {
+                                            _purchase: true,
+                                        },
+                                    },
+                                });
+
+                                if (purchasedGiftCard) {
+                                    // If the gift card has been purchased then activate it.
+                                    const activatedGiftCard = await cl.patch(`/api/gift_cards/${giftCardId}`, {
+                                        data: {
+                                            type: 'gift_cards',
+                                            id: giftCardId,
+                                            attributes: {
+                                                _activate: true,
+                                            },
+                                        },
+                                    });
+
+                                    if (activatedGiftCard) {
+                                        await achievementsCollection.insertOne({
+                                            emailAddress: user.email,
+                                            giftCardId,
+                                        });
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 return true;

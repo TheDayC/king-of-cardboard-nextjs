@@ -2,13 +2,13 @@ import React from 'react';
 import { ClientSafeProvider, LiteralUnion } from 'next-auth/react';
 import { BuiltInProviderType } from 'next-auth/providers';
 import { useRouter } from 'next/router';
-import { get } from 'lodash';
 
 import Credentials from './credentials';
 import ErrorAlert from '../ErrorAlert';
 import Google from './google';
 import Twitch from './twitch';
 import SuccessAlert from '../SuccessAlert';
+import { parseAsString, safelyParse } from '../../utils/parsers';
 
 interface LoginProps {
     providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider>;
@@ -18,7 +18,7 @@ interface LoginProps {
 export const Login: React.FC<LoginProps> = ({ providers, showRegistrationSuccess }) => {
     const { credentials, google } = providers;
     const router = useRouter();
-    const error: string = get(router, 'query.error', '');
+    const error = safelyParse(router, 'query.error', parseAsString, null);
 
     return (
         <React.Fragment>

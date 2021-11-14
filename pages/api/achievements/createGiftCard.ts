@@ -70,6 +70,8 @@ async function createGiftCard(req: NextApiRequest, res: NextApiResponse): Promis
 
             res.status(status).json({ status, statusText, message });
         }
+
+        return Promise.resolve();
     }
 }
 
