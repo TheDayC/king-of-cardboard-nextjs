@@ -14,6 +14,17 @@ export interface OrderHistoryLineItem {
     quantity: number;
 }
 
+export interface OrderHistoryLineItemWithSkuData {
+    lineItemId: string;
+    skuId: string;
+    name: string | null;
+    skuCode: string | null;
+    imageUrl: string | null;
+    quantity: number;
+    amount: string | null;
+    compareAmount: string | null;
+}
+
 export interface OrderHistoryAddress {
     first_name: string | null;
     last_name: string | null;

@@ -4,7 +4,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 import { authClient } from '../../../utils/auth';
 
-async function getHistoricalOrders(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+async function getHistoricalOrderLineItems(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         const token = safelyParse(req, 'body.token', parseAsString, null);
         const emailAddress = safelyParse(req, 'body.emailAddress', parseAsString, null);
@@ -45,4 +45,4 @@ async function getHistoricalOrders(req: NextApiRequest, res: NextApiResponse): P
     }
 }
 
-export default getHistoricalOrders;
+export default getHistoricalOrderLineItems;
