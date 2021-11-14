@@ -23,11 +23,12 @@ export async function checkoutOrder(clientSecret: string): Promise<string | null
     return null;
 }
 
-export async function confirmOrder(accessToken: string, orderId: string): Promise<boolean> {
+export async function confirmOrder(accessToken: string, orderId: string, attribute: string): Promise<boolean> {
     try {
         const response = await axios.post('/api/confirmOrder', {
             token: accessToken,
             id: orderId,
+            attribute,
         });
 
         if (response) {

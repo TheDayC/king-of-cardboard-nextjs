@@ -1,3 +1,10 @@
+import { OrderHistoryAddress, OrderHistoryPaymentMethod } from '../types/account';
+import {
+    CommerceLayerLineItemRelationship,
+    CommerceLayerMeta,
+    CommerceLayerObject,
+    CommerceLayerResponse,
+} from '../types/api';
 import { ITypeGuard } from '../types/parsers';
 import { SocialMedia } from '../types/profile';
 
@@ -31,4 +38,40 @@ export function isEnumMember<E>(enumToTest: E): ITypeGuard<E[keyof E]> {
 
 export function isSocialMedia(candidate: unknown): candidate is SocialMedia {
     return isNotNullOrUndefined<object>(candidate) && 'instagram' in candidate;
+}
+
+export function isCommerceResponse(candidate: unknown): candidate is CommerceLayerResponse {
+    return isNotNullOrUndefined<object>(candidate) && 'type' in candidate;
+}
+
+export function isCommerceResponseArray(candidate: unknown): candidate is CommerceLayerResponse[] {
+    return isArray(candidate) && isCommerceResponse(candidate[0]);
+}
+
+export function isCommerceMeta(candidate: unknown): candidate is CommerceLayerMeta {
+    return isNotNullOrUndefined<object>(candidate) && 'page_count' in candidate;
+}
+
+export function isArrayOfStrings(candidate: unknown): candidate is string[] {
+    return isArray(candidate) && typeof candidate[0] === 'string';
+}
+
+export function isAttributes(candidate: unknown): candidate is CommerceLayerObject {
+    return isNotNullOrUndefined<object>(candidate) && 'name' in candidate;
+}
+
+export function isLineItemRelationship(candidate: unknown): candidate is CommerceLayerLineItemRelationship {
+    return isNotNullOrUndefined<object>(candidate) && 'id' in candidate;
+}
+
+export function isArrayOfLineItemRelationships(candidate: unknown): candidate is CommerceLayerLineItemRelationship[] {
+    return isArray(candidate) && isLineItemRelationship(candidate[0]);
+}
+
+export function isHistoricalAddress(candidate: unknown): candidate is OrderHistoryAddress {
+    return isNotNullOrUndefined<object>(candidate) && 'line_1' in candidate;
+}
+
+export function isPaymentMethodDetails(candidate: unknown): candidate is OrderHistoryPaymentMethod {
+    return isNotNullOrUndefined<object>(candidate) && 'brand' in candidate;
 }

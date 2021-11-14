@@ -10,7 +10,7 @@ import rootReducer from './slices';
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['cart', 'checkout', 'global', 'confirmation', 'pages', 'breaks', 'account'],
+    whitelist: ['cart', 'checkout', 'global', 'confirmation', 'pages'],
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -18,7 +18,7 @@ const makeConfiguredStore = (rootReducer: any) =>
     configureStore({
         reducer: rootReducer,
         middleware: [thunkMiddleware],
-        devTools: true,
+        devTools: process.env.NODE_ENV !== 'production',
     });
 
 const makeStore = () => {
@@ -42,4 +42,4 @@ export type AppStore = ReturnType<typeof makeStore>;
 export type AppState = ReturnType<AppStore['getState']>;
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, Action>;
 
-export const wrapper = createWrapper<AppStore>(makeStore, { debug: true });
+export const wrapper = createWrapper<AppStore>(makeStore);

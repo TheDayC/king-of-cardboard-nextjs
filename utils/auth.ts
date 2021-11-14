@@ -3,6 +3,7 @@ import { get } from 'lodash';
 import { DateTime } from 'luxon';
 
 import { CreateToken } from '../types/commerce';
+import { parseAsNumber, parseAsString, safelyParse } from './parsers';
 
 // Create a authClient with axios
 export function authClient(accessToken: string | null = null): AxiosInstance {
@@ -30,10 +31,10 @@ export async function createToken(): Promise<CreateToken | null> {
         const accessDetails = await axios.get('/api/getAccessToken');
 
         if (accessDetails) {
-            const token: string | null = get(accessDetails, 'data.token', null);
-            const expires: number | null = get(accessDetails, 'data.expires', null);
+            const token = safelyParse(accessDetails, 'data.token', parseAsString, null);
+            const expires = safelyParse(accessDetails, 'data.expires', parseAsNumber, null);
             const expiresIso = expires
-                ? DateTime.now().setZone('Europe/London').plus({ minutes: expires }).toISO()
+                ? DateTime.now().setZone('Europe/London').plus({ seconds: expires }).toISO()
                 : null;
 
             return {

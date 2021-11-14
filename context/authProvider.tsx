@@ -18,11 +18,23 @@ import {
 import { createToken } from '../utils/auth';
 import { getShipment, getShipments } from '../utils/checkout';
 import { addShipmentWithMethod } from '../store/slices/checkout';
+import { safelyParse } from '../utils/parsers';
 
 const AuthProvider: React.FC = ({ children }) => {
     const { accessToken, expires, order, shouldFetchOrder } = useSelector(selector);
     const dispatch = useDispatch();
     const [shouldCreateOrder, setShouldCreateOrder] = useState(true);
+
+    const fetchToken = useCallback(async () => {
+        const res = await createToken();
+
+        if (res) {
+            const { token, expires } = res;
+
+            dispatch(setAccessToken(token));
+            dispatch(setExpires(expires));
+        }
+    }, []);
 
     // Fetch order with line items.
     const fetchOrder = useCallback(
@@ -43,7 +55,7 @@ const AuthProvider: React.FC = ({ children }) => {
                     // Put fetched line items into cart.items store.
                     // Ensure sku_code exists to avoid adding shipping or payment methods.
                     const cartItems = items
-                        .filter((item) => item.attributes.sku_code)
+                        .filter((item) => (item.attributes ? item.attributes.sku_code : ''))
                         .map((item) => ({
                             ...item.attributes,
                             id: item.id,
@@ -109,13 +121,7 @@ const AuthProvider: React.FC = ({ children }) => {
     // If accessToken doesn't exist create a new one.
     useIsomorphicLayoutEffect(() => {
         if (!accessToken) {
-            createToken().then((res) => {
-                const token = get(res, 'token', null);
-                const expires = get(res, 'expires', null);
-
-                dispatch(setAccessToken(token));
-                dispatch(setExpires(expires));
-            });
+            fetchToken();
         }
     }, [accessToken]);
 
@@ -128,7 +134,7 @@ const AuthProvider: React.FC = ({ children }) => {
 
             // Check to see where our current token has expired.
             if (expiryDate < currentDate) {
-                createToken();
+                fetchToken();
             }
         }
     }, [accessToken, expires]);
@@ -140,13 +146,6 @@ const AuthProvider: React.FC = ({ children }) => {
             setShouldCreateOrder(false);
         }
     }, [order, accessToken, shouldCreateOrder]);
-
-    // Create the product collection on load.
-    /* useIsomorphicLayoutEffect(() => {
-        if (products.length <= 0 && accessToken) {
-            createProductCollection(accessToken);
-        }
-    }, [products, accessToken]); */
 
     return <React.Fragment>{children}</React.Fragment>;
 };

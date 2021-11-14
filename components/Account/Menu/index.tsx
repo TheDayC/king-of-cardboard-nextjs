@@ -3,11 +3,15 @@ import { CgDetailsMore } from 'react-icons/cg';
 import { BsFillPersonLinesFill, BsFillCartCheckFill, BsFillAwardFill } from 'react-icons/bs';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { get } from 'lodash';
+
+import { parseAsString, safelyParse } from '../../../utils/parsers';
 
 export const AccountMenu: React.FC = () => {
     const router = useRouter();
-    const slug = get(router, 'query.slug', null);
+    console.log('🚀 ~ file: index.tsx ~ line 11 ~ router', router.query);
+    const slug = safelyParse(router, 'query.slug', parseAsString, null);
+    const orderNumber = safelyParse(router, 'query.orderNumber', parseAsString, null);
+    console.log('🚀 ~ file: index.tsx ~ line 14 ~ orderNumber', orderNumber);
 
     return (
         <ul className="menu p-4 shadow-lg bg-base-100 rounded-md">
@@ -27,7 +31,7 @@ export const AccountMenu: React.FC = () => {
                     </a>
                 </Link>
             </li>
-            <li className={`${slug === 'orderHistory' ? 'bordered' : 'hover-bordered'}`}>
+            <li className={`${slug === 'orderHistory' || orderNumber ? 'bordered' : 'hover-bordered'}`}>
                 <Link href="/account/orderHistory" passHref>
                     <a>
                         <BsFillCartCheckFill className="inline-block w-5 h-5 mr-2 stroke-current" />

@@ -44,3 +44,9 @@
 .input-group :first-child {
     @apply rounded-l-md;
 }
+
+.lightDivider::before,
+.lightDivider::after {
+    @apply bg-base-200;
+    @apply h-px;
+}

@@ -60,13 +60,12 @@ export const Payment: React.FC = () => {
             if (!stripe || checkoutLoading) {
                 return;
             }
+            dispatch(setCheckoutLoading(true));
 
             // Fetch the client secret from Commerce Layer to use with Stripe.
             const clientSecret = await createPaymentSource(accessToken, orderId, paymentSourceType);
 
             if (clientSecret) {
-                dispatch(setCheckoutLoading(true));
-
                 // Assuming we've got a secret then confirm the card payment with stripe.
                 const result = await stripe.confirmCardPayment(clientSecret, {
                     payment_method: {
@@ -96,7 +95,7 @@ export const Payment: React.FC = () => {
 
                     // Place the order with commerce layer when the payment status is confirmed with stripe.
                     if (paymentStatus && paymentStatus === 'succeeded') {
-                        const hasBeenConfirmed = await confirmOrder(accessToken, orderId);
+                        const hasBeenConfirmed = await confirmOrder(accessToken, orderId, '_place');
 
                         if (hasBeenConfirmed) {
                             // Set the confirmation data in the store.
