@@ -80,10 +80,13 @@ export default async function auth(req: any, res: any): Promise<any> {
                     const { db } = await connectToDatabase();
                     const credsCollection = db.collection('credentials');
                     const profileCollection = db.collection('profile');
+                    const achievementsCollection = db.collection('achievements');
 
                     const creds = await credsCollection.findOne({ emailAddress: user.email });
                     const profile = await profileCollection.findOne({ emailAddress: user.email });
+                    const achievements = await achievementsCollection.findOne({ emailAddress: user.email });
 
+                    // Reserve credentials when a user signs in if they don't exist.
                     if (!creds) {
                         const userDocument = {
                             username: user.name,
@@ -93,6 +96,7 @@ export default async function auth(req: any, res: any): Promise<any> {
                         await credsCollection.insertOne(userDocument);
                     }
 
+                    // Setup a blank profile if the user is signing in for the first time.
                     if (!profile) {
                         const profileDocument = {
                             emailAddress: user.email,
@@ -104,6 +108,10 @@ export default async function auth(req: any, res: any): Promise<any> {
                         };
 
                         await profileCollection.insertOne(profileDocument);
+                    }
+
+                    // Set up achievements document if the user hasn't logged in before.
+                    if (!achievements) {
                     }
                 }
                 return true;

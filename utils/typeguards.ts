@@ -1,3 +1,4 @@
+import axios, { AxiosError } from 'axios';
 import { OrderHistoryAddress, OrderHistoryPaymentMethod } from '../types/account';
 import {
     CommerceLayerLineItemRelationship,
@@ -74,4 +75,8 @@ export function isHistoricalAddress(candidate: unknown): candidate is OrderHisto
 
 export function isPaymentMethodDetails(candidate: unknown): candidate is OrderHistoryPaymentMethod {
     return isNotNullOrUndefined<object>(candidate) && 'brand' in candidate;
+}
+
+export function isAxiosError(candidate: unknown): candidate is AxiosError {
+    return isNotNullOrUndefined<object>(candidate) && axios.isAxiosError(candidate);
 }

@@ -17,6 +17,7 @@ import {
     isArrayOfLineItemRelationships,
     isHistoricalAddress,
     isPaymentMethodDetails,
+    isAxiosError,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 
@@ -202,3 +203,4 @@ export const parseAsCounties = parseAsType(isEnumMember(Counties));
 export const parseAsArrayOfLineItemRelationships = parseAsType(isArrayOfLineItemRelationships);
 export const parseAsHistoricalAddress = parseAsType(isHistoricalAddress);
 export const parseAsPaymentMethodDetails = parseAsType(isPaymentMethodDetails);
+export const parseAsAxiosError = parseAsType(isAxiosError);
