@@ -11,7 +11,7 @@ async function getOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
         const cl = authClient(token);
         const includeJoin = join(include, ',');
         const orderFields =
-            'fields[orders]=number,skus_count,formatted_subtotal_amount,formatted_discount_amount,formatted_shipping_amount,formatted_total_tax_amount,formatted_gift_card_amount,formatted_total_amount_with_taxes,line_items,shipments_count';
+            'fields[orders]=number,skus_count,formatted_subtotal_amount,formatted_discount_amount,formatted_shipping_amount,formatted_total_tax_amount,formatted_gift_card_amount,formatted_total_amount_with_taxes,line_items,shipments_count,status,payment_status,fulfillment_status';
         const lineItemFields =
             'fields[line_items]=item_type,image_url,name,sku_code,formatted_unit_amount,quantity,formatted_total_amount,metadata';
         const paymentFields = 'fields[payment_methods]=id,name,payment_source_type';

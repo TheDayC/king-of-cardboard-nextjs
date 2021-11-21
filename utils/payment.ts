@@ -44,3 +44,25 @@ export async function confirmOrder(accessToken: string, orderId: string, attribu
 
     return false;
 }
+
+export async function refreshPayment(accessToken: string, id: string, paymentSourceType: string): Promise<boolean> {
+    try {
+        const response = await axios.post('/api/refreshPaymentSource', {
+            token: accessToken,
+            id,
+            paymentSourceType,
+        });
+
+        if (response) {
+            const hasPlaced: boolean = get(response, 'data.hasPlaced', false);
+
+            return hasPlaced;
+        }
+
+        return false;
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return false;
+}

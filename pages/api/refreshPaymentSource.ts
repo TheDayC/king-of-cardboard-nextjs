@@ -2,35 +2,30 @@ import { get } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { authClient } from '../../utils/auth';
+import { parseAsString, safelyParse } from '../../utils/parsers';
 
-async function createPaymentSource(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+async function refreshPaymentSource(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
-        const token = get(req, 'body.token', null);
-        const id = get(req, 'body.id', null);
-        const paymentSourceType = get(req, 'body.paymentSourceType', null);
+        const token = safelyParse(req, 'body.token', parseAsString, null);
+        const id = safelyParse(req, 'body.id', parseAsString, null);
+        const paymentSourceType = safelyParse(req, 'body.paymentSourceType', parseAsString, 'stripe_payments');
         const cl = authClient(token);
 
         return cl
-            .post(`/api/${paymentSourceType}`, {
+            .patch(`/api/${paymentSourceType}/${id}`, {
                 data: {
                     type: paymentSourceType,
-                    attributes: {},
-                    relationships: {
-                        order: {
-                            data: {
-                                type: 'orders',
-                                id,
-                            },
-                        },
+                    id,
+                    attributes: {
+                        _refresh: true,
                     },
                 },
             })
             .then((response) => {
                 const status = get(response, 'status', 500);
-                const paymentId = get(response, 'data.data.id', null);
-                const clientSecret = get(response, 'data.data.attributes.client_secret', null);
+                console.log('🚀 ~ file: refreshPaymentSource.ts ~ line 26 ~ .then ~ response', response.data);
 
-                res.status(status).json({ paymentId, clientSecret });
+                res.status(status).json({ hasPlaced: status === 200 ? true : false });
             })
             .catch((error) => {
                 const status = get(error, 'response.status', 500);
@@ -44,4 +39,4 @@ async function createPaymentSource(req: NextApiRequest, res: NextApiResponse): P
     }
 }
 
-export default createPaymentSource;
+export default refreshPaymentSource;
