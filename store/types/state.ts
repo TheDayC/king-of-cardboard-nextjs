@@ -119,4 +119,5 @@ export interface BreaksState {
 
 export interface AccountState {
     socialMedia: SocialMedia;
+    balance: number;
 }

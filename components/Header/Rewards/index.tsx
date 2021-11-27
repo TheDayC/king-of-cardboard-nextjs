@@ -6,21 +6,21 @@ import Link from 'next/link';
 import selector from './selector';
 import { getGiftCardBalance } from '../../../utils/achievements';
 import { setShouldFetchRewards } from '../../../store/slices/global';
+import { setBalance } from '../../../store/slices/account';
 
 interface RewardsProps {
     emailAddress: string | null;
 }
 
 export const Rewards: React.FC<RewardsProps> = ({ emailAddress }) => {
-    const { accessToken, shouldFetchRewards } = useSelector(selector);
+    const { accessToken, shouldFetchRewards, balance } = useSelector(selector);
     const dispatch = useDispatch();
-    const [balance, setBalance] = useState(0);
 
     const fetchBalance = async (token: string, email: string) => {
         const balanceResponse = await getGiftCardBalance(token, email);
 
         if (balanceResponse) {
-            setBalance(balanceResponse);
+            dispatch(setBalance(balanceResponse));
         }
     };
 
