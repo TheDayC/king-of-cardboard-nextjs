@@ -12,7 +12,7 @@ async function updateSocialMedia(req: NextApiRequest, res: NextApiResponse): Pro
         const youtube = safelyParse(req, 'body.youtube', parseAsString, '');
         const ebay = safelyParse(req, 'body.ebay', parseAsString, '');
 
-        const { db } = await connectToDatabase();
+        const { db, client } = await connectToDatabase();
         const profileCollection = db.collection('profile');
         const profile = await profileCollection.findOne({ emailAddress });
 
@@ -30,6 +30,7 @@ async function updateSocialMedia(req: NextApiRequest, res: NextApiResponse): Pro
 
             // Update document in collection.
             const updatedProfile = await profileCollection.updateOne({ emailAddress }, values);
+            client.close();
 
             if (updatedProfile) {
                 res.status(200).json({ success: true, data: updatedProfile });

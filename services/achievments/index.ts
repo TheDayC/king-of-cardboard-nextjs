@@ -2,17 +2,24 @@ import axios from 'axios';
 import { Session } from 'next-auth';
 
 import { Achievement, ObjectId, Objective } from '../../types/achievements';
-import { parseAsArrayOfAchievements, parseAsArrayOfObjectives, parseAsString, safelyParse } from '../../utils/parsers';
+import {
+    parseAsArrayOfAchievements,
+    parseAsArrayOfObjectives,
+    parseAsNumber,
+    parseAsString,
+    safelyParse,
+} from '../../utils/parsers';
 
 class Achievements {
     private _email: string | null = null;
     private _accessToken: string | null = null;
     private _objectives: Objective[] | null = null;
+    private _objectives_count: number = 0;
     private _achievements: Achievement[] | null = null;
     private _giftCardId: string | null = null;
     private _points: number = 0;
 
-    constructor(session: Session, accessToken: string) {
+    constructor(session: Session | null, accessToken: string | null) {
         this._email = safelyParse(session, 'user.email', parseAsString, null);
         this._accessToken = accessToken;
 
@@ -43,15 +50,20 @@ class Achievements {
         }
     }
 
-    public async fetchObjectives(categories: string[], types: string[]): Promise<boolean> {
-        const response = await axios.post('/api/achievements/getObjectives', { categories, types });
+    public async fetchObjectives(
+        categories: string[] | null = null,
+        types: string[] | null = null,
+        page: number = 1
+    ): Promise<boolean> {
+        const response = await axios.post('/api/achievements/getObjectives', { categories, types, page });
 
         if (response) {
-            this.objectives = safelyParse(response, 'data.objectives', parseAsArrayOfObjectives, null);
+            this._objectives = safelyParse(response, 'data.objectives', parseAsArrayOfObjectives, null);
+            this._objectives_count = safelyParse(response, 'data.count', parseAsNumber, 0);
 
             return true;
         } else {
-            this.objectives = null;
+            this._objectives = null;
 
             return false;
         }
@@ -132,6 +144,10 @@ class Achievements {
 
     get objectives(): Objective[] | null {
         return this._objectives;
+    }
+
+    get objectivesCount(): number {
+        return this._objectives_count;
     }
 
     get achievements(): Achievement[] | null {

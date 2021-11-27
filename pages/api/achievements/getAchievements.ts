@@ -14,9 +14,10 @@ async function getAchievements(req: NextApiRequest, res: NextApiResponse): Promi
         try {
             const emailAddress = safelyParse(req, 'body.emailAddress', parseAsString, null);
 
-            const { db } = await connectToDatabase();
+            const { db, client } = await connectToDatabase();
             const achievementsCollection = db.collection('achievements');
             const achievementsDocument = await achievementsCollection.findOne({ emailAddress });
+            client.close();
 
             if (achievementsDocument) {
                 const giftCardId = safelyParse(achievementsDocument, 'giftCardId', parseAsString, null);

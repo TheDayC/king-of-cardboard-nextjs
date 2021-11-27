@@ -4,12 +4,13 @@ import TwitchProvider from 'next-auth/providers/twitch';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcrypt';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { authClient } from '../../../utils/auth';
 
-export default async function auth(req: any, res: any): Promise<any> {
+export default async function auth(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     return await NextAuth(req, res, {
         // Configure one or more authentication providers
         providers: [
@@ -35,11 +36,12 @@ export default async function auth(req: any, res: any): Promise<any> {
                     // (i.e., the request IP address)
 
                     const { emailAddress, password } = JSON.parse(JSON.stringify(credentials));
-                    const { db } = await connectToDatabase();
+                    const { db, client } = await connectToDatabase();
                     const collection = db.collection('credentials');
 
                     if (emailAddress && password) {
                         const user = await collection.findOne({ emailAddress });
+                        client.close();
 
                         if (user) {
                             const match = await bcrypt.compare(password, user.password);
@@ -79,7 +81,7 @@ export default async function auth(req: any, res: any): Promise<any> {
         callbacks: {
             async signIn({ user, account, profile, email, credentials }) {
                 if (!credentials) {
-                    const { db } = await connectToDatabase();
+                    const { db, client } = await connectToDatabase();
                     const credsCollection = db.collection('credentials');
                     const profileCollection = db.collection('profile');
                     const achievementsCollection = db.collection('achievements');
@@ -177,6 +179,8 @@ export default async function auth(req: any, res: any): Promise<any> {
                             }
                         }
                     }
+
+                    client.close();
                 }
                 return true;
             },

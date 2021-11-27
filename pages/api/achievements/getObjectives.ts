@@ -6,19 +6,31 @@ import { parseAsArrayOfStrings, parseAsNumber, parseAsString, safelyParse } from
 async function getObjectives(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         try {
-            const categories = safelyParse(req, 'body.categories', parseAsArrayOfStrings, []);
-            const types = safelyParse(req, 'body.types', parseAsArrayOfStrings, []);
+            const categories = safelyParse(req, 'body.categories', parseAsArrayOfStrings, null);
+            const types = safelyParse(req, 'body.types', parseAsArrayOfStrings, null);
+            const page = safelyParse(req, 'body.page', parseAsNumber, 0);
+            const limit = 9;
+            const skip = page * limit;
 
-            const { db } = await connectToDatabase();
+            const { db, client } = await connectToDatabase();
             const objectivesCollection = db.collection('objectives');
-            const objectivesDocument = await objectivesCollection
-                .find({
-                    $or: [{ category: { $in: categories } }, { types: { $in: types } }],
-                })
-                .toArray();
+
+            // Define our query based on what is passed. Leave empty by default.
+            let query = {};
+            if (categories && types) {
+                query = { $or: [{ category: { $in: categories } }, { types: { $in: types } }] };
+            } else if (categories) {
+                query = { category: { $in: categories } };
+            } else if (types) {
+                query = { types: { $in: types } };
+            }
+
+            const objectivesCount = await objectivesCollection.find(query).count();
+            const objectivesDocument = await objectivesCollection.find(query).skip(skip).limit(limit).toArray();
+            client.close();
 
             if (objectivesDocument) {
-                res.status(200).json({ objectives: objectivesDocument });
+                res.status(200).json({ objectives: objectivesDocument, count: objectivesCount });
             } else {
                 res.status(404).json({ objectives: [] });
             }

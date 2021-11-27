@@ -11,9 +11,10 @@ async function getGiftCardBalance(req: NextApiRequest, res: NextApiResponse): Pr
             const token = safelyParse(req, 'body.token', parseAsString, null);
             const emailAddress = safelyParse(req, 'body.emailAddress', parseAsString, null);
             const cl = authClient(token);
-            const { db } = await connectToDatabase();
+            const { db, client } = await connectToDatabase();
             const achievementsCollection = db.collection('achievements');
             const achievements = await achievementsCollection.findOne({ emailAddress });
+            client.close();
 
             if (achievements) {
                 const giftCardId = safelyParse(achievements, 'giftCardId', parseAsString, null);

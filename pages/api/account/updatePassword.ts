@@ -10,10 +10,11 @@ async function updatePassword(req: NextApiRequest, res: NextApiResponse): Promis
         const password = safelyParse(req, 'body.password', parseAsString, null);
         const confirmPassword = safelyParse(req, 'body.confirmPassword', parseAsString, null);
 
-        const { db } = await connectToDatabase();
+        const { db, client } = await connectToDatabase();
         const credsCollection = db.collection('credentials');
         const creds = await credsCollection.findOne({ emailAddress });
         const passwordsMatch = password === confirmPassword;
+        client.close();
 
         if (creds && password && passwordsMatch) {
             const hash = await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS || '1'));
