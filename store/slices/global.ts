@@ -19,6 +19,9 @@ const globalSlice = createSlice({
         setNewOrder(state, action) {
             state.shouldSetNewOrder = action.payload;
         },
+        setShouldFetchRewards(state, action) {
+            state.shouldFetchRewards = action.payload;
+        },
     },
     extraReducers: {
         [HYDRATE]: (state, action) => {
@@ -31,5 +34,6 @@ const globalSlice = createSlice({
     },
 });
 
-export const { setAccessToken, setExpires, setCheckoutLoading, setNewOrder } = globalSlice.actions;
+export const { setAccessToken, setExpires, setCheckoutLoading, setNewOrder, setShouldFetchRewards } =
+    globalSlice.actions;
 export default globalSlice.reducer;

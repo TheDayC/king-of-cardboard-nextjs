@@ -43,20 +43,24 @@ class Achievements {
         }
     }
 
-    public async fetchObjectives(categories: string[], types: string[]): Promise<void> {
+    public async fetchObjectives(categories: string[], types: string[]): Promise<boolean> {
         const response = await axios.post('/api/achievements/getObjectives', { categories, types });
 
         if (response) {
-            this._objectives = safelyParse(response, 'data.objectives', parseAsArrayOfObjectives, null);
+            this.objectives = safelyParse(response, 'data.objectives', parseAsArrayOfObjectives, null);
+
+            return true;
         } else {
-            this._objectives = null;
+            this.objectives = null;
+
+            return false;
         }
     }
 
     public async updateAchievements(): Promise<void> {
         const response = await axios.post('/api/achievements/updateAchievements', {
             emailAddress: this._email,
-            achievments: this._achievements,
+            achievements: this._achievements,
         });
 
         if (response) {
@@ -106,17 +110,24 @@ class Achievements {
                         this._points = this._points + reward;
                     }
                 }
+            }
+        } else {
+            const current = 1;
+
+            this._achievements = [{ id, current }];
+
+            // Check to see if we've hit our min threshold.
+            if (this.hasReachedMinThreshold(current, min)) {
+                this._points = this._points + reward;
             } else {
-                const current = 1;
-
-                this._achievements.push({ id, current });
-
-                // Check to see if we've hit our min threshold.
-                if (this.hasReachedMinThreshold(current, min)) {
-                    this._points = this._points + reward;
-                }
+                // Apply basic reward.
+                this._points = this._points + reward;
             }
         }
+    }
+
+    set objectives(objectives: Objective[] | null) {
+        this._objectives = objectives;
     }
 
     get objectives(): Objective[] | null {

@@ -23,7 +23,6 @@ async function refreshPaymentSource(req: NextApiRequest, res: NextApiResponse): 
             })
             .then((response) => {
                 const status = get(response, 'status', 500);
-                console.log('🚀 ~ file: refreshPaymentSource.ts ~ line 26 ~ .then ~ response', response.data);
 
                 res.status(status).json({ hasPlaced: status === 200 ? true : false });
             })

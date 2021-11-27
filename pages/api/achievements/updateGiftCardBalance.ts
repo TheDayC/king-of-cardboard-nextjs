@@ -14,7 +14,15 @@ async function updateGiftCardBalance(req: NextApiRequest, res: NextApiResponse):
 
             if (giftCardId) {
                 // If the gift card id exists fetch its balance.
-                const giftCard = await cl.patch(`/api/gift_cards/${giftCardId}`, { balance_cents: points });
+                const giftCard = await cl.patch(`/api/gift_cards/${giftCardId}`, {
+                    data: {
+                        type: 'gift_cards',
+                        id: giftCardId,
+                        attributes: {
+                            balance_cents: points,
+                        },
+                    },
+                });
 
                 const status = safelyParse(giftCard, 'status', parseAsNumber, 500);
                 res.status(status).json({ hasUpdated: true });

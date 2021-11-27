@@ -17,13 +17,9 @@ async function updateAchievements(req: NextApiRequest, res: NextApiResponse): Pr
 
             const { db } = await connectToDatabase();
             const achievementsCollection = db.collection('achievements');
-            await achievementsCollection.updateOne({ emailAddress }, { $set: { achievements } });
+            const hasUpdated = await achievementsCollection.updateOne({ emailAddress }, { $set: { achievements } });
 
-            if (achievements) {
-                res.status(200).json({ hasUpdated: true });
-            } else {
-                res.status(404).json({ hasUpdated: false });
-            }
+            res.status(hasUpdated ? 200 : 400).json({ hasUpdated });
         } catch (err: unknown) {
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);
             const statusText = safelyParse(err, 'response.statusText', parseAsString, '');

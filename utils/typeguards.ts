@@ -83,7 +83,7 @@ export function isAxiosError(candidate: unknown): candidate is AxiosError {
 }
 
 export function isObjective(candidate: unknown): candidate is Objective {
-    return isNotNullOrUndefined<object>(candidate) && 'rewardIncrement' in candidate;
+    return isNotNullOrUndefined<object>(candidate) && 'reward' in candidate;
 }
 
 export function isArrayOfObjectives(candidate: unknown): candidate is Objective[] {

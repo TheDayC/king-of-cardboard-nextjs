@@ -12,7 +12,7 @@ import Method from './Method';
 import { createPaymentSource } from '../../../utils/commerce';
 import { checkoutOrder, confirmOrder, refreshPayment } from '../../../utils/payment';
 import { CartItem, CustomerDetails } from '../../../store/types/state';
-import { setCheckoutLoading } from '../../../store/slices/global';
+import { setCheckoutLoading, setShouldFetchRewards } from '../../../store/slices/global';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import { Order } from '../../../types/cart';
 import Achievements from '../../../services/achievments';
@@ -111,11 +111,11 @@ export const Payment: React.FC = () => {
                             // Figure out achievement progress now that the order has been confirmed.
                             if (currentSession) {
                                 const achievements = new Achievements(currentSession, accessToken);
-                                items.forEach((item) => {
+                                items.forEach(async (item) => {
                                     const { categories, types } = item.metadata;
-                                    achievements.fetchObjectives(categories, types);
+                                    const hasFetchedObjectives = await achievements.fetchObjectives(categories, types);
 
-                                    if (achievements.objectives) {
+                                    if (hasFetchedObjectives && achievements.objectives) {
                                         achievements.objectives.forEach((objective) => {
                                             const {
                                                 _id,
@@ -139,6 +139,9 @@ export const Payment: React.FC = () => {
 
                                         // Update achievements and points once all increments have been achieved.
                                         achievements.updateAchievements();
+
+                                        // Dispatch coin update
+                                        dispatch(setShouldFetchRewards(true));
                                     }
                                 });
                             }
