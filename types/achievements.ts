@@ -11,6 +11,7 @@ export interface Objective {
     milestone: number;
     milestoneMultiplier: number;
     category: string;
+    icon: string;
 }
 
 export interface Achievement {
