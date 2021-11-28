@@ -28,19 +28,19 @@ export function progressColour(max: number, current: number): string {
     const threeQuarters = round(max * 0.75, 2);
 
     if (current <= 0 || current < quarter) {
-        return 'error';
+        return 'yellow-600';
     }
 
     if (current >= quarter && current < half) {
-        return 'warning';
+        return 'gray-400';
     }
 
     if (current >= half && current < threeQuarters) {
-        return 'info';
+        return 'primary';
     }
 
     if (current >= threeQuarters && current < max) {
-        return 'success';
+        return 'secondary';
     }
 
     if (current >= max) {
