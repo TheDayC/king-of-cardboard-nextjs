@@ -25,3 +25,8 @@ export interface CommerceLayerLineItemRelationship {
     id: string;
     type: string;
 }
+
+export interface PaymentSourceResponse {
+    paymentId: string | null;
+    clientSecret: string | null;
+}

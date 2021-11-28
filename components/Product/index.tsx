@@ -143,6 +143,10 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                 image_url: currentImage ? currentImage.url : '',
                 _external_price: false,
                 _update_quantity: true,
+                metadata: {
+                    types: currentProduct.types,
+                    categories: currentProduct.categories,
+                },
             };
 
             const relationships = {

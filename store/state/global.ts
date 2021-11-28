@@ -5,6 +5,7 @@ const globalInitialState: Global = {
     accessToken: null,
     expires: null,
     shouldSetNewOrder: false,
+    shouldFetchRewards: true,
 };
 
 export default globalInitialState;

@@ -8,6 +8,7 @@ const accountInitialState: AccountState = {
         youtube: '',
         ebay: '',
     },
+    balance: 0,
 };
 
 export default accountInitialState;

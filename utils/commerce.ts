@@ -2,9 +2,10 @@
 import axios from 'axios';
 import { get } from 'lodash';
 
+import { PaymentSourceResponse } from '../types/api';
 import { Order } from '../types/cart';
 import { LineItemAttributes, LineItemRelationships, Price, StockItem, SkuItem, SkuProduct } from '../types/commerce';
-import { parseOrderData } from './parsers';
+import { parseAsString, parseOrderData, safelyParse } from './parsers';
 
 export async function createOrder(accessToken: string): Promise<Order | null> {
     try {
@@ -279,7 +280,7 @@ export async function createPaymentSource(
     accessToken: string,
     id: string,
     paymentSourceType: string
-): Promise<string | null> {
+): Promise<PaymentSourceResponse> {
     try {
         const response = await axios.post('/api/createPaymentSource', {
             token: accessToken,
@@ -288,17 +289,20 @@ export async function createPaymentSource(
         });
 
         if (response) {
-            const clientSecret: string | null = get(response, 'data.clientSecret', null);
+            const paymentId = safelyParse(response, 'data.paymentId', parseAsString, null);
+            const clientSecret = safelyParse(response, 'data.clientSecret', parseAsString, null);
 
-            if (clientSecret) {
-                return clientSecret;
-            }
-
-            return null;
+            return {
+                paymentId,
+                clientSecret,
+            };
         }
     } catch (error) {
         console.log('Error: ', error);
     }
 
-    return null;
+    return {
+        paymentId: null,
+        clientSecret: null,
+    };
 }

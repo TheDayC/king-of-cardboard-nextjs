@@ -1,4 +1,6 @@
+import axios, { AxiosError } from 'axios';
 import { OrderHistoryAddress, OrderHistoryPaymentMethod } from '../types/account';
+import { Achievement, Objective } from '../types/achievements';
 import {
     CommerceLayerLineItemRelationship,
     CommerceLayerMeta,
@@ -74,4 +76,24 @@ export function isHistoricalAddress(candidate: unknown): candidate is OrderHisto
 
 export function isPaymentMethodDetails(candidate: unknown): candidate is OrderHistoryPaymentMethod {
     return isNotNullOrUndefined<object>(candidate) && 'brand' in candidate;
+}
+
+export function isAxiosError(candidate: unknown): candidate is AxiosError {
+    return isNotNullOrUndefined<object>(candidate) && axios.isAxiosError(candidate);
+}
+
+export function isObjective(candidate: unknown): candidate is Objective {
+    return isNotNullOrUndefined<object>(candidate) && 'reward' in candidate;
+}
+
+export function isArrayOfObjectives(candidate: unknown): candidate is Objective[] {
+    return isArray(candidate) && isObjective(candidate[0]);
+}
+
+export function isAchievement(candidate: unknown): candidate is Achievement {
+    return isNotNullOrUndefined<object>(candidate) && 'current' in candidate;
+}
+
+export function isArrayOfAchievements(candidate: unknown): candidate is Achievement[] {
+    return isArray(candidate) && isAchievement(candidate[0]);
 }

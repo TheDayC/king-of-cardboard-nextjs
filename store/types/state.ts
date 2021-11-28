@@ -37,6 +37,10 @@ export interface CartItem {
     formatted_unit_amount: string;
     formatted_total_amount: string;
     image_url: string;
+    metadata: {
+        categories: string[];
+        types: string[];
+    };
 }
 
 export interface CartPaymentMethod {
@@ -55,6 +59,7 @@ export interface Global {
     accessToken: string | null;
     expires: string | null;
     shouldSetNewOrder: boolean;
+    shouldFetchRewards: boolean;
 }
 
 export interface Checkout {
@@ -114,4 +119,5 @@ export interface BreaksState {
 
 export interface AccountState {
     socialMedia: SocialMedia;
+    balance: number;
 }

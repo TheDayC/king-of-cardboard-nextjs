@@ -3,7 +3,7 @@ import React from 'react';
 import Details from './Details';
 import Profile from './Profile';
 import OrderHistory from './OrderHistory';
-import Achievements from './Achievements';
+import AchievementList from './AchievementList';
 
 interface AccountProps {
     slug: string;
@@ -18,7 +18,7 @@ export const Account: React.FC<AccountProps> = ({ slug }) => {
         case 'orderHistory':
             return <OrderHistory />;
         case 'achievements':
-            return <Achievements />;
+            return <AchievementList />;
         default:
             return null;
     }

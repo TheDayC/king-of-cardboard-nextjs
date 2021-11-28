@@ -18,7 +18,7 @@ import {
 import { createToken } from '../utils/auth';
 import { getShipment, getShipments } from '../utils/checkout';
 import { addShipmentWithMethod } from '../store/slices/checkout';
-import { safelyParse } from '../utils/parsers';
+import { parseAsString, safelyParse } from '../utils/parsers';
 
 const AuthProvider: React.FC = ({ children }) => {
     const { accessToken, expires, order, shouldFetchOrder } = useSelector(selector);
@@ -55,7 +55,7 @@ const AuthProvider: React.FC = ({ children }) => {
                     // Put fetched line items into cart.items store.
                     // Ensure sku_code exists to avoid adding shipping or payment methods.
                     const cartItems = items
-                        .filter((item) => (item.attributes ? item.attributes.sku_code : ''))
+                        .filter((item) => safelyParse(item, 'attributes.sku_code', parseAsString, null))
                         .map((item) => ({
                             ...item.attributes,
                             id: item.id,

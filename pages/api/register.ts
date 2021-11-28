@@ -10,11 +10,12 @@ async function register(req: NextApiRequest, res: NextApiResponse): Promise<void
         const emailAddress = get(req, 'body.emailAddress', '');
         const password = get(req, 'body.password', '');
 
-        const { db } = await connectToDatabase();
+        const { db, client } = await connectToDatabase();
         const credsCollection = db.collection('credentials');
         const usersCollection = db.collection('users');
         const creds = await credsCollection.findOne({ emailAddress });
         const user = await usersCollection.findOne({ emailAddress });
+        client.close();
 
         if (creds || user) {
             res.status(403).json({ response: 'Email already assigned to a user' });

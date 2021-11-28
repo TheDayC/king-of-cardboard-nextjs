@@ -7,15 +7,18 @@ import { get } from 'lodash';
 import { useRouter } from 'next/router';
 
 import selector from './selector';
-import { resetCheckoutDetails, setCurrentStep } from '../../../store/slices/checkout';
+import { setCurrentStep } from '../../../store/slices/checkout';
 import Method from './Method';
-import { createOrder, createPaymentSource } from '../../../utils/commerce';
-import { checkoutOrder, confirmOrder } from '../../../utils/payment';
+import { createPaymentSource } from '../../../utils/commerce';
+import { checkoutOrder, confirmOrder, refreshPayment } from '../../../utils/payment';
 import { CartItem, CustomerDetails } from '../../../store/types/state';
-import { setCheckoutLoading } from '../../../store/slices/global';
-import { resetCart, setOrder } from '../../../store/slices/cart';
+import { setCheckoutLoading, setShouldFetchRewards } from '../../../store/slices/global';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import { Order } from '../../../types/cart';
+import Achievements from '../../../services/achievments';
+import { useSession } from 'next-auth/react';
+import { parseAsString, safelyParse } from '../../../utils/parsers';
+import { Session } from 'next-auth';
 
 export const Payment: React.FC = () => {
     const dispatch = useDispatch();
@@ -38,6 +41,8 @@ export const Payment: React.FC = () => {
         handleSubmit,
         formState: { errors },
     } = useForm();
+    const { data: session } = useSession();
+    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
     const isCurrentStep = currentStep === 2;
 
     const handleEdit = () => {
@@ -55,7 +60,8 @@ export const Payment: React.FC = () => {
             paymentSourceType: string,
             order: Order | null,
             items: CartItem[],
-            customerDetails: CustomerDetails
+            customerDetails: CustomerDetails,
+            currentSession: Session | null
         ) => {
             if (!stripe || checkoutLoading) {
                 return;
@@ -63,7 +69,7 @@ export const Payment: React.FC = () => {
             dispatch(setCheckoutLoading(true));
 
             // Fetch the client secret from Commerce Layer to use with Stripe.
-            const clientSecret = await createPaymentSource(accessToken, orderId, paymentSourceType);
+            const { paymentId, clientSecret } = await createPaymentSource(accessToken, orderId, paymentSourceType);
 
             if (clientSecret) {
                 // Assuming we've got a secret then confirm the card payment with stripe.
@@ -90,16 +96,55 @@ export const Payment: React.FC = () => {
                     // TODO: Show error to your customer (e.g., insufficient funds)
                     console.log(result.error.message);
                 } else {
-                    // Capture the order with stripe now that we know the payment source has been confirmed.
-                    const paymentStatus = await checkoutOrder(result.paymentIntent.id);
+                    // Place the order with commerce layer.
+                    const hasBeenPlaced = await confirmOrder(accessToken, orderId, '_place');
 
-                    // Place the order with commerce layer when the payment status is confirmed with stripe.
-                    if (paymentStatus && paymentStatus === 'succeeded') {
-                        const hasBeenConfirmed = await confirmOrder(accessToken, orderId, '_place');
+                    if (hasBeenPlaced && paymentId) {
+                        const hasBeenRefreshed = await refreshPayment(accessToken, paymentId, paymentSourceType);
+                        const hasBeenAuthorized = await confirmOrder(accessToken, orderId, '_authorize');
+                        const hasBeenApproved = await confirmOrder(accessToken, orderId, '_approve_and_capture');
 
-                        if (hasBeenConfirmed) {
-                            // Set the confirmation data in the store.
+                        // Set the confirmation data in the store.
+                        if (hasBeenRefreshed && hasBeenAuthorized && hasBeenApproved) {
                             dispatch(setConfirmationData({ order, items, customerDetails }));
+
+                            // Figure out achievement progress now that the order has been confirmed.
+                            if (currentSession) {
+                                const achievements = new Achievements(currentSession, accessToken);
+                                items.forEach(async (item) => {
+                                    const { categories, types } = item.metadata;
+                                    const hasFetchedObjectives = await achievements.fetchObjectives(categories, types);
+
+                                    if (hasFetchedObjectives && achievements.objectives) {
+                                        achievements.objectives.forEach((objective) => {
+                                            const {
+                                                _id,
+                                                min,
+                                                max,
+                                                milestone,
+                                                reward,
+                                                milestoneMultiplier: multiplier,
+                                            } = objective;
+
+                                            // Increment the achievement based on the objective found.
+                                            achievements.incrementAchievement(
+                                                _id,
+                                                min,
+                                                max,
+                                                reward,
+                                                milestone,
+                                                multiplier
+                                            );
+                                        });
+
+                                        // Update achievements and points once all increments have been achieved.
+                                        achievements.updateAchievements();
+
+                                        // Dispatch coin update
+                                        dispatch(setShouldFetchRewards(true));
+                                    }
+                                });
+                            }
                         }
                     }
                 }
@@ -128,12 +173,24 @@ export const Payment: React.FC = () => {
                         paymentMethodData.payment_source_type,
                         order,
                         items,
-                        customerDetails
+                        customerDetails,
+                        session
                     );
                 }
             }
         },
-        [accessToken, orderId, paymentMethods, stripe, handlePaymentMethod, elements, order, items, customerDetails]
+        [
+            accessToken,
+            orderId,
+            paymentMethods,
+            stripe,
+            handlePaymentMethod,
+            elements,
+            order,
+            items,
+            customerDetails,
+            session,
+        ]
     );
 
     useEffect(() => {

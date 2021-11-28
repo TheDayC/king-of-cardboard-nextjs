@@ -17,6 +17,10 @@ import {
     isArrayOfLineItemRelationships,
     isHistoricalAddress,
     isPaymentMethodDetails,
+    isAxiosError,
+    isObjective,
+    isArrayOfObjectives,
+    isArrayOfAchievements,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 
@@ -202,3 +206,7 @@ export const parseAsCounties = parseAsType(isEnumMember(Counties));
 export const parseAsArrayOfLineItemRelationships = parseAsType(isArrayOfLineItemRelationships);
 export const parseAsHistoricalAddress = parseAsType(isHistoricalAddress);
 export const parseAsPaymentMethodDetails = parseAsType(isPaymentMethodDetails);
+export const parseAsAxiosError = parseAsType(isAxiosError);
+export const parseAsObjective = parseAsType(isObjective);
+export const parseAsArrayOfObjectives = parseAsType(isArrayOfObjectives);
+export const parseAsArrayOfAchievements = parseAsType(isArrayOfAchievements);

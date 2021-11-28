@@ -8,7 +8,7 @@ async function updateUsername(req: NextApiRequest, res: NextApiResponse): Promis
         const emailAddress = safelyParse(req, 'body.emailAddress', parseAsString, null);
         const username = safelyParse(req, 'body.username', parseAsString, null);
 
-        const { db } = await connectToDatabase();
+        const { db, client } = await connectToDatabase();
         const credsCollection = db.collection('credentials');
         const creds = await credsCollection.findOne({ emailAddress });
 
@@ -22,6 +22,7 @@ async function updateUsername(req: NextApiRequest, res: NextApiResponse): Promis
 
             // Update document in collection.
             const updatedCreds = await credsCollection.updateOne({ emailAddress }, values);
+            client.close();
 
             if (updatedCreds) {
                 res.status(200).json({ success: true, data: updatedCreds });

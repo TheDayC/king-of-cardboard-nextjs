@@ -12,7 +12,7 @@ import { Tabs } from '../../enums/auth';
 interface ServerSideProps {
     props: {
         providers?: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null;
-        csrfToken?: string;
+        csrfToken?: string | null;
     };
 }
 
@@ -22,7 +22,7 @@ export async function getServerSideProps(context: any): Promise<ServerSideProps 
     const csrfToken = await getCsrfToken(context);
     const session = await getSession(context);
 
-    if (session) {
+    if (session && csrfToken) {
         return {
             redirect: {
                 permanent: false,
@@ -34,14 +34,14 @@ export async function getServerSideProps(context: any): Promise<ServerSideProps 
     return {
         props: {
             providers,
-            csrfToken,
+            csrfToken: csrfToken || null,
         },
     };
 }
 
 interface LoginPageProps {
     providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null;
-    csrfToken?: string;
+    csrfToken?: string | null;
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) => {
