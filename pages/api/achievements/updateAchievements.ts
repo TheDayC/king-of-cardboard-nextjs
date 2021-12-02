@@ -11,11 +11,12 @@ import {
 
 async function updateAchievements(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
+        const { db, client } = await connectToDatabase();
+
         try {
             const emailAddress = safelyParse(req, 'body.emailAddress', parseAsString, null);
             const achievements = safelyParse(req, 'body.achievements', parseAsArrayOfAchievements, null);
 
-            const { db, client } = await connectToDatabase();
             const achievementsCollection = db.collection('achievements');
             const hasUpdated = await achievementsCollection.updateOne({ emailAddress }, { $set: { achievements } });
 
@@ -28,6 +29,8 @@ async function updateAchievements(req: NextApiRequest, res: NextApiResponse): Pr
             ]);
 
             res.status(status).json({ status, statusText, message });
+        } finally {
+            await client.close();
         }
 
         return Promise.resolve();

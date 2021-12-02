@@ -11,10 +11,11 @@ import {
 
 async function getAchievements(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
+        const { db, client } = await connectToDatabase();
+
         try {
             const emailAddress = safelyParse(req, 'body.emailAddress', parseAsString, null);
 
-            const { db, client } = await connectToDatabase();
             const achievementsCollection = db.collection('achievements');
             const achievementsDocument = await achievementsCollection.findOne({ emailAddress });
 
@@ -31,7 +32,7 @@ async function getAchievements(req: NextApiRequest, res: NextApiResponse): Promi
             } else {
                 res.status(404).json({ achievements: [] });
             }
-        } catch (err: unknown) {
+        } catch (err) {
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);
             const statusText = safelyParse(err, 'response.statusText', parseAsString, '');
             const message = safelyParse(err, 'response.data.errors', parseAsArrayOfStrings, [
@@ -39,6 +40,8 @@ async function getAchievements(req: NextApiRequest, res: NextApiResponse): Promi
             ]);
 
             res.status(status).json({ status, statusText, message });
+        } finally {
+            await client.close();
         }
 
         return Promise.resolve();

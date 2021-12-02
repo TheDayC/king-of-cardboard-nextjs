@@ -7,11 +7,12 @@ import { parseAsArrayOfStrings, parseAsNumber, parseAsString, safelyParse } from
 
 async function getGiftCardBalance(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
+        const { db, client } = await connectToDatabase();
+
         try {
             const token = safelyParse(req, 'body.token', parseAsString, null);
             const emailAddress = safelyParse(req, 'body.emailAddress', parseAsString, null);
             const cl = authClient(token);
-            const { db, client } = await connectToDatabase();
             const achievementsCollection = db.collection('achievements');
             const achievements = await achievementsCollection.findOne({ emailAddress });
 
@@ -32,7 +33,7 @@ async function getGiftCardBalance(req: NextApiRequest, res: NextApiResponse): Pr
                     res.status(status).json({ giftCardId });
                 }
             }
-        } catch (err: unknown) {
+        } catch (err) {
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);
             const statusText = safelyParse(err, 'response.statusText', parseAsString, '');
             const message = safelyParse(err, 'response.data.errors', parseAsArrayOfStrings, [
@@ -40,6 +41,8 @@ async function getGiftCardBalance(req: NextApiRequest, res: NextApiResponse): Pr
             ]);
 
             res.status(status).json({ status, statusText, message });
+        } finally {
+            await client.close();
         }
 
         return Promise.resolve();
