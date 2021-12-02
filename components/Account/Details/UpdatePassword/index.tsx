@@ -3,9 +3,11 @@ import { useForm } from 'react-hook-form';
 import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
+import { useSelector } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import SuccessAlert from '../../../SuccessAlert';
+import selector from './selector';
 
 const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -25,6 +27,7 @@ export const UpdatePassword: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState<string | null>(null);
     const { data: session } = useSession();
+    const { accessToken: token } = useSelector(selector);
 
     const hasErrors = Object.keys(errors).length > 0;
     const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
@@ -43,6 +46,7 @@ export const UpdatePassword: React.FC = () => {
                 emailAddress,
                 password: newPassword,
                 confirmPassword,
+                token,
             });
 
             if (response) {

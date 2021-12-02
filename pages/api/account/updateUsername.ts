@@ -22,7 +22,6 @@ async function updateUsername(req: NextApiRequest, res: NextApiResponse): Promis
 
             // Update document in collection.
             const updatedCreds = await credsCollection.updateOne({ emailAddress }, values);
-            client.close();
 
             if (updatedCreds) {
                 res.status(200).json({ success: true, data: updatedCreds });

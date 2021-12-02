@@ -21,6 +21,8 @@ import {
     isObjective,
     isArrayOfObjectives,
     isArrayOfAchievements,
+    isCommerceLayerError,
+    isArrayofCommerceLayerErrors,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 
@@ -210,3 +212,5 @@ export const parseAsAxiosError = parseAsType(isAxiosError);
 export const parseAsObjective = parseAsType(isObjective);
 export const parseAsArrayOfObjectives = parseAsType(isArrayOfObjectives);
 export const parseAsArrayOfAchievements = parseAsType(isArrayOfAchievements);
+export const parseAsCommerceLayerError = parseAsType(isCommerceLayerError);
+export const parseAsArrayOfCommerceLayerErrors = parseAsType(isArrayofCommerceLayerErrors);

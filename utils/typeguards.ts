@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { OrderHistoryAddress, OrderHistoryPaymentMethod } from '../types/account';
 import { Achievement, Objective } from '../types/achievements';
 import {
+    CommerceLayerError,
     CommerceLayerLineItemRelationship,
     CommerceLayerMeta,
     CommerceLayerObject,
@@ -96,4 +97,12 @@ export function isAchievement(candidate: unknown): candidate is Achievement {
 
 export function isArrayOfAchievements(candidate: unknown): candidate is Achievement[] {
     return isArray(candidate) && isAchievement(candidate[0]);
+}
+
+export function isCommerceLayerError(candidate: unknown): candidate is CommerceLayerError {
+    return isNotNullOrUndefined<object>(candidate) && 'code' in candidate;
+}
+
+export function isArrayofCommerceLayerErrors(candidate: unknown): candidate is CommerceLayerError[] {
+    return isArray(candidate) && isCommerceLayerError(candidate[0]);
 }

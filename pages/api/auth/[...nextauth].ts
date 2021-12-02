@@ -7,7 +7,7 @@ import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';
-import { parseAsString, safelyParse } from '../../../utils/parsers';
+import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 import { authClient } from '../../../utils/auth';
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse): Promise<void> {
@@ -36,12 +36,11 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                     // (i.e., the request IP address)
 
                     const { emailAddress, password } = JSON.parse(JSON.stringify(credentials));
-                    const { db, client } = await connectToDatabase();
+                    const { db } = await connectToDatabase();
                     const collection = db.collection('credentials');
 
                     if (emailAddress && password) {
                         const user = await collection.findOne({ emailAddress });
-                        client.close();
 
                         if (user) {
                             const match = await bcrypt.compare(password, user.password);
@@ -81,7 +80,13 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
         callbacks: {
             async signIn({ user, account, profile, email, credentials }) {
                 if (!credentials) {
-                    const { db, client } = await connectToDatabase();
+                    const tokenRes = await authClient().post('/oauth/token', {
+                        grant_type: 'client_credentials',
+                        client_id: process.env.ECOM_CLIENT_ID,
+                        client_secret: process.env.ECOM_CLIENT_SECRET,
+                        scope: 'market:6098',
+                    });
+                    const { db } = await connectToDatabase();
                     const credsCollection = db.collection('credentials');
                     const profileCollection = db.collection('profile');
                     const achievementsCollection = db.collection('achievements');
@@ -89,6 +94,9 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                     const creds = await credsCollection.findOne({ emailAddress: user.email });
                     const profile = await profileCollection.findOne({ emailAddress: user.email });
                     const achievements = await achievementsCollection.findOne({ emailAddress: user.email });
+
+                    const token = safelyParse(tokenRes, 'data.access_token', parseAsString, null);
+                    const cl = authClient(token);
 
                     // Reserve credentials when a user signs in if they don't exist.
                     if (!creds) {
@@ -115,72 +123,77 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                     }
 
                     // Set up achievements document if the user hasn't logged in before.
-                    if (!achievements) {
-                        const tokenRes = await authClient().post('/oauth/token', {
-                            grant_type: 'client_credentials',
-                            client_id: process.env.ECOM_CLIENT_ID,
-                            client_secret: process.env.ECOM_CLIENT_SECRET,
-                            scope: 'market:6098',
+                    if (!achievements && token) {
+                        // Send a post requet to setup a draft gift card.
+                        const draftGiftCard = await cl.post('/api/gift_cards', {
+                            data: {
+                                type: 'gift_cards',
+                                attributes: {
+                                    currency_code: 'GBP',
+                                    balance_cents: 0,
+                                    single_use: false,
+                                    rechargeable: true,
+                                    recipient_email: user.email,
+                                    reference: `${user.email}-reward-card`,
+                                },
+                            },
                         });
-                        const token = safelyParse(tokenRes, 'data.access_token', parseAsString, null);
 
-                        if (token) {
-                            const cl = authClient(token);
+                        // Find the gift card id.
+                        const giftCardId = safelyParse(draftGiftCard, 'data.data.id', parseAsString, null);
 
-                            // Send a post requet to setup a draft gift card.
-                            const draftGiftCard = await cl.post('/api/gift_cards', {
+                        if (giftCardId) {
+                            // If the gift card id exists then purchase it.
+                            const purchasedGiftCard = await cl.patch(`/api/gift_cards/${giftCardId}`, {
                                 data: {
                                     type: 'gift_cards',
+                                    id: giftCardId,
                                     attributes: {
-                                        currency_code: 'GBP',
-                                        balance_cents: 0,
-                                        single_use: false,
-                                        rechargeable: true,
-                                        recipient_email: user.email,
-                                        reference: `${user.email}-reward-card`,
+                                        _purchase: true,
                                     },
                                 },
                             });
 
-                            // Find the gift card id.
-                            const giftCardId = safelyParse(draftGiftCard, 'data.data.id', parseAsString, null);
-
-                            if (giftCardId) {
-                                // If the gift card id exists then purchase it.
-                                const purchasedGiftCard = await cl.patch(`/api/gift_cards/${giftCardId}`, {
+                            if (purchasedGiftCard) {
+                                // If the gift card has been purchased then activate it.
+                                const activatedGiftCard = await cl.patch(`/api/gift_cards/${giftCardId}`, {
                                     data: {
                                         type: 'gift_cards',
                                         id: giftCardId,
                                         attributes: {
-                                            _purchase: true,
+                                            _activate: true,
                                         },
                                     },
                                 });
 
-                                if (purchasedGiftCard) {
-                                    // If the gift card has been purchased then activate it.
-                                    const activatedGiftCard = await cl.patch(`/api/gift_cards/${giftCardId}`, {
-                                        data: {
-                                            type: 'gift_cards',
-                                            id: giftCardId,
-                                            attributes: {
-                                                _activate: true,
-                                            },
-                                        },
+                                if (activatedGiftCard) {
+                                    await achievementsCollection.insertOne({
+                                        emailAddress: user.email,
+                                        giftCardId,
                                     });
-
-                                    if (activatedGiftCard) {
-                                        await achievementsCollection.insertOne({
-                                            emailAddress: user.email,
-                                            giftCardId,
-                                        });
-                                    }
                                 }
                             }
                         }
                     }
 
-                    client.close();
+                    // Perform some further actions with our token.
+                    if (token) {
+                        // See if the customer already exists in commerce layer.
+                        const { data: customerData } = await cl.get(`/api/customers?filter[q][email_eq]=${user.email}`);
+                        const customerCount = safelyParse(customerData, 'meta.record_count', parseAsNumber, 0);
+
+                        // If the customer doesn't exist in Commerce Layer, create them.
+                        if (customerCount <= 0) {
+                            await cl.post(`/api/customers`, {
+                                data: {
+                                    type: 'customers',
+                                    attributes: {
+                                        email: user.email,
+                                    },
+                                },
+                            });
+                        }
+                    }
                 }
                 return true;
             },
