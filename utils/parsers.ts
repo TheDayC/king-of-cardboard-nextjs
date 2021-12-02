@@ -25,6 +25,7 @@ import {
     isArrayofCommerceLayerErrors,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
+import { Slugs } from '../enums/account';
 
 export function parseOrderData(order: any, included: any): Order | null {
     if (order !== null) {
@@ -214,3 +215,4 @@ export const parseAsArrayOfObjectives = parseAsType(isArrayOfObjectives);
 export const parseAsArrayOfAchievements = parseAsType(isArrayOfAchievements);
 export const parseAsCommerceLayerError = parseAsType(isCommerceLayerError);
 export const parseAsArrayOfCommerceLayerErrors = parseAsType(isArrayofCommerceLayerErrors);
+export const parseAsSlug = parseAsType(isEnumMember(Slugs));

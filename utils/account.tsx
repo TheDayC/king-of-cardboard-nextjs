@@ -4,6 +4,7 @@ import { AiFillCreditCard } from 'react-icons/ai';
 
 import { GetOrders } from '../types/account';
 import { parseAsCommerceResponseArray, safelyParse, parseAsCommerceMeta } from './parsers';
+import { CommerceLayerResponse } from '../types/api';
 
 export async function getHistoricalOrders(
     accessToken: string,
@@ -113,4 +114,30 @@ export function cardLogo(card: string | null): JSX.Element {
         default:
             return <AiFillCreditCard />;
     }
+}
+
+export async function getAddresses(
+    accessToken: string,
+    emailAddress: string,
+    pageSize: number,
+    page: number
+): Promise<CommerceLayerResponse[] | null> {
+    try {
+        const response = await axios.post('/api/account/getAddresses', {
+            token: accessToken,
+            emailAddress,
+            pageSize,
+            page,
+        });
+
+        if (response) {
+            return safelyParse(response, 'data.addresses', parseAsCommerceResponseArray, null);
+        }
+
+        return null;
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
 }
