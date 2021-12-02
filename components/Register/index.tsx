@@ -6,10 +6,12 @@ import { useRouter } from 'next/router';
 import { AiOutlineUser } from 'react-icons/ai';
 import { MdOutlineMailOutline } from 'react-icons/md';
 import { RiLockPasswordLine } from 'react-icons/ri';
+import { useSelector } from 'react-redux';
 
 import ErrorAlert from '../ErrorAlert';
 import { Tabs } from '../../enums/auth';
 import { parseAsString, safelyParse } from '../../utils/parsers';
+import selector from './selector';
 
 interface Submit {
     username?: string;
@@ -38,7 +40,7 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
     const [loading, setLoading] = useState(false);
     const hasErrors = Object.keys(errors).length > 0;
     const router = useRouter();
-    const error: string = get(router, 'query.error', '');
+    const { accessToken: token } = useSelector(selector);
 
     const onSubmit = async (data: Submit) => {
         setLoading(true);
@@ -49,6 +51,7 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
                 username,
                 emailAddress,
                 password,
+                token,
             });
 
             if (response) {
@@ -72,6 +75,7 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
     const confirmEmailErr = safelyParse(errors, 'confirmEmailAddress.message', parseAsString, null);
     const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
     const confirmPasswordErr = safelyParse(errors, 'confirmPassword.message', parseAsString, null);
+    const error = safelyParse(router, 'query.error', parseAsString, null);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>

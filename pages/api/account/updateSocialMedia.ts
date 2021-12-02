@@ -30,7 +30,6 @@ async function updateSocialMedia(req: NextApiRequest, res: NextApiResponse): Pro
 
             // Update document in collection.
             const updatedProfile = await profileCollection.updateOne({ emailAddress }, values);
-            client.close();
 
             if (updatedProfile) {
                 res.status(200).json({ success: true, data: updatedProfile });

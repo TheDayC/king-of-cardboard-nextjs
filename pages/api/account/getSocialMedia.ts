@@ -10,7 +10,6 @@ async function getSocialMedia(req: NextApiRequest, res: NextApiResponse): Promis
         const { db, client } = await connectToDatabase();
         const profileCollection = db.collection('profile');
         const profile = await profileCollection.findOne({ emailAddress });
-        client.close();
 
         if (profile) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars

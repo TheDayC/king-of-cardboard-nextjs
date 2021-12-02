@@ -27,7 +27,6 @@ async function getObjectives(req: NextApiRequest, res: NextApiResponse): Promise
 
             const objectivesCount = await objectivesCollection.find(query).count();
             const objectivesDocument = await objectivesCollection.find(query).skip(skip).limit(limit).toArray();
-            client.close();
 
             if (objectivesDocument) {
                 res.status(200).json({ objectives: objectivesDocument, count: objectivesCount });

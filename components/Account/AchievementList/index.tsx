@@ -13,9 +13,7 @@ export const AchievementList: React.FC = () => {
     const { data: session } = useSession();
     const [shouldFetchAchievements, setShouldFetchAchievements] = useState(true);
     const [objectives, setObjectives] = useState<ObjectiveType[] | null>(null);
-    console.log('🚀 ~ file: index.tsx ~ line 14 ~ objectives', objectives);
     const [achievements, setAchievements] = useState<Achievement[] | null>(null);
-    console.log('🚀 ~ file: index.tsx ~ line 18 ~ achievements', achievements);
     const [page, setPage] = useState(0);
     const [count, setCount] = useState(0);
 
@@ -28,10 +26,6 @@ export const AchievementList: React.FC = () => {
         }
 
         if (service.achievements) {
-            console.log(
-                '🚀 ~ file: index.tsx ~ line 31 ~ fetchObjectives ~ service.achievements',
-                service.achievements
-            );
             setAchievements(service.achievements);
         }
     };

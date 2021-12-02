@@ -30,3 +30,21 @@ export interface PaymentSourceResponse {
     paymentId: string | null;
     clientSecret: string | null;
 }
+
+export interface CommerceLayerError {
+    title: string;
+    detail: string;
+    code: string;
+    source: CommerceLayerErrorSource;
+    status: string;
+    meta: CommerceLayerErrorMeta;
+}
+
+interface CommerceLayerErrorSource {
+    pointer: string;
+}
+
+interface CommerceLayerErrorMeta {
+    error: string;
+    value: string;
+}
