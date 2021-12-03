@@ -3,10 +3,7 @@ import { useSelector } from 'react-redux';
 import { useSession } from 'next-auth/react';
 
 import selector from './selector';
-import Achievements from '../../../services/achievments';
-import { Achievement, Objective as ObjectiveType } from '../../../types/achievements';
 import Loading from '../../Loading';
-import Objective from './Objective';
 import { getAddresses } from '../../../utils/account';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import Add from './Add';
@@ -14,7 +11,7 @@ import { CommerceLayerResponse } from '../../../types/api';
 import Address from './Address';
 import Pagination from '../../Pagination';
 
-const PER_PAGE = 5;
+const PER_PAGE = 7;
 
 export const AddressBook: React.FC = () => {
     const { accessToken } = useSelector(selector);
@@ -46,12 +43,12 @@ export const AddressBook: React.FC = () => {
         }
     };
 
-    // Fetch achievements
     useEffect(() => {
         const clPage = currentPage + 1;
 
         if (shouldFetchAddresses && accessToken && emailAddress && clPage > 0) {
             fetchAddresses(accessToken, emailAddress, clPage);
+            setIsLoading(true);
             setShouldFetchAddresses(false);
         }
     }, [accessToken, emailAddress, shouldFetchAddresses, currentPage]);
@@ -62,7 +59,12 @@ export const AddressBook: React.FC = () => {
             <div className="grid grid-cols-4 gap-4">
                 {addresses &&
                     addresses.map((address) => (
-                        <Address id={address.id} name={address.attributes.name} key={`address-${address.id}`} />
+                        <Address
+                            id={address.id}
+                            name={address.attributes.name}
+                            key={`address-${address.id}`}
+                            fetchAddresses={setShouldFetchAddresses}
+                        />
                     ))}
                 <Add />
             </div>

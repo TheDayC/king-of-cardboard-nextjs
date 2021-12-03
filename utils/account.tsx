@@ -3,8 +3,15 @@ import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 
 import { GetOrders } from '../types/account';
-import { parseAsCommerceResponseArray, safelyParse, parseAsCommerceMeta, parseAsString } from './parsers';
+import {
+    parseAsCommerceResponseArray,
+    safelyParse,
+    parseAsCommerceMeta,
+    parseAsString,
+    parseAsNumber,
+} from './parsers';
 import { AddressResponse, CommerceLayerResponse } from '../types/api';
+import { authClient } from './auth';
 
 export async function getHistoricalOrders(
     accessToken: string,
@@ -179,4 +186,19 @@ export async function addAddress(
     }
 
     return null;
+}
+
+export async function deleteAddress(accessToken: string, id: string): Promise<boolean> {
+    try {
+        const cl = authClient(accessToken);
+
+        const response = await cl.delete(`/api/customer_addresses/${id}`);
+        const status = safelyParse(response, 'status', parseAsNumber, false);
+
+        return status && status === 204 ? true : false;
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return false;
 }
