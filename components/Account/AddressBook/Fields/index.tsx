@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import selector from './selector';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import { fieldPatternMsgs } from '../../../../utils/checkout';
-import { addAddress } from '../../../../utils/account';
+import { addAddress, editAddress } from '../../../../utils/account';
 import ErrorAlert from '../../../ErrorAlert';
 import SuccessAlert from '../../../SuccessAlert';
 
@@ -22,7 +22,31 @@ interface FormData {
     postcode: string;
 }
 
-export const Fields: React.FC = () => {
+interface FieldProps {
+    addressId?: string;
+    addressLineOne?: string;
+    addressLineTwo?: string;
+    city?: string;
+    company?: string;
+    county?: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    postcode?: string;
+}
+
+export const Fields: React.FC<FieldProps> = ({
+    addressId,
+    addressLineOne,
+    addressLineTwo,
+    city,
+    company,
+    county,
+    firstName,
+    lastName,
+    phone,
+    postcode,
+}) => {
     const { accessToken } = useSelector(selector);
     const { data: session } = useSession();
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
@@ -35,6 +59,7 @@ export const Fields: React.FC = () => {
         formState: { errors },
         reset,
     } = useForm();
+    const hasErrors = Object.keys(errors).length > 0;
 
     const onSubmit = async (data: FormData) => {
         if (hasErrors || !emailAddress || !accessToken) {
@@ -43,44 +68,66 @@ export const Fields: React.FC = () => {
 
         setIsLoading(true);
 
-        const { addressLineOne, addressLineTwo, city, company, county, firstName, lastName, phone, postcode } = data;
+        if (addressId) {
+            const editAddressResponse = await editAddress(
+                accessToken,
+                addressId,
+                data.addressLineOne,
+                data.addressLineTwo,
+                data.city,
+                data.company,
+                data.county,
+                data.firstName,
+                data.lastName,
+                data.phone,
+                data.postcode
+            );
 
-        const customerAddressId = await addAddress(
-            accessToken,
-            emailAddress,
-            addressLineOne,
-            addressLineTwo,
-            city,
-            company,
-            county,
-            firstName,
-            lastName,
-            phone,
-            postcode
-        );
-
-        if (customerAddressId) {
-            setSuccessMsg('Address successfullly added!');
-            setErrorMsg(null);
-            reset();
+            if (editAddressResponse) {
+                setSuccessMsg('Address edited!');
+                setErrorMsg(null);
+            } else {
+                setErrorMsg('Unable to edit address.');
+                setSuccessMsg(null);
+            }
         } else {
-            setErrorMsg('Unable to add address.');
-            setSuccessMsg(null);
+            const customerAddressId = await addAddress(
+                accessToken,
+                emailAddress,
+                data.addressLineOne,
+                data.addressLineTwo,
+                data.city,
+                data.company,
+                data.county,
+                data.firstName,
+                data.lastName,
+                data.phone,
+                data.postcode
+            );
+
+            if (customerAddressId) {
+                setSuccessMsg('Address successfullly added!');
+                setErrorMsg(null);
+                reset();
+            } else {
+                setErrorMsg('Unable to add address.');
+                setSuccessMsg(null);
+            }
         }
 
         setIsLoading(false);
     };
 
-    const hasErrors = Object.keys(errors).length > 0;
     const firstNameErr = safelyParse(errors, 'firstName.message', parseAsString, null);
     const lastNameErr = safelyParse(errors, 'lastName.message', parseAsString, null);
     const companyErr = safelyParse(errors, 'company.message', parseAsString, null);
     const mobileErr = safelyParse(errors, 'mobile.message', parseAsString, null);
-    const lineOneErr = safelyParse(errors, 'billingAddressLineOne.message', parseAsString, null);
-    const lineTwoErr = safelyParse(errors, 'billingAddressLineTwo.message', parseAsString, null);
-    const cityErr = safelyParse(errors, 'billingCity.message', parseAsString, null);
-    const postcodeErr = safelyParse(errors, 'billingPostcode.message', parseAsString, null);
-    const countyErr = safelyParse(errors, 'billingCounty.message', parseAsString, null);
+    const lineOneErr = safelyParse(errors, 'addressLineOne.message', parseAsString, null);
+    const lineTwoErr = safelyParse(errors, 'addressLineTwo.message', parseAsString, null);
+    const cityErr = safelyParse(errors, 'city.message', parseAsString, null);
+    const postcodeErr = safelyParse(errors, 'postcode.message', parseAsString, null);
+    const countyErr = safelyParse(errors, 'county.message', parseAsString, null);
+    const btnText = addressId ? 'Save Address' : 'Add Address';
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full">
@@ -111,6 +158,7 @@ export const Fields: React.FC = () => {
                                         value: /^[a-z ,.'-]+$/i,
                                         message: fieldPatternMsgs('firstName'),
                                     },
+                                    value: firstName || '',
                                 })}
                                 className={`input input-sm input-bordered${firstNameErr ? ' input-error' : ''}`}
                             />
@@ -133,6 +181,7 @@ export const Fields: React.FC = () => {
                                         value: /^[a-z ,.'-]+$/i,
                                         message: fieldPatternMsgs('lastName'),
                                     },
+                                    value: lastName || '',
                                 })}
                                 className={`input input-sm input-bordered${lastNameErr ? ' input-error' : ''}`}
                             />
@@ -151,6 +200,7 @@ export const Fields: React.FC = () => {
                                 placeholder="Company"
                                 {...register('company', {
                                     required: false,
+                                    value: company || '',
                                 })}
                                 className={`input input-sm input-bordered${companyErr ? ' input-error' : ''}`}
                             />
@@ -173,6 +223,7 @@ export const Fields: React.FC = () => {
                                         value: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g,
                                         message: fieldPatternMsgs('mobile'),
                                     },
+                                    value: phone || '',
                                 })}
                                 className={`input input-sm input-bordered${mobileErr ? ' input-error' : ''}`}
                             />
@@ -196,6 +247,7 @@ export const Fields: React.FC = () => {
                                 placeholder="Address Line One"
                                 {...register('addressLineOne', {
                                     required: { value: true, message: 'Required' },
+                                    value: addressLineOne || '',
                                 })}
                                 className={`input input-sm input-bordered${lineOneErr ? ' input-error' : ''}`}
                             />
@@ -212,7 +264,7 @@ export const Fields: React.FC = () => {
                             <input
                                 type="text"
                                 placeholder="Address Line Two"
-                                {...register('addressLineTwo')}
+                                {...register('addressLineTwo', { value: addressLineTwo || '' })}
                                 className={`input input-sm input-bordered${lineTwoErr ? ' input-error' : ''}`}
                             />
                             {lineTwoErr && (
@@ -230,6 +282,7 @@ export const Fields: React.FC = () => {
                                 placeholder="City"
                                 {...register('city', {
                                     required: { value: true, message: 'Required' },
+                                    value: city || '',
                                 })}
                                 className={`input input-sm input-bordered${cityErr ? ' input-error' : ''}`}
                             />
@@ -252,6 +305,7 @@ export const Fields: React.FC = () => {
                                         value: /^([A-Z][A-HJ-Y]?\d[A-Z\d]? ?\d[A-Z]{2}|GIR ?0A{2})$/gim,
                                         message: fieldPatternMsgs('postcode'),
                                     },
+                                    value: postcode || '',
                                 })}
                                 className={`input input-sm input-bordered${postcodeErr ? ' input-error' : ''}`}
                             />
@@ -270,6 +324,7 @@ export const Fields: React.FC = () => {
                                 placeholder="County"
                                 {...register('county', {
                                     required: { value: true, message: 'Required' },
+                                    value: county || '',
                                 })}
                                 className={`input input-sm input-bordered${countyErr ? ' input-error' : ''}`}
                             />
@@ -289,7 +344,7 @@ export const Fields: React.FC = () => {
                         isLoading ? ' loading btn-square' : ''
                     }`}
                 >
-                    {isLoading ? '' : 'Add Address'}
+                    {isLoading ? '' : btnText}
                 </button>
             </div>
         </form>

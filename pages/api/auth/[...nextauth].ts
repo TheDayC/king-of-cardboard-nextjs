@@ -263,7 +263,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                             }
                         }
                     } catch (err) {
-                        if (err) throw err;
+                        console.log('🚀 ~ file: [...nextauth].ts ~ line 266 ~ signIn ~ err', err);
                     } finally {
                         await client.close();
                     }

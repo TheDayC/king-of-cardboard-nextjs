@@ -9,6 +9,7 @@ import {
     parseAsCommerceMeta,
     parseAsString,
     parseAsNumber,
+    parseAsCommerceResponse,
 } from './parsers';
 import { AddressResponse, CommerceLayerResponse } from '../types/api';
 import { authClient } from './auth';
@@ -201,4 +202,72 @@ export async function deleteAddress(accessToken: string, id: string): Promise<bo
     }
 
     return false;
+}
+
+export async function getAddress(accessToken: string, id: string): Promise<CommerceLayerResponse | null> {
+    try {
+        const cl = authClient(accessToken);
+
+        const response = await cl.get(`/api/addresses/${id}`);
+        return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
+
+export async function getCustomerAddress(accessToken: string, id: string): Promise<CommerceLayerResponse | null> {
+    try {
+        const cl = authClient(accessToken);
+
+        const response = await cl.get(`/api/customer_addresses/${id}?include=address`);
+        return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
+
+export async function editAddress(
+    accessToken: string,
+    addressId: string,
+    addressLineOne: string,
+    addressLineTwo: string,
+    city: string,
+    company: string,
+    county: string,
+    firstName: string,
+    lastName: string,
+    phone: string,
+    postcode: string
+): Promise<CommerceLayerResponse | null> {
+    try {
+        const cl = authClient(accessToken);
+
+        const response = await cl.patch(`/api/addresses/${addressId}`, {
+            data: {
+                type: 'addresses',
+                id: addressId,
+                attributes: {
+                    line_1: addressLineOne,
+                    line_2: addressLineTwo,
+                    city,
+                    company,
+                    state_code: county,
+                    zip_code: postcode,
+                    first_name: firstName,
+                    last_name: lastName,
+                    phone,
+                },
+            },
+        });
+
+        return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
 }
