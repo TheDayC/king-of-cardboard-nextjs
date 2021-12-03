@@ -11,15 +11,14 @@ import { ServerSideRedirectProps } from '../../types/pages';
 import Account from '../../components/Account';
 import selector from './slugSelector';
 import Content from '../../components/Content';
-
-const slugs = ['details', 'profile', 'orderHistory', 'achievements'];
+import { parseAsSlug, safelyParse } from '../../utils/parsers';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 export async function getServerSideProps(context: any): Promise<ServerSideRedirectProps | object> {
     const session = await getSession(context);
-    const slug: string = get(context, 'query.slug', '');
+    const slug = safelyParse(context, 'query.slug', parseAsSlug, null);
 
-    const errorCode = slugs.includes(slug) ? false : 404;
+    const errorCode = slug ? false : 404;
 
     // If session hasn't been established redirect to the login page.
     if (!session) {

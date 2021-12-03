@@ -4,6 +4,9 @@ import Details from './Details';
 import Profile from './Profile';
 import OrderHistory from './OrderHistory';
 import AchievementList from './AchievementList';
+import AddressBook from './AddressBook';
+import Fields from './AddressBook/Fields';
+import { Slugs } from '../../enums/account';
 
 interface AccountProps {
     slug: string;
@@ -11,14 +14,18 @@ interface AccountProps {
 
 export const Account: React.FC<AccountProps> = ({ slug }) => {
     switch (slug) {
-        case 'details':
+        case Slugs.Details:
             return <Details />;
-        case 'profile':
+        case Slugs.Profile:
             return <Profile />;
-        case 'orderHistory':
+        case Slugs.OrderHistory:
             return <OrderHistory />;
-        case 'achievements':
+        case Slugs.Achievements:
             return <AchievementList />;
+        case Slugs.AddressBook:
+            return <AddressBook />;
+        case Slugs.AddAddress:
+            return <Fields />;
         default:
             return null;
     }

@@ -48,3 +48,8 @@ interface CommerceLayerErrorMeta {
     error: string;
     value: string;
 }
+
+export interface AddressResponse {
+    addresses: CommerceLayerResponse[] | null;
+    meta: CommerceLayerMeta | null;
+}

@@ -3,7 +3,16 @@ import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 
 import { GetOrders } from '../types/account';
-import { parseAsCommerceResponseArray, safelyParse, parseAsCommerceMeta } from './parsers';
+import {
+    parseAsCommerceResponseArray,
+    safelyParse,
+    parseAsCommerceMeta,
+    parseAsString,
+    parseAsNumber,
+    parseAsCommerceResponse,
+} from './parsers';
+import { AddressResponse, CommerceLayerResponse } from '../types/api';
+import { authClient } from './auth';
 
 export async function getHistoricalOrders(
     accessToken: string,
@@ -113,4 +122,152 @@ export function cardLogo(card: string | null): JSX.Element {
         default:
             return <AiFillCreditCard />;
     }
+}
+
+export async function getAddresses(
+    accessToken: string,
+    emailAddress: string,
+    pageSize: number,
+    page: number
+): Promise<AddressResponse | null> {
+    try {
+        const response = await axios.post('/api/account/getAddresses', {
+            token: accessToken,
+            emailAddress,
+            pageSize,
+            page,
+        });
+
+        if (response) {
+            return {
+                addresses: safelyParse(response, 'data.addresses', parseAsCommerceResponseArray, null),
+                meta: safelyParse(response, 'data.meta', parseAsCommerceMeta, null),
+            };
+        }
+
+        return null;
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
+
+export async function addAddress(
+    accessToken: string,
+    emailAddress: string,
+    addressLineOne: string,
+    addressLineTwo: string,
+    city: string,
+    company: string,
+    county: string,
+    firstName: string,
+    lastName: string,
+    phone: string,
+    postcode: string
+): Promise<string | null> {
+    try {
+        const response = await axios.post('/api/account/addAddress', {
+            token: accessToken,
+            emailAddress,
+            addressLineOne,
+            addressLineTwo,
+            city,
+            company,
+            county,
+            firstName,
+            lastName,
+            phone,
+            postcode,
+        });
+
+        return safelyParse(response, 'data.customerAddressId', parseAsString, null);
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
+
+export async function deleteAddress(accessToken: string, id: string): Promise<boolean> {
+    try {
+        const cl = authClient(accessToken);
+
+        const response = await cl.delete(`/api/customer_addresses/${id}`);
+        const status = safelyParse(response, 'status', parseAsNumber, false);
+
+        return status && status === 204 ? true : false;
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return false;
+}
+
+export async function getAddress(accessToken: string, id: string): Promise<CommerceLayerResponse | null> {
+    try {
+        const cl = authClient(accessToken);
+
+        const response = await cl.get(`/api/addresses/${id}`);
+        return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
+
+export async function getCustomerAddress(accessToken: string, id: string): Promise<CommerceLayerResponse | null> {
+    try {
+        const cl = authClient(accessToken);
+
+        const response = await cl.get(`/api/customer_addresses/${id}?include=address`);
+        return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
+
+export async function editAddress(
+    accessToken: string,
+    addressId: string,
+    addressLineOne: string,
+    addressLineTwo: string,
+    city: string,
+    company: string,
+    county: string,
+    firstName: string,
+    lastName: string,
+    phone: string,
+    postcode: string
+): Promise<CommerceLayerResponse | null> {
+    try {
+        const cl = authClient(accessToken);
+
+        const response = await cl.patch(`/api/addresses/${addressId}`, {
+            data: {
+                type: 'addresses',
+                id: addressId,
+                attributes: {
+                    line_1: addressLineOne,
+                    line_2: addressLineTwo,
+                    city,
+                    company,
+                    state_code: county,
+                    zip_code: postcode,
+                    first_name: firstName,
+                    last_name: lastName,
+                    phone,
+                },
+            },
+        });
+
+        return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
 }

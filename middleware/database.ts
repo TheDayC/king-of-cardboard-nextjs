@@ -18,28 +18,28 @@ if (!MONGODB_DB) {
     throw new Error('Define the MONGODB_DB environmental variable');
 }
 
-let cachedClient: MongoClient | null = null;
-let cachedDb: Db | null = null;
+/* let cachedClient: MongoClient | null = null;
+let cachedDb: Db | null = null; */
 
 export async function connectToDatabase(): Promise<ConnectReturn> {
     // Check cache and return before reconnecting
-    if (cachedClient && cachedDb) {
+    /* if (cachedClient && cachedDb) {
         return {
             client: cachedClient,
             db: cachedDb,
         };
-    }
+    } */
 
     const client = new MongoClient(MONGODB_URI || '');
     await client.connect();
     const db = client.db(MONGODB_DB);
 
     // set cache
-    cachedClient = client;
-    cachedDb = db;
+    /* cachedClient = client;
+    cachedDb = db; */
 
     return {
-        client: cachedClient,
-        db: cachedDb,
+        client,
+        db,
     };
 }

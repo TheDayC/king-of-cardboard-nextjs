@@ -5,6 +5,8 @@ import { parseAsArrayOfStrings, parseAsNumber, parseAsString, safelyParse } from
 
 async function getObjectives(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
+        const { db, client } = await connectToDatabase();
+
         try {
             const categories = safelyParse(req, 'body.categories', parseAsArrayOfStrings, null);
             const types = safelyParse(req, 'body.types', parseAsArrayOfStrings, null);
@@ -12,7 +14,6 @@ async function getObjectives(req: NextApiRequest, res: NextApiResponse): Promise
             const limit = 9;
             const skip = page * limit;
 
-            const { db, client } = await connectToDatabase();
             const objectivesCollection = db.collection('objectives');
 
             // Define our query based on what is passed. Leave empty by default.
@@ -41,6 +42,8 @@ async function getObjectives(req: NextApiRequest, res: NextApiResponse): Promise
             ]);
 
             res.status(status).json({ status, statusText, message });
+        } finally {
+            await client.close();
         }
 
         return Promise.resolve();
