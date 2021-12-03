@@ -171,7 +171,6 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
 
     useEffect(() => {
         if (accessToken && lineItemSkus && includedLineItems) {
-            console.log('Triggered');
             fetchSkuItems(accessToken, lineItemSkus, includedLineItems);
         }
     }, [accessToken, lineItemSkus, includedLineItems]);

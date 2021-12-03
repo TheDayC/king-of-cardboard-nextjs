@@ -43,8 +43,6 @@ async function updateSocialMedia(req: NextApiRequest, res: NextApiResponse): Pro
             }
         } catch (err) {
             if (err) throw err;
-        } finally {
-            await client.close();
         }
     }
 }

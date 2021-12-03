@@ -41,8 +41,6 @@ async function getGiftCardBalance(req: NextApiRequest, res: NextApiResponse): Pr
             ]);
 
             res.status(status).json({ status, statusText, message });
-        } finally {
-            await client.close();
         }
 
         return Promise.resolve();

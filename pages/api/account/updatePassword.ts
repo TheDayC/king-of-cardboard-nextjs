@@ -66,8 +66,6 @@ async function updatePassword(req: NextApiRequest, res: NextApiResponse): Promis
             }
         } catch (err) {
             if (err) throw err;
-        } finally {
-            await client.close();
         }
     }
 }

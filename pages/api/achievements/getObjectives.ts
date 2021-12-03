@@ -42,8 +42,6 @@ async function getObjectives(req: NextApiRequest, res: NextApiResponse): Promise
             ]);
 
             res.status(status).json({ status, statusText, message });
-        } finally {
-            await client.close();
         }
 
         return Promise.resolve();
