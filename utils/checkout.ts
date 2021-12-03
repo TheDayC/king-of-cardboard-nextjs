@@ -203,6 +203,7 @@ export function fieldPatternMsgs(field: string): string {
             return 'Must not contain letters.';
         case 'billingPostcode':
         case 'shippingPostcode':
+        case 'postcode':
             return 'Must be a valid postcode.';
         default:
             return '';

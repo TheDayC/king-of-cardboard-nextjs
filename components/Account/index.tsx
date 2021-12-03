@@ -5,6 +5,7 @@ import Profile from './Profile';
 import OrderHistory from './OrderHistory';
 import AchievementList from './AchievementList';
 import AddressBook from './AddressBook';
+import Fields from './AddressBook/Fields';
 import { Slugs } from '../../enums/account';
 
 interface AccountProps {
@@ -23,6 +24,8 @@ export const Account: React.FC<AccountProps> = ({ slug }) => {
             return <AchievementList />;
         case Slugs.AddressBook:
             return <AddressBook />;
+        case Slugs.AddAddress:
+            return <Fields />;
         default:
             return null;
     }

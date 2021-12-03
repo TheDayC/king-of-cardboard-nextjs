@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import {
     parseAsArrayOfCommerceLayerErrors,
+    parseAsCommerceMeta,
     parseAsCommerceResponseArray,
     parseAsNumber,
     parseAsString,
@@ -25,8 +26,10 @@ async function getAddresses(req: NextApiRequest, res: NextApiResponse): Promise<
             const response = await cl.get(`/api/customer_addresses?${filters}&${pagination}`);
             const status = safelyParse(response, 'status', parseAsNumber, 500);
             const addresses = safelyParse(response, 'data.data', parseAsCommerceResponseArray, null);
+            const meta = safelyParse(response, 'data.meta', parseAsCommerceMeta, null);
+            console.log('🚀 ~ file: getAddresses.ts ~ line 30 ~ getAddresses ~ meta', meta);
 
-            res.status(status).json({ addresses });
+            res.status(status).json({ addresses, meta });
         } catch (error) {
             const status = safelyParse(error, 'response.status', parseAsNumber, 500);
             const statusText = safelyParse(error, 'response.statusText', parseAsString, 'Error');

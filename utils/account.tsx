@@ -3,8 +3,8 @@ import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 
 import { GetOrders } from '../types/account';
-import { parseAsCommerceResponseArray, safelyParse, parseAsCommerceMeta } from './parsers';
-import { CommerceLayerResponse } from '../types/api';
+import { parseAsCommerceResponseArray, safelyParse, parseAsCommerceMeta, parseAsString } from './parsers';
+import { AddressResponse, CommerceLayerResponse } from '../types/api';
 
 export async function getHistoricalOrders(
     accessToken: string,
@@ -121,7 +121,7 @@ export async function getAddresses(
     emailAddress: string,
     pageSize: number,
     page: number
-): Promise<CommerceLayerResponse[] | null> {
+): Promise<AddressResponse | null> {
     try {
         const response = await axios.post('/api/account/getAddresses', {
             token: accessToken,
@@ -131,10 +131,49 @@ export async function getAddresses(
         });
 
         if (response) {
-            return safelyParse(response, 'data.addresses', parseAsCommerceResponseArray, null);
+            return {
+                addresses: safelyParse(response, 'data.addresses', parseAsCommerceResponseArray, null),
+                meta: safelyParse(response, 'data.meta', parseAsCommerceMeta, null),
+            };
         }
 
         return null;
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return null;
+}
+
+export async function addAddress(
+    accessToken: string,
+    emailAddress: string,
+    addressLineOne: string,
+    addressLineTwo: string,
+    city: string,
+    company: string,
+    county: string,
+    firstName: string,
+    lastName: string,
+    phone: string,
+    postcode: string
+): Promise<string | null> {
+    try {
+        const response = await axios.post('/api/account/addAddress', {
+            token: accessToken,
+            emailAddress,
+            addressLineOne,
+            addressLineTwo,
+            city,
+            company,
+            county,
+            firstName,
+            lastName,
+            phone,
+            postcode,
+        });
+
+        return safelyParse(response, 'data.customerAddressId', parseAsString, null);
     } catch (error) {
         console.log('Error: ', error);
     }
