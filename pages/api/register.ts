@@ -66,8 +66,6 @@ async function register(req: NextApiRequest, res: NextApiResponse): Promise<void
             }
         } catch (err) {
             if (err) throw err;
-        } finally {
-            await client.close();
         }
     }
 }

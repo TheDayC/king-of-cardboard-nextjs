@@ -27,7 +27,6 @@ async function getAddresses(req: NextApiRequest, res: NextApiResponse): Promise<
             const status = safelyParse(response, 'status', parseAsNumber, 500);
             const addresses = safelyParse(response, 'data.data', parseAsCommerceResponseArray, null);
             const meta = safelyParse(response, 'data.meta', parseAsCommerceMeta, null);
-            console.log('🚀 ~ file: getAddresses.ts ~ line 30 ~ getAddresses ~ meta', meta);
 
             res.status(status).json({ addresses, meta });
         } catch (error) {

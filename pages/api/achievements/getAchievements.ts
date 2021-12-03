@@ -40,8 +40,6 @@ async function getAchievements(req: NextApiRequest, res: NextApiResponse): Promi
             ]);
 
             res.status(status).json({ status, statusText, message });
-        } finally {
-            await client.close();
         }
 
         return Promise.resolve();

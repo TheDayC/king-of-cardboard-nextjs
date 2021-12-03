@@ -76,8 +76,6 @@ async function addAddress(req: NextApiRequest, res: NextApiResponse): Promise<vo
             const message = safelyParse(error, 'response.data.errors', parseAsArrayOfCommerceLayerErrors, null);
 
             res.status(status).json({ status, statusText, message });
-        } finally {
-            await client.close();
         }
 
         return Promise.resolve();

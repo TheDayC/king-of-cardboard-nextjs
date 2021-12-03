@@ -1,14 +1,16 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import TwitchProvider from 'next-auth/providers/twitch';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcrypt';
-import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';
 import { parseAsCommerceResponseArray, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 import { authClient } from '../../../utils/auth';
+import clientPromise from '../../../lib/mongodb';
+import { MongoDBAdapter } from '../../../lib/mongoAdapter';
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     return await NextAuth(req, res, {
@@ -90,9 +92,8 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                             }
                         }
                     } catch (err) {
-                        if (err) throw err;
-                    } finally {
-                        await client.close();
+                        console.log('🚀 ~ file: [...nextauth].ts ~ line 97 ~ authorize ~ err', err);
+                        throw err;
                     }
 
                     return null;
@@ -108,12 +109,9 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
             }),
         ],
         secret: process.env.JWT_SECRET,
-        jwt: {
+        /* jwt: {
             secret: process.env.JWT_ENCRYPT,
-        },
-        session: {
-            jwt: true,
-        },
+        }, */
         pages: {
             signIn: '/account',
             signOut: '/login?signedOut=true',
@@ -226,10 +224,6 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                             // See if the customer already exists in commerce layer.
                             const customerData = await cl.get(`/api/customers?filter[q][email_eq]=${user.email}`);
                             const customerCount = safelyParse(customerData, 'data.meta.record_count', parseAsNumber, 0);
-                            console.log(
-                                '🚀 ~ file: [...nextauth].ts ~ line 218 ~ signIn ~ customerCount',
-                                customerCount
-                            );
 
                             // If the customer doesn't exist in Commerce Layer, create them.
                             if (customerCount <= 0) {
@@ -264,8 +258,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                         }
                     } catch (err) {
                         console.log('🚀 ~ file: [...nextauth].ts ~ line 266 ~ signIn ~ err', err);
-                    } finally {
-                        await client.close();
+                        throw err;
                     }
 
                     return true;
@@ -273,20 +266,11 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
 
                 return true;
             },
-            /* async redirect({ url, baseUrl }) {
-            return baseUrl
         },
-        async session({ session, user, token }) {
-            return session
-        },
-        async jwt({ token, user, account, profile, isNewUser }) {
-            return token
-        }, */
-        },
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        adapter: MongoDBAdapter({
+        /* adapter: MongoDBAdapter({
             db: (await connectToDatabase()).db,
-        }),
+        }), */
+        adapter: MongoDBAdapter(clientPromise),
+        debug: false,
     });
 }
