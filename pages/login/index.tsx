@@ -47,8 +47,6 @@ interface LoginPageProps {
 export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) => {
     const [currentTab, setCurrentTab] = useState(Tabs.Login);
     const [regSuccess, setRegSuccess] = useState(false);
-    const { data: session, status } = useSession();
-    const router = useRouter();
 
     if (!providers || !csrfToken) return null;
 

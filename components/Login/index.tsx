@@ -16,7 +16,7 @@ interface LoginProps {
 }
 
 export const Login: React.FC<LoginProps> = ({ providers, showRegistrationSuccess }) => {
-    const { credentials, google } = providers;
+    const { credentials } = providers;
     const router = useRouter();
     const error = safelyParse(router, 'query.error', parseAsString, null);
 

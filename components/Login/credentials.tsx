@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { get } from 'lodash';
-import axios from 'axios';
 import { MdOutlineMailOutline } from 'react-icons/md';
 import { RiLockPasswordLine } from 'react-icons/ri';
 import { signIn } from 'next-auth/react';
+
+import { parseAsString, safelyParse } from '../../utils/parsers';
 
 interface Submit {
     emailAddress?: string;
@@ -23,11 +23,11 @@ export const Credentials: React.FC = () => {
     const onSubmit = async (data: Submit) => {
         const { emailAddress, password } = data;
 
-        signIn('credentials', { emailAddress, password });
+        await signIn('credentials', { emailAddress, password });
     };
 
-    const emailErr = get(errors, 'emailAddress.message', null);
-    const passwordErr = get(errors, 'password.message', null);
+    const emailErr = safelyParse(errors, 'emailAddress.message', parseAsString, null);
+    const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>

@@ -123,10 +123,6 @@
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@napi-rs/triples/-/triples-1.0.3.tgz#76d6d0c3f4d16013c61e45dfca5ff1e6c31ae53c"
 
-"@next-auth/mongodb-adapter@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@next-auth/mongodb-adapter/-/mongodb-adapter-1.0.0.tgz#e4cf457667dc1bb7d5461b7fe28df52e5530497f"
-
 "@next/env@12.0.3":
   version "12.0.3"
   resolved "https://registry.yarnpkg.com/@next/env/-/env-12.0.3.tgz#e676b4d1454d8b6be433a348e99f2b8276ab6cd7"
@@ -2440,9 +2436,9 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
 
-next-auth@4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/next-auth/-/next-auth-4.0.2.tgz#fd60dd9e1ebc5df84bfd3fbc3980d47d26a04b4b"
+next-auth@4.0.5:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/next-auth/-/next-auth-4.0.5.tgz#a41cdbe41f8a8dad42f4b3fb510ef1fb7035667e"
   dependencies:
     "@babel/runtime" "^7.15.4"
     "@panva/hkdf" "^1.0.0"

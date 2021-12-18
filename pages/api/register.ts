@@ -41,7 +41,6 @@ async function register(req: NextApiRequest, res: NextApiResponse): Promise<void
                         const userDocument = {
                             username,
                             emailAddress,
-                            password: hash,
                             commerceId: safelyParse(customer, 'data.data.id', parseAsString, null),
                         };
 
