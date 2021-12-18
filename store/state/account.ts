@@ -9,6 +9,7 @@ const accountInitialState: AccountState = {
         ebay: '',
     },
     balance: 0,
+    shouldFetchRewards: true,
 };
 
 export default accountInitialState;

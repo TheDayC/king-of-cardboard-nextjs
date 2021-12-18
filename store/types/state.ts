@@ -59,7 +59,6 @@ export interface Global {
     accessToken: string | null;
     expires: string | null;
     shouldSetNewOrder: boolean;
-    shouldFetchRewards: boolean;
 }
 
 export interface Checkout {
@@ -120,4 +119,5 @@ export interface BreaksState {
 export interface AccountState {
     socialMedia: SocialMedia;
     balance: number;
+    shouldFetchRewards: boolean;
 }

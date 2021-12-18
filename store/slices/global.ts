@@ -19,9 +19,6 @@ const globalSlice = createSlice({
         setNewOrder(state, action) {
             state.shouldSetNewOrder = action.payload;
         },
-        setShouldFetchRewards(state, action) {
-            state.shouldFetchRewards = action.payload;
-        },
     },
     extraReducers: {
         [HYDRATE]: (state, action) => {
