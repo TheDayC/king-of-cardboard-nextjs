@@ -31,6 +31,5 @@ const globalSlice = createSlice({
     },
 });
 
-export const { setAccessToken, setExpires, setCheckoutLoading, setNewOrder, setShouldFetchRewards } =
-    globalSlice.actions;
+export const { setAccessToken, setExpires, setCheckoutLoading, setNewOrder } = globalSlice.actions;
 export default globalSlice.reducer;
