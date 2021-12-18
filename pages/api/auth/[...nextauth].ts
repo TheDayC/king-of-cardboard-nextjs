@@ -17,6 +17,7 @@ import { authClient, userClient } from '../../../utils/auth';
 import clientPromise from '../../../lib/mongodb';
 import { MongoDBAdapter } from '../../../lib/mongoAdapter';
 import { isAxiosError } from '../../../utils/typeguards';
+import axios from 'axios';
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     return await NextAuth(req, res, {
@@ -88,7 +89,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
 
                         return null;
                     } catch (error) {
-                        if (isAxiosError(error)) {
+                        if (axios.isAxiosError(error)) {
                             throw new Error(error.message);
                         } else {
                             throw new Error('Error');
