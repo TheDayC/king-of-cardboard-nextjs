@@ -14,7 +14,6 @@ interface RewardsProps {
 
 export const Rewards: React.FC<RewardsProps> = ({ emailAddress }) => {
     const { accessToken, shouldFetchRewards, balance } = useSelector(selector);
-    console.log('🚀 ~ file: index.tsx ~ line 17 ~ shouldFetchRewards', shouldFetchRewards);
     const dispatch = useDispatch();
 
     const fetchBalance = async (token: string, email: string) => {
@@ -27,7 +26,6 @@ export const Rewards: React.FC<RewardsProps> = ({ emailAddress }) => {
 
     useEffect(() => {
         if (shouldFetchRewards && accessToken && emailAddress) {
-            console.log('🚀 ~ file: index.tsx ~ line 30 ~ useEffect ~ shouldFetchRewards', shouldFetchRewards);
             fetchBalance(accessToken, emailAddress);
             dispatch(setShouldFetchRewards(false));
         }

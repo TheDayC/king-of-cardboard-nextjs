@@ -1,5 +1,4 @@
 import axios, { AxiosInstance } from 'axios';
-import { get } from 'lodash';
 import { DateTime } from 'luxon';
 
 import { CreateToken } from '../types/commerce';
@@ -18,6 +17,18 @@ export function authClient(accessToken: string | null = null): AxiosInstance {
               Authorization: `Bearer ${accessToken}`,
           }
         : defaultHeaders;
+
+    return axios.create({
+        baseURL: process.env.NEXT_PUBLIC_ECOM_DOMAIN,
+        headers,
+    });
+}
+
+export function userClient(): AxiosInstance {
+    const headers = {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+    };
 
     return axios.create({
         baseURL: process.env.NEXT_PUBLIC_ECOM_DOMAIN,

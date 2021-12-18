@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { get } from 'lodash';
 import axios from 'axios';
@@ -35,12 +35,19 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
         register,
         handleSubmit,
         formState: { errors },
-        watch,
     } = useForm();
     const [loading, setLoading] = useState(false);
+    const [responseError, setResponseError] = useState<string | null>(null);
     const hasErrors = Object.keys(errors).length > 0;
     const router = useRouter();
     const { accessToken: token } = useSelector(selector);
+
+    const usernameErr = safelyParse(errors, 'username.message', parseAsString, null);
+    const emailErr = safelyParse(errors, 'emailAddress.message', parseAsString, null);
+    const confirmEmailErr = safelyParse(errors, 'confirmEmailAddress.message', parseAsString, null);
+    const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
+    const confirmPasswordErr = safelyParse(errors, 'confirmPassword.message', parseAsString, null);
+    const error = safelyParse(router, 'query.error', parseAsString, null);
 
     const onSubmit = async (data: Submit) => {
         setLoading(true);
@@ -58,30 +65,24 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
                 setCurrentTab(Tabs.Login);
                 setLoading(false);
                 setRegSuccess(true);
+                setResponseError(null);
             }
         } catch (error) {
             setLoading(false);
             setRegSuccess(false);
-            if (axios.isAxiosError(error)) {
-                console.log('🚀 ~ file: index.tsx ~ line 50 ~ onSubmit ~ error', error);
-            } else {
-                console.log('🚀 ~ file: index.tsx ~ line 50 ~ onSubmit ~ error', error);
-            }
+            setResponseError('User already exists!');
         }
     };
 
-    const usernameErr = safelyParse(errors, 'username.message', parseAsString, null);
-    const emailErr = safelyParse(errors, 'emailAddress.message', parseAsString, null);
-    const confirmEmailErr = safelyParse(errors, 'confirmEmailAddress.message', parseAsString, null);
-    const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
-    const confirmPasswordErr = safelyParse(errors, 'confirmPassword.message', parseAsString, null);
-    const error = safelyParse(router, 'query.error', parseAsString, null);
+    useEffect(() => {
+        setResponseError(error ? 'Invalid Credentials.' : null);
+    }, [error]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            {error && (
+            {responseError && (
                 <div className="mb-6">
-                    <ErrorAlert error="Invalid Credentials." />
+                    <ErrorAlert error={responseError} />
                 </div>
             )}
             <div className="form-control">
