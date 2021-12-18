@@ -13,6 +13,9 @@ const accountSlice = createSlice({
         setBalance(state, action) {
             state.balance = action.payload;
         },
+        setShouldFetchRewards(state, action) {
+            state.shouldFetchRewards = action.payload;
+        },
     },
     extraReducers: {
         [HYDRATE]: (state, action) => {
@@ -25,5 +28,5 @@ const accountSlice = createSlice({
     },
 });
 
-export const { setSocialMedia, setBalance } = accountSlice.actions;
+export const { setSocialMedia, setBalance, setShouldFetchRewards } = accountSlice.actions;
 export default accountSlice.reducer;

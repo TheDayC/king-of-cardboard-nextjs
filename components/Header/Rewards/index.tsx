@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 import selector from './selector';
 import { getGiftCardBalance } from '../../../utils/achievements';
-import { setShouldFetchRewards } from '../../../store/slices/global';
+import { setShouldFetchRewards } from '../../../store/slices/account';
 import { setBalance } from '../../../store/slices/account';
 
 interface RewardsProps {
@@ -14,6 +14,7 @@ interface RewardsProps {
 
 export const Rewards: React.FC<RewardsProps> = ({ emailAddress }) => {
     const { accessToken, shouldFetchRewards, balance } = useSelector(selector);
+    console.log('🚀 ~ file: index.tsx ~ line 17 ~ shouldFetchRewards', shouldFetchRewards);
     const dispatch = useDispatch();
 
     const fetchBalance = async (token: string, email: string) => {
@@ -26,10 +27,11 @@ export const Rewards: React.FC<RewardsProps> = ({ emailAddress }) => {
 
     useEffect(() => {
         if (shouldFetchRewards && accessToken && emailAddress) {
+            console.log('🚀 ~ file: index.tsx ~ line 30 ~ useEffect ~ shouldFetchRewards', shouldFetchRewards);
             fetchBalance(accessToken, emailAddress);
             dispatch(setShouldFetchRewards(false));
         }
-    }, [accessToken, emailAddress]);
+    }, [accessToken, emailAddress, shouldFetchRewards]);
 
     return (
         <Link href="/account/achievements" passHref>

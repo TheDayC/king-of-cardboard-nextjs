@@ -12,13 +12,14 @@ import Method from './Method';
 import { createPaymentSource } from '../../../utils/commerce';
 import { checkoutOrder, confirmOrder, refreshPayment } from '../../../utils/payment';
 import { CartItem, CustomerDetails } from '../../../store/types/state';
-import { setCheckoutLoading, setShouldFetchRewards } from '../../../store/slices/global';
+import { setCheckoutLoading } from '../../../store/slices/global';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import { Order } from '../../../types/cart';
 import Achievements from '../../../services/achievments';
 import { useSession } from 'next-auth/react';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { Session } from 'next-auth';
+import { setShouldFetchRewards } from '../../../store/slices/account';
 
 export const Payment: React.FC = () => {
     const dispatch = useDispatch();
