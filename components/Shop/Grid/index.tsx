@@ -5,20 +5,18 @@ import Link from 'next/link';
 import { ceil, divide } from 'lodash';
 
 import selector from './selector';
-import { fetchContentfulProducts, mergeProductData } from '../../utils/products';
-import { getSkus } from '../../utils/commerce';
-import { Product } from '../../types/products';
-import Pagination from '../Pagination';
-import { Categories, ProductType } from '../../enums/shop';
-import { setIsLoadingProducts } from '../../store/slices/shop';
-
-interface ProductGridProps {
-    useFilters: boolean;
-}
+import { fetchContentfulProducts, mergeProductData } from '../../../utils/products';
+import { getSkus } from '../../../utils/commerce';
+import { Product } from '../../../types/products';
+import Pagination from '../../Pagination';
+import { Categories, ProductType } from '../../../enums/shop';
+import { setIsLoadingProducts } from '../../../store/slices/shop';
+import ProductCard from './ProductCard';
+import { parseAsString, safelyParse } from '../../../utils/parsers';
 
 const PRODUCTS_PER_PAGE = 9;
 
-export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
+export const Grid: React.FC = () => {
     const { accessToken, filters } = useSelector(selector);
     const dispatch = useDispatch();
     const [products, setProducts] = useState<Product[] | null>(null);
@@ -90,54 +88,23 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
                 {products &&
                     products.map((product) => {
                         const shouldShowCompare = product.amount !== product.compare_amount;
+                        const { name, tags, amount, compare_amount, slug } = product;
+                        const imgUrl = safelyParse(product, 'cardImage.url', parseAsString, null);
+                        const imgDesc = safelyParse(product, 'cardImage.description', parseAsString, '');
+                        const imgTitle = safelyParse(product, 'cardImage.title', parseAsString, '');
 
                         return (
-                            <div className="card shadow-md rounded-md image-full" key={product.name}>
-                                {product.cardImage && (
-                                    <Image
-                                        src={product.cardImage.url}
-                                        layout="fill"
-                                        objectFit="cover"
-                                        className="rounded-sm"
-                                    />
-                                )}
-                                <div className="justify-between items-center card-body px-6 py-4">
-                                    <div className="flex flex-col justify-start items-center">
-                                        <h2 className="card-title text-center text-2xl">{product.name}</h2>
-                                        {product.tags && (
-                                            <div className="flex flex-row flex-wrap justify-start items-center">
-                                                {product.tags.map((tag) => (
-                                                    <div
-                                                        className="badge m-2 badge-secondary badge-outline"
-                                                        key={`tag-${tag}`}
-                                                    >
-                                                        {tag}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="card-actions w-full">
-                                        <div
-                                            className={`flex flex-row ${
-                                                shouldShowCompare ? 'justify-between' : 'justify-end'
-                                            } items-center w-full`}
-                                        >
-                                            {shouldShowCompare && (
-                                                <span className="text-xs line-through text-base-200 mr-2 mt-1">
-                                                    {product.compare_amount}
-                                                </span>
-                                            )}
-                                            <span className="text-lg font-bold">{product.amount}</span>
-                                        </div>
-                                        <Link href={`/product/${product.slug}`} passHref>
-                                            <button className="btn btn-primary btn-sm rounded-md shadow-md w-full">
-                                                View Product
-                                            </button>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
+                            <ProductCard
+                                name={name}
+                                image={imgUrl}
+                                imgDesc={imgDesc}
+                                imgTitle={imgTitle}
+                                tags={tags}
+                                shouldShowCompare={shouldShowCompare}
+                                amount={amount}
+                                compareAmount={compare_amount}
+                                slug={slug}
+                            />
                         );
                     })}
             </div>
@@ -154,4 +121,4 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ useFilters }) => {
     );
 };
 
-export default ProductGrid;
+export default Grid;

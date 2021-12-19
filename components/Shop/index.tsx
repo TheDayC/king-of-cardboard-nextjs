@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { removeAllCategories, removeAllProductTypes, setUrlProductType } from '../../store/slices/filters';
-import ProductGrid from '../../components/ProductGrid';
+import Grid from './Grid';
 import Filters from './Filters';
 import Loading from '../Loading';
 import selector from './selector';
@@ -29,7 +29,7 @@ export const Shop: React.FC<ShopBodyProps> = ({ category }) => {
         <div className="flex p-4 flex-col md:flex-row relative">
             <Loading show={isLoadingProducts} />
             <Filters category={category} />
-            <ProductGrid useFilters />
+            <Grid />
         </div>
     );
 };
