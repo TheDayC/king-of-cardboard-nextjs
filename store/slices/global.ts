@@ -19,6 +19,9 @@ const globalSlice = createSlice({
         setNewOrder(state, action) {
             state.shouldSetNewOrder = action.payload;
         },
+        setShowDrawer(state, action) {
+            state.shouldShowDrawer = action.payload;
+        },
     },
     extraReducers: {
         [HYDRATE]: (state, action) => {
@@ -31,5 +34,5 @@ const globalSlice = createSlice({
     },
 });
 
-export const { setAccessToken, setExpires, setCheckoutLoading, setNewOrder } = globalSlice.actions;
+export const { setAccessToken, setExpires, setCheckoutLoading, setNewOrder, setShowDrawer } = globalSlice.actions;
 export default globalSlice.reducer;
