@@ -10,9 +10,10 @@ import { setBalance } from '../../../store/slices/account';
 
 interface RewardsProps {
     emailAddress: string | null;
+    fullWidth: boolean;
 }
 
-export const Rewards: React.FC<RewardsProps> = ({ emailAddress }) => {
+export const Rewards: React.FC<RewardsProps> = ({ emailAddress, fullWidth }) => {
     const { accessToken, shouldFetchRewards, balance } = useSelector(selector);
     const dispatch = useDispatch();
 
@@ -33,7 +34,11 @@ export const Rewards: React.FC<RewardsProps> = ({ emailAddress }) => {
 
     return (
         <Link href="/account/achievements" passHref>
-            <div className="flex justify-center items-center indicator cursor-pointer rounded-md p-2 hover:bg-neutral-focus">
+            <div
+                className={`flex justify-center items-center indicator cursor-pointer rounded-md p-2 hover:bg-neutral-focus${
+                    fullWidth ? ' w-full' : ''
+                }`}
+            >
                 <p>{balance} coins</p>
                 <GiCrownCoin className="text-primary text-3xl ml-2" />
             </div>

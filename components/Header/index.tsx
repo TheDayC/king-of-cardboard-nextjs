@@ -39,7 +39,11 @@ export const Header: React.FC = () => {
                 </div>
                 <NavBar />
                 <div className="navbar-end">
-                    {status === 'authenticated' && <Rewards emailAddress={email} />}
+                    {status === 'authenticated' && (
+                        <div className="hidden lg:inline-block">
+                            <Rewards emailAddress={email} fullWidth={false} />
+                        </div>
+                    )}
                     <Link href="/cart" passHref>
                         <div className="flex justify-start items-center indicator cursor-pointer rounded-md hover:bg-neutral-focus">
                             <AiOutlineShoppingCart className={styles.cart} />
