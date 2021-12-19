@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { ClientSafeProvider, getProviders, LiteralUnion, getCsrfToken, useSession, getSession } from 'next-auth/react';
+import { ClientSafeProvider, getProviders, LiteralUnion, getCsrfToken, getSession } from 'next-auth/react';
 import { BuiltInProviderType } from 'next-auth/providers';
-import { useRouter } from 'next/router';
 
 import Header from '../../components/Header';
 import Register from '../../components/Register';
+import ResetPassword from '../../components/ResetPassword';
 import Login from '../../components/Login';
 import { ServerSideRedirectProps } from '../../types/pages';
 import { Tabs } from '../../enums/auth';
@@ -60,7 +60,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
                             <div className="card-body">
                                 <div className="tabs">
                                     <a
-                                        className={`tab tab-bordered w-1/2${
+                                        className={`tab tab-bordered w-1/3${
                                             currentTab === Tabs.Login ? ' tab-active' : ''
                                         }`}
                                         onClick={() => setCurrentTab(Tabs.Login)}
@@ -68,12 +68,20 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
                                         Log In
                                     </a>
                                     <a
-                                        className={`tab tab-bordered w-1/2${
+                                        className={`tab tab-bordered w-1/3${
                                             currentTab === Tabs.Register ? ' tab-active' : ''
                                         }`}
                                         onClick={() => setCurrentTab(Tabs.Register)}
                                     >
                                         Sign Up
+                                    </a>
+                                    <a
+                                        className={`tab tab-bordered w-1/3${
+                                            currentTab === Tabs.Reset ? ' tab-active' : ''
+                                        }`}
+                                        onClick={() => setCurrentTab(Tabs.Reset)}
+                                    >
+                                        Reset
                                     </a>
                                 </div>
                                 <div className="p-4">
@@ -83,6 +91,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
                                     {currentTab === Tabs.Register && (
                                         <Register setCurrentTab={setCurrentTab} setRegSuccess={setRegSuccess} />
                                     )}
+                                    {currentTab === Tabs.Reset && <ResetPassword />}
                                 </div>
                             </div>
                         </div>
