@@ -6,7 +6,6 @@ import { useSession, signOut } from 'next-auth/react';
 import { toSvg } from 'jdenticon';
 import md5 from 'md5';
 
-import styles from './header.module.css';
 import logo from '../../images/logo-full.png';
 import Rewards from './Rewards';
 import { parseAsString, safelyParse } from '../../utils/parsers';
@@ -30,7 +29,7 @@ export const Header: React.FC = () => {
                         <AiOutlineMenu />
                     </label>
                     <Link href="/" passHref>
-                        <div className={styles.logoWrapper}>
+                        <div className="h-auto w-44 pointer lg:block">
                             <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
                         </div>
                     </Link>
@@ -46,7 +45,9 @@ export const Header: React.FC = () => {
                     {status === 'unauthenticated' && (
                         <Link href="/login" passHref>
                             <div className="flex justify-start items-center cursor-pointer rounded-md hover:bg-neutral-focus">
-                                <AiOutlineUser className={styles.account} />
+                                <div className="p-2 text-2xl">
+                                    <AiOutlineUser />
+                                </div>
                             </div>
                         </Link>
                     )}
