@@ -77,7 +77,7 @@ export const Grid: React.FC = () => {
     return (
         <div className="flex w-full p-4">
             <div className="container mx-auto">
-                <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl2:grid-cols-4 gap-4">
+                <div className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl2:grid-cols-4 gap-4">
                     {breaks &&
                         breaks.map((b) => {
                             const breakSlots: BreakSlot[] | null = get(b, 'breakSlotsCollection.items', null);

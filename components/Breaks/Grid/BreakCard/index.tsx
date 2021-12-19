@@ -63,7 +63,7 @@ export const BreakCard: React.FC<BreakProps> = ({
     return (
         <div className="card shadow-md rounded-md bordered pt-4">
             {cardImage && (
-                <div className="relative w-full h-40">
+                <div className="relative h-20 md:h-30 lg:h-40">
                     <Image
                         src={cardImage.url}
                         alt={cardImage.description}
@@ -73,14 +73,14 @@ export const BreakCard: React.FC<BreakProps> = ({
                         className="rounded-sm"
                     />
                     {isActive && (
-                        <div className="badge badge-accent absolute -bottom-2 left-0 ml-6 shadow-md">
+                        <div className="badge badge-accent absolute -bottom-2 left-0 ml-4 lg:ml-6 shadow-md">
                             {hasSlots
                                 ? `${slotsAvailable} ${slotsAvailable > 1 ? 'slots' : 'slot'} available`
                                 : 'Sold Out!'}
                         </div>
                     )}
                     {isComplete && (
-                        <div className="badge badge-success absolute -bottom-2 left-0 ml-6 shadow-md">
+                        <div className="badge badge-success absolute -bottom-4 left-0 ml-4 lg:ml-6 shadow-md">
                             Opened on {breakDateLuxon.toFormat('MMM dd, y')}
                         </div>
                     )}
@@ -88,8 +88,8 @@ export const BreakCard: React.FC<BreakProps> = ({
             )}
             <div className="justify-between items-start card-body p-0">
                 <div className="flex flex-col justify-start items-start w-full">
-                    <div className="p-6 pb-2">
-                        <h2 className="card-title text-2xl mb-1">{title}</h2>
+                    <div className="p-4 mt-4 lg:p-6">
+                        <h2 className="card-title text-2xl mb-2">{title}</h2>
                         <div className="pl-2">
                             <p className="text-base-200 text-sm">
                                 <AiFillStar className="inline mr-1 w-4 h-4 text-yellow-300" />
@@ -123,9 +123,12 @@ export const BreakCard: React.FC<BreakProps> = ({
                         </a>
                     )}
                     {tags && (
-                        <div className="flex flex-row flex-wrap justify-center items-center w-full space-x-2 px-6">
+                        <div className="flex flex-row flex-wrap justify-center items-start w-full px-2 lg:px-6">
                             {tags.map((tag) => (
-                                <div className="badge m-0 badge-secondary badge-outline" key={`tag-${tag}`}>
+                                <div
+                                    className="badge badge-secondary badge-outline m-1 text-xs lg:text-md"
+                                    key={`tag-${tag}`}
+                                >
                                     {tag}
                                 </div>
                             ))}
@@ -134,7 +137,7 @@ export const BreakCard: React.FC<BreakProps> = ({
                 </div>
                 <div className="card-actions w-full p-6 pt-0 mt-0">
                     <Link href={`/breaks/${breakType}/${breakSlug}`} passHref>
-                        <button className="btn btn-primary btn-sm rounded-md shadow-md w-full">View Break</button>
+                        <button className="btn btn-primary btn-sm rounded-md shadow-md w-full mt-0">View Break</button>
                     </Link>
                 </div>
             </div>
