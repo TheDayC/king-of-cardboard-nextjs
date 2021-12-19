@@ -137,7 +137,7 @@ export const CartItem: React.FC<BasketItemProps> = ({
             <div className="text-center">
                 <div className="flex flex-col lg:flex-row justify-center items-center lg:space-x-4">
                     {product && product.cardImage && (
-                        <div className={`${styles.imageContainer}`}>
+                        <div className={`mb-2 lg:mb-0 ${styles.imageContainer}`}>
                             <Image
                                 src={product.cardImage.url}
                                 alt={product.cardImage.description}
@@ -147,7 +147,7 @@ export const CartItem: React.FC<BasketItemProps> = ({
                             />
                         </div>
                     )}
-                    <div className="text-left">
+                    <div className="text-center lg:text-left">
                         <h4 className="text-xs lg:text-md">{productName || name}</h4>
                         <p className="text-xs text-base-200">{sku || ''}</p>
                     </div>
