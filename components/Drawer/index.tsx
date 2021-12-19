@@ -16,38 +16,38 @@ export const Drawer: React.FC = ({ children }) => (
             <ul className="menu p-4 overflow-y-auto w-1/2 bg-neutral text-base-content">
                 <li className="text-neutral-content mb-6">
                     <Link href="/" passHref>
-                        <div className="max-w-xs">
+                        <div className="w-full p-2">
                             <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
                         </div>
                     </Link>
                 </li>
                 <li className="text-neutral-content mb-4">
                     <Link href="/" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn pl-2 leading-4">
+                        <button className="btn btn-ghost btn-sm rounded-btn px-4 w-full h-12">
                             <AiFillHome className="inline-block w-6 h-6 mr-1.5 stroke-current" />
                             Home
                         </button>
                     </Link>
                 </li>
-                <li className="text-neutral-content mb-4">
+                <li className="text-neutral-content mb-2">
                     <Link href="/shop" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn pl-2 leading-4">
+                        <button className="btn btn-ghost btn-sm rounded-btn px-4 w-full h-12">
                             <AiFillShopping className="inline-block w-6 h-6 mr-1.5 stroke-current" />
                             Shop
                         </button>
                     </Link>
                 </li>
-                <li className="text-neutral-content mb-4">
+                <li className="text-neutral-content mb-2">
                     <Link href="/breaks" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn pl-2 leading-4">
+                        <button className="btn btn-ghost btn-sm rounded-btn px-4 w-full h-12">
                             <AiTwotoneCrown className="inline-block w-6 h-6 mr-1.5 stroke-current" />
                             Breaks
                         </button>
                     </Link>
                 </li>
-                <li className="text-neutral-content mb-4">
+                <li className="text-neutral-content mb-2">
                     <Link href="/streaming" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn pl-2 leading-4">
+                        <button className="btn btn-ghost btn-sm rounded-btn px-4 w-full h-12">
                             <BsFillRecord2Fill className="inline-block w-6 h-6 mr-1.5 stroke-current" />
                             Streaming
                         </button>
