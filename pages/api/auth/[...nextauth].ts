@@ -4,6 +4,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import TwitchProvider from 'next-auth/providers/twitch';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { NextApiRequest, NextApiResponse } from 'next';
+import axios from 'axios';
 
 import { connectToDatabase } from '../../../middleware/database';
 import {
@@ -16,8 +17,6 @@ import {
 import { authClient, userClient } from '../../../utils/auth';
 import clientPromise from '../../../lib/mongodb';
 import { MongoDBAdapter } from '../../../lib/mongoAdapter';
-import { isAxiosError } from '../../../utils/typeguards';
-import axios from 'axios';
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     return await NextAuth(req, res, {

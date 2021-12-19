@@ -10,6 +10,7 @@ import {
     parseAsString,
     parseAsNumber,
     parseAsCommerceResponse,
+    parseAsBoolean,
 } from './parsers';
 import { AddressResponse, CommerceLayerResponse } from '../types/api';
 import { authClient } from './auth';
@@ -270,4 +271,19 @@ export async function editAddress(
     }
 
     return null;
+}
+
+export async function requestResetPassword(accessToken: string, email: string): Promise<boolean> {
+    try {
+        const response = await axios.post('/api/account/resetPassword', {
+            token: accessToken,
+            email,
+        });
+
+        return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+
+    return false;
 }
