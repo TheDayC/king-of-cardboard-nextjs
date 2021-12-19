@@ -13,10 +13,10 @@ export const Drawer: React.FC = ({ children }) => (
         <div className="drawer-side">
             <label htmlFor="my-drawer" className="drawer-overlay"></label>
 
-            <ul className="menu p-4 overflow-y-auto w-1/2 bg-neutral text-base-content">
-                <li className="text-neutral-content mb-6">
+            <ul className="menu p-4 overflow-y-auto w-3/4 sm:w-1/2 md:w-1/4 bg-neutral text-base-content">
+                <li className="text-neutral-content mb-2">
                     <Link href="/" passHref>
-                        <div className="w-full p-2">
+                        <div className="w-3/4 xs:w-1/2 sm:w-3/4 md:w-full p-2 mx-auto">
                             <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
                         </div>
                     </Link>
