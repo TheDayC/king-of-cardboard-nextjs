@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -26,16 +26,18 @@ export const ProductCard: React.FC<CardProps> = ({
     slug,
 }) => {
     return (
-        <div className="card shadow-md rounded-md image-full">
+        <div className="card shadow-md rounded-md bordered pt-4">
             {image && (
-                <Image
-                    src={image}
-                    layout="fill"
-                    objectFit="cover"
-                    className="rounded-sm"
-                    alt={imgDesc}
-                    title={imgTitle}
-                />
+                <div className="relative w-full h-40">
+                    <Image
+                        src={image}
+                        alt={imgDesc}
+                        title={imgTitle}
+                        layout="fill"
+                        objectFit="scale-down"
+                        className="rounded-sm"
+                    />
+                </div>
             )}
             <div className="justify-between items-center card-body px-6 py-4">
                 <div className="flex flex-col justify-start items-center">
@@ -51,15 +53,11 @@ export const ProductCard: React.FC<CardProps> = ({
                     )}
                 </div>
                 <div className="card-actions w-full">
-                    <div
-                        className={`flex flex-row ${
-                            shouldShowCompare ? 'justify-between' : 'justify-end'
-                        } items-center w-full`}
-                    >
+                    <div className="flex flex-row justify-end items-center w-full">
                         {shouldShowCompare && (
-                            <span className="text-xs line-through text-base-200 mr-2 mt-1">{compareAmount}</span>
+                            <span className="text-md line-through text-base-200 mr-2 mt-1">{compareAmount}</span>
                         )}
-                        <span className="text-lg font-bold">{amount}</span>
+                        <span className="text-2xl font-bold">{amount}</span>
                     </div>
                     <Link href={`/product/${slug}`} passHref>
                         <button className="btn btn-primary btn-sm rounded-md shadow-md w-full">View Product</button>
