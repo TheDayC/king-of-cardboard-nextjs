@@ -10,7 +10,7 @@ export const ConfirmationDetails: React.FC = () => {
     const { customerDetails } = useSelector(selector);
 
     return (
-        <div className="card shadow-md rounded-md p-8">
+        <div className="card shadow-md rounded-md p-2 lg:p-8">
             <div className="flex justify-center items-center">
                 <BsCheck2Circle className={styles.check} />
             </div>
@@ -25,8 +25,8 @@ export const ConfirmationDetails: React.FC = () => {
                         <h4 className="text-lg font-bold">Customer:</h4>
                         <p>{customerDetails.email || ''}</p>
                     </div>
-                    <div className="flex flex-row justify-between">
-                        <div className="flex flex-col">
+                    <div className="flex flex-col lg:flex-row justify-between">
+                        <div className="flex mb-4 lg:mb-0 flex-col">
                             <h4 className="text-lg font-bold">Billing Address:</h4>
                             <div className="flex flex-row justify-start align-start space-x-2">
                                 <IoLocationSharp className="mt-1 text-secondary" />
