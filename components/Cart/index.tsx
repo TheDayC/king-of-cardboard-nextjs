@@ -48,17 +48,15 @@ export const Cart: React.FC = () => {
             {cartItemCount > 0 ? (
                 <div className="overflow-x-auto relative">
                     <Loading show={isUpdatingCart} />
-                    <table className="table w-full">
-                        <thead>
-                            <tr>
-                                <th className="text-center rounded-none">Remove</th>
-                                <th className="text-center">Product</th>
-                                <th className="text-center">Price</th>
-                                <th className="text-center">Quantity</th>
-                                <th className="text-center">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <div className="flex flex-col w-full">
+                        <div className="grid grid-cols-3 lg:grid-cols-5 bg-neutral text-neutral-content p-4 rounded-md">
+                            <div className="text-center hidden lg:table-cell">Remove</div>
+                            <div className="text-center">Product</div>
+                            <div className="text-center hidden lg:table-cell">Price</div>
+                            <div className="text-center">Quantity</div>
+                            <div className="text-center">Total</div>
+                        </div>
+                        <div className="flex flex-col w-full">
                             {items &&
                                 skuItems &&
                                 items.map((item) => {
@@ -79,22 +77,20 @@ export const Cart: React.FC = () => {
                                         />
                                     );
                                 })}
-                            <CartTotals isConfirmation={false} />
-                            <tr>
-                                <td align="right" colSpan={5}>
-                                    <Link href="/checkout" passHref>
-                                        <button
-                                            className={`btn btn-primary btn-lg${
-                                                isUpdatingCart ? ' loading btn-square' : ''
-                                            }`}
-                                        >
-                                            {isUpdatingCart ? '' : 'Checkout'}
-                                        </button>
-                                    </Link>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                        </div>
+                        <CartTotals isConfirmation={false} />
+                        <div className="flex flex-col items-end mt-4 lg:mt-6">
+                            <Link href="/checkout" passHref>
+                                <button
+                                    className={`btn btn-primary btn-block rounded-md lg:btn-wide${
+                                        isUpdatingCart ? ' loading btn-square' : ''
+                                    }`}
+                                >
+                                    {isUpdatingCart ? '' : 'Checkout'}
+                                </button>
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             ) : (
                 <p>

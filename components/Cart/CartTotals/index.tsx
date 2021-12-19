@@ -17,29 +17,20 @@ export const CartTotals: React.FC<CartTotalsProps> = ({ isConfirmation }) => {
     const total = order && order.formatted_total_amount_with_taxes ? order.formatted_total_amount_with_taxes : null;
 
     return (
-        <React.Fragment>
-            <tr>
-                <td colSpan={3}>&nbsp;</td>
-                <td className="text-sm">Subtotal</td>
-                <td align="right" className="text-sm">
-                    {subTotal}
-                </td>
-            </tr>
-            <tr>
-                <td colSpan={3}>&nbsp;</td>
-                <td className="text-sm">Shipping</td>
-                <td align="right" className="text-sm">
-                    {shipping}
-                </td>
-            </tr>
-            <tr>
-                <td colSpan={3}>&nbsp;</td>
-                <td className="text-xl font-semibold">Total</td>
-                <td align="right" className="text-xl font-semibold">
-                    {total}
-                </td>
-            </tr>
-        </React.Fragment>
+        <div className="flex flex-col">
+            <div className="flex flex-row w-full justify-end align-center space-x-2 border-b p-4">
+                <p className="text-sm lg:text-xl">Subtotal</p>
+                <p className="text-sm lg:text-xl">{subTotal}</p>
+            </div>
+            <div className="flex flex-row w-full justify-end align-center space-x-2 border-b p-4">
+                <p className="text-sm lg:text-xl">Shipping</p>
+                <p className="text-sm lg:text-xl">{shipping}</p>
+            </div>
+            <div className="flex flex-row w-full justify-end align-center space-x-2 border-b p-4">
+                <p className="text-xl lg:text-3xl font-semibold">Total</p>
+                <p className="text-xl lg:text-3xl font-semibold">{total}</p>
+            </div>
+        </div>
     );
 };
 
