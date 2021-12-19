@@ -1,5 +1,6 @@
 import { Counties } from '../../enums/checkout';
 import { Categories, ProductType } from '../../enums/shop';
+import { ErrorLevel } from '../../enums/system';
 import { Order } from '../../types/cart';
 import { SkuItem } from '../../types/commerce';
 import { ContentfulPage } from '../../types/pages';
@@ -9,7 +10,7 @@ export interface IAppState {
     global: Global;
     products: SkuItem[];
     cart: CartState;
-    errors: string | null;
+    errors: ErrorsState;
     productType: ProductType[];
     categories: Categories[];
     filters: Filters;
@@ -128,6 +129,6 @@ export interface ErrorsState {
 }
 
 export interface CustomError {
-    level: string;
+    level: ErrorLevel;
     message: string;
 }
