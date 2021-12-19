@@ -60,7 +60,7 @@ export const OrderHistory: React.FC = () => {
     return (
         <React.Fragment>
             <Loading show={Boolean(!orders || !included)} />
-            <h1 className="text-3xl mb-6">Order History</h1>
+            <h1 className="text-xl mb-2 md:text-3xl md:mb-6">Order History</h1>
             {orders &&
                 orders.map((order, i) => {
                     const lineItems = safelyParse(

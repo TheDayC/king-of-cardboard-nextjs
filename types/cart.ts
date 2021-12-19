@@ -18,6 +18,7 @@ export interface Order {
     formatted_shipping_amount: string;
     formatted_total_tax_amount: string;
     formatted_gift_card_amount: string;
+    formatted_total_amount_with_taxes: string;
     status: string;
     payment_status: string;
     fulfillment_status: string;

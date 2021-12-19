@@ -9,6 +9,7 @@ import { wrapper } from '../store';
 import '../styles/globals.css';
 import AuthProvider from '../context/authProvider';
 import PageProvider from '../context/pageProvider';
+import Drawer from '../components/Drawer';
 
 // Called outside of the render to only create once.
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
@@ -25,7 +26,9 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps: { session, ...pagePro
                 <AuthProvider>
                     <PageProvider>
                         <Elements stripe={stripePromise}>
-                            <Component {...pageProps} />
+                            <Drawer>
+                                <Component {...pageProps} />
+                            </Drawer>
                         </Elements>
                     </PageProvider>
                 </AuthProvider>

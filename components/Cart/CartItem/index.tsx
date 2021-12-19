@@ -128,16 +128,16 @@ export const CartItem: React.FC<BasketItemProps> = ({
     }, [stock]);
 
     return (
-        <tr>
-            <td className="text-center">
+        <div className="grid grid-cols-3 lg:grid-cols-5 bg-white p-4 border-b p-4">
+            <div className="text-center hidden lg:table-cell">
                 <button aria-label="remove item" onClick={handleRemoveItem}>
                     <MdDeleteForever />
                 </button>
-            </td>
-            <td className="text-center">
-                <div className="flex flex-row justify-center items-center space-x-4">
+            </div>
+            <div className="text-center">
+                <div className="flex flex-col lg:flex-row justify-center items-center lg:space-x-4">
                     {product && product.cardImage && (
-                        <div className={`${styles.imageContainer}`}>
+                        <div className={`mb-2 lg:mb-0 ${styles.imageContainer}`}>
                             <Image
                                 src={product.cardImage.url}
                                 alt={product.cardImage.description}
@@ -147,14 +147,14 @@ export const CartItem: React.FC<BasketItemProps> = ({
                             />
                         </div>
                     )}
-                    <div className="text-left">
-                        <h4 className="text-md">{productName || name}</h4>
+                    <div className="text-center lg:text-left">
+                        <h4 className="text-xs lg:text-md">{productName || name}</h4>
                         <p className="text-xs text-base-200">{sku || ''}</p>
                     </div>
                 </div>
-            </td>
-            <td className="text-center">{unitAmount}</td>
-            <td className="text-center">
+            </div>
+            <div className="text-center hidden lg:table-cell">{unitAmount}</div>
+            <div className="text-center">
                 <button
                     aria-label="subtract one item"
                     onClick={handleDecreaseAmount}
@@ -162,7 +162,7 @@ export const CartItem: React.FC<BasketItemProps> = ({
                 >
                     <MdRemoveCircleOutline />
                 </button>
-                <span className="px-4">{quantity}</span>
+                <span className="px-2 lg:px-4">{quantity}</span>
                 <button
                     aria-label="add one item"
                     onClick={handleIncreaseAmount}
@@ -170,9 +170,9 @@ export const CartItem: React.FC<BasketItemProps> = ({
                 >
                     <MdAddCircleOutline />
                 </button>
-            </td>
-            <td className="text-center">{totalAmount}</td>
-        </tr>
+            </div>
+            <div className="text-center">{totalAmount}</div>
+        </div>
     );
 };
 

@@ -48,7 +48,7 @@ export const PickYourTeam: React.FC<PickYourTeamProps> = ({ slots }) => {
         return (
             <div className="w-full relative">
                 <Loading show={loading} />
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                     {skuItemData.map((skuItem, index) => {
                         return <Team skuItem={skuItem} setLoading={setLoading} key={`team-${index}`} />;
                     })}

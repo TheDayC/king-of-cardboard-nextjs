@@ -141,8 +141,8 @@ export const Fields: React.FC<FieldProps> = ({
                     <SuccessAlert msg={successMsg} />
                 </div>
             )}
-            <div className="flex flex-row relative w-full">
-                <div className="card p-4 rounded-md w-1/2">
+            <div className="flex flex-col md:flex-row relative w-full">
+                <div className="card p-0 rounded-md w-full mb-4 md:w-1/2 md:p-4 md:mb-0">
                     <h3 className="card-title">Personal Details</h3>
                     <div className="grid grid-cols-1 gap-2">
                         <div className="form-control">
@@ -235,7 +235,7 @@ export const Fields: React.FC<FieldProps> = ({
                         </div>
                     </div>
                 </div>
-                <div className="card p-4 rounded-md w-1/2">
+                <div className="card p-2 md:p-4 rounded-md w-full md:w-1/2">
                     <h3 className="card-title">Address Details</h3>
                     <div className="grid grid-cols-1 gap-2">
                         <div className="form-control">

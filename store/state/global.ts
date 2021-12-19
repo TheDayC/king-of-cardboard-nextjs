@@ -5,6 +5,7 @@ const globalInitialState: Global = {
     accessToken: null,
     expires: null,
     shouldSetNewOrder: false,
+    shouldShowDrawer: false,
 };
 
 export default globalInitialState;

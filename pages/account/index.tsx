@@ -33,13 +33,23 @@ export const AccountPage: React.FC = () => {
     return (
         <React.Fragment>
             <Header />
-            <div className="flex p-4 relative">
+            <div className="flex p-0 md:p-4 relative">
                 <div className="container mx-auto">
-                    <div className="flex flex-row w-full justify-start items-start">
-                        <div className="w-1/4">
-                            <AccountMenu />
+                    <div className="flex flex-col md:flex-row w-full justify-start items-start">
+                        <div className="w-full md:w-1/4">
+                            <div className="hidden md:block">
+                                <AccountMenu isDropdown={false} />
+                            </div>
+                            <div className="dropdown w-full p-2 md:hidden">
+                                <div tabIndex={0} className="btn btn-block">
+                                    Account Menu
+                                </div>
+                                <AccountMenu isDropdown />
+                            </div>
                         </div>
-                        <div className="flex flex-col py-4 px-8 w-3/4">{content && <Content content={content} />}</div>
+                        <div className="flex flex-col py-4 px-8 w-full md:w-3/4">
+                            {content && <Content content={content} />}
+                        </div>
                     </div>
                 </div>
             </div>

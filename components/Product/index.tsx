@@ -175,14 +175,14 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         const quantity =
             currentProduct.inventory && currentProduct.inventory.quantity ? currentProduct.inventory.quantity : 0;
         return (
-            <div className="p-8 relative">
+            <div className="p-2 lg:p-8 relative">
                 <Loading show={loading} />
                 <div className="container mx-auto">
-                    <div className="flex flex-row space-x-16">
+                    <div className="flex flex-col lg:flex-row lg:space-x-16">
                         <Images mainImage={currentImage} imageCollection={get(currentProduct, 'images.items', null)} />
 
                         <div id="productDetails" className="flex-grow">
-                            <div className="card rounded-md shadow-lg p-6">
+                            <div className="card rounded-md shadow-lg p-2 lg:p-6">
                                 <Details
                                     name={currentProduct.name}
                                     amount={currentProduct.amount}
@@ -195,7 +195,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                                 />
                                 <div className="quantity mb-4 flex flex-col justify-center">
                                     <form onSubmit={handleSubmit(onSubmit)}>
-                                        <div className="flex flex-row justify-start align-center space-x-2">
+                                        <div className="flex flex-col lg:flex-row justify-start align-center lg:space-x-2">
                                             <input
                                                 type="text"
                                                 placeholder="0"
@@ -205,7 +205,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                                                 })}
                                                 defaultValue={1}
                                                 onChange={handleFieldChange}
-                                                className={`input input-lg rounded-md w-20 input-bordered${
+                                                className={`input input-lg rounded-md w-full mb-2 lg:mb-0 lg:w-20 input-bordered${
                                                     qtyErr ? ' input-error' : ''
                                                 }`}
                                                 disabled={hasExceededStock}

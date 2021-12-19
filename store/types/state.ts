@@ -59,6 +59,7 @@ export interface Global {
     accessToken: string | null;
     expires: string | null;
     shouldSetNewOrder: boolean;
+    shouldShowDrawer: boolean;
 }
 
 export interface Checkout {

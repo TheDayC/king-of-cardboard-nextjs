@@ -47,44 +47,53 @@ interface LoginPageProps {
 export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) => {
     const [currentTab, setCurrentTab] = useState(Tabs.Login);
     const [regSuccess, setRegSuccess] = useState(false);
+    const isLogin = currentTab === Tabs.Login;
+    const isRegister = currentTab === Tabs.Register;
+    const isReset = currentTab === Tabs.Reset;
+
+    const handleLoginTab = () => {
+        setCurrentTab(Tabs.Login);
+    };
+
+    const handleRegisterTab = () => {
+        setCurrentTab(Tabs.Register);
+    };
+
+    const handleResetTab = () => {
+        setCurrentTab(Tabs.Reset);
+    };
 
     if (!providers || !csrfToken) return null;
 
     return (
         <React.Fragment>
             <Header />
-            <div className="flex p-4 relative">
+            <div className="flex p-0 relative lg:p-4">
                 <div className="container mx-auto">
                     <div className="flex flex-col w-full justify-center items-center">
-                        <div className="flex flex-col w-1/3 card text-center shadow-2xl rounded-md">
-                            <div className="card-body">
+                        <div className="flex flex-col w-full md:w-1/2 lg:w-1/3 card text-center rounded-md md:shadow-2xl">
+                            <div className="card-body p-2 lg:p-6">
                                 <div className="tabs">
                                     <a
-                                        className={`tab tab-bordered w-1/3${
-                                            currentTab === Tabs.Login ? ' tab-active' : ''
-                                        }`}
-                                        onClick={() => setCurrentTab(Tabs.Login)}
+                                        className={`tab tab-bordered w-1/3${isLogin ? ' tab-active' : ''}`}
+                                        onClick={handleLoginTab}
                                     >
                                         Log In
                                     </a>
                                     <a
-                                        className={`tab tab-bordered w-1/3${
-                                            currentTab === Tabs.Register ? ' tab-active' : ''
-                                        }`}
-                                        onClick={() => setCurrentTab(Tabs.Register)}
+                                        className={`tab tab-bordered w-1/3${isRegister ? ' tab-active' : ''}`}
+                                        onClick={handleRegisterTab}
                                     >
-                                        Sign Up
+                                        Register
                                     </a>
                                     <a
-                                        className={`tab tab-bordered w-1/3${
-                                            currentTab === Tabs.Reset ? ' tab-active' : ''
-                                        }`}
-                                        onClick={() => setCurrentTab(Tabs.Reset)}
+                                        className={`tab tab-bordered w-1/3${isReset ? ' tab-active' : ''}`}
+                                        onClick={handleResetTab}
                                     >
                                         Reset
                                     </a>
                                 </div>
-                                <div className="p-4">
+                                <div className="px-2 py-4 lg:p-4">
                                     {currentTab === Tabs.Login && (
                                         <Login providers={providers} showRegistrationSuccess={regSuccess} />
                                     )}

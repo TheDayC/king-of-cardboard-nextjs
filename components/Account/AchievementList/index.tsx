@@ -41,7 +41,7 @@ export const AchievementList: React.FC = () => {
     }, [accessToken, session, shouldFetchAchievements]);
 
     return (
-        <div className="grid grid-cols-3 relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative">
             <Loading show={!objectives} />
             {objectives &&
                 objectives.map((obj) => {
