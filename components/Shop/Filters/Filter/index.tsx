@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 
 import { combinedFilters, FilterTypes } from '../../../../enums/shop';
@@ -21,7 +21,7 @@ export const Filter: React.FC<FilterProps> = ({ value, type, label, checked, cha
 
     return (
         <div className="form-control">
-            <label className="cursor-pointer label">
+            <label className="cursor-pointer label p-0 mb-2 lg:mb-4">
                 <span className="label-text">{label}</span>
                 <input type="checkbox" checked={checked} className="checkbox" value={type} onChange={handleOnChange} />
             </label>
