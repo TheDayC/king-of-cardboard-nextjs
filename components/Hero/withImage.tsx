@@ -37,7 +37,7 @@ export const HeroWithImage: React.FC<HeroWithImageProps> = ({
                         ))}
                     {link && (
                         <Link href={link} passHref>
-                            <button className="btn btn-primary btn-block rounded-md lg:btn-md">{link_title}</button>
+                            <button className="btn btn-primary w-full rounded-md lg:w-1/4">{link_title}</button>
                         </Link>
                     )}
                 </div>
