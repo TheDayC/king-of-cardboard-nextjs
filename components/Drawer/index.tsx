@@ -46,12 +46,12 @@ export const Drawer: React.FC = ({ children }) => (
                     </Link>
                 </li>
                 <li className="text-neutral-content mb-2">
-                    <Link href="/streaming" passHref>
+                    <a href="https://twitch.tv/dayc" target="_blank" rel="noreferrer">
                         <button className="btn btn-ghost btn-sm rounded-btn px-4 w-full h-12">
                             <BsFillRecord2Fill className="inline-block w-6 h-6 mr-1.5 stroke-current" />
                             Streaming
                         </button>
-                    </Link>
+                    </a>
                 </li>
             </ul>
         </div>

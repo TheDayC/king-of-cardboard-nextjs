@@ -24,12 +24,12 @@ export const Navbar: React.FC = () => (
                     Breaks
                 </button>
             </Link>
-            <Link href="/streaming" passHref>
+            <a href="https://twitch.tv/dayc" target="_blank" rel="noreferrer">
                 <button className="btn btn-ghost btn-sm rounded-btn pl-2 leading-4">
                     <BsFillRecord2Fill className="inline-block w-6 h-6 mr-1.5 stroke-current" />
                     Streaming
                 </button>
-            </Link>
+            </a>
         </div>
     </div>
 );
