@@ -1,7 +1,6 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
-import { AiOutlineShoppingCart, AiFillHome, AiFillShopping, AiTwotoneCrown, AiOutlineUser } from 'react-icons/ai';
-import { BsFillRecord2Fill } from 'react-icons/bs';
+import { AiOutlineShoppingCart, AiOutlineUser } from 'react-icons/ai';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
@@ -13,11 +12,13 @@ import styles from './header.module.css';
 import logo from '../../images/logo-full.png';
 import Rewards from './Rewards';
 import { parseAsString, safelyParse } from '../../utils/parsers';
+import NavBar from './Navbar';
 
 export const Header: React.FC = () => {
     const { cartItemCount } = useSelector(selector);
     const { data: session, status } = useSession();
-    const email = useMemo(() => safelyParse(session, 'user.email', parseAsString, null), [session]);
+    const icon = safelyParse(session, 'user.image', parseAsString, null);
+    const email = safelyParse(session, 'user.email', parseAsString, null);
 
     const handleLogout = () => {
         signOut();
@@ -32,34 +33,7 @@ export const Header: React.FC = () => {
                     </div>
                 </Link>
             </div>
-            <div className="navbar-center">
-                <div className="items-stretch hidden lg:flex">
-                    <Link href="/" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn pl-2 leading-4">
-                            <AiFillHome className="inline-block w-6 h-6 mr-1.5 stroke-current" />
-                            Home
-                        </button>
-                    </Link>
-                    <Link href="/shop" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn pl-2 leading-4">
-                            <AiFillShopping className="inline-block w-6 h-6 mr-1.5 stroke-current" />
-                            Shop
-                        </button>
-                    </Link>
-                    <Link href="/breaks" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn pl-2 leading-4">
-                            <AiTwotoneCrown className="inline-block w-6 h-6 mr-1.5 stroke-current" />
-                            Breaks
-                        </button>
-                    </Link>
-                    <Link href="/streaming" passHref>
-                        <button className="btn btn-ghost btn-sm rounded-btn pl-2 leading-4">
-                            <BsFillRecord2Fill className="inline-block w-6 h-6 mr-1.5 stroke-current" />
-                            Streaming
-                        </button>
-                    </Link>
-                </div>
-            </div>
+            <NavBar />
             <div className="navbar-end">
                 {status === 'authenticated' && <Rewards emailAddress={email} />}
                 <Link href="/cart" passHref>
@@ -78,14 +52,14 @@ export const Header: React.FC = () => {
                 {status === 'authenticated' && (
                     <div className="dropdown dropdown-end">
                         <div className="avatar cursor-pointer relative" tabIndex={0}>
-                            {session?.user?.image ? (
+                            {icon ? (
                                 <div className="rounded-full w-8 h-8 m-1 bg-white">
-                                    <img src={session?.user?.image || ''} />
+                                    <img src={icon || ''} />
                                 </div>
                             ) : (
                                 <div
                                     className="rounded-full w-8 h-8 m-1 bg-white"
-                                    dangerouslySetInnerHTML={{ __html: toSvg(md5(session?.user?.email || ''), 32) }}
+                                    dangerouslySetInnerHTML={{ __html: toSvg(md5(email || ''), 32) }}
                                 ></div>
                             )}
                         </div>
