@@ -14,7 +14,7 @@ export const Drawer: React.FC = ({ children }) => {
     const email = safelyParse(session, 'user.email', parseAsString, null);
 
     return (
-        <div className="shadow bg-none drawer">
+        <div className="bg-none drawer h-screen">
             <input id="my-drawer" type="checkbox" className="drawer-toggle" />
             <div className="drawer-content">{children}</div>
             <div className="drawer-side">
