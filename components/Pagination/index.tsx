@@ -52,17 +52,17 @@ export const Pagination: React.FC<PaginationProps> = ({ currentPage, pageCount, 
     };
 
     return (
-        <div className="btn-group mt-16">
+        <div className="btn-group mt-4 md:mt-8 lg:mt-16">
             <button
-                className={`btn btn-outline btn-sm rounded-l-md`}
+                className="btn btn-outline btn-sm rounded-l-md w-1/2 lg:w-auto"
                 disabled={currentPage <= 0}
                 onClick={handlePrevPage}
             >
                 Previous
             </button>
-            {getBtns()}
+            <div className="hidden lg:inline-block">{getBtns()}</div>
             <button
-                className="btn btn-outline btn-sm rounded-r-md"
+                className="btn btn-outline btn-sm rounded-r-md w-1/2 lg:w-auto"
                 disabled={currentPage === pageCount - 1}
                 onClick={handleNextPage}
             >

@@ -84,13 +84,19 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId, em
     return (
         <React.Fragment>
             <Header />
-            <div className="flex p-4 relative">
+            <div className="flex p-2 md:p-4 relative">
                 <div className="container mx-auto">
-                    <div className="flex flex-row w-full justify-start items-start">
-                        <div className="w-1/4">
-                            <AccountMenu />
+                    <div className="flex flex-col md:flex-row w-full justify-start items-start">
+                        <div className="hidden md:block">
+                            <AccountMenu isDropdown={false} />
                         </div>
-                        <div className="flex flex-col py-4 px-8 w-3/4 relative">
+                        <div className="dropdown w-full p-2 md:hidden">
+                            <div tabIndex={0} className="btn btn-block">
+                                Account Menu
+                            </div>
+                            <AccountMenu isDropdown />
+                        </div>
+                        <div className="flex flex-col py-2 px-6 md:py-4 md:px-8 w-full md:w-3/4 relative">
                             <Loading show={isLoading} />
                             {currentAddress && (
                                 <Fields

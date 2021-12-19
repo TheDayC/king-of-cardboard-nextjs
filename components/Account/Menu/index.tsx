@@ -7,13 +7,17 @@ import Link from 'next/link';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { Slugs } from '../../../enums/account';
 
-export const AccountMenu: React.FC = () => {
+interface AccountMenuProps {
+    isDropdown: boolean;
+}
+
+export const AccountMenu: React.FC<AccountMenuProps> = ({ isDropdown }) => {
     const router = useRouter();
     const slug = safelyParse(router, 'query.slug', parseAsString, null);
     const orderNumber = safelyParse(router, 'query.orderNumber', parseAsString, null);
 
     return (
-        <ul className="menu p-4 shadow-lg bg-base-100 rounded-md">
+        <ul className={`menu p-4 shadow-lg bg-base-100 rounded-md${isDropdown ? ' dropdown-content' : ''}`}>
             <li className={`${slug === Slugs.Details ? 'bordered' : 'hover-bordered'}`}>
                 <Link href={`/account/${Slugs.Details}`} passHref>
                     <a>

@@ -12,9 +12,9 @@ interface ImageProps {
 
 export const Images: React.FC<ImageProps> = ({ mainImage, imageCollection }) => {
     return (
-        <div id="productImagesWrapper" className="flex flex-col">
+        <div id="productImagesWrapper" className="flex flex-col w-full lg:w-auto">
             {mainImage && (
-                <div id="productImages" className="flex-1 w-60">
+                <div id="productImages" className="flex-1 w-40 lg:w-60 mx-auto">
                     <GlassMagnifier
                         imageSrc={mainImage.url}
                         imageAlt={mainImage.title}

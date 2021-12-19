@@ -41,7 +41,7 @@ export const Objective: React.FC<ObjectiveProps> = ({
     const percentage = round((current / max) * 100);
 
     return (
-        <div className="flex flex-col w-full justify-center items-center p-4">
+        <div className="flex flex-col w-full justify-center items-center p-0 mb-4 md:p-2 md:mb-0 lg:mb-0 lg:p-4">
             <div className={`text-4xl mb-2 text-${progressClass}`}>
                 <Award icon={icon} />
             </div>

@@ -35,22 +35,24 @@ export const ShortOrder: React.FC<OrderProps> = ({
     const updatedAtDate = DateTime.fromISO(updatedAt, { zone: 'Europe/London' });
 
     return (
-        <div className="card card-side bordered rounded-md mb-4">
-            <div className="card-body p-4">
+        <div className="card card-side bordered rounded-md mb-2">
+            <div className="card-body p-2 md:p-4">
                 <div className="flex flex-row justify-between items-center">
                     <div className="flex flex-col">
-                        <h3 className="card-title mb-2">
+                        <h3 className="card-title text-sm md:text-md mb-2">
                             {orderNumber && (
                                 <Link href={`/account/orderHistory/${orderNumber}`}>{`Order #${orderNumber}`}</Link>
                             )}
                         </h3>
-                        <div className="flex flex-row mb-2">
-                            <p className="text-xs text-gray-400">Placed on: {placedAtDate.toFormat('MMM dd, y')}</p>
-                            <p className="text-xs text-gray-400 ml-2">
+                        <div className="flex flex-col mb-4 md:flex-row">
+                            <p className="text-xs text-gray-400 mb-1 md:mb-0">
+                                Placed on: {placedAtDate.toFormat('MMM dd, y')}
+                            </p>
+                            <p className="text-xs text-gray-400 md:ml-2">
                                 Updated on: {updatedAtDate.toFormat('MMM dd, y')}
                             </p>
                         </div>
-                        <div className="flex flex-row mb-2">
+                        <div className="flex flex-row mb-4">
                             <p className="text-xs text-gray-400 mr-2">
                                 <b>Items:</b> {itemCount}
                             </p>
@@ -58,23 +60,29 @@ export const ShortOrder: React.FC<OrderProps> = ({
                                 <b>Shipments:</b> {shipmentsCount}
                             </p>
                         </div>
-                        <div className="flex flex-row mb-2">
-                            <div className="flex flex-row justify-center items-center mr-6">
-                                <h3 className="text-lg mr-2">Order:</h3>
-                                <div className={`rounded-full w-3 h-3 bg-${statusColour(status)}-400 mr-2`}></div>
+                        <div className="flex flex-col lg:flex-row mb-2">
+                            <div className="flex flex-row justify-start items-center text-md lg:text-lg lg:justify-center lg:items-center lg:mr-6">
+                                <h3 className="mr-2">Order:</h3>
+                                <div
+                                    className={`rounded-full w-2.5 h-2.5 md:w-3 md:h-3 bg-${statusColour(
+                                        status
+                                    )}-400 mr-2`}
+                                ></div>
                                 <p className="capitalize">{status}</p>
                             </div>
-                            <div className="flex flex-row justify-center items-center mr-6">
-                                <h3 className="text-lg mr-2">Payment:</h3>
+                            <div className="flex flex-row justify-start items-center text-md lg:text-lg lg:justify-center lg:items-center lg:mr-6">
+                                <h3 className="mr-2">Payment:</h3>
                                 <div
-                                    className={`rounded-full w-3 h-3 bg-${paymentStatusColour(paymentStatus)}-400 mr-2`}
+                                    className={`rounded-full w-2.5 h-2.5 md:w-3 md:h-3 bg-${paymentStatusColour(
+                                        paymentStatus
+                                    )}-400 mr-2`}
                                 ></div>
                                 <p className="capitalize">{paymentStatus}</p>
                             </div>
-                            <div className="flex flex-row justify-center items-center mr-4">
-                                <h3 className="text-lg mr-2">Fulfillment:</h3>
+                            <div className="flex flex-row justify-start items-center text-md mr-0 lg:text-lg lg:justify-center lg:items-center">
+                                <h3 className="mr-2">Fulfillment:</h3>
                                 <div
-                                    className={`rounded-full w-3 h-3 bg-${fulfillmentStatusColour(
+                                    className={`rounded-full w-2.5 h-2.5 md:w-3 md:h-3 bg-${fulfillmentStatusColour(
                                         fulfillmentStatus
                                     )}-400 mr-2`}
                                 ></div>
