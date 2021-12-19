@@ -61,7 +61,7 @@ export const BreakCard: React.FC<BreakProps> = ({
     }, [accessToken, slotSkus]);
 
     return (
-        <div className="card shadow-md rounded-md bordered">
+        <div className="card shadow-md rounded-md bordered pt-4">
             {cardImage && (
                 <div className="relative w-full h-40">
                     <Image

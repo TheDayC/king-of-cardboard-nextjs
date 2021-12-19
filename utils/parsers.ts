@@ -23,6 +23,11 @@ import {
     isArrayOfAchievements,
     isCommerceLayerError,
     isArrayofCommerceLayerErrors,
+    isImageCollection,
+    isImageItem,
+    isSkuInventory,
+    isSkuOption,
+    isArrayofSkuOptions,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
@@ -216,3 +221,8 @@ export const parseAsArrayOfAchievements = parseAsType(isArrayOfAchievements);
 export const parseAsCommerceLayerError = parseAsType(isCommerceLayerError);
 export const parseAsArrayOfCommerceLayerErrors = parseAsType(isArrayofCommerceLayerErrors);
 export const parseAsSlug = parseAsType(isEnumMember(Slugs));
+export const parseAsImageCollection = parseAsType(isImageCollection);
+export const parseAsImageItem = parseAsType(isImageItem);
+export const parseAsSkuInventory = parseAsType(isSkuInventory);
+export const parseAsSkuOption = parseAsType(isSkuOption);
+export const parseAsArrayOfSkuOptions = parseAsType(isArrayofSkuOptions);

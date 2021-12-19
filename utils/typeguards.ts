@@ -8,7 +8,9 @@ import {
     CommerceLayerObject,
     CommerceLayerResponse,
 } from '../types/api';
+import { SkuInventory, SkuOption } from '../types/commerce';
 import { ITypeGuard } from '../types/parsers';
+import { ImageCollection, ImageItem } from '../types/products';
 import { SocialMedia } from '../types/profile';
 
 export function isString(candidate: unknown): candidate is string {
@@ -105,4 +107,24 @@ export function isCommerceLayerError(candidate: unknown): candidate is CommerceL
 
 export function isArrayofCommerceLayerErrors(candidate: unknown): candidate is CommerceLayerError[] {
     return isArray(candidate) && isCommerceLayerError(candidate[0]);
+}
+
+export function isImageCollection(candidate: unknown): candidate is ImageCollection {
+    return isNotNullOrUndefined<object>(candidate) && 'items' in candidate;
+}
+
+export function isImageItem(candidate: unknown): candidate is ImageItem {
+    return isNotNullOrUndefined<object>(candidate) && 'url' in candidate;
+}
+
+export function isSkuInventory(candidate: unknown): candidate is SkuInventory {
+    return isNotNullOrUndefined<object>(candidate) && 'available' in candidate;
+}
+
+export function isSkuOption(candidate: unknown): candidate is SkuOption {
+    return isNotNullOrUndefined<object>(candidate) && 'sku_code_regex' in candidate;
+}
+
+export function isArrayofSkuOptions(candidate: unknown): candidate is SkuOption[] {
+    return isArray(candidate) && isSkuOption(candidate[0]);
 }

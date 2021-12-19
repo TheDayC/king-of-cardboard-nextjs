@@ -10,6 +10,15 @@ import {
     SingleProduct,
 } from '../types/products';
 import { fetchContent } from './content';
+import {
+    parseAsArrayOfSkuOptions,
+    parseAsArrayOfStrings,
+    parseAsImageCollection,
+    parseAsImageItem,
+    parseAsSkuInventory,
+    parseAsString,
+    safelyParse,
+} from './parsers';
 
 export function parseProductType(type: string): ProductType {
     switch (type) {
@@ -210,37 +219,37 @@ export function mergeProductData(products: ContentfulProduct[], skuItems: SkuIte
         const skuItem = skuItems.find((s) => s.sku_code === sku_code) || null;
 
         return {
-            id: get(skuItem, 'id', ''),
-            name: get(product, 'name', ''),
-            slug: get(product, 'slug', ''),
-            sku_code: get(product, 'productLink', null),
-            description: get(product, 'description', ''),
-            types: get(product, 'types', []),
-            categories: get(product, 'categories', []),
-            images: get(product, 'imageCollection', null),
-            cardImage: get(product, 'cardImage', null),
-            tags: get(product, 'tags', null),
-            amount: get(skuItem, 'amount', ''),
-            compare_amount: get(skuItem, 'compare_amount', ''),
+            id: safelyParse(skuItem, 'id', parseAsString, null),
+            name: safelyParse(product, 'name', parseAsString, null),
+            slug: safelyParse(product, 'slug', parseAsString, null),
+            sku_code: safelyParse(product, 'productLink', parseAsString, null),
+            description: safelyParse(product, 'description', parseAsString, null),
+            types: safelyParse(product, 'types', parseAsArrayOfStrings, null),
+            categories: safelyParse(product, 'categories', parseAsArrayOfStrings, null),
+            images: safelyParse(product, 'imageCollection', parseAsImageCollection, null),
+            cardImage: safelyParse(product, 'cardImage', parseAsImageItem, null),
+            tags: safelyParse(product, 'tags', parseAsArrayOfStrings, null),
+            amount: safelyParse(skuItem, 'amount', parseAsString, null),
+            compare_amount: safelyParse(skuItem, 'compare_amount', parseAsString, null),
         };
     });
 }
 
 export function mergeSkuProductData(product: ContentfulProduct, skuItem: SkuItem, skuData: SkuProduct): SingleProduct {
     return {
-        id: get(skuItem, 'id', ''),
-        name: get(product, 'name', ''),
-        slug: get(product, 'slug', ''),
-        sku_code: get(product, 'productLink', null),
-        description: get(product, 'description', null),
-        types: get(product, 'types', []),
-        categories: get(product, 'categories', []),
-        images: get(product, 'imageCollection', null),
-        cardImage: get(product, 'cardImage', null),
-        tags: get(product, 'tags', null),
-        amount: get(skuData, 'formatted_amount', null),
-        compare_amount: get(skuData, 'formatted_compare_at_amount', null),
-        inventory: get(skuData, 'inventory', null),
-        options: get(skuData, 'options', null),
+        id: safelyParse(skuItem, 'id', parseAsString, ''),
+        name: safelyParse(product, 'name', parseAsString, ''),
+        slug: safelyParse(product, 'slug', parseAsString, ''),
+        sku_code: safelyParse(product, 'productLink', parseAsString, null),
+        description: safelyParse(product, 'description', parseAsString, null),
+        types: safelyParse(product, 'types', parseAsArrayOfStrings, []),
+        categories: safelyParse(product, 'categories', parseAsArrayOfStrings, []),
+        images: safelyParse(product, 'imageCollection', parseAsImageCollection, null),
+        cardImage: safelyParse(product, 'cardImage', parseAsImageItem, null),
+        tags: safelyParse(product, 'tags', parseAsArrayOfStrings, null),
+        amount: safelyParse(skuData, 'formatted_amount', parseAsString, null),
+        compare_amount: safelyParse(skuData, 'formatted_compare_at_amount', parseAsString, null),
+        inventory: safelyParse(skuData, 'inventory', parseAsSkuInventory, null),
+        options: safelyParse(skuData, 'options', parseAsArrayOfSkuOptions, null),
     };
 }
