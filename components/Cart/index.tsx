@@ -44,7 +44,7 @@ export const Cart: React.FC = () => {
 
     return (
         <div className="flex flex-col">
-            <h1 className="mb-8">{`Your basket (${cartItemCount} ${itemPlural})`}</h1>
+            <h1 className="mb-8 text-4xl">{`Cart (${cartItemCount} ${itemPlural})`}</h1>
             {cartItemCount > 0 ? (
                 <div className="overflow-x-auto relative">
                     <Loading show={isUpdatingCart} />
@@ -98,7 +98,7 @@ export const Cart: React.FC = () => {
                 </div>
             ) : (
                 <p>
-                    You have no items in your basket, start shopping <Link href="/shop">here</Link>.
+                    You have no items in your cart, start shopping <Link href="/shop">here</Link>.
                 </p>
             )}
         </div>
