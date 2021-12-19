@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useRouter } from 'next/router';
 
 import Header from '../../components/Header';
 import { CommerceAuthProps } from '../../types/commerce';
@@ -15,7 +14,6 @@ import { createOrder } from '../../utils/commerce';
 export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
     const { confirmationOrder, accessToken } = useSelector(selector);
     const dispatch = useDispatch();
-    const router = useRouter();
 
     // Create a brand new order and set the id in the store.
     const generateOrder = useCallback(
@@ -55,11 +53,11 @@ export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
         <React.Fragment>
             <Header />
             <div className="container mx-auto max-w-xxl">
-                <div className="flex flex-row space-x-4 pt-4">
-                    <div className="flex-1">
+                <div className="flex flex-col lg:flex-row lg:space-x-4 pt-4">
+                    <div className="flex-1 mb-4">
                         <ConfirmationDetails />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 p-2 lg:p-0">
                         <Summary isConfirmation={true} />
                     </div>
                 </div>

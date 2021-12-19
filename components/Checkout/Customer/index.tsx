@@ -104,18 +104,18 @@ const Customer: React.FC = () => {
 
     return (
         <div
-            className={`collapse collapse-plus card bordered mb-6 rounded-md collapse-${
+            className={`collapse collapse-plus card bordered mb-4 rounded-md lg:mb-6 collapse-${
                 isCurrentStep ? 'open' : 'closed'
             }`}
         >
-            <div className="collapse-title text-xl font-medium" onClick={handleEdit}>
+            <div className="collapse-title text-lg lg:text-xl" onClick={handleEdit}>
                 {!hasErrors && !isCurrentStep ? 'Customer - Edit' : 'Customer'}
             </div>
             <div className="collapse-content bg-base-100 p-0">
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex">
                         <div className="flex-grow">
-                            <div className="card p-4">
+                            <div className="card p-2 md:p-4">
                                 <h3 className="card-title">Personal Details</h3>
                                 <div className="grid grid-cols-1 gap-2">
                                     <div className="form-control">

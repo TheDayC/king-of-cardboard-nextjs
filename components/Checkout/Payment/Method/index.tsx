@@ -47,7 +47,7 @@ export const Method: React.FC<MethodProps> = ({ id, name, sourceType, defaultChe
     return (
         <div className="form-control mb-6" key={`payment-method-${id}`}>
             <label className="label cursor-pointer mb-2">
-                <span className="label-text">{name}</span>
+                <span className="label-text text-lg">{name}</span>
                 <input
                     type="radio"
                     className="radio"
