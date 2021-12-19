@@ -1,21 +1,19 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { AiOutlineShoppingCart, AiOutlineUser, AiOutlineMenu } from 'react-icons/ai';
+import { AiOutlineUser, AiOutlineMenu } from 'react-icons/ai';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { toSvg } from 'jdenticon';
 import md5 from 'md5';
 
-import selector from './selector';
 import styles from './header.module.css';
 import logo from '../../images/logo-full.png';
 import Rewards from './Rewards';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import NavBar from './Navbar';
+import CartIcon from './CartIcon';
 
 export const Header: React.FC = () => {
-    const { cartItemCount } = useSelector(selector);
     const { data: session, status } = useSession();
     const icon = safelyParse(session, 'user.image', parseAsString, null);
     const email = safelyParse(session, 'user.email', parseAsString, null);
@@ -44,14 +42,7 @@ export const Header: React.FC = () => {
                             <Rewards emailAddress={email} fullWidth={false} />
                         </div>
                     )}
-                    <Link href="/cart" passHref>
-                        <div className="flex justify-start items-center indicator cursor-pointer rounded-md hover:bg-neutral-focus">
-                            <AiOutlineShoppingCart className={styles.cart} />
-                            {cartItemCount > 0 && (
-                                <div className="indicator-item badge badge-primary">{cartItemCount}</div>
-                            )}
-                        </div>
-                    </Link>
+                    <CartIcon />
                     {status === 'unauthenticated' && (
                         <Link href="/login" passHref>
                             <div className="flex justify-start items-center cursor-pointer rounded-md hover:bg-neutral-focus">
