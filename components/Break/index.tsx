@@ -56,14 +56,14 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
         const slots: BreakSlot[] | null = get(currentBreak, 'breakSlotsCollection.items', null);
 
         return (
-            <div className="p-8 relative">
+            <div className="p-4 lg:p-6 relative">
                 <Loading show={loading} />
                 <div className="container mx-auto">
-                    <div className="flex flex-row space-x-16">
+                    <div className="flex flex-col lg:flex-row">
                         <Images mainImage={currentImage} imageCollection={get(currentBreak, 'images.items', null)} />
 
-                        <div id="productDetails" className="flex-grow">
-                            <div className="card rounded-md shadow-lg bordered p-6">
+                        <div id="productDetails" className="flex flex-col items-center w-full lg:w-3/4">
+                            <div className="card rounded-md shadow-lg bordered p-4 w-full lg:p-6">
                                 <Details name={currentBreak.title} tags={currentBreak.tags} description={description} />
                                 {slots && <Slots slots={slots} format={currentBreak.format} />}
                             </div>

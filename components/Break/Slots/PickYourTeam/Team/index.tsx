@@ -55,17 +55,19 @@ export const Team: React.FC<TeamProps> = ({ skuItem, setLoading }) => {
 
     return (
         <div
-            className={`flex flex-col justify-center items-center relative${isInBasket ? '' : ' cursor-pointer'}`}
+            className={`flex flex-col justify-center items-center p-2 rounded-sm relative${
+                isInBasket ? '' : ' cursor-pointer'
+            }`}
             onClick={handleClick}
         >
             {isInBasket && (
-                <div className="absolute inset-0 z-50 bg-base-200 bg-opacity-25 flex flex-col justify-center items-center">
+                <div className="absolute inset-0 z-50 bg-base-200 bg-opacity-25 flex flex-col justify-center items-center rounded-md">
                     <AiOutlineShoppingCart className="w-10 h-10" />
                     <p className="text-xl">In Cart</p>
                 </div>
             )}
             {skuItem.image && skuItem.image.url && (
-                <div className={`w-32 h-32 relative`}>
+                <div className="w-full h-10 md:h-20 lg:h-32 relative mb-2">
                     <Image
                         src={skuItem.image.url}
                         alt="shipment image"
@@ -75,12 +77,14 @@ export const Team: React.FC<TeamProps> = ({ skuItem, setLoading }) => {
                     />
                 </div>
             )}
-            <p className={`${isInBasket ? ' opacity-10' : ''}`}>{skuItem.name}</p>
+            <p className={`text-xs text-center mb-2 lg:mb-4 lg:text-md${isInBasket ? ' opacity-10' : ''}`}>
+                {skuItem.name}
+            </p>
             <div className={`flex flex-row justify-center items-center${isInBasket ? ' opacity-10' : ''}`}>
                 {shouldShowCompare && (
                     <span className="text-xs line-through text-base-200 mr-2 mt-1">{skuItem.compare_amount}</span>
                 )}
-                <p className="text-xl font-semibold">{skuItem.amount}</p>
+                <p className="text-md lg:text-xl font-semibold">{skuItem.amount}</p>
             </div>
         </div>
     );
