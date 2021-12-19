@@ -122,3 +122,12 @@ export interface AccountState {
     balance: number;
     shouldFetchRewards: boolean;
 }
+
+export interface ErrorsState {
+    errors: CustomError[] | null;
+}
+
+export interface CustomError {
+    level: string;
+    message: string;
+}
