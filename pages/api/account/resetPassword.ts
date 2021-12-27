@@ -1,12 +1,21 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createTransport } from 'nodemailer';
-import AWS from 'aws-sdk';
+import { defaultProvider } from '@aws-sdk/credential-provider-node';
+import * as aws from '@aws-sdk/client-ses';
 
 import { parseAsArrayOfCommerceLayerErrors, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 import { authClient } from '../../../utils/auth';
 
-const isProd = process.env.NODE_ENV === 'production';
-const mailer = isProd ? createTransport({ SES: new AWS.SES() }) : createTransport({ port: 1025 });
+const ses = new aws.SES({
+    apiVersion: '2010-12-01',
+    region: process.env.AWS_REGION,
+    credentialDefaultProvider: defaultProvider,
+});
+
+const mailer = createTransport({
+    SES: { ses, aws },
+    sendingRate: 1, // max 1 messages/second
+});
 
 async function resetPassword(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
@@ -37,6 +46,15 @@ async function resetPassword(req: NextApiRequest, res: NextApiResponse): Promise
                     to: email,
                     subject: 'Password Reset - King of Cardboard',
                     text: `Here is your password reset link ${process.env.SITE_URL}/account/resetPassword?token=${resetToken}`,
+                    ses: {
+                        // optional extra arguments for SendRawEmail
+                        Tags: [
+                            {
+                                Name: 'reset_password',
+                                Value: 'reset_password_value',
+                            },
+                        ],
+                    },
                 };
 
                 await mailer.sendMail(mailOptions);
@@ -46,7 +64,9 @@ async function resetPassword(req: NextApiRequest, res: NextApiResponse): Promise
         } catch (error) {
             const status = safelyParse(error, 'response.status', parseAsNumber, 500);
             const statusText = safelyParse(error, 'response.statusText', parseAsString, 'Error');
-            const message = safelyParse(error, 'response.data.errors', parseAsArrayOfCommerceLayerErrors, null);
+            const message = safelyParse(error, 'response.data.errors', parseAsArrayOfCommerceLayerErrors, [
+                'We could not send you a password reset email.',
+            ]);
 
             res.status(status).json({ status, statusText, message });
         }
