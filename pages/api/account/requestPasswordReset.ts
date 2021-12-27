@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createTransport } from 'nodemailer';
 import { defaultProvider } from '@aws-sdk/credential-provider-node';
@@ -16,6 +18,8 @@ const mailer = createTransport({
     SES: { ses, aws },
     sendingRate: 1, // max 1 messages/second
 });
+
+const filePath = path.resolve(process.cwd(), 'html', 'resetPassword.html');
 
 async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
@@ -43,11 +47,18 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
             );
 
             if (resetToken && email) {
+                const link = `${process.env.SITE_URL}/resetPassword?token=${resetToken}&id=${resetId}&email=${email}`;
+                const htmlData = fs.readFileSync(filePath, 'utf8');
+                const html = htmlData
+                    .replace('{{email}}', email)
+                    .replace('{{link}}', `<a href="${link}" target="_blank">Reset Password</a>`);
+
                 const mailOptions = {
                     from: `No Reply <${process.env.MAILER_ADDRESS}>`,
                     to: email,
                     subject: 'Password Reset - King of Cardboard',
-                    text: `Here is your password reset link ${process.env.SITE_URL}/resetPassword?token=${resetToken}&id=${resetId}&email=${email}`,
+                    html,
+                    text: `Hi ${email}, it looks like you've requested a password reset and are looking at the raw version of our email. Please copy and paste the following link into your browser's address bar: ${link}`,
                     ses: {
                         // optional extra arguments for SendRawEmail
                         Tags: [
@@ -57,6 +68,13 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
                             },
                         ],
                     },
+                    attachments: [
+                        {
+                            filename: 'logo-full.png',
+                            path: path.resolve(process.cwd(), 'images', 'logo-full.png'),
+                            cid: 'logo', //same cid value as in the html img src
+                        },
+                    ],
                 };
 
                 await mailer.sendMail(mailOptions);
@@ -64,6 +82,7 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
                 res.status(200).json({ hasSent: true });
             }
         } catch (error) {
+            console.log('🚀 ~ file: requestPasswordReset.ts ~ line 76 ~ requestPasswordReset ~ error', error);
             const status = safelyParse(error, 'response.status', parseAsNumber, 500);
             const statusText = safelyParse(error, 'response.statusText', parseAsString, 'Error');
             const message = safelyParse(error, 'response.data.errors', parseAsArrayOfCommerceLayerErrors, [
