@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { DateTime } from 'luxon';
-import { GrClose } from 'react-icons/gr';
+import { AiOutlineClose } from 'react-icons/ai';
 
 import { AlertLevel } from '../../../enums/system';
 import { alertClass } from '../../../utils/alert';
@@ -30,14 +30,16 @@ export const Body: React.FC<ErrorAlertProps> = ({ id, message, level, timestamp 
     }, []);
 
     return (
-        <div className={`alert rounded-md mb-2${className}`}>
-            <div className="flex-1">
+        <div
+            className={`flex flex-row justify-between items-center rounded-md mb-2 shadow-md p-2 text-neutral-content${className}`}
+        >
+            <div className="flex-1 mr-2">
                 <Icon level={level} />
                 <label>{message}</label>
             </div>
             <div className="flex-none">
-                <button className="btn btn-sm btn-primary">
-                    <GrClose className="inline-block w-4 mr-2 stroke-current" onClick={handleClose} />
+                <button className="btn btn-sm btn-ghost">
+                    <AiOutlineClose className="inline-block text-xl" onClick={handleClose} />
                 </button>
             </div>
         </div>

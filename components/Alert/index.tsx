@@ -12,7 +12,7 @@ export const Alert: React.FC = () => {
     }
 
     return (
-        <div className="fixed bottom-5 left-5">
+        <div className="fixed w-full bottom-0 left-0 p-2 pb-0 md:bottom-2 md:left-4 md:w-auto md:p-0">
             {alerts.map((alert, i) => (
                 <Body
                     id={alert.id}

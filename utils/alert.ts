@@ -3,11 +3,11 @@ import { AlertLevel } from '../enums/system';
 export function alertClass(type: AlertLevel): string {
     switch (type) {
         case AlertLevel.Error:
-            return ' alert-error';
+            return ' bg-red-400';
         case AlertLevel.Warning:
-            return ' alert-warning';
+            return ' bg-yellow-400';
         case AlertLevel.Success:
-            return ' alert-success';
+            return ' bg-green-400';
         default:
             return '';
     }
