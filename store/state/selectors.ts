@@ -12,13 +12,13 @@ import {
     ShopState,
     BreaksState,
     AccountState,
-    ErrorsState,
+    AlertsState,
 } from '../types/state';
 
 export const selectGlobalData = (state: IAppState): Global => state.global;
 export const selectProductData = (state: IAppState): SkuItem[] => state.products;
 export const selectCartData = (state: IAppState): CartState => state.cart;
-export const selectErrorData = (state: IAppState): ErrorsState => state.errors;
+export const selectAlertsData = (state: IAppState): AlertsState => state.alerts;
 export const selectCategoryData = (state: IAppState): Categories[] => state.categories;
 export const selectProductTypeData = (state: IAppState): ProductType[] => state.productType;
 export const selectFiltersData = (state: IAppState): Filters => state.filters;

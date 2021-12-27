@@ -1,19 +1,18 @@
 import React from 'react';
+import { DateTime } from 'luxon';
 
 import { AlertLevel } from '../../../enums/system';
 import { alertClass } from '../../../utils/alert';
 import Icon from './Icon';
 
 interface ErrorAlertProps {
-    msg: string | null;
+    id: string;
+    message: string;
     level: AlertLevel;
+    timestamp: DateTime;
 }
 
-export const Body: React.FC<ErrorAlertProps> = ({ msg, level }) => {
-    if (!msg) {
-        return null;
-    }
-
+export const Body: React.FC<ErrorAlertProps> = ({ id, message, level, timestamp }) => {
     const className = alertClass(level);
 
     return (

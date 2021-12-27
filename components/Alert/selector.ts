@@ -1,9 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectErrorData } from '../../store/state/selectors';
+import { selectAlertsData } from '../../store/state/selectors';
 
-const selector = createSelector([selectErrorData], (errorData) => ({
-    errors: errorData.errors,
+const selector = createSelector([selectAlertsData], (alertData) => ({
+    alerts: alertData.alerts,
 }));
 
 export default selector;

@@ -5,15 +5,23 @@ import Body from './Body';
 import selector from './selector';
 
 export const Alert: React.FC = () => {
-    const { errors } = useSelector(selector);
+    const { alerts } = useSelector(selector);
 
-    if (!errors || errors.length <= 0) {
+    if (alerts.length <= 0) {
         return null;
     }
 
     return (
         <div className="fixed bottom-5 left-5">
-            {errors && errors.map((error, i) => <Body msg={error.message} level={error.level} key={`error-${i}`} />)}
+            {alerts.map((alert, i) => (
+                <Body
+                    id={alert.id}
+                    msg={alert.message}
+                    level={alert.level}
+                    timestamp={alert.timestamp}
+                    key={`error-${i}`}
+                />
+            ))}
         </div>
     );
 };
