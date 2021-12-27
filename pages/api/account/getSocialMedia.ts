@@ -5,7 +5,7 @@ import { parseAsString, safelyParse } from '../../../utils/parsers';
 
 async function getSocialMedia(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
-        const { db, client } = await connectToDatabase();
+        const { db } = await connectToDatabase();
 
         try {
             const emailAddress = safelyParse(req, 'body.emailAddress', parseAsString, null);

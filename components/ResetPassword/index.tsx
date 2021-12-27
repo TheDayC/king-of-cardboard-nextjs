@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import selector from './selector';
-import { requestResetPassword } from '../../utils/account';
+import { requestPasswordReset } from '../../utils/account';
 import { AlertLevel } from '../../enums/system';
 import { addAlert } from '../../store/slices/alerts';
 
@@ -36,7 +36,7 @@ export const ResetPassword: React.FC = () => {
             return;
         }
 
-        const hasSent = await requestResetPassword(accessToken, email);
+        const hasSent = await requestPasswordReset(accessToken, email);
 
         if (hasSent) {
             setError(null);

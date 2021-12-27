@@ -6,7 +6,7 @@ import { connectToDatabase } from '../../../middleware/database';
 
 async function addAddress(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
-        const { db, client } = await connectToDatabase();
+        const { db } = await connectToDatabase();
 
         try {
             const token = safelyParse(req, 'body.token', parseAsString, null);
