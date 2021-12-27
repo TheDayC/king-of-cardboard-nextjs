@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 
@@ -7,8 +7,8 @@ import selector from './selector';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import { fieldPatternMsgs } from '../../../../utils/checkout';
 import { addAddress, editAddress } from '../../../../utils/account';
-import ErrorAlert from '../../../ErrorAlert';
-import SuccessAlert from '../../../SuccessAlert';
+import { AlertLevel } from '../../../../enums/system';
+import { addAlert } from '../../../../store/slices/alerts';
 
 interface FormData {
     addressLineOne: string;
@@ -49,6 +49,7 @@ export const Fields: React.FC<FieldProps> = ({
 }) => {
     const { accessToken } = useSelector(selector);
     const { data: session } = useSession();
+    const dispatch = useDispatch();
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -129,18 +130,20 @@ export const Fields: React.FC<FieldProps> = ({
     const countyErr = safelyParse(errors, 'county.message', parseAsString, null);
     const btnText = addressId ? 'Save Address' : 'Add Address';
 
+    useEffect(() => {
+        if (errorMsg) {
+            dispatch(addAlert({ message: errorMsg, level: AlertLevel.Error }));
+        }
+    }, [errorMsg]);
+
+    useEffect(() => {
+        if (successMsg) {
+            dispatch(addAlert({ message: successMsg, level: AlertLevel.Success }));
+        }
+    }, [successMsg]);
+
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full">
-            {errorMsg && (
-                <div className="mb-6 w-full">
-                    <ErrorAlert error={errorMsg} />
-                </div>
-            )}
-            {successMsg && (
-                <div className="mb-6 w-full">
-                    <SuccessAlert msg={successMsg} />
-                </div>
-            )}
             <div className="flex flex-col md:flex-row relative w-full">
                 <div className="card p-0 rounded-md w-full mb-4 md:w-1/2 md:p-4 md:mb-0">
                     <h3 className="card-title">Personal Details</h3>

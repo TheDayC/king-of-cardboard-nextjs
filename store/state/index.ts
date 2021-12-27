@@ -2,7 +2,7 @@ import { IAppState } from '../types/state';
 import globalInitialState from './global';
 import productsInitialState from './products';
 import cartInitialState from './cart';
-import errorsInitialState from './errors';
+import alertsInitialState from './alerts';
 import categoriesInitialState from './categories';
 import productTypeInitialState from './productType';
 import filtersInitialState from './filters';
@@ -19,7 +19,7 @@ export function createInitialState(): IAppState {
         global: globalInitialState,
         products: productsInitialState,
         cart: cartInitialState,
-        errors: errorsInitialState,
+        alerts: alertsInitialState,
         categories: categoriesInitialState,
         productType: productTypeInitialState,
         filters: filtersInitialState,

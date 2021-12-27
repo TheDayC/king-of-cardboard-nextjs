@@ -5,9 +5,10 @@ import { useSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { parseAsSocialMedia, parseAsString, safelyParse } from '../../../../utils/parsers';
-import SuccessAlert from '../../../SuccessAlert';
 import { setSocialMedia } from '../../../../store/slices/account';
 import selector from './selector';
+import { AlertLevel } from '../../../../enums/system';
+import { addAlert } from '../../../../store/slices/alerts';
 
 interface SubmitData {
     instagram: string;
@@ -100,6 +101,12 @@ export const SocialMediaLinks: React.FC = () => {
             setValue('ebay', savedSocialMedia.ebay);
         }
     }, [savedSocialMedia]);
+
+    useEffect(() => {
+        if (success) {
+            dispatch(addAlert({ message: success, level: AlertLevel.Success }));
+        }
+    }, [success]);
 
     return (
         <React.Fragment>
@@ -202,11 +209,6 @@ export const SocialMediaLinks: React.FC = () => {
                     </button>
                 </div>
             </form>
-            {success && (
-                <div className="mt-2">
-                    <SuccessAlert msg={success} />
-                </div>
-            )}
         </React.Fragment>
     );
 };

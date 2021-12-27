@@ -4,7 +4,7 @@ import { IAppState } from '../types/state';
 import globalReducer from './global';
 import productsReducer from './products';
 import cartReducer from './cart';
-import errorsReducer from './errors';
+import alertsReducer from './alerts';
 import categoriesReducer from './categories';
 import productTypeReducer from './productType';
 import filtersReducer from './filters';
@@ -19,7 +19,7 @@ const rootReducer = combineReducers<IAppState>({
     global: globalReducer,
     products: productsReducer,
     cart: cartReducer,
-    errors: errorsReducer,
+    alerts: alertsReducer,
     categories: categoriesReducer,
     productType: productTypeReducer,
     filters: filtersReducer,

@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
-import SuccessAlert from '../../../SuccessAlert';
 import selector from './selector';
+import { AlertLevel } from '../../../../enums/system';
+import { addAlert } from '../../../../store/slices/alerts';
 
 const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -28,6 +29,7 @@ export const UpdatePassword: React.FC = () => {
     const [success, setSuccess] = useState<string | null>(null);
     const { data: session } = useSession();
     const { accessToken: token } = useSelector(selector);
+    const dispatch = useDispatch();
 
     const hasErrors = Object.keys(errors).length > 0;
     const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
@@ -63,6 +65,12 @@ export const UpdatePassword: React.FC = () => {
             }
         }
     };
+
+    useEffect(() => {
+        if (success) {
+            dispatch(addAlert({ message: success, level: AlertLevel.Success }));
+        }
+    }, [success]);
 
     return (
         <React.Fragment>
@@ -142,11 +150,6 @@ export const UpdatePassword: React.FC = () => {
                     </button>
                 </div>
             </form>
-            {success && (
-                <div className="mt-2">
-                    <SuccessAlert msg={success} />
-                </div>
-            )}
         </React.Fragment>
     );
 };

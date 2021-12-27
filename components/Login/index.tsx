@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ClientSafeProvider, LiteralUnion } from 'next-auth/react';
 import { BuiltInProviderType } from 'next-auth/providers';
 import { useRouter } from 'next/router';
 
 import Credentials from './credentials';
-import ErrorAlert from '../ErrorAlert';
 import Google from './google';
 import Twitch from './twitch';
-import SuccessAlert from '../SuccessAlert';
 import { parseAsString, safelyParse } from '../../utils/parsers';
+import { AlertLevel } from '../../enums/system';
+import { useDispatch } from 'react-redux';
+import { addAlert } from '../../store/slices/alerts';
 
 interface LoginProps {
     providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider>;
@@ -18,20 +19,23 @@ interface LoginProps {
 export const Login: React.FC<LoginProps> = ({ providers, showRegistrationSuccess }) => {
     const { credentials } = providers;
     const router = useRouter();
+    const dispatch = useDispatch();
     const error = safelyParse(router, 'query.error', parseAsString, null);
+
+    useEffect(() => {
+        if (error) {
+            dispatch(addAlert({ message: 'Invalid Credentials.', level: AlertLevel.Error }));
+        }
+    }, [error]);
+
+    useEffect(() => {
+        if (showRegistrationSuccess) {
+            dispatch(addAlert({ message: 'Registration Successful!', level: AlertLevel.Success }));
+        }
+    }, [showRegistrationSuccess]);
 
     return (
         <React.Fragment>
-            {error && (
-                <div className="mb-6">
-                    <ErrorAlert error="Invalid Credentials." />
-                </div>
-            )}
-            {showRegistrationSuccess && (
-                <div className="mb-6">
-                    <SuccessAlert msg="Registration Successful!" />
-                </div>
-            )}
             {credentials && <Credentials />}
             <div className="divider">OR</div>
             <Google />

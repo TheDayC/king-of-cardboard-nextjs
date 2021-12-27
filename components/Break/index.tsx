@@ -1,20 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { BiErrorCircle } from 'react-icons/bi';
-import { useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 
-import { ImageItem, SingleProduct } from '../../types/products';
-import { getSkus, getSkuDetails, setLineItem } from '../../utils/commerce';
-import { fetchProductBySlug, mergeSkuProductData } from '../../utils/products';
+import { ImageItem } from '../../types/products';
 import Loading from '../Loading';
 import selector from './selector';
-import { get, inRange, isNaN, split } from 'lodash';
-import { fetchOrder } from '../../store/slices/cart';
+import { get, split } from 'lodash';
 import Images from './Images';
 import Details from './Details';
-import ErrorAlert from '../ErrorAlert';
-import { fetchBreakBySlug, mergeSkuBreakData } from '../../utils/breaks';
-import { SingleBreak, BreakSlot, ContentfulBreak } from '../../types/breaks';
+import { fetchBreakBySlug } from '../../utils/breaks';
+import { BreakSlot, ContentfulBreak } from '../../types/breaks';
 import Slots from './Slots';
 
 interface BreakProps {

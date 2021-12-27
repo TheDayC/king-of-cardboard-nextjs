@@ -1,5 +1,8 @@
+import { DateTime } from 'luxon';
+
 import { Counties } from '../../enums/checkout';
 import { Categories, ProductType } from '../../enums/shop';
+import { AlertLevel } from '../../enums/system';
 import { Order } from '../../types/cart';
 import { SkuItem } from '../../types/commerce';
 import { ContentfulPage } from '../../types/pages';
@@ -9,7 +12,7 @@ export interface IAppState {
     global: Global;
     products: SkuItem[];
     cart: CartState;
-    errors: string | null;
+    alerts: AlertsState;
     productType: ProductType[];
     categories: Categories[];
     filters: Filters;
@@ -123,11 +126,13 @@ export interface AccountState {
     shouldFetchRewards: boolean;
 }
 
-export interface ErrorsState {
-    errors: CustomError[] | null;
+export interface AlertsState {
+    alerts: CustomAlert[];
 }
 
-export interface CustomError {
-    level: string;
+export interface CustomAlert {
+    id: string;
+    level: AlertLevel;
     message: string;
+    timestamp: DateTime;
 }
