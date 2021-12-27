@@ -1,12 +1,12 @@
-import { ErrorLevel } from '../enums/system';
+import { AlertLevel } from '../enums/system';
 
-export function alertClass(type: ErrorLevel): string {
+export function alertClass(type: AlertLevel): string {
     switch (type) {
-        case ErrorLevel.Error:
+        case AlertLevel.Error:
             return ' alert-error';
-        case ErrorLevel.Warning:
+        case AlertLevel.Warning:
             return ' alert-warning';
-        case ErrorLevel.Success:
+        case AlertLevel.Success:
             return ' alert-success';
         default:
             return '';

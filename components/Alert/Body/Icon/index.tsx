@@ -3,21 +3,21 @@ import { BiErrorCircle } from 'react-icons/bi';
 import { BsFillCheckCircleFill } from 'react-icons/bs';
 import { AiOutlineWarning, AiOutlineBell } from 'react-icons/ai';
 
-import { ErrorLevel } from '../../../../enums/system';
+import { AlertLevel } from '../../../../enums/system';
 
 interface IconProps {
-    level: ErrorLevel;
+    level: AlertLevel;
 }
 
 const classes = 'inline-block w-6 h-6 mx-2 stroke-current';
 
 export const Icon: React.FC<IconProps> = ({ level }) => {
     switch (level) {
-        case ErrorLevel.Error:
+        case AlertLevel.Error:
             return <BiErrorCircle className={classes} />;
-        case ErrorLevel.Warning:
+        case AlertLevel.Warning:
             return <AiOutlineWarning className={classes} />;
-        case ErrorLevel.Success:
+        case AlertLevel.Success:
             return <BsFillCheckCircleFill className={classes} />;
         default:
             return <AiOutlineBell className={classes} />;

@@ -1,18 +1,26 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
+import { DateTime } from 'luxon';
 
-import errorsInitialState from '../state/errors';
+import alertsInitialState from '../state/alerts';
 
-const errorsSlice = createSlice({
-    name: 'errors',
-    initialState: errorsInitialState,
+const alertsSlice = createSlice({
+    name: 'alerts',
+    initialState: alertsInitialState,
     reducers: {
-        addError(state, action) {
-            if (!state.errors) {
-                state.errors = [];
-            }
+        addAlert(state, action) {
+            // Destruct msg and type so we can re-use them.
+            const { message, level } = action.payload;
 
-            state.errors.push(action.payload);
+            // Set the curretnt dateTime from Luxon.
+            const dateTime = DateTime.now().setZone('Europe/London');
+
+            // Create an id by taking the msg, level and the DateTime and converting it to a base64 string.
+            // This should be unique enough for any id, even if msg and level are identical the time will have moved on.
+            const id = Buffer.from(`${message}-${level}-${dateTime.toISO()}`).toString('base64');
+
+            // Push the object onto the alerts array.
+            state.alerts.push({ id, level, message, timestamp: dateTime });
         },
     },
     extraReducers: {
@@ -23,5 +31,5 @@ const errorsSlice = createSlice({
     },
 });
 
-export const { addError } = errorsSlice.actions;
-export default errorsSlice.reducer;
+export const { addAlert } = alertsSlice.actions;
+export default alertsSlice.reducer;

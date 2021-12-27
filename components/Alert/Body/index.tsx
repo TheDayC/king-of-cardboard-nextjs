@@ -1,12 +1,12 @@
 import React from 'react';
 
-import { ErrorLevel } from '../../../enums/system';
+import { AlertLevel } from '../../../enums/system';
 import { alertClass } from '../../../utils/alert';
 import Icon from './Icon';
 
 interface ErrorAlertProps {
     msg: string | null;
-    level: ErrorLevel;
+    level: AlertLevel;
 }
 
 export const Body: React.FC<ErrorAlertProps> = ({ msg, level }) => {
