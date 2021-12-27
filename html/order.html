@@ -3,7 +3,7 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>Password Reset - King of Cardboard</title>
+        <title>Order Confirmation - King of Cardboard</title>
         <style>
             /* -------------------------------------
           GLOBAL RESETS
@@ -40,6 +40,10 @@
                 font-family: sans-serif;
                 font-size: 14px;
                 vertical-align: top;
+            }
+
+            table.items td {
+                vertical-align: middle;
             }
 
             /* -------------------------------------
@@ -95,6 +99,15 @@
                 padding-top: 10px;
             }
 
+            .personal {
+                padding-bottom: 15px;
+            }
+
+            .addresses,
+            .items {
+                padding-bottom: 30px;
+            }
+
             .footer {
                 clear: both;
                 margin-top: 10px;
@@ -123,7 +136,7 @@
                 font-weight: 400;
                 line-height: 1.4;
                 margin: 0;
-                margin-bottom: 30px;
+                margin-bottom: 10px;
             }
 
             h1 {
@@ -131,6 +144,12 @@
                 font-weight: 300;
                 text-align: center;
                 text-transform: capitalize;
+                margin-bottom: 30px;
+            }
+
+            h4.itemName {
+                margin-bottom: 2px;
+                font-size: 16px;
             }
 
             p,
@@ -153,6 +172,24 @@
             a {
                 color: #3498db;
                 text-decoration: underline;
+            }
+
+            p.skuCode,
+            p.quantity {
+                margin-bottom: 2px;
+                font-size: 12px;
+            }
+
+            p.subTotal,
+            p.shipping,
+            p.total {
+                margin-bottom: 16px;
+                font-size: 18px;
+            }
+
+            p.total {
+                font-size: 32px;
+                font-weight: bold;
             }
 
             /* -------------------------------------
@@ -363,7 +400,7 @@
     </head>
 
     <body class="">
-        <span class="preheader">Password Reset - King of Cardboard</span>
+        <span class="preheader">Order Confirmation - King of Cardboard</span>
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
             <tr>
                 <td>&nbsp;</td>
@@ -396,19 +433,29 @@
                                     <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                         <tr>
                                             <td>
-                                                <p>Hi {{email}},</p>
+                                                <p>Hi {{name}},</p>
                                                 <p>
-                                                    It looks like you've requested a password reset. You can do this by
-                                                    clicking the button below and filling in the relevant details once
-                                                    you've been redirected to the site.
+                                                    Thank you for placing your order with King of Cardboard, we hope you
+                                                    enjoy the products you've bought!
                                                 </p>
+                                                <p>
+                                                    Below you'll find a summary of your order, you can also review these
+                                                    details by logging into your account on the website and using the
+                                                    account menu to navigate to your order history.
+                                                </p>
+                                                <h1>Order Details</h1>
                                                 <table
                                                     role="presentation"
                                                     border="0"
                                                     cellpadding="0"
                                                     cellspacing="0"
-                                                    class="btn btn-primary"
+                                                    class="personal"
                                                 >
+                                                    <thead>
+                                                        <tr>
+                                                            <td><h2>Personal Details</h2></td>
+                                                        </tr>
+                                                    </thead>
                                                     <tbody>
                                                         <tr>
                                                             <td align="left">
@@ -420,10 +467,146 @@
                                                                 >
                                                                     <tbody>
                                                                         <tr>
-                                                                            <td>{{link}}</td>
+                                                                            <td>Name: {{firstName}} {{lastName}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>Email: {{email}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>Phone: {{phone}}</td>
                                                                         </tr>
                                                                     </tbody>
                                                                 </table>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <table
+                                                    role="presentation"
+                                                    border="0"
+                                                    cellpadding="0"
+                                                    cellspacing="0"
+                                                    class="addresses"
+                                                >
+                                                    <thead>
+                                                        <tr>
+                                                            <td><h3>Billing Address</h3></td>
+                                                            <td><h3>Shipping Address</h3></td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td align="left">
+                                                                <table
+                                                                    role="presentation"
+                                                                    border="0"
+                                                                    cellpadding="0"
+                                                                    cellspacing="0"
+                                                                >
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td>{{lineOne}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>{{lineTwo}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>{{city}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>{{postcode}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>{{county}}</td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                            <td align="left">
+                                                                <table
+                                                                    role="presentation"
+                                                                    border="0"
+                                                                    cellpadding="0"
+                                                                    cellspacing="0"
+                                                                >
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td>{{shippingLineOne}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>{{shippingLineTwo}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>{{shippingCity}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>{{shippingPostcode}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>{{shippingCounty}}</td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <table
+                                                    role="presentation"
+                                                    border="0"
+                                                    cellpadding="0"
+                                                    cellspacing="0"
+                                                    class="items"
+                                                >
+                                                    <thead>
+                                                        <tr>
+                                                            <td><h2>Items</h2></td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td align="left">
+                                                                <table
+                                                                    role="presentation"
+                                                                    border="0"
+                                                                    cellpadding="0"
+                                                                    cellspacing="0"
+                                                                >
+                                                                    <tbody>
+                                                                        {{items}}
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <table
+                                                    role="presentation"
+                                                    border="0"
+                                                    cellpadding="0"
+                                                    cellspacing="0"
+                                                    class="totals"
+                                                >
+                                                    <tbody>
+                                                        <tr>
+                                                            <td align="right">
+                                                                <p class="subTotal">
+                                                                    Subtotal: <span>{{subTotal}}</span>
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td align="right">
+                                                                <p class="shipping">
+                                                                    Shipping: <span>{{shipping}}</span>
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td align="right">
+                                                                <p class="total">Total: <span>{{total}}</span></p>
                                                             </td>
                                                         </tr>
                                                     </tbody>

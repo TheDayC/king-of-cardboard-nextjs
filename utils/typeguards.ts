@@ -1,4 +1,6 @@
 import axios, { AxiosError } from 'axios';
+
+import { CartItem, CustomerDetails } from '../store/types/state';
 import { OrderHistoryAddress, OrderHistoryPaymentMethod } from '../types/account';
 import { Achievement, Objective } from '../types/achievements';
 import {
@@ -8,6 +10,7 @@ import {
     CommerceLayerObject,
     CommerceLayerResponse,
 } from '../types/api';
+import { Order } from '../types/cart';
 import { SkuInventory, SkuOption } from '../types/commerce';
 import { ITypeGuard } from '../types/parsers';
 import { ImageCollection, ImageItem } from '../types/products';
@@ -127,4 +130,20 @@ export function isSkuOption(candidate: unknown): candidate is SkuOption {
 
 export function isArrayofSkuOptions(candidate: unknown): candidate is SkuOption[] {
     return isArray(candidate) && isSkuOption(candidate[0]);
+}
+
+export function isOrder(candidate: unknown): candidate is Order {
+    return isNotNullOrUndefined<object>(candidate) && 'payment_status' in candidate;
+}
+
+export function isItem(candidate: unknown): candidate is CartItem {
+    return isNotNullOrUndefined<object>(candidate) && 'quantity' in candidate;
+}
+
+export function isArrayofItems(candidate: unknown): candidate is CartItem[] {
+    return isArray(candidate) && isItem(candidate[0]);
+}
+
+export function isCustomerDetails(candidate: unknown): candidate is CustomerDetails {
+    return isNotNullOrUndefined<object>(candidate) && 'firstName' in candidate;
 }

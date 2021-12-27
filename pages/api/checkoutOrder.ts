@@ -2,8 +2,6 @@ import { get } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-// const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const apiVersion = '2020-08-27';
 
 async function checkoutOrder(req: NextApiRequest, res: NextApiResponse): Promise<void> {
