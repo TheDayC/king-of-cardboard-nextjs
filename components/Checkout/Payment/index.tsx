@@ -10,7 +10,7 @@ import selector from './selector';
 import { setCurrentStep } from '../../../store/slices/checkout';
 import Method from './Method';
 import { createPaymentSource } from '../../../utils/commerce';
-import { checkoutOrder, confirmOrder, refreshPayment } from '../../../utils/payment';
+import { checkoutOrder, confirmOrder, refreshPayment, sendOrderConfirmation } from '../../../utils/payment';
 import { CartItem, CustomerDetails } from '../../../store/types/state';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import { setConfirmationData } from '../../../store/slices/confirmation';
@@ -59,7 +59,7 @@ export const Payment: React.FC = () => {
             stripe: Stripe,
             card: StripeCardElement,
             paymentSourceType: string,
-            order: Order | null,
+            order: Order,
             items: CartItem[],
             customerDetails: CustomerDetails,
             currentSession: Session | null
@@ -107,7 +107,11 @@ export const Payment: React.FC = () => {
 
                         // Set the confirmation data in the store.
                         if (hasBeenRefreshed && hasBeenAuthorized && hasBeenApproved) {
+                            // Set the confirmation data in the store.
                             dispatch(setConfirmationData({ order, items, customerDetails }));
+
+                            // Distribute the confirmation email so the customer has a receipt.
+                            await sendOrderConfirmation(order, items, customerDetails);
 
                             // Figure out achievement progress now that the order has been confirmed.
                             if (currentSession) {
@@ -165,7 +169,7 @@ export const Payment: React.FC = () => {
                 const paymentMethodData = paymentMethods.find((pM) => pM.id === methodId) || null;
 
                 // If both exist then call the payment handler.
-                if (card && paymentMethodData) {
+                if (card && paymentMethodData && order) {
                     handlePaymentMethod(
                         accessToken,
                         orderId,

@@ -28,6 +28,10 @@ import {
     isSkuInventory,
     isSkuOption,
     isArrayofSkuOptions,
+    isOrder,
+    isItem,
+    isArrayofItems,
+    isCustomerDetails,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
@@ -73,6 +77,9 @@ export function parseOrderData(order: any, included: any): Order | null {
             parseAsString,
             '£0.00'
         );
+        const status = safelyParse(order, 'attributes.status', parseAsString, 'draft');
+        const payment_status = safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid');
+        const fulfillment_status = safelyParse(order, 'attributes.fulfillment_status', parseAsString, 'unfulfilled');
         const line_items = safelyParse(order, 'attributes.line_items', parseAsArrayOfStrings, [] as string[]);
 
         return {
@@ -85,6 +92,9 @@ export function parseOrderData(order: any, included: any): Order | null {
             formatted_total_tax_amount,
             formatted_gift_card_amount,
             formatted_total_amount_with_taxes,
+            status,
+            payment_status,
+            fulfillment_status,
             line_items,
             included: included
                 ? included.map((include: unknown) => {
@@ -226,3 +236,7 @@ export const parseAsImageItem = parseAsType(isImageItem);
 export const parseAsSkuInventory = parseAsType(isSkuInventory);
 export const parseAsSkuOption = parseAsType(isSkuOption);
 export const parseAsArrayOfSkuOptions = parseAsType(isArrayofSkuOptions);
+export const parseAsOrder = parseAsType(isOrder);
+export const parseAsItem = parseAsType(isItem);
+export const parseAsArrayOfItems = parseAsType(isArrayofItems);
+export const parseAsCustomerDetails = parseAsType(isCustomerDetails);
