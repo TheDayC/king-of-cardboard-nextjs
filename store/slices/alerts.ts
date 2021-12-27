@@ -22,6 +22,10 @@ const alertsSlice = createSlice({
             // Push the object onto the alerts array.
             state.alerts.push({ id, level, message, timestamp: dateTime });
         },
+        removeAlert(state, action) {
+            // Remove alert by filtering on object id and re-assigning to state.
+            state.alerts = state.alerts.filter((alert) => alert.id !== action.payload);
+        },
     },
     extraReducers: {
         [HYDRATE]: (state, action) => ({
@@ -31,5 +35,5 @@ const alertsSlice = createSlice({
     },
 });
 
-export const { addAlert } = alertsSlice.actions;
+export const { addAlert, removeAlert } = alertsSlice.actions;
 export default alertsSlice.reducer;

@@ -16,7 +16,7 @@ export const Alert: React.FC = () => {
             {alerts.map((alert, i) => (
                 <Body
                     id={alert.id}
-                    msg={alert.message}
+                    message={alert.message}
                     level={alert.level}
                     timestamp={alert.timestamp}
                     key={`error-${i}`}
