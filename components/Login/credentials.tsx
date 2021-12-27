@@ -6,7 +6,6 @@ import { signIn, useSession } from 'next-auth/react';
 import { useSelector } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
-import { requestResetPassword } from '../../utils/account';
 import selector from './selector';
 
 interface Submit {

@@ -273,9 +273,9 @@ export async function editAddress(
     return null;
 }
 
-export async function requestResetPassword(accessToken: string, email: string): Promise<boolean> {
+export async function requestPasswordReset(accessToken: string, email: string): Promise<boolean> {
     try {
-        const response = await axios.post('/api/account/resetPassword', {
+        const response = await axios.post('/api/account/requestPasswordReset', {
             token: accessToken,
             email,
         });
