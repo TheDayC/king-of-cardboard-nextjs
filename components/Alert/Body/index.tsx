@@ -19,7 +19,7 @@ export const Body: React.FC<ErrorAlertProps> = ({ id, message, level, timestamp 
         <div className={`alert rounded-md${className}`}>
             <div className="flex-1">
                 <Icon level={level} />
-                <label>{msg}</label>
+                <label>{message}</label>
             </div>
         </div>
     );
