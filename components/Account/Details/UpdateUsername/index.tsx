@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AiOutlineUser } from 'react-icons/ai';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
-import SuccessAlert from '../../../SuccessAlert';
+import { useDispatch } from 'react-redux';
+import { AlertLevel } from '../../../../enums/system';
 
 const USER_PATTERN = /^[a-zA-Z]{4,}$/;
 
@@ -22,6 +23,7 @@ export const UpdateUsername: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState<string | null>(null);
     const { data: session } = useSession();
+    const dispatch = useDispatch();
 
     const hasErrors = Object.keys(errors).length > 0;
     const usernameErr = safelyParse(errors, 'username.message', parseAsString, null);
@@ -54,6 +56,12 @@ export const UpdateUsername: React.FC = () => {
             }
         }
     };
+
+    useEffect(() => {
+        if (success) {
+            dispatch({ message: success, level: AlertLevel.Success });
+        }
+    }, [success]);
 
     return (
         <React.Fragment>
@@ -100,11 +108,6 @@ export const UpdateUsername: React.FC = () => {
                     </button>
                 </div>
             </form>
-            {success && (
-                <div className="mt-2">
-                    <SuccessAlert msg={success} />
-                </div>
-            )}
         </React.Fragment>
     );
 };

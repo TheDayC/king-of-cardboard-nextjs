@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { get } from 'lodash';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { AiOutlineUser } from 'react-icons/ai';
 import { MdOutlineMailOutline } from 'react-icons/md';
 import { RiLockPasswordLine } from 'react-icons/ri';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import ErrorAlert from '../ErrorAlert';
 import { Tabs } from '../../enums/auth';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import selector from './selector';
+import { AlertLevel } from '../../enums/system';
 
 interface Submit {
     username?: string;
@@ -41,6 +40,7 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
     const hasErrors = Object.keys(errors).length > 0;
     const router = useRouter();
     const { accessToken: token } = useSelector(selector);
+    const dispatch = useDispatch();
 
     const usernameErr = safelyParse(errors, 'username.message', parseAsString, null);
     const emailErr = safelyParse(errors, 'emailAddress.message', parseAsString, null);
@@ -78,13 +78,14 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
         setResponseError(error ? 'Invalid Credentials.' : null);
     }, [error]);
 
+    useEffect(() => {
+        if (responseError) {
+            dispatch({ message: responseError, level: AlertLevel.Error });
+        }
+    }, [responseError]);
+
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            {responseError && (
-                <div className="mb-6">
-                    <ErrorAlert error={responseError} />
-                </div>
-            )}
             <div className="form-control">
                 <label className="input-group input-group-md">
                     <span className="bg-base-200">

@@ -12,7 +12,7 @@ import { get, inRange, isNaN, split } from 'lodash';
 import { fetchOrder } from '../../store/slices/cart';
 import Images from './Images';
 import Details from './Details';
-import ErrorAlert from '../ErrorAlert';
+import { AlertLevel } from '../../enums/system';
 
 interface ProductProps {
     slug: string;
@@ -168,6 +168,12 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         [hasErrors, accessToken, currentProduct, order, maxQuantity, hasExceededStock]
     );
 
+    useEffect(() => {
+        if (qtyErr) {
+            dispatch({ message: qtyErr, level: AlertLevel.Error });
+        }
+    }, [qtyErr]);
+
     if (currentProduct) {
         const description = currentProduct.description ? split(currentProduct.description, '\n\n') : [];
         const shouldShowCompare = currentProduct.amount !== currentProduct.compare_amount;
@@ -222,7 +228,6 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                                         </div>
                                     </form>
                                 </div>
-                                <ErrorAlert error={qtyErr} />
                             </div>
                         </div>
                     </div>

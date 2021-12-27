@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { MdOutlineMailOutline } from 'react-icons/md';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import ErrorAlert from '../ErrorAlert';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import selector from './selector';
 import { requestResetPassword } from '../../utils/account';
-import SuccessAlert from '../SuccessAlert';
+import { AlertLevel } from '../../enums/system';
 
 interface Submit {
     emailAddress?: string;
@@ -24,6 +23,7 @@ export const ResetPassword: React.FC = () => {
     const [success, setSuccess] = useState<string | null>(null);
     const hasErrors = Object.keys(errors).length > 0;
     const { accessToken } = useSelector(selector);
+    const dispatch = useDispatch();
 
     const emailErr = safelyParse(errors, 'emailAddress.message', parseAsString, null);
 
@@ -48,18 +48,20 @@ export const ResetPassword: React.FC = () => {
         setLoading(false);
     };
 
+    useEffect(() => {
+        if (error) {
+            dispatch({ message: error, level: AlertLevel.Error });
+        }
+    }, [error]);
+
+    useEffect(() => {
+        if (success) {
+            dispatch({ message: success, level: AlertLevel.Success });
+        }
+    }, [success]);
+
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            {error && (
-                <div className="mb-6">
-                    <ErrorAlert error={error} />
-                </div>
-            )}
-            {success && (
-                <div className="mb-6 w-full">
-                    <SuccessAlert msg={success} />
-                </div>
-            )}
             <div className="form-control mt-2">
                 <label className="input-group input-group-md">
                     <span className="bg-base-200">
