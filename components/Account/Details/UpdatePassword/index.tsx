@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import selector from './selector';
 import { AlertLevel } from '../../../../enums/system';
+import { addAlert } from '../../../../store/slices/alerts';
 
 const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -67,7 +68,7 @@ export const UpdatePassword: React.FC = () => {
 
     useEffect(() => {
         if (success) {
-            dispatch({ message: success, level: AlertLevel.Success });
+            dispatch(addAlert({ message: success, level: AlertLevel.Success }));
         }
     }, [success]);
 

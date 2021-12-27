@@ -11,6 +11,7 @@ import { Tabs } from '../../enums/auth';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import selector from './selector';
 import { AlertLevel } from '../../enums/system';
+import { addAlert } from '../../store/slices/alerts';
 
 interface Submit {
     username?: string;
@@ -80,7 +81,7 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
 
     useEffect(() => {
         if (responseError) {
-            dispatch({ message: responseError, level: AlertLevel.Error });
+            dispatch(addAlert({ message: responseError, level: AlertLevel.Error }));
         }
     }, [responseError]);
 

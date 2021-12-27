@@ -13,6 +13,7 @@ import { fetchOrder } from '../../store/slices/cart';
 import Images from './Images';
 import Details from './Details';
 import { AlertLevel } from '../../enums/system';
+import { addAlert } from '../../store/slices/alerts';
 
 interface ProductProps {
     slug: string;
@@ -170,7 +171,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
 
     useEffect(() => {
         if (qtyErr) {
-            dispatch({ message: qtyErr, level: AlertLevel.Error });
+            dispatch(addAlert({ message: qtyErr, level: AlertLevel.Error }));
         }
     }, [qtyErr]);
 

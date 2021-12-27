@@ -7,6 +7,7 @@ import { parseAsString, safelyParse } from '../../utils/parsers';
 import selector from './selector';
 import { requestResetPassword } from '../../utils/account';
 import { AlertLevel } from '../../enums/system';
+import { addAlert } from '../../store/slices/alerts';
 
 interface Submit {
     emailAddress?: string;
@@ -50,13 +51,13 @@ export const ResetPassword: React.FC = () => {
 
     useEffect(() => {
         if (error) {
-            dispatch({ message: error, level: AlertLevel.Error });
+            dispatch(addAlert({ message: error, level: AlertLevel.Error }));
         }
     }, [error]);
 
     useEffect(() => {
         if (success) {
-            dispatch({ message: success, level: AlertLevel.Success });
+            dispatch(addAlert({ message: success, level: AlertLevel.Success }));
         }
     }, [success]);
 

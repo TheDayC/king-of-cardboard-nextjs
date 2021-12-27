@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import { useDispatch } from 'react-redux';
 import { AlertLevel } from '../../../../enums/system';
+import { addAlert } from '../../../../store/slices/alerts';
 
 const USER_PATTERN = /^[a-zA-Z]{4,}$/;
 
@@ -59,7 +60,7 @@ export const UpdateUsername: React.FC = () => {
 
     useEffect(() => {
         if (success) {
-            dispatch({ message: success, level: AlertLevel.Success });
+            dispatch(addAlert({ message: success, level: AlertLevel.Success }));
         }
     }, [success]);
 

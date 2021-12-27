@@ -9,6 +9,7 @@ import Twitch from './twitch';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { AlertLevel } from '../../enums/system';
 import { useDispatch } from 'react-redux';
+import { addAlert } from '../../store/slices/alerts';
 
 interface LoginProps {
     providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider>;
@@ -23,13 +24,13 @@ export const Login: React.FC<LoginProps> = ({ providers, showRegistrationSuccess
 
     useEffect(() => {
         if (error) {
-            dispatch({ message: 'Invalid Credentials.', level: AlertLevel.Error });
+            dispatch(addAlert({ message: 'Invalid Credentials.', level: AlertLevel.Error }));
         }
     }, [error]);
 
     useEffect(() => {
         if (showRegistrationSuccess) {
-            dispatch({ message: 'Registration Successful!', level: AlertLevel.Success });
+            dispatch(addAlert({ message: 'Registration Successful!', level: AlertLevel.Success }));
         }
     }, [showRegistrationSuccess]);
 

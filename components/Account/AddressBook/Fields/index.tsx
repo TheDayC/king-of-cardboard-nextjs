@@ -8,6 +8,7 @@ import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import { fieldPatternMsgs } from '../../../../utils/checkout';
 import { addAddress, editAddress } from '../../../../utils/account';
 import { AlertLevel } from '../../../../enums/system';
+import { addAlert } from '../../../../store/slices/alerts';
 
 interface FormData {
     addressLineOne: string;
@@ -131,13 +132,13 @@ export const Fields: React.FC<FieldProps> = ({
 
     useEffect(() => {
         if (errorMsg) {
-            dispatch({ message: errorMsg, level: AlertLevel.Error });
+            dispatch(addAlert({ message: errorMsg, level: AlertLevel.Error }));
         }
     }, [errorMsg]);
 
     useEffect(() => {
         if (successMsg) {
-            dispatch({ message: successMsg, level: AlertLevel.Success });
+            dispatch(addAlert({ message: successMsg, level: AlertLevel.Success }));
         }
     }, [successMsg]);
 

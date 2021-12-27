@@ -8,6 +8,7 @@ import { parseAsSocialMedia, parseAsString, safelyParse } from '../../../../util
 import { setSocialMedia } from '../../../../store/slices/account';
 import selector from './selector';
 import { AlertLevel } from '../../../../enums/system';
+import { addAlert } from '../../../../store/slices/alerts';
 
 interface SubmitData {
     instagram: string;
@@ -103,7 +104,7 @@ export const SocialMediaLinks: React.FC = () => {
 
     useEffect(() => {
         if (success) {
-            dispatch({ message: success, level: AlertLevel.Success });
+            dispatch(addAlert({ message: success, level: AlertLevel.Success }));
         }
     }, [success]);
 
