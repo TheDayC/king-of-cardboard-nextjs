@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 import { DateTime } from 'luxon';
@@ -12,42 +12,38 @@ import {
     parseAsNumber,
     parseAsCommerceResponse,
     parseAsBoolean,
-    parseAsError,
-    parseAsAxiosError,
 } from './parsers';
 import { AddressResponse, CommerceLayerResponse, ErrorResponse } from '../types/api';
 import { authClient } from './auth';
-import { isAxiosError } from './typeguards';
-import { axiosErrorHandler, errorHandler } from '../middleware/errors';
+import { errorHandler } from '../middleware/errors';
 
 export async function getHistoricalOrders(
     accessToken: string,
     emailAddress: string,
     pageSize: number,
     page: number
-): Promise<GetOrders | null> {
+): Promise<GetOrders | ErrorResponse | ErrorResponse[] | null> {
     try {
-        const response = await axios.post('/api/account/getHistoricalOrders', {
-            token: accessToken,
-            emailAddress,
-            pageSize,
-            page,
-        });
+        const filters = `filter[q][email_eq]=${emailAddress}&filter[q][status_not_in]=draft,pending`;
+        const pagination = `page[size]=${pageSize}&page[number]=${page}`;
+        const sort = 'sort=-created_at,number';
+        const orderFields =
+            'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount_with_taxes,shipments_count,placed_at,updated_at,line_items';
+        const include = 'line_items';
+        const lineItemFields = 'fields[line_items]=id,sku_code,image_url,quantity';
+        const cl = authClient(accessToken);
+        const res = await cl.get(
+            `/api/orders?${filters}&${sort}&${pagination}&${orderFields}&include=${include}&${lineItemFields}`
+        );
 
-        if (response) {
-            const orders = safelyParse(response, 'data.orders', parseAsArrayOfCommerceResponse, null);
-            const included = safelyParse(response, 'data.included', parseAsArrayOfCommerceResponse, null);
-            const meta = safelyParse(response, 'data.meta', parseAsCommerceMeta, null);
-
-            return { orders, included, meta };
-        }
-
-        return null;
-    } catch (error) {
-        console.log('Error: ', error);
+        return {
+            orders: safelyParse(res, 'data.orders', parseAsArrayOfCommerceResponse, null),
+            included: safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null),
+            meta: safelyParse(res, 'data.meta', parseAsCommerceMeta, null),
+        };
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not get historical orders.');
     }
-
-    return null;
 }
 
 export async function getHistoricalOrder(
