@@ -233,24 +233,23 @@ export async function setLineItem(
     accessToken: string,
     attributes: LineItemAttributes,
     relationships: LineItemRelationships
-): Promise<boolean> {
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
-        const response = await axios.post('/api/lineItems', {
-            token: accessToken,
-            attributes,
-            relationships,
+        const cl = authClient(accessToken);
+        const res = await cl.post('/api/line_items', {
+            data: {
+                type: 'line_items',
+                attributes,
+                relationships,
+            },
         });
 
-        if (response) {
-            const hasUpdated: boolean = get(response, 'data.hasUpdated', false);
+        const lineItems = safelyParse(res, 'data.data', parseAsCommerceResponse, false);
 
-            return hasUpdated;
-        }
-    } catch (error) {
-        console.log('Error: ', error);
+        return Boolean(lineItems);
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not fetch an order.');
     }
-
-    return false;
 }
 
 export async function removeLineItem(accessToken: string, id: string): Promise<boolean> {
