@@ -132,28 +132,20 @@ export async function getAddresses(
     emailAddress: string,
     pageSize: number,
     page: number
-): Promise<AddressResponse | null> {
+): Promise<AddressResponse | ErrorResponse | ErrorResponse[] | null> {
     try {
-        const response = await axios.post('/api/account/getAddresses', {
-            token: accessToken,
-            emailAddress,
-            pageSize,
-            page,
-        });
+        const filters = `filter[q][email_eq]=${emailAddress}`;
+        const pagination = `page[size]=${pageSize}&page[number]=${page}`;
+        const cl = authClient(accessToken);
+        const res = await cl.get(`/api/customer_addresses?${filters}&${pagination}`);
 
-        if (response) {
-            return {
-                addresses: safelyParse(response, 'data.addresses', parseAsArrayOfCommerceResponse, null),
-                meta: safelyParse(response, 'data.meta', parseAsCommerceMeta, null),
-            };
-        }
-
-        return null;
-    } catch (error) {
-        console.log('Error: ', error);
+        return {
+            addresses: safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null),
+            meta: safelyParse(res, 'data.meta', parseAsCommerceMeta, null),
+        };
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not fetch your saved addresses.');
     }
-
-    return null;
 }
 
 export async function addAddress(
