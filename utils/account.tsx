@@ -18,7 +18,7 @@ import {
 import { AddressResponse, CommerceLayerResponse, ErrorResponse } from '../types/api';
 import { authClient } from './auth';
 import { isAxiosError } from './typeguards';
-import { axiosErrorHandler } from '../middleware/axiosErrors';
+import { axiosErrorHandler } from '../middleware/errors';
 
 export async function getHistoricalOrders(
     accessToken: string,

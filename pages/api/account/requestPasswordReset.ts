@@ -7,7 +7,13 @@ import * as aws from '@aws-sdk/client-ses';
 import { DateTime } from 'luxon';
 
 import { connectToDatabase } from '../../../middleware/database';
-import { parseAsArrayOfCommerceLayerErrors, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
+import {
+    parseAsArrayOfCommerceLayerErrors,
+    parseAsArrayOfStrings,
+    parseAsNumber,
+    parseAsString,
+    safelyParse,
+} from '../../../utils/parsers';
 import { authClient } from '../../../utils/auth';
 import { shouldResetPassword } from '../../../utils/account';
 
@@ -123,7 +129,7 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
         } catch (error) {
             const status = safelyParse(error, 'response.status', parseAsNumber, 500);
             const message = safelyParse(error, 'response.statusText', parseAsString, 'Error');
-            const errors = safelyParse(error, 'response.data.errors', parseAsArrayOfCommerceLayerErrors, [
+            const errors = safelyParse(error, 'response.data.errors', parseAsArrayOfStrings, [
                 'We could not send you a password reset email.',
             ]);
 

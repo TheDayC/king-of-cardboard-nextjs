@@ -1,30 +1,36 @@
 import axios from 'axios';
 import { get } from 'react-hook-form';
 
+import { errorHandler } from '../middleware/errors';
 import { CartItem, CustomerDetails } from '../store/types/state';
+import { ErrorResponse } from '../types/api';
 import { Order } from '../types/cart';
-import { parseAsBoolean, safelyParse } from './parsers';
+import { authClient } from './auth';
+import { parseAsBoolean, parseAsNumber, safelyParse } from './parsers';
 
-export async function confirmOrder(accessToken: string, orderId: string, attribute: string): Promise<boolean> {
+export async function confirmOrder(
+    accessToken: string,
+    orderId: string,
+    attribute: string
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
-        const response = await axios.post('/api/confirmOrder', {
-            token: accessToken,
-            id: orderId,
-            attribute,
+        const cl = authClient(accessToken);
+        const res = await cl.patch(`/api/orders/${orderId}`, {
+            data: {
+                type: 'orders',
+                id: orderId,
+                attributes: {
+                    [attribute]: true,
+                },
+            },
         });
 
-        if (response) {
-            const hasPlaced: boolean = get(response, 'data.hasPlaced', false);
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-            return hasPlaced;
-        }
-
-        return false;
-    } catch (error) {
-        console.log('Error: ', error);
+        return status === 200 ? true : false;
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not place your order.');
     }
-
-    return false;
 }
 
 export async function refreshPayment(accessToken: string, id: string, paymentSourceType: string): Promise<boolean> {
