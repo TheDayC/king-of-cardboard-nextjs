@@ -42,41 +42,6 @@ export async function createOrder(accessToken: string): Promise<Order | ErrorRes
     }
 }
 
-export async function getStockItems(accessToken: string, sku_codes: string[]): Promise<StockItem[] | null> {
-    try {
-        const response = await axios.post('/api/stockItems', {
-            token: accessToken,
-            sku_codes,
-        });
-
-        if (response) {
-            const stockItems = get(response, 'data.stockItems', null);
-
-            return stockItems.map((item: unknown) => {
-                const id = get(item, 'id', '');
-                const sku_code = get(item, 'attributes.sku_code', '');
-                const reference = get(item, 'attributes.reference', '');
-                const quantity = get(item, 'attributes.quantity', 0);
-                const created_at = get(item, 'attributes.created_at', '');
-
-                return {
-                    id,
-                    attributes: {
-                        sku_code,
-                        reference,
-                        quantity,
-                        created_at,
-                    },
-                };
-            });
-        }
-    } catch (error) {
-        console.log('Error: ', error);
-    }
-
-    return null;
-}
-
 export async function getSkus(
     accessToken: string,
     sku_codes: string[]
