@@ -9,6 +9,7 @@ import { fieldPatternMsgs } from '../../../../utils/checkout';
 import { addAddress, editAddress } from '../../../../utils/account';
 import { AlertLevel } from '../../../../enums/system';
 import { addAlert } from '../../../../store/slices/alerts';
+import { isArrayOfErrors, isError } from '../../../../utils/typeguards';
 
 interface FormData {
     addressLineOne: string;
@@ -92,7 +93,7 @@ export const Fields: React.FC<FieldProps> = ({
                 setSuccessMsg(null);
             }
         } else {
-            const customerAddressId = await addAddress(
+            const res = await addAddress(
                 accessToken,
                 emailAddress,
                 data.addressLineOne,
@@ -106,13 +107,21 @@ export const Fields: React.FC<FieldProps> = ({
                 data.postcode
             );
 
-            if (customerAddressId) {
-                setSuccessMsg('Address successfullly added!');
-                setErrorMsg(null);
-                reset();
+            if (isError(res)) {
+                dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
+            } else if (isArrayOfErrors(res)) {
+                res.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
             } else {
-                setErrorMsg('Unable to add address.');
-                setSuccessMsg(null);
+                if (res) {
+                    setSuccessMsg('Address successfullly added!');
+                    setErrorMsg(null);
+                    reset();
+                } else {
+                    setErrorMsg('Unable to add address.');
+                    setSuccessMsg(null);
+                }
             }
         }
 

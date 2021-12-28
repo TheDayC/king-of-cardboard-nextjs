@@ -160,7 +160,7 @@ export async function addAddress(
     lastName: string,
     phone: string,
     postcode: string
-): Promise<string | null> {
+): Promise<string | ErrorResponse | ErrorResponse[] | null> {
     try {
         const response = await axios.post('/api/account/addAddress', {
             token: accessToken,
@@ -177,11 +177,9 @@ export async function addAddress(
         });
 
         return safelyParse(response, 'data.customerAddressId', parseAsString, null);
-    } catch (error) {
-        console.log('Error: ', error);
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not fetch your saved addresses.');
     }
-
-    return null;
 }
 
 export async function deleteAddress(accessToken: string, id: string): Promise<boolean> {
