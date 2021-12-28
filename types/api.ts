@@ -19,7 +19,7 @@ export interface CommerceLayerResponse {
 }
 
 export interface CommerceLayerObject {
-    [key: string]: string;
+    [key: string]: unknown;
 }
 
 export interface CommerceLayerMeta {

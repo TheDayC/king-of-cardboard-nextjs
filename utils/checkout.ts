@@ -10,7 +10,13 @@ import { authClient } from './auth';
 import { ErrorResponse } from '../types/api';
 import { errorHandler } from '../middleware/errors';
 import { isArray } from './typeguards';
-import { parseAsArrayOfLineItemRelationships, parseAsNumber, parseAsString, safelyParse } from './parsers';
+import {
+    parseAsArrayOfLineItemRelationships,
+    parseAsCommerceResponseArray,
+    parseAsNumber,
+    parseAsString,
+    safelyParse,
+} from './parsers';
 
 function regexEmail(email: string): boolean {
     // eslint-disable-next-line no-useless-escape
@@ -258,67 +264,55 @@ export async function updateAddress(
     return false;
 }
 
-export async function getShipments(accessToken: string, orderId: string): Promise<Shipments | null> {
+export async function getShipments(
+    accessToken: string,
+    orderId: string
+): Promise<Shipments | ErrorResponse | ErrorResponse[] | null> {
     try {
-        const response = await axios.post('/api/getShipments', {
-            token: accessToken,
-            id: orderId,
-        });
+        const cl = authClient(accessToken);
+        const include = 'available_shipping_methods,stock_location';
+        const res = await cl.get(`/api/orders/${orderId}/shipments?include=${include}`);
+        const shipments = safelyParse(res, 'data.data', parseAsCommerceResponseArray, null);
+        const included = safelyParse(res, 'data.included', parseAsCommerceResponseArray, null);
 
-        if (response) {
-            const shipments: any[] | null = get(response, 'data.shipments', null);
-            const included: any[] | null = get(response, 'data.included', null);
-
-            if (shipments && included) {
-                return {
-                    shipments: shipments.map((shipment) => shipment.id),
-                    shippingMethods: included.map((method) => {
-                        const id: string = get(method, 'id', '');
-                        const name: string = get(method, 'attributes.name', '');
-                        const price_amount_cents: number = get(method, 'attributes.price_amount_cents', 0);
-                        const price_amount_float: number = get(method, 'attributes.price_amount_float', 0);
-                        const price_amount_for_shipment_cents: number = get(
-                            method,
-                            'attributes.price_amount_for_shipment_cents',
-                            0
-                        );
-                        const price_amount_for_shipment_float: number = get(
-                            method,
-                            'attributes.price_amount_for_shipment_float',
-                            0
-                        );
-                        const currency_code: string = get(method, 'attributes.currency_code', '');
-                        const formatted_price_amount: string = get(method, 'attributes.formatted_price_amount', '');
-                        const formatted_price_amount_for_shipment: string = get(
-                            method,
-                            'attributes.formatted_price_amount_for_shipment',
-                            ''
-                        );
-
-                        return {
-                            id,
-                            name,
-                            price_amount_cents,
-                            price_amount_float,
-                            price_amount_for_shipment_cents,
-                            price_amount_for_shipment_float,
-                            currency_code,
-                            formatted_price_amount,
-                            formatted_price_amount_for_shipment,
-                        };
-                    }),
-                };
-            } else {
-                return null;
-            }
+        if (!shipments || !included) {
+            return null;
         }
 
-        return null;
-    } catch (error) {
-        console.log('Error: ', error);
+        return {
+            shipments: shipments.map((shipment) => shipment.id),
+            shippingMethods: included.map((method) => {
+                return {
+                    id: safelyParse(method, 'id', parseAsString, ''),
+                    name: safelyParse(method, 'attributes.name', parseAsString, ''),
+                    price_amount_cents: safelyParse(method, 'attributes.price_amount_cents', parseAsNumber, 0),
+                    price_amount_float: safelyParse(method, 'attributes.price_amount_float', parseAsNumber, 0),
+                    price_amount_for_shipment_cents: safelyParse(
+                        method,
+                        'attributes.price_amount_for_shipment_cents',
+                        parseAsNumber,
+                        0
+                    ),
+                    price_amount_for_shipment_float: safelyParse(
+                        method,
+                        'attributes.price_amount_for_shipment_float',
+                        parseAsNumber,
+                        0
+                    ),
+                    currency_code: safelyParse(method, 'attributes.currency_code', parseAsString, ''),
+                    formatted_price_amount: safelyParse(method, 'attributes.formatted_price_amount', parseAsString, ''),
+                    formatted_price_amount_for_shipment: safelyParse(
+                        method,
+                        'attributes.formatted_price_amount_for_shipment',
+                        parseAsString,
+                        ''
+                    ),
+                };
+            }),
+        };
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not fetch delivery lead times.');
     }
-
-    return null;
 }
 
 export async function getDeliveryLeadTimes(
@@ -340,7 +334,7 @@ export async function getDeliveryLeadTimes(
         }
 
         return null;
-    } catch (error) {
+    } catch (error: unknown) {
         return errorHandler(error, 'We could not fetch delivery lead times.');
     }
 }
@@ -394,39 +388,36 @@ export async function updateShipmentMethod(
     return false;
 }
 
-export async function getShipment(accessToken: string, shipmentId: string): Promise<ShipmentsWithLineItems | null> {
+export async function getShipment(
+    accessToken: string,
+    shipmentId: string
+): Promise<ShipmentsWithLineItems | ErrorResponse | ErrorResponse[] | null> {
     try {
-        const response = await axios.post('/api/getShipment', {
-            token: accessToken,
-            shipmentId,
-        });
+        const cl = authClient(accessToken);
+        const include = 'shipping_method,delivery_lead_time,shipment_line_items';
+        const res = await cl.get(`/api/shipments/${shipmentId}?include=${include}`);
+        const included = safelyParse(res, 'data.included', parseAsCommerceResponseArray, null);
 
-        if (response) {
-            const included = get(response, 'data.included', null);
-            const method = included ? included.find((include: any) => include.type === 'shipping_methods') : null;
-            const items = included
-                ? included
-                      .filter((include: any) => include.type === 'shipment_line_items')
-                      .map((item: any) => item.attributes.sku_code)
-                : null;
-
-            if (method && items) {
-                const methodId: string = method ? get(method, 'id', '') : '';
-
-                return {
-                    shipmentId,
-                    methodId,
-                    lineItems: items,
-                };
-            } else {
-                return null;
-            }
+        if (!included) {
+            return null;
         }
-    } catch (error) {
-        console.log('Error: ', error);
-    }
 
-    return null;
+        const method = included.find(
+            (include) => safelyParse(include, 'type', parseAsString, null) === 'shipping_methods'
+        );
+        const items = included
+            .filter((include) => safelyParse(include, 'type', parseAsString, null) === 'shipment_line_items')
+            .map((item) => safelyParse(item, 'attributes.sku_code', parseAsString, ''));
+        const methodId = safelyParse(method, 'id', parseAsString, '');
+
+        return {
+            shipmentId,
+            methodId,
+            lineItems: items,
+        };
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not get a shipment.');
+    }
 }
 
 export async function updatePaymentMethod(accessToken: string, id: string, paymentMethodId: string): Promise<boolean> {
