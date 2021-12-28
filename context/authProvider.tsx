@@ -14,21 +14,30 @@ import {
     setPaymentMethods,
     setUpdatingCart,
 } from '../store/slices/cart';
-// import { rehydration } from '../store';
 import { createToken } from '../utils/auth';
 import { getShipment, getShipments } from '../utils/checkout';
 import { addShipmentWithMethod } from '../store/slices/checkout';
 import { parseAsString, safelyParse } from '../utils/parsers';
+import { isArrayOfErrors, isError } from '../utils/typeguards';
+import { addAlert } from '../store/slices/alerts';
+import { AlertLevel } from '../enums/system';
 
 const AuthProvider: React.FC = ({ children }) => {
     const { accessToken, expires, order, shouldFetchOrder } = useSelector(selector);
     const dispatch = useDispatch();
     const [shouldCreateOrder, setShouldCreateOrder] = useState(true);
 
+    // Fetch an auth token for the user to interact with commerceLayer.
     const fetchToken = useCallback(async () => {
         const res = await createToken();
 
-        if (res) {
+        if (isError(res)) {
+            dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
+        } else if (isArrayOfErrors(res)) {
+            res.forEach((value) => {
+                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+            });
+        } else {
             const { token, expires } = res;
 
             dispatch(setAccessToken(token));
