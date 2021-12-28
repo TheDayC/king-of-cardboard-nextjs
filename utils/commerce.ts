@@ -42,6 +42,32 @@ export async function createOrder(accessToken: string): Promise<Order | ErrorRes
     }
 }
 
+export async function getStockItems(
+    accessToken: string
+): Promise<StockItem[] | ErrorResponse | ErrorResponse[] | null> {
+    try {
+        const cl = authClient(accessToken);
+        const res = await cl.get('/api/stock_items');
+        const stockItems = safelyParse(res, 'data.stockItems', parseAsArrayOfCommerceResponse, null);
+
+        if (!stockItems) {
+            return null;
+        }
+
+        return stockItems.map((item) => ({
+            id: item.id,
+            attributes: {
+                sku_code: safelyParse(item, 'attributes.sku_code', parseAsString, ''),
+                reference: safelyParse(item, 'attributes.reference', parseAsString, ''),
+                quantity: safelyParse(item, 'attributes.quantity', parseAsNumber, 0),
+                created_at: safelyParse(item, 'attributes.created_at', parseAsString, ''),
+            },
+        }));
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not get a shipment.');
+    }
+}
+
 export async function getSkus(
     accessToken: string,
     sku_codes: string[]
