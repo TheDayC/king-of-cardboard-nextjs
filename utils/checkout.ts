@@ -10,7 +10,7 @@ import { authClient } from './auth';
 import { ErrorResponse } from '../types/api';
 import { errorHandler } from '../middleware/errors';
 import { isArray } from './typeguards';
-import { parseAsNumber, parseAsString, safelyParse } from './parsers';
+import { parseAsArrayOfLineItemRelationships, parseAsNumber, parseAsString, safelyParse } from './parsers';
 
 function regexEmail(email: string): boolean {
     // eslint-disable-next-line no-useless-escape
@@ -418,29 +418,6 @@ export async function getShipment(accessToken: string, shipmentId: string): Prom
                     methodId,
                     lineItems: items,
                 };
-            } else {
-                return null;
-            }
-        }
-    } catch (error) {
-        console.log('Error: ', error);
-    }
-
-    return null;
-}
-
-export async function getLineItem(accessToken: string, id: string): Promise<any | null> {
-    try {
-        const response = await axios.post('/api/getLineItem', {
-            token: accessToken,
-            id,
-        });
-
-        if (response) {
-            const items = get(response, 'data.items', null);
-
-            if (items) {
-                return items;
             } else {
                 return null;
             }
