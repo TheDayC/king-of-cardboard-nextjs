@@ -333,3 +333,29 @@ export async function updatePassword(
         return errorHandler(error, 'We could not create a payment source.');
     }
 }
+
+export async function resetPassword(
+    accessToken: string,
+    password: string,
+    id: string,
+    resetToken: string
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+    try {
+        const cl = authClient(accessToken);
+        const res = await cl.patch(`/api/customer_password_resets/${id}`, {
+            data: {
+                type: 'customer_password_resets',
+                id: id,
+                attributes: {
+                    customer_password: password,
+                    _reset_password_token: resetToken,
+                },
+            },
+        });
+        const status = safelyParse(res, 'response.status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not create a payment source.');
+    }
+}

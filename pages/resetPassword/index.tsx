@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { getSession } from 'next-auth/react';
 import Error from 'next/error';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
 import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import { GetServerSideProps } from 'next';
 
 import Header from '../../components/Header';
-import { ServerSideRedirectProps } from '../../types/pages';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { addAlert } from '../../store/slices/alerts';
 import { AlertLevel } from '../../enums/system';
 import selector from './selector';
+import { resetPassword } from '../../utils/account';
+import { isBoolean, isError } from '../../utils/typeguards';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -62,7 +62,6 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
 
     const password = watch('password', ''); // Watch password field for changes.
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState<string | null>(null);
     const dispatch = useDispatch();
 
     const hasErrors = Object.keys(errors).length > 0;
@@ -72,39 +71,20 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
     const onSubmit = async (data: SubmitData) => {
         const { password: newPassword, confirmPassword } = data;
 
-        if (newPassword !== confirmPassword || !emailAddress) return;
+        if (newPassword !== confirmPassword || !emailAddress || !accessToken || !resetToken || !id) return;
 
         setLoading(true);
 
-        try {
-            const response = await axios.post('/api/account/resetPassword', {
-                password: newPassword,
-                confirmPassword,
-                token: accessToken,
-                resetToken,
-                id,
-            });
+        const res = await resetPassword(accessToken, password, id, resetToken);
 
-            if (response) {
-                setSuccess('Password Updated!');
-                setLoading(false);
-            }
-        } catch (error) {
-            setLoading(false);
-
-            if (axios.isAxiosError(error)) {
-                console.log('🚀 ~ file: index.tsx ~ line 50 ~ onSubmit ~ error', error);
-            } else {
-                console.log('🚀 ~ file: index.tsx ~ line 50 ~ onSubmit ~ error', error);
-            }
+        if (isBoolean(res)) {
+            dispatch(addAlert({ message: 'Password Reset!', level: AlertLevel.Success }));
+        } else if (isError(res)) {
+            dispatch(addAlert({ message: res.message, level: AlertLevel.Error }));
         }
+
+        setLoading(false);
     };
-
-    useEffect(() => {
-        if (success) {
-            dispatch(addAlert({ message: success, level: AlertLevel.Success }));
-        }
-    }, [success]);
 
     // Show error page if a code is provided.
     if (errorCode && typeof errorCode === 'number') {
