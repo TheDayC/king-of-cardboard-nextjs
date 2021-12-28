@@ -2,30 +2,36 @@
 import axios from 'axios';
 import { get } from 'lodash';
 
-import { PaymentSourceResponse } from '../types/api';
+import { errorHandler } from '../middleware/errors';
+import { ErrorResponse, PaymentSourceResponse } from '../types/api';
 import { Order } from '../types/cart';
 import { LineItemAttributes, LineItemRelationships, Price, StockItem, SkuItem, SkuProduct } from '../types/commerce';
+import { authClient } from './auth';
 import { parseAsString, parseOrderData, safelyParse } from './parsers';
 
-export async function createOrder(accessToken: string): Promise<Order | null> {
+export async function createOrder(accessToken: string): Promise<Order | ErrorResponse | ErrorResponse[] | null> {
     try {
-        const response = await axios.post('/api/createOrder', {
-            token: accessToken,
+        const cl = authClient(accessToken);
+        const res = await cl.post('/api/orders', {
+            data: {
+                type: 'orders',
+                attributes: {
+                    guest: true,
+                },
+            },
         });
 
-        if (response) {
-            const order: any[] | null = get(response, 'data.order', null);
-            const included: any[] | null = get(response, 'data.included', null);
+        if (res) {
+            const order: unknown = get(res, 'data.order', null);
+            const included: unknown[] = get(res, 'data.included', []);
 
             return parseOrderData(order, included);
         }
 
         return null;
-    } catch (error) {
-        console.log('Error: ', error);
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not create your order.');
     }
-
-    return null;
 }
 
 export async function getStockItems(accessToken: string, sku_codes: string[]): Promise<StockItem[] | null> {
