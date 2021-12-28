@@ -27,7 +27,7 @@ export async function confirmOrder(
 
         const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        return status === 200 ? true : false;
+        return status === 200;
     } catch (error: unknown) {
         return errorHandler(error, 'We could not confirm your order.');
     }
