@@ -1,6 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 import { DateTime } from 'luxon';
 
+import { errorHandler } from '../middleware/errors';
+import { ErrorResponse } from '../types/api';
 import { CreateToken } from '../types/commerce';
 import { parseAsNumber, parseAsString, safelyParse } from './parsers';
 
@@ -37,28 +39,18 @@ export function userClient(): AxiosInstance {
 }
 
 // Create commerce layer access token
-export async function createToken(): Promise<CreateToken | null> {
+export async function createToken(): Promise<CreateToken | ErrorResponse | ErrorResponse[] | null> {
     try {
-        const accessDetails = await axios.get('/api/getAccessToken');
+        const res = await axios.get('/api/getAccessToken');
+        const token = safelyParse(res, 'data.token', parseAsString, null);
+        const expires = safelyParse(res, 'data.expires', parseAsNumber, null);
+        const expiresIso = expires ? DateTime.now().setZone('Europe/London').plus({ seconds: expires }).toISO() : null;
 
-        if (accessDetails) {
-            const token = safelyParse(accessDetails, 'data.token', parseAsString, null);
-            const expires = safelyParse(accessDetails, 'data.expires', parseAsNumber, null);
-            const expiresIso = expires
-                ? DateTime.now().setZone('Europe/London').plus({ seconds: expires }).toISO()
-                : null;
-
-            return {
-                token,
-                expires: expiresIso,
-            };
-        }
-    } catch (error) {
-        console.log('Error: ', error);
+        return {
+            token,
+            expires: expiresIso,
+        };
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not create a payment source.');
     }
-
-    return {
-        token: null,
-        expires: null,
-    };
 }

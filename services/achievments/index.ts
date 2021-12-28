@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Session } from 'next-auth';
 
 import { Achievement, ObjectId, Objective } from '../../types/achievements';
+import { authClient } from '../../utils/auth';
 import {
     parseAsArrayOfAchievements,
     parseAsArrayOfObjectives,
@@ -70,18 +71,16 @@ class Achievements {
     }
 
     public async updateAchievements(): Promise<void> {
-        const response = await axios.post('/api/achievements/updateAchievements', {
-            emailAddress: this._email,
-            achievements: this._achievements,
+        const cl = authClient(this._accessToken);
+        await cl.patch(`/api/gift_cards/${this._giftCardId}`, {
+            data: {
+                type: 'gift_cards',
+                id: this._giftCardId,
+                attributes: {
+                    balance_cents: this._points,
+                },
+            },
         });
-
-        if (response) {
-            await axios.post('/api/achievements/updateGiftCardBalance', {
-                token: this._accessToken,
-                giftCardId: this._giftCardId,
-                points: this._points,
-            });
-        }
     }
 
     public incrementAchievement(

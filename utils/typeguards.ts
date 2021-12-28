@@ -73,6 +73,10 @@ export function isError(candidate: unknown): candidate is ErrorResponse {
     return isNotNullOrUndefined<object>(candidate) && isObject(candidate) && 'status' in candidate;
 }
 
+export function isArrayOfErrors(candidate: unknown): candidate is ErrorResponse[] {
+    return isArray(candidate) && isError(candidate[0]);
+}
+
 export function isAttributes(candidate: unknown): candidate is CommerceLayerObject {
     return isNotNullOrUndefined<object>(candidate) && 'name' in candidate;
 }

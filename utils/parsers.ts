@@ -37,83 +37,38 @@ import {
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
 
-export function parseOrderData(order: any, included: any): Order | null {
-    if (order !== null) {
-        const id = safelyParse(order, 'id', parseAsString, '');
-        const orderNumber = safelyParse(order, 'attributes.number', parseAsNumber, 0);
-        const sku_count = safelyParse(order, 'attributes.sku_count', parseAsNumber, 0);
-        const formatted_subtotal_amount = safelyParse(
-            order,
-            'attributes.formatted_subtotal_amount',
-            parseAsString,
-            '£0.00'
-        );
-        const formatted_discount_amount = safelyParse(
-            order,
-            'attributes.formatted_discount_amount',
-            parseAsString,
-            '£0.00'
-        );
-        const formatted_shipping_amount = safelyParse(
-            order,
-            'attributes.formatted_shipping_amount',
-            parseAsString,
-            '£0.00'
-        );
-        const formatted_total_tax_amount = safelyParse(
-            order,
-            'attributes.formatted_total_tax_amount',
-            parseAsString,
-            '£0.00'
-        );
-        const formatted_gift_card_amount = safelyParse(
-            order,
-            'attributes.formatted_gift_card_amount',
-            parseAsString,
-            '£0.00'
-        );
-        const formatted_total_amount_with_taxes = safelyParse(
+export function parseOrderData(order: unknown, included: unknown[]): Order | null {
+    if (!order) {
+        return null;
+    }
+
+    return {
+        id: safelyParse(order, 'id', parseAsString, ''),
+        number: safelyParse(order, 'attributes.number', parseAsNumber, 0),
+        sku_count: safelyParse(order, 'attributes.sku_count', parseAsNumber, 0),
+        formatted_subtotal_amount: safelyParse(order, 'attributes.formatted_subtotal_amount', parseAsString, '£0.00'),
+        formatted_discount_amount: safelyParse(order, 'attributes.formatted_discount_amount', parseAsString, '£0.00'),
+        formatted_shipping_amount: safelyParse(order, 'attributes.formatted_shipping_amount', parseAsString, '£0.00'),
+        formatted_total_tax_amount: safelyParse(order, 'attributes.formatted_total_tax_amount', parseAsString, '£0.00'),
+        formatted_gift_card_amount: safelyParse(order, 'attributes.formatted_gift_card_amount', parseAsString, '£0.00'),
+        formatted_total_amount_with_taxes: safelyParse(
             order,
             'attributes.formatted_total_amount_with_taxes',
             parseAsString,
             '£0.00'
-        );
-        const status = safelyParse(order, 'attributes.status', parseAsString, 'draft');
-        const payment_status = safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid');
-        const fulfillment_status = safelyParse(order, 'attributes.fulfillment_status', parseAsString, 'unfulfilled');
-        const line_items = safelyParse(order, 'attributes.line_items', parseAsArrayOfStrings, [] as string[]);
-
-        return {
-            id,
-            number: orderNumber,
-            sku_count,
-            formatted_subtotal_amount,
-            formatted_discount_amount,
-            formatted_shipping_amount,
-            formatted_total_tax_amount,
-            formatted_gift_card_amount,
-            formatted_total_amount_with_taxes,
-            status,
-            payment_status,
-            fulfillment_status,
-            line_items,
-            included: included
-                ? included.map((include: unknown) => {
-                      const id = safelyParse(include, 'id', parseAsString, '');
-                      const type = safelyParse(include, 'type', parseAsString, '');
-                      const attributes = safelyParse(include, 'attributes', parseAsAttributes, null);
-
-                      return {
-                          id,
-                          type,
-                          attributes,
-                      };
-                  })
-                : [],
-        };
-    }
-
-    return null;
+        ),
+        status: safelyParse(order, 'attributes.status', parseAsString, 'draft'),
+        payment_status: safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid'),
+        fulfillment_status: safelyParse(order, 'attributes.fulfillment_status', parseAsString, 'unfulfilled'),
+        line_items: safelyParse(order, 'attributes.line_items', parseAsArrayOfStrings, [] as string[]),
+        included: included.length
+            ? included.map((include: unknown) => ({
+                  id: safelyParse(include, 'id', parseAsString, ''),
+                  type: safelyParse(include, 'type', parseAsString, ''),
+                  attributes: safelyParse(include, 'attributes', parseAsAttributes, null),
+              }))
+            : [],
+    };
 }
 
 export function parseCustomerDetails(data: unknown, allowShipping: boolean): CustomerDetails {
@@ -219,7 +174,7 @@ export const parseAsArrayOfStrings = parseAsType(isArrayOfStrings);
 export const parseAsError = parseAsType(isError);
 export const parseAsSocialMedia = parseAsType(isSocialMedia);
 export const parseAsCommerceResponse = parseAsType(isCommerceResponse);
-export const parseAsCommerceResponseArray = parseAsType(isCommerceResponseArray);
+export const parseAsArrayOfCommerceResponse = parseAsType(isCommerceResponseArray);
 export const parseAsCommerceMeta = parseAsType(isCommerceMeta);
 export const parseAsAttributes = parseAsType(isAttributes);
 export const parseAsCounties = parseAsType(isEnumMember(Counties));

@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
-import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -9,6 +8,8 @@ import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import selector from './selector';
 import { AlertLevel } from '../../../../enums/system';
 import { addAlert } from '../../../../store/slices/alerts';
+import { updatePassword } from '../../../../utils/account';
+import { isBoolean, isError } from '../../../../utils/typeguards';
 
 const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -26,7 +27,6 @@ export const UpdatePassword: React.FC = () => {
     } = useForm();
     const password = watch('password', ''); // Watch password field for changes.
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState<string | null>(null);
     const { data: session } = useSession();
     const { accessToken: token } = useSelector(selector);
     const dispatch = useDispatch();
@@ -39,38 +39,20 @@ export const UpdatePassword: React.FC = () => {
     const onSubmit = async (data: SubmitData) => {
         const { password: newPassword, confirmPassword } = data;
 
-        if (newPassword !== confirmPassword || !emailAddress) return;
+        if (newPassword !== confirmPassword || !emailAddress || !token) return;
 
         setLoading(true);
 
-        try {
-            const response = await axios.post('/api/account/updatePassword', {
-                emailAddress,
-                password: newPassword,
-                confirmPassword,
-                token,
-            });
+        const res = await updatePassword(token, emailAddress, password);
 
-            if (response) {
-                setSuccess('Password Updated!');
-                setLoading(false);
-            }
-        } catch (error) {
-            setLoading(false);
-
-            if (axios.isAxiosError(error)) {
-                console.log('🚀 ~ file: index.tsx ~ line 50 ~ onSubmit ~ error', error);
-            } else {
-                console.log('🚀 ~ file: index.tsx ~ line 50 ~ onSubmit ~ error', error);
-            }
+        if (isBoolean(res)) {
+            dispatch(addAlert({ message: 'Password Updated!', level: AlertLevel.Success }));
+        } else if (isError(res)) {
+            dispatch(addAlert({ message: res.message, level: AlertLevel.Error }));
         }
+
+        setLoading(false);
     };
-
-    useEffect(() => {
-        if (success) {
-            dispatch(addAlert({ message: success, level: AlertLevel.Success }));
-        }
-    }, [success]);
 
     return (
         <React.Fragment>

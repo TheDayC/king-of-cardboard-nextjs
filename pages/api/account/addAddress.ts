@@ -1,14 +1,16 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { parseAsArrayOfCommerceLayerErrors, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
+import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 import { authClient } from '../../../utils/auth';
 import { connectToDatabase } from '../../../middleware/database';
+import { errorHandler } from '../../../middleware/errors';
+
+const defaultErr = 'Could not add address.';
 
 async function addAddress(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
-        const { db } = await connectToDatabase();
-
         try {
+            const { db } = await connectToDatabase();
             const token = safelyParse(req, 'body.token', parseAsString, null);
             const email = safelyParse(req, 'body.emailAddress', parseAsString, null);
             const first_name = safelyParse(req, 'body.firstName', parseAsString, null);
@@ -69,13 +71,13 @@ async function addAddress(req: NextApiRequest, res: NextApiResponse): Promise<vo
                 const customerAddressId = safelyParse(response, 'data.data.id', parseAsString, null);
 
                 res.status(status).json({ customerAddressId });
+            } else {
+                res.status(204);
             }
-        } catch (error) {
-            const status = safelyParse(error, 'response.status', parseAsNumber, 500);
-            const statusText = safelyParse(error, 'response.statusText', parseAsString, 'Error');
-            const message = safelyParse(error, 'response.data.errors', parseAsArrayOfCommerceLayerErrors, null);
+        } catch (err: unknown) {
+            const status = safelyParse(err, 'response.status', parseAsNumber, 500);
 
-            res.status(status).json({ status, statusText, message });
+            res.status(status).json(errorHandler(err, defaultErr));
         }
 
         return Promise.resolve();

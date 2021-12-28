@@ -1,33 +1,43 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import axios from 'axios';
 
 import { authClient } from '../../utils/auth';
 import { parseAsNumber, parseAsString, safelyParse } from '../../utils/parsers';
+import { errorHandler } from '../../middleware/errors';
+
+const defaultError = 'Could not get access token.';
 
 async function getAccessToken(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'GET' && process.env.ECOM_CLIENT_ID) {
-        const cl = authClient();
+        try {
+            const cl = authClient();
 
-        return cl
-            .post('/oauth/token', {
+            const response = await cl.post('/oauth/token', {
                 grant_type: 'client_credentials',
                 client_id: process.env.ECOM_CLIENT_ID,
                 client_secret: process.env.ECOM_CLIENT_SECRET,
                 scope: 'market:6098',
-            })
-            .then((response) => {
-                const token = safelyParse(response, 'data.access_token', parseAsString, null);
-                const expires = safelyParse(response, 'data.expires_in', parseAsNumber, null);
-                const status = safelyParse(response, 'status', parseAsNumber, 500);
-
-                if (token && expires) {
-                    res.status(status).json({ token, expires });
-                } else {
-                    res.status(status).json({ error: 'Could not get access token.', status });
-                }
-            })
-            .catch((error) => {
-                res.status(500).json(error.response);
             });
+
+            const token = safelyParse(response, 'data.access_token', parseAsString, null);
+            const expires = safelyParse(response, 'data.expires_in', parseAsNumber, null);
+            const status = safelyParse(response, 'status', parseAsNumber, 500);
+
+            if (token && expires) {
+                res.status(status).json({ token, expires });
+            } else {
+                const message = safelyParse(response, 'statusText', parseAsString, 'Internal Server Error');
+                const description = safelyParse(response, 'message', parseAsString, defaultError);
+
+                res.status(status).json({ status, message, description });
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                const status = safelyParse(error, 'response.status', parseAsNumber, 500);
+
+                res.status(status).json(errorHandler(error, defaultError));
+            }
+        }
     } else {
         res.status(405).end('Method Not Allowed');
     }

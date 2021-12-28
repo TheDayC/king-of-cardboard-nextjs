@@ -1,13 +1,15 @@
-import { get } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';
+import { errorHandler } from '../../../middleware/errors';
 import { authClient } from '../../../utils/auth';
-import { parseAsArrayOfStrings, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
+import { parseAsCommerceResponse, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
+
+const defaultErr = 'We could not update your gift card balance.';
 
 async function getGiftCardBalance(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
-        const { db, client } = await connectToDatabase();
+        const { db } = await connectToDatabase();
 
         try {
             const token = safelyParse(req, 'body.token', parseAsString, null);
@@ -22,25 +24,20 @@ async function getGiftCardBalance(req: NextApiRequest, res: NextApiResponse): Pr
                 if (giftCardId) {
                     // If the gift card id exists fetch its balance.
                     const giftCard = await cl.get(`/api/gift_cards/${giftCardId}?fields[gift_cards]=balance_cents`);
-                    const giftCardData = get(giftCard, 'data.data', null);
-
-                    const status = safelyParse(giftCard, 'status', parseAsNumber, 500);
+                    const giftCardData = safelyParse(giftCard, 'data.data', parseAsCommerceResponse, null);
                     const balance = safelyParse(giftCardData, 'attributes.balance_cents', parseAsNumber, 0);
+                    const status = giftCard ? 200 : 400;
+                    const body = giftCard ? { balance } : { status, message: 'Bad Request', description: defaultErr };
 
-                    res.status(status).json({ balance });
+                    res.status(status).json(body);
                 } else {
-                    const status = safelyParse(giftCardId, 'status', parseAsNumber, 500);
-                    res.status(status).json({ giftCardId });
+                    res.status(400).json({ status: 400, message: 'Bad Request', description: defaultErr });
                 }
             }
-        } catch (err) {
+        } catch (err: unknown) {
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);
-            const statusText = safelyParse(err, 'response.statusText', parseAsString, '');
-            const message = safelyParse(err, 'response.data.errors', parseAsArrayOfStrings, [
-                'Something went very wrong! Likely a problem connecting to commercelayer.',
-            ]);
 
-            res.status(status).json({ status, statusText, message });
+            res.status(status).json(errorHandler(err, defaultErr));
         }
 
         return Promise.resolve();

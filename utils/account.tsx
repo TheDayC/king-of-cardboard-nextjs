@@ -1,81 +1,78 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 import { DateTime } from 'luxon';
 
 import { GetOrders } from '../types/account';
 import {
-    parseAsCommerceResponseArray,
+    parseAsArrayOfCommerceResponse,
     safelyParse,
     parseAsCommerceMeta,
     parseAsString,
     parseAsNumber,
     parseAsCommerceResponse,
     parseAsBoolean,
-    parseAsError,
-    parseAsAxiosError,
 } from './parsers';
 import { AddressResponse, CommerceLayerResponse, ErrorResponse } from '../types/api';
 import { authClient } from './auth';
-import { isAxiosError } from './typeguards';
-import { axiosErrorHandler } from '../middleware/axiosErrors';
+import { errorHandler } from '../middleware/errors';
 
 export async function getHistoricalOrders(
     accessToken: string,
     emailAddress: string,
     pageSize: number,
     page: number
-): Promise<GetOrders | null> {
+): Promise<GetOrders | ErrorResponse | ErrorResponse[] | null> {
     try {
-        const response = await axios.post('/api/account/getHistoricalOrders', {
-            token: accessToken,
-            emailAddress,
-            pageSize,
-            page,
-        });
+        const filters = `filter[q][email_eq]=${emailAddress}&filter[q][status_not_in]=draft,pending`;
+        const pagination = `page[size]=${pageSize}&page[number]=${page}`;
+        const sort = 'sort=-created_at,number';
+        const orderFields =
+            'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount_with_taxes,shipments_count,placed_at,updated_at,line_items';
+        const include = 'line_items';
+        const lineItemFields = 'fields[line_items]=id,sku_code,image_url,quantity';
+        const cl = authClient(accessToken);
+        const res = await cl.get(
+            `/api/orders?${filters}&${sort}&${pagination}&${orderFields}&include=${include}&${lineItemFields}`
+        );
 
-        if (response) {
-            const orders = safelyParse(response, 'data.orders', parseAsCommerceResponseArray, null);
-            const included = safelyParse(response, 'data.included', parseAsCommerceResponseArray, null);
-            const meta = safelyParse(response, 'data.meta', parseAsCommerceMeta, null);
-
-            return { orders, included, meta };
-        }
-
-        return null;
-    } catch (error) {
-        console.log('Error: ', error);
+        return {
+            orders: safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null),
+            included: safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null),
+            meta: safelyParse(res, 'data.meta', parseAsCommerceMeta, null),
+        };
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not get historical orders.');
     }
-
-    return null;
 }
 
 export async function getHistoricalOrder(
     accessToken: string,
     emailAddress: string,
     orderNumber: string
-): Promise<GetOrders | null> {
+): Promise<GetOrders | ErrorResponse | ErrorResponse[] | null> {
     try {
-        const response = await axios.post('/api/account/getHistoricalOrder', {
-            token: accessToken,
-            emailAddress,
-            orderNumber,
-        });
+        const filters = `filter[q][number_eq]=${orderNumber}&filter[q][email_eq]=${emailAddress}`;
+        const orderFields =
+            'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount,formatted_subtotal_amount,formatted_shipping_amount,formatted_discount_amount,shipments_count,placed_at,updated_at,line_items,shipping_address,billing_address,payment_source_details';
+        const include = 'line_items,shipping_address,billing_address,shipments';
+        const lineItemFields = 'fields[line_items]=id,sku_code,image_url,quantity';
+        const addressFields =
+            'fields[addresses]=id,name,first_name,last_name,company,line_1,line_2,city,zip_code,state_code,country_code,phone';
+        const shipmentFields = 'fields[shipments]=id,number,status,formatted_cost_amount';
+        const cl = authClient(accessToken);
+        const res = await cl.get(
+            `/api/orders?${filters}&${orderFields}&include=${include}&${lineItemFields}&${addressFields}&${shipmentFields}`
+        );
 
-        if (response) {
-            const orders = safelyParse(response, 'data.orders', parseAsCommerceResponseArray, null);
-            const included = safelyParse(response, 'data.included', parseAsCommerceResponseArray, null);
-            const meta = safelyParse(response, 'data.meta', parseAsCommerceMeta, null);
-
-            return { orders, included, meta };
-        }
-
-        return null;
-    } catch (error) {
-        console.log('Error: ', error);
+        return {
+            orders: safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null),
+            included: safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null),
+            meta: safelyParse(res, 'data.meta', parseAsCommerceMeta, null),
+        };
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not get historical order.');
     }
-
-    return null;
 }
 
 export function statusColour(status: string): string {
@@ -135,28 +132,20 @@ export async function getAddresses(
     emailAddress: string,
     pageSize: number,
     page: number
-): Promise<AddressResponse | null> {
+): Promise<AddressResponse | ErrorResponse | ErrorResponse[] | null> {
     try {
-        const response = await axios.post('/api/account/getAddresses', {
-            token: accessToken,
-            emailAddress,
-            pageSize,
-            page,
-        });
+        const filters = `filter[q][email_eq]=${emailAddress}`;
+        const pagination = `page[size]=${pageSize}&page[number]=${page}`;
+        const cl = authClient(accessToken);
+        const res = await cl.get(`/api/customer_addresses?${filters}&${pagination}`);
 
-        if (response) {
-            return {
-                addresses: safelyParse(response, 'data.addresses', parseAsCommerceResponseArray, null),
-                meta: safelyParse(response, 'data.meta', parseAsCommerceMeta, null),
-            };
-        }
-
-        return null;
-    } catch (error) {
-        console.log('Error: ', error);
+        return {
+            addresses: safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null),
+            meta: safelyParse(res, 'data.meta', parseAsCommerceMeta, null),
+        };
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not fetch your saved addresses.');
     }
-
-    return null;
 }
 
 export async function addAddress(
@@ -278,7 +267,10 @@ export async function editAddress(
     return null;
 }
 
-export async function requestPasswordReset(accessToken: string, email: string): Promise<boolean | ErrorResponse> {
+export async function requestPasswordReset(
+    accessToken: string,
+    email: string
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
         const response = await axios.post('/api/account/requestPasswordReset', {
             token: accessToken,
@@ -287,7 +279,7 @@ export async function requestPasswordReset(accessToken: string, email: string): 
 
         return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
     } catch (error: unknown) {
-        return safelyParse(error, 'response.data', parseAsError, false);
+        return errorHandler(error, 'We could not create a payment source.');
     }
 }
 
@@ -296,4 +288,63 @@ export function shouldResetPassword(lastSent: DateTime): boolean {
     const expiry = lastSent.plus({ seconds: 300 });
 
     return now >= expiry;
+}
+
+export async function updatePassword(
+    accessToken: string,
+    emailAddress: string,
+    password: string
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+    try {
+        const cl = authClient(accessToken);
+        const customer = await cl.get(`/api/customers/?filter[q][email_eq]=${emailAddress}`);
+        const customerRes = safelyParse(customer, 'data.data', parseAsArrayOfCommerceResponse, null);
+
+        if (!customerRes) {
+            return false;
+        }
+
+        const customerId = customerRes[0].id;
+
+        const res = await cl.patch(`/api/customers/${customerId}`, {
+            data: {
+                type: 'customers',
+                id: customerId,
+                attributes: {
+                    password,
+                },
+            },
+        });
+        const status = safelyParse(res, 'response.status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not create a payment source.');
+    }
+}
+
+export async function resetPassword(
+    accessToken: string,
+    password: string,
+    id: string,
+    resetToken: string
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+    try {
+        const cl = authClient(accessToken);
+        const res = await cl.patch(`/api/customer_password_resets/${id}`, {
+            data: {
+                type: 'customer_password_resets',
+                id: id,
+                attributes: {
+                    customer_password: password,
+                    _reset_password_token: resetToken,
+                },
+            },
+        });
+        const status = safelyParse(res, 'response.status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not create a payment source.');
+    }
 }

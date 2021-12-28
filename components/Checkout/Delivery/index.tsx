@@ -17,11 +17,17 @@ import Shipment from './Shipment';
 import { fetchOrder } from '../../../store/slices/cart';
 import { ShipmentsWithMethods } from '../../../store/types/state';
 import { setCheckoutLoading } from '../../../store/slices/global';
+import { isArrayOfErrors, isError } from '../../../utils/typeguards';
+import { addAlert } from '../../../store/slices/alerts';
+import { AlertLevel } from '../../../enums/system';
+import { parseAsString, safelyParse } from '../../../utils/parsers';
+import Alert from '../../Alert';
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
     const { accessToken, currentStep, shipmentsWithMethods, order, checkoutLoading } = useSelector(selector);
     const [shipments, setShipments] = useState<FinalShipments | null>(null);
+    console.log('🚀 ~ file: index.tsx ~ line 29 ~ shipments', shipments);
     const {
         register,
         handleSubmit,
@@ -34,8 +40,15 @@ export const Delivery: React.FC = () => {
         if (accessToken && orderId) {
             const shipmentData = await getShipments(accessToken, orderId);
             const deliveryLeadTimes = await getDeliveryLeadTimes(accessToken);
+            const hasResErrors =
+                !shipmentData ||
+                !deliveryLeadTimes ||
+                isError(shipmentData) ||
+                isError(deliveryLeadTimes) ||
+                isArrayOfErrors(shipmentData) ||
+                isArrayOfErrors(deliveryLeadTimes);
 
-            if (shipmentData && deliveryLeadTimes) {
+            if (!hasResErrors) {
                 const { shipments, shippingMethods } = shipmentData;
                 const mergedMethods = mergeMethodsAndLeadTimes(shippingMethods, deliveryLeadTimes);
 
@@ -43,6 +56,26 @@ export const Delivery: React.FC = () => {
                     shipments,
                     shippingMethods: mergedMethods,
                 });
+            } else {
+                if (isError(shipmentData)) {
+                    dispatch(addAlert({ message: shipmentData.description, level: AlertLevel.Error }));
+                }
+
+                if (isError(deliveryLeadTimes)) {
+                    dispatch(addAlert({ message: deliveryLeadTimes.description, level: AlertLevel.Error }));
+                }
+
+                if (isArrayOfErrors(shipmentData)) {
+                    shipmentData.forEach((shipmentErr) => {
+                        dispatch(addAlert({ message: shipmentErr.description, level: AlertLevel.Error }));
+                    });
+                }
+
+                if (isArrayOfErrors(deliveryLeadTimes)) {
+                    deliveryLeadTimes.forEach((leadErr) => {
+                        dispatch(addAlert({ message: leadErr.description, level: AlertLevel.Error }));
+                    });
+                }
             }
         }
     }, []);
@@ -54,7 +87,7 @@ export const Delivery: React.FC = () => {
     }, [accessToken, order, fetchAllShipments]);
 
     const handleSelectShippingMethod = async (data: unknown) => {
-        if (hasErrors || checkoutLoading) {
+        if (hasErrors || checkoutLoading || !accessToken) {
             return;
         }
 
@@ -63,23 +96,25 @@ export const Delivery: React.FC = () => {
             // Set shipments with methods for local storage.
             const setShipmentsAndMethods: ShipmentsWithMethods[] = shipments.shipments.map((shipment) => ({
                 shipmentId: shipment,
-                methodId: get(data, `shipment-${shipment}-method`, ''),
+                methodId: safelyParse(data, `shipment-${shipment}-method`, parseAsString, ''),
             }));
 
             dispatch(setShipmentsWithMethods(setShipmentsAndMethods));
 
             // Set shipments in the commerce layer.
             shipments.shipments.forEach((shipment) => {
-                const chosenMethod = get(data, `shipment-${shipment}-shippingMethod`, null);
+                const chosenMethod = safelyParse(data, `shipment-${shipment}-shippingMethod`, parseAsString, '');
 
-                if (chosenMethod && accessToken) {
+                if (chosenMethod) {
                     updateShipmentMethod(accessToken, shipment, chosenMethod).then((res) => {
-                        if (res) {
+                        if (!isError(res)) {
                             // Fetch the order with new details.
                             dispatch(fetchOrder(true));
 
                             // Redirect to next stage.
                             dispatch(setCurrentStep(2));
+                        } else {
+                            dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
                         }
                     });
                 }

@@ -1,7 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';
-import { parseAsString, safelyParse } from '../../../utils/parsers';
+import { errorHandler } from '../../../middleware/errors';
+import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
+
+const defaultErr = 'We could not update your username.';
 
 async function updateUsername(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
@@ -28,13 +31,15 @@ async function updateUsername(req: NextApiRequest, res: NextApiResponse): Promis
                 if (updatedCreds) {
                     res.status(200).json({ success: true, data: updatedCreds });
                 } else {
-                    res.status(500).json({ success: false, error: 'Could not update password.' });
+                    res.status(204);
                 }
             } else {
-                res.status(403).json({ success: false, message: 'Passwords do not match' });
+                res.status(403).json({ status: 403, message: 'Forbidden', description: 'Passwords do not match.' });
             }
-        } catch (err) {
-            if (err) throw err;
+        } catch (err: unknown) {
+            const status = safelyParse(err, 'response.status', parseAsNumber, 500);
+
+            res.status(status).json(errorHandler(err, defaultErr));
         }
     }
 }

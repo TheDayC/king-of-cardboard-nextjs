@@ -10,7 +10,7 @@ import selector from './selector';
 import { setCurrentStep } from '../../../store/slices/checkout';
 import Method from './Method';
 import { createPaymentSource } from '../../../utils/commerce';
-import { checkoutOrder, confirmOrder, refreshPayment, sendOrderConfirmation } from '../../../utils/payment';
+import { confirmOrder, refreshPayment, sendOrderConfirmation } from '../../../utils/payment';
 import { CartItem, CustomerDetails } from '../../../store/types/state';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import { setConfirmationData } from '../../../store/slices/confirmation';
@@ -20,6 +20,9 @@ import { useSession } from 'next-auth/react';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { Session } from 'next-auth';
 import { setShouldFetchRewards } from '../../../store/slices/account';
+import { addAlert } from '../../../store/slices/alerts';
+import { isArray } from '../../../utils/typeguards';
+import { AlertLevel } from '../../../enums/system';
 
 export const Payment: React.FC = () => {
     const dispatch = useDispatch();
@@ -150,7 +153,11 @@ export const Payment: React.FC = () => {
                                     }
                                 });
                             }
+                        } else {
+                            dispatch(addAlert({ message: 'Could not place your order.', type: AlertLevel.Error }));
                         }
+                    } else {
+                        dispatch(addAlert({ message: 'Could not place your order.', type: AlertLevel.Error }));
                     }
                 }
             }

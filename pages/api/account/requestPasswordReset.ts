@@ -7,9 +7,10 @@ import * as aws from '@aws-sdk/client-ses';
 import { DateTime } from 'luxon';
 
 import { connectToDatabase } from '../../../middleware/database';
-import { parseAsArrayOfCommerceLayerErrors, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
+import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 import { authClient } from '../../../utils/auth';
 import { shouldResetPassword } from '../../../utils/account';
+import { errorHandler } from '../../../middleware/errors';
 
 const ses = new aws.SES({
     apiVersion: '2010-12-01',
@@ -23,6 +24,7 @@ const mailer = createTransport({
 });
 
 const filePath = path.resolve(process.cwd(), 'html', 'resetPassword.html');
+const defaultErr = 'Could not request a password reset.';
 
 async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
@@ -120,24 +122,13 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
 
                 res.status(200).json({ hasSent: true });
             }
-        } catch (error) {
-            const status = safelyParse(error, 'response.status', parseAsNumber, 500);
-            const message = safelyParse(error, 'response.statusText', parseAsString, 'Error');
-            const errors = safelyParse(error, 'response.data.errors', parseAsArrayOfCommerceLayerErrors, [
-                'We could not send you a password reset email.',
-            ]);
+        } catch (err: unknown) {
+            const status = safelyParse(err, 'response.status', parseAsNumber, 500);
 
-            res.status(status).json({ status, message, description: errors[0] });
+            res.status(status).json(errorHandler(err, defaultErr));
         }
 
         return Promise.resolve();
-    }
-
-    // If the user hits this endpoint via a get request
-    if (req.method === 'GET') {
-        const token = safelyParse(req, 'query.token', parseAsString, null);
-
-        res.status(200).json({ token });
     }
 }
 

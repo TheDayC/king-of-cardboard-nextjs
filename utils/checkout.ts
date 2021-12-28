@@ -6,6 +6,17 @@ import { AxiosData } from '../types/fetch';
 import { Counties } from '../enums/checkout';
 import { CustomerDetails, ShipmentsWithLineItems } from '../store/types/state';
 import { DeliveryLeadTimes, MergedShipmentMethods, Shipments, ShippingMethods } from '../types/checkout';
+import { authClient } from './auth';
+import { ErrorResponse } from '../types/api';
+import { errorHandler } from '../middleware/errors';
+import { isArray } from './typeguards';
+import {
+    parseAsArrayOfCommerceResponse,
+    parseAsNumber,
+    parseAsString,
+    safelyParse,
+    parseAsCommerceResponse,
+} from './parsers';
 
 function regexEmail(email: string): boolean {
     // eslint-disable-next-line no-useless-escape
@@ -232,116 +243,132 @@ export async function updateAddress(
     id: string,
     personalDetails: CustomerDetails,
     isShipping: boolean
-): Promise<boolean> {
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
-        const response = await axios.post('/api/updateAddress', {
-            token: accessToken,
-            id,
-            personalDetails,
-            isShipping,
-        });
+        const data = {
+            type: 'addresses',
+            attributes: {
+                first_name: personalDetails.firstName,
+                last_name: personalDetails.lastName,
+                company: personalDetails.company,
+                line_1: isShipping ? personalDetails.shippingAddressLineOne : personalDetails.addressLineOne,
+                line_2: isShipping ? personalDetails.shippingAddressLineTwo : personalDetails.addressLineTwo,
+                city: isShipping ? personalDetails.shippingCity : personalDetails.city,
+                zip_code: isShipping ? personalDetails.shippingPostcode : personalDetails.postcode,
+                state_code: isShipping ? personalDetails.shippingCounty : personalDetails.county,
+                country_code: 'GB',
+                phone: personalDetails.phone,
+            },
+        };
+        const cl = authClient(accessToken);
+        const res = await cl.post('/api/addresses', { data });
+        const addressId = safelyParse(res, 'data.data.id', parseAsString, null);
 
-        if (response) {
-            const hasUpdated: boolean = get(response, 'data.hasUpdated', false);
-
-            return hasUpdated;
+        if (!addressId) {
+            return false;
         }
-    } catch (error) {
-        console.log('Error: ', error);
-    }
 
-    return false;
+        const relationshipProp = isShipping ? 'shipping_address' : 'billing_address';
+        const relationships = {
+            [relationshipProp]: {
+                data: {
+                    type: 'addresses',
+                    id: addressId,
+                },
+            },
+        };
+
+        const orderRes = await cl.patch(`/api/orders/${id}`, {
+            data: {
+                type: 'orders',
+                id,
+                attributes: {
+                    customer_email: personalDetails.email,
+                },
+                relationships,
+            },
+        });
+        const status = safelyParse(orderRes, 'status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not fetch delivery lead times.');
+    }
 }
 
-export async function getShipments(accessToken: string, orderId: string): Promise<Shipments | null> {
+export async function getShipments(
+    accessToken: string,
+    orderId: string
+): Promise<Shipments | ErrorResponse | ErrorResponse[] | null> {
     try {
-        const response = await axios.post('/api/getShipments', {
-            token: accessToken,
-            id: orderId,
-        });
+        const cl = authClient(accessToken);
+        const include = 'available_shipping_methods,stock_location';
+        const res = await cl.get(`/api/orders/${orderId}/shipments?include=${include}`);
+        const shipments = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null);
+        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null);
 
-        if (response) {
-            const shipments: any[] | null = get(response, 'data.shipments', null);
-            const included: any[] | null = get(response, 'data.included', null);
+        if (!shipments || !included) {
+            return null;
+        }
 
-            if (shipments && included) {
+        return {
+            shipments: shipments.map((shipment) => shipment.id),
+            shippingMethods: included.map((method) => {
                 return {
-                    shipments: shipments.map((shipment) => shipment.id),
-                    shippingMethods: included.map((method) => {
-                        const id: string = get(method, 'id', '');
-                        const name: string = get(method, 'attributes.name', '');
-                        const price_amount_cents: number = get(method, 'attributes.price_amount_cents', 0);
-                        const price_amount_float: number = get(method, 'attributes.price_amount_float', 0);
-                        const price_amount_for_shipment_cents: number = get(
-                            method,
-                            'attributes.price_amount_for_shipment_cents',
-                            0
-                        );
-                        const price_amount_for_shipment_float: number = get(
-                            method,
-                            'attributes.price_amount_for_shipment_float',
-                            0
-                        );
-                        const currency_code: string = get(method, 'attributes.currency_code', '');
-                        const formatted_price_amount: string = get(method, 'attributes.formatted_price_amount', '');
-                        const formatted_price_amount_for_shipment: string = get(
-                            method,
-                            'attributes.formatted_price_amount_for_shipment',
-                            ''
-                        );
-
-                        return {
-                            id,
-                            name,
-                            price_amount_cents,
-                            price_amount_float,
-                            price_amount_for_shipment_cents,
-                            price_amount_for_shipment_float,
-                            currency_code,
-                            formatted_price_amount,
-                            formatted_price_amount_for_shipment,
-                        };
-                    }),
+                    id: safelyParse(method, 'id', parseAsString, ''),
+                    name: safelyParse(method, 'attributes.name', parseAsString, ''),
+                    price_amount_cents: safelyParse(method, 'attributes.price_amount_cents', parseAsNumber, 0),
+                    price_amount_float: safelyParse(method, 'attributes.price_amount_float', parseAsNumber, 0),
+                    price_amount_for_shipment_cents: safelyParse(
+                        method,
+                        'attributes.price_amount_for_shipment_cents',
+                        parseAsNumber,
+                        0
+                    ),
+                    price_amount_for_shipment_float: safelyParse(
+                        method,
+                        'attributes.price_amount_for_shipment_float',
+                        parseAsNumber,
+                        0
+                    ),
+                    currency_code: safelyParse(method, 'attributes.currency_code', parseAsString, ''),
+                    formatted_price_amount: safelyParse(method, 'attributes.formatted_price_amount', parseAsString, ''),
+                    formatted_price_amount_for_shipment: safelyParse(
+                        method,
+                        'attributes.formatted_price_amount_for_shipment',
+                        parseAsString,
+                        ''
+                    ),
                 };
-            } else {
-                return null;
-            }
+            }),
+        };
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not fetch delivery lead times.');
+    }
+}
+
+export async function getDeliveryLeadTimes(
+    accessToken: string
+): Promise<DeliveryLeadTimes[] | ErrorResponse | ErrorResponse[] | null> {
+    try {
+        const cl = authClient(accessToken);
+        const res = await cl.get('/api/delivery_lead_times?include=shipping_method,stock_location');
+        const deliveryLeadTimes: unknown = get(res, 'data.data', null);
+
+        if (deliveryLeadTimes && isArray(deliveryLeadTimes)) {
+            return deliveryLeadTimes.map((leadTime: unknown) => ({
+                id: safelyParse(leadTime, 'id', parseAsString, ''),
+                minHours: safelyParse(leadTime, 'attributes.min_hours', parseAsNumber, 0),
+                maxHours: safelyParse(leadTime, 'attributes.max_hours', parseAsNumber, 0),
+                minDays: safelyParse(leadTime, 'attributes.min_days', parseAsNumber, 0),
+                maxDays: safelyParse(leadTime, 'attributes.max_days', parseAsNumber, 0),
+            }));
         }
 
         return null;
-    } catch (error) {
-        console.log('Error: ', error);
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not fetch delivery lead times.');
     }
-
-    return null;
-}
-
-export async function getDeliveryLeadTimes(accessToken: string): Promise<DeliveryLeadTimes[] | null> {
-    try {
-        const response = await axios.post('/api/getDeliveryLeadTimes', {
-            token: accessToken,
-        });
-
-        if (response) {
-            const deliveryLeadTimes: any | null = get(response, 'data.deliveryLeadTimes', null);
-
-            if (deliveryLeadTimes) {
-                return deliveryLeadTimes.map((leadTime: any) => ({
-                    id: leadTime.id,
-                    minHours: leadTime.attributes.min_hours,
-                    maxHours: leadTime.attributes.max_hours,
-                    minDays: leadTime.attributes.min_days,
-                    maxDays: leadTime.attributes.max_days,
-                }));
-            } else {
-                return null;
-            }
-        }
-    } catch (error) {
-        console.log('Error: ', error);
-    }
-
-    return null;
 }
 
 export function mergeMethodsAndLeadTimes(
@@ -373,100 +400,86 @@ export async function updateShipmentMethod(
     accessToken: string,
     shipmentId: string,
     methodId: string
-): Promise<boolean> {
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
-        const response = await axios.post('/api/updateShipmentMethod', {
-            token: accessToken,
+        const cl = authClient(accessToken);
+        const res = await cl.patch(`/api/shipments/${shipmentId}`, {
+            data: {
+                type: 'shipments',
+                id: shipmentId,
+                relationships: {
+                    shipping_method: {
+                        data: {
+                            type: 'shipping_methods',
+                            id: methodId,
+                        },
+                    },
+                },
+            },
+        });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not fetch delivery lead times.');
+    }
+}
+
+export async function getShipment(
+    accessToken: string,
+    shipmentId: string
+): Promise<ShipmentsWithLineItems | ErrorResponse | ErrorResponse[] | null> {
+    try {
+        const cl = authClient(accessToken);
+        const include = 'shipping_method,delivery_lead_time,shipment_line_items';
+        const res = await cl.get(`/api/shipments/${shipmentId}?include=${include}`);
+        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null);
+
+        if (!included) {
+            return null;
+        }
+
+        const method = included.find((i) => i.type === 'shipping_methods');
+        const items = included
+            .filter((i) => i.type === 'shipment_line_items')
+            .map((item) => safelyParse(item, 'attributes.sku_code', parseAsString, ''));
+        const methodId = safelyParse(method, 'id', parseAsString, '');
+
+        return {
             shipmentId,
             methodId,
-        });
-
-        if (response) {
-            const hasUpdated: boolean = get(response, 'data.hasUpdated', false);
-
-            return hasUpdated;
-        }
-    } catch (error) {
-        console.log('Error: ', error);
+            lineItems: items,
+        };
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not get a shipment.');
     }
-
-    return false;
 }
 
-export async function getShipment(accessToken: string, shipmentId: string): Promise<ShipmentsWithLineItems | null> {
+export async function updatePaymentMethod(
+    accessToken: string,
+    id: string,
+    paymentMethodId: string
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
-        const response = await axios.post('/api/getShipment', {
-            token: accessToken,
-            shipmentId,
+        const cl = authClient(accessToken);
+        const res = await cl.patch(`/api/orders/${id}`, {
+            data: {
+                type: 'orders',
+                id,
+                relationships: {
+                    payment_method: {
+                        data: {
+                            type: 'payment_methods',
+                            id: paymentMethodId,
+                        },
+                    },
+                },
+            },
         });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        if (response) {
-            const included = get(response, 'data.included', null);
-            const method = included ? included.find((include: any) => include.type === 'shipping_methods') : null;
-            const items = included
-                ? included
-                      .filter((include: any) => include.type === 'shipment_line_items')
-                      .map((item: any) => item.attributes.sku_code)
-                : null;
-
-            if (method && items) {
-                const methodId: string = method ? get(method, 'id', '') : '';
-
-                return {
-                    shipmentId,
-                    methodId,
-                    lineItems: items,
-                };
-            } else {
-                return null;
-            }
-        }
-    } catch (error) {
-        console.log('Error: ', error);
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not get a shipment.');
     }
-
-    return null;
-}
-
-export async function getLineItem(accessToken: string, id: string): Promise<any | null> {
-    try {
-        const response = await axios.post('/api/getLineItem', {
-            token: accessToken,
-            id,
-        });
-
-        if (response) {
-            const items = get(response, 'data.items', null);
-
-            if (items) {
-                return items;
-            } else {
-                return null;
-            }
-        }
-    } catch (error) {
-        console.log('Error: ', error);
-    }
-
-    return null;
-}
-
-export async function updatePaymentMethod(accessToken: string, id: string, paymentMethodId: string): Promise<boolean> {
-    try {
-        const response = await axios.post('/api/updatePaymentMethod', {
-            token: accessToken,
-            id,
-            paymentMethodId,
-        });
-
-        if (response) {
-            const hasUpdated: boolean = get(response, 'data.hasUpdated', false);
-
-            return hasUpdated;
-        }
-    } catch (error) {
-        console.log('Error: ', error);
-    }
-
-    return false;
 }
