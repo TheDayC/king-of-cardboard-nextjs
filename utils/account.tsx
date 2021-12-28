@@ -50,7 +50,7 @@ export async function getHistoricalOrder(
     accessToken: string,
     emailAddress: string,
     orderNumber: string
-): Promise<GetOrders | ErrorResponse | ErrorResponse[] | null> {
+): Promise<GetOrders | ErrorResponse | ErrorResponse[]> {
     try {
         const filters = `filter[q][number_eq]=${orderNumber}&filter[q][email_eq]=${emailAddress}`;
         const orderFields =
