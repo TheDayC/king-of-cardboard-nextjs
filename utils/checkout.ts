@@ -12,7 +12,7 @@ import { errorHandler } from '../middleware/errors';
 import { isArray } from './typeguards';
 import {
     parseAsArrayOfLineItemRelationships,
-    parseAsCommerceResponseArray,
+    parseAsArrayOfCommerceResponse,
     parseAsNumber,
     parseAsString,
     safelyParse,
@@ -272,8 +272,8 @@ export async function getShipments(
         const cl = authClient(accessToken);
         const include = 'available_shipping_methods,stock_location';
         const res = await cl.get(`/api/orders/${orderId}/shipments?include=${include}`);
-        const shipments = safelyParse(res, 'data.data', parseAsCommerceResponseArray, null);
-        const included = safelyParse(res, 'data.included', parseAsCommerceResponseArray, null);
+        const shipments = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null);
+        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null);
 
         if (!shipments || !included) {
             return null;
@@ -396,17 +396,15 @@ export async function getShipment(
         const cl = authClient(accessToken);
         const include = 'shipping_method,delivery_lead_time,shipment_line_items';
         const res = await cl.get(`/api/shipments/${shipmentId}?include=${include}`);
-        const included = safelyParse(res, 'data.included', parseAsCommerceResponseArray, null);
+        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null);
 
         if (!included) {
             return null;
         }
 
-        const method = included.find(
-            (include) => safelyParse(include, 'type', parseAsString, null) === 'shipping_methods'
-        );
+        const method = included.find((i) => i.type === 'shipping_methods');
         const items = included
-            .filter((include) => safelyParse(include, 'type', parseAsString, null) === 'shipment_line_items')
+            .filter((i) => i.type === 'shipment_line_items')
             .map((item) => safelyParse(item, 'attributes.sku_code', parseAsString, ''));
         const methodId = safelyParse(method, 'id', parseAsString, '');
 

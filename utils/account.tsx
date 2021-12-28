@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 
 import { GetOrders } from '../types/account';
 import {
-    parseAsCommerceResponseArray,
+    parseAsArrayOfCommerceResponse,
     safelyParse,
     parseAsCommerceMeta,
     parseAsString,
@@ -35,8 +35,8 @@ export async function getHistoricalOrders(
         });
 
         if (response) {
-            const orders = safelyParse(response, 'data.orders', parseAsCommerceResponseArray, null);
-            const included = safelyParse(response, 'data.included', parseAsCommerceResponseArray, null);
+            const orders = safelyParse(response, 'data.orders', parseAsArrayOfCommerceResponse, null);
+            const included = safelyParse(response, 'data.included', parseAsArrayOfCommerceResponse, null);
             const meta = safelyParse(response, 'data.meta', parseAsCommerceMeta, null);
 
             return { orders, included, meta };
@@ -63,8 +63,8 @@ export async function getHistoricalOrder(
         });
 
         if (response) {
-            const orders = safelyParse(response, 'data.orders', parseAsCommerceResponseArray, null);
-            const included = safelyParse(response, 'data.included', parseAsCommerceResponseArray, null);
+            const orders = safelyParse(response, 'data.orders', parseAsArrayOfCommerceResponse, null);
+            const included = safelyParse(response, 'data.included', parseAsArrayOfCommerceResponse, null);
             const meta = safelyParse(response, 'data.meta', parseAsCommerceMeta, null);
 
             return { orders, included, meta };
@@ -146,7 +146,7 @@ export async function getAddresses(
 
         if (response) {
             return {
-                addresses: safelyParse(response, 'data.addresses', parseAsCommerceResponseArray, null),
+                addresses: safelyParse(response, 'data.addresses', parseAsArrayOfCommerceResponse, null),
                 meta: safelyParse(response, 'data.meta', parseAsCommerceMeta, null),
             };
         }
