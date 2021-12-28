@@ -33,26 +33,28 @@ export async function confirmOrder(
     }
 }
 
-export async function refreshPayment(accessToken: string, id: string, paymentSourceType: string): Promise<boolean> {
+export async function refreshPayment(
+    accessToken: string,
+    id: string,
+    paymentSourceType: string
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
-        const response = await axios.post('/api/refreshPaymentSource', {
-            token: accessToken,
-            id,
-            paymentSourceType,
+        const cl = authClient(accessToken);
+        const res = await cl.patch(`/api/${paymentSourceType}/${id}`, {
+            data: {
+                type: paymentSourceType,
+                id,
+                attributes: {
+                    _refresh: true,
+                },
+            },
         });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        if (response) {
-            const hasPlaced: boolean = get(response, 'data.hasPlaced', false);
-
-            return hasPlaced;
-        }
-
-        return false;
-    } catch (error) {
-        console.log('Error: ', error);
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not confirm your order.');
     }
-
-    return false;
 }
 
 export async function sendOrderConfirmation(
