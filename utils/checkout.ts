@@ -262,9 +262,9 @@ export async function updateAddress(
         };
         const cl = authClient(accessToken);
         const res = await cl.post('/api/addresses', { data });
-        const addressData = safelyParse(res, 'data', parseAsCommerceResponse, null);
+        const addressId = safelyParse(res, 'data.data.id', parseAsString, null);
 
-        if (!addressData) {
+        if (!addressId) {
             return false;
         }
 
@@ -273,12 +273,12 @@ export async function updateAddress(
             [relationshipProp]: {
                 data: {
                     type: 'addresses',
-                    id: addressData.id,
+                    id: addressId,
                 },
             },
         };
 
-        const orderRes = cl.patch(`/api/orders/${id}`, {
+        const orderRes = await cl.patch(`/api/orders/${id}`, {
             data: {
                 type: 'orders',
                 id,
@@ -403,7 +403,7 @@ export async function updateShipmentMethod(
 ): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
-        const res = cl.patch(`/api/shipments/${shipmentId}`, {
+        const res = await cl.patch(`/api/shipments/${shipmentId}`, {
             data: {
                 type: 'shipments',
                 id: shipmentId,

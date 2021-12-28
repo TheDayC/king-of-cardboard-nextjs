@@ -60,6 +60,10 @@ const Customer: React.FC = () => {
         if (order && accessToken) {
             // Update billing address details in commerceLayer
             const hasBillingAddressUpdated = await updateAddress(accessToken, order.id, customerDetails, false);
+            console.log(
+                '🚀 ~ file: index.tsx ~ line 63 ~ onSubmit ~ hasBillingAddressUpdated',
+                hasBillingAddressUpdated
+            );
 
             if (hasBillingAddressUpdated) {
                 // Update shipping address details in commerceLayer

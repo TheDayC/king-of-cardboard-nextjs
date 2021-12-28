@@ -245,7 +245,7 @@ export async function removeLineItem(
 ): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
-        const res = cl.delete(`/api/line_items/${id}`);
+        const res = await cl.delete(`/api/line_items/${id}`);
         const status = safelyParse(res, 'status', parseAsNumber, 500);
 
         return status === 204;
@@ -285,7 +285,7 @@ export async function createPaymentSource(
 ): Promise<PaymentSourceResponse | ErrorResponse | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
-        const res = cl.post(`/api/${paymentSourceType}`, {
+        const res = await cl.post(`/api/${paymentSourceType}`, {
             data: {
                 type: paymentSourceType,
                 attributes: {},
