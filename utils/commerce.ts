@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
-import { get } from 'lodash';
+import { get, join } from 'lodash';
 
 import { errorHandler } from '../middleware/errors';
 import { ErrorResponse, PaymentSourceResponse } from '../types/api';
@@ -196,27 +196,34 @@ export async function getPrices(accessToken: string): Promise<Price[] | null> {
     return null;
 }
 
-export async function getOrder(accessToken: string, orderId: string, include: string[]): Promise<Order | null> {
+export async function getOrder(
+    accessToken: string,
+    orderId: string,
+    include: string[]
+): Promise<Order | ErrorResponse | ErrorResponse[] | null> {
     try {
-        const response = await axios.post('/api/getOrder', {
-            token: accessToken,
-            id: orderId,
-            include,
-        });
+        const includeJoin = join(include, ',');
+        const orderFields =
+            'fields[orders]=number,skus_count,formatted_subtotal_amount,formatted_discount_amount,formatted_shipping_amount,formatted_total_tax_amount,formatted_gift_card_amount,formatted_total_amount_with_taxes,line_items,shipments_count,status,payment_status,fulfillment_status';
+        const lineItemFields =
+            'fields[line_items]=item_type,image_url,name,sku_code,formatted_unit_amount,quantity,formatted_total_amount,metadata';
+        const paymentFields = 'fields[payment_methods]=id,name,payment_source_type';
+        const shipmentsFields = 'fields[shipments]=id,status,currency_code,cost_amount_cents';
 
-        if (response) {
-            const order: unknown = get(response, 'data.order', null);
-            const included: unknown[] = get(response, 'data.included', null);
+        const apiUrl = include
+            ? `/api/orders/${orderId}?include=${includeJoin}&${orderFields}&${lineItemFields}&${paymentFields}&${shipmentsFields}`
+            : `/api/orders/${orderId}`;
 
-            return parseOrderData(order, included);
-        }
+        const cl = authClient(accessToken);
+        const res = await cl.get(apiUrl);
 
-        return null;
-    } catch (error) {
-        console.log('Error: ', error);
+        const order: unknown = get(res, 'data.order', null);
+        const included: unknown[] = get(res, 'data.included', null);
+
+        return parseOrderData(order, included);
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not fetch an order.');
     }
-
-    return null;
 }
 
 export async function setLineItem(
