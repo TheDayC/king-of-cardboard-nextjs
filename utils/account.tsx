@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
+import { DateTime } from 'luxon';
 
 import { GetOrders } from '../types/account';
 import {
@@ -286,4 +287,11 @@ export async function requestPasswordReset(accessToken: string, email: string): 
     }
 
     return false;
+}
+
+export function shouldResetPassword(lastSent: DateTime): boolean {
+    const now = DateTime.now().setZone('Europe/London');
+    const expiry = lastSent.plus({ seconds: 300 });
+
+    return now >= expiry;
 }

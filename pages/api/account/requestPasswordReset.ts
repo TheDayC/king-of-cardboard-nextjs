@@ -4,9 +4,12 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { createTransport } from 'nodemailer';
 import { defaultProvider } from '@aws-sdk/credential-provider-node';
 import * as aws from '@aws-sdk/client-ses';
+import { DateTime } from 'luxon';
 
+import { connectToDatabase } from '../../../middleware/database';
 import { parseAsArrayOfCommerceLayerErrors, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 import { authClient } from '../../../utils/auth';
+import { shouldResetPassword } from '../../../utils/account';
 
 const ses = new aws.SES({
     apiVersion: '2010-12-01',
@@ -23,11 +26,27 @@ const filePath = path.resolve(process.cwd(), 'html', 'resetPassword.html');
 
 async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
+        const { db } = await connectToDatabase();
         const token = safelyParse(req, 'body.token', parseAsString, null);
         const email = safelyParse(req, 'body.email', parseAsString, null);
         const cl = authClient(token);
+        const passwordResetsCollection = db.collection('passwordResets');
 
         try {
+            const resetRequest = await passwordResetsCollection.findOne({ emailAddress: email });
+            const shouldReset = resetRequest
+                ? shouldResetPassword(DateTime.fromISO(resetRequest.lastSent, { zone: 'Europe/London' }))
+                : true;
+
+            if (!shouldReset) {
+                res.status(403).json({
+                    status: 403,
+                    statusText: 'Forbidden',
+                    message: 'You have sent a reset request in the last 5 minutes, please try again later.',
+                });
+                return;
+            }
+
             const resetPasswordResponse = await cl.post('/api/customer_password_resets', {
                 data: {
                     type: 'customer_password_resets',
@@ -79,10 +98,29 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
 
                 await mailer.sendMail(mailOptions);
 
+                // Choose whether to update or insert depending on if a reset request was found.
+                const lastSent = DateTime.now().setZone('Europe/London').toISO();
+
+                if (resetRequest) {
+                    const values = {
+                        $set: {
+                            lastSent,
+                        },
+                    };
+
+                    await passwordResetsCollection.updateOne({ emailAddress: email }, values);
+                } else {
+                    const document = {
+                        emailAddress: email,
+                        lastSent,
+                    };
+
+                    await passwordResetsCollection.insertOne(document);
+                }
+
                 res.status(200).json({ hasSent: true });
             }
         } catch (error) {
-            console.log('🚀 ~ file: requestPasswordReset.ts ~ line 76 ~ requestPasswordReset ~ error', error);
             const status = safelyParse(error, 'response.status', parseAsNumber, 500);
             const statusText = safelyParse(error, 'response.statusText', parseAsString, 'Error');
             const message = safelyParse(error, 'response.data.errors', parseAsArrayOfCommerceLayerErrors, [
