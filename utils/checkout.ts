@@ -6,6 +6,11 @@ import { AxiosData } from '../types/fetch';
 import { Counties } from '../enums/checkout';
 import { CustomerDetails, ShipmentsWithLineItems } from '../store/types/state';
 import { DeliveryLeadTimes, MergedShipmentMethods, Shipments, ShippingMethods } from '../types/checkout';
+import { authClient } from './auth';
+import { ErrorResponse } from '../types/api';
+import { errorHandler } from '../middleware/errors';
+import { isArray } from './typeguards';
+import { parseAsNumber, parseAsString, safelyParse } from './parsers';
 
 function regexEmail(email: string): boolean {
     // eslint-disable-next-line no-useless-escape
@@ -316,32 +321,28 @@ export async function getShipments(accessToken: string, orderId: string): Promis
     return null;
 }
 
-export async function getDeliveryLeadTimes(accessToken: string): Promise<DeliveryLeadTimes[] | null> {
+export async function getDeliveryLeadTimes(
+    accessToken: string
+): Promise<DeliveryLeadTimes[] | ErrorResponse | ErrorResponse[] | null> {
     try {
-        const response = await axios.post('/api/getDeliveryLeadTimes', {
-            token: accessToken,
-        });
+        const cl = authClient(accessToken);
+        const res = await cl.get('/api/delivery_lead_times?include=shipping_method,stock_location');
+        const deliveryLeadTimes: unknown = get(res, 'data.deliveryLeadTimes', null);
 
-        if (response) {
-            const deliveryLeadTimes: any | null = get(response, 'data.deliveryLeadTimes', null);
-
-            if (deliveryLeadTimes) {
-                return deliveryLeadTimes.map((leadTime: any) => ({
-                    id: leadTime.id,
-                    minHours: leadTime.attributes.min_hours,
-                    maxHours: leadTime.attributes.max_hours,
-                    minDays: leadTime.attributes.min_days,
-                    maxDays: leadTime.attributes.max_days,
-                }));
-            } else {
-                return null;
-            }
+        if (deliveryLeadTimes && isArray(deliveryLeadTimes)) {
+            return deliveryLeadTimes.map((leadTime: unknown) => ({
+                id: safelyParse(leadTime, 'id', parseAsString, ''),
+                minHours: safelyParse(leadTime, 'attributes.min_hours', parseAsNumber, 0),
+                maxHours: safelyParse(leadTime, 'attributes.max_hours', parseAsNumber, 0),
+                minDays: safelyParse(leadTime, 'attributes.min_days', parseAsNumber, 0),
+                maxDays: safelyParse(leadTime, 'attributes.max_days', parseAsNumber, 0),
+            }));
         }
-    } catch (error) {
-        console.log('Error: ', error);
-    }
 
-    return null;
+        return null;
+    } catch (error) {
+        return errorHandler(error, 'We could not fetch delivery lead times.');
+    }
 }
 
 export function mergeMethodsAndLeadTimes(
