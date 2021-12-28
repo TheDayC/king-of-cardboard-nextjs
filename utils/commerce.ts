@@ -231,10 +231,9 @@ export async function setLineItem(
                 relationships,
             },
         });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        const lineItems = safelyParse(res, 'data.data', parseAsCommerceResponse, false);
-
-        return Boolean(lineItems);
+        return status === 201;
     } catch (error: unknown) {
         return errorHandler(error, 'We could not fetch an order.');
     }

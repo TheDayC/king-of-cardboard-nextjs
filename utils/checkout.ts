@@ -11,7 +11,6 @@ import { ErrorResponse } from '../types/api';
 import { errorHandler } from '../middleware/errors';
 import { isArray } from './typeguards';
 import {
-    parseAsArrayOfLineItemRelationships,
     parseAsArrayOfCommerceResponse,
     parseAsNumber,
     parseAsString,
