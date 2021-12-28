@@ -1,10 +1,7 @@
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { get } from 'lodash';
+import { useDispatch } from 'react-redux';
 
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
-import selector from './pageSelector';
-import { rehydration } from '../store';
 import { setLoadingPages, setPages } from '../store/slices/pages';
 import { fetchPageCollection } from '../utils/pages';
 import { PAGES_QUERY } from '../utils/content';

@@ -11,10 +11,12 @@ import {
 } from '../types/products';
 import { fetchContent } from './content';
 import {
+    parseAsArrayOfContentfulProducts,
     parseAsArrayOfSkuOptions,
     parseAsArrayOfStrings,
     parseAsImageCollection,
     parseAsImageItem,
+    parseAsNumber,
     parseAsSkuInventory,
     parseAsString,
     safelyParse,
@@ -91,26 +93,22 @@ export async function fetchContentfulProducts(
     // Make the contentful request.
     const productResponse = await fetchContent(query);
 
-    if (productResponse) {
-        // On a successful request get the total number of items for pagination.
-        const total: number = get(productResponse, 'data.data.productCollection.total', 0);
+    // On a successful request get the total number of items for pagination.
+    const total = safelyParse(productResponse, 'data.content.productCollection.total', parseAsNumber, 0);
 
-        // On success get the item data for products.
-        const productCollection: ContentfulProduct[] | null = get(
-            productResponse,
-            'data.data.productCollection.items',
-            null
-        );
+    // On success get the item data for products.
+    const productCollection = safelyParse(
+        productResponse,
+        'data.data.productCollection.items',
+        parseAsArrayOfContentfulProducts,
+        null
+    );
 
-        // Return both.
-        return {
-            total,
-            productCollection,
-        };
-    }
-
-    // Return both defaults if unsuccessful.
-    return { total: 0, productCollection: null };
+    // Return both.
+    return {
+        total,
+        productCollection,
+    };
 }
 
 export async function fetchProductBySlug(slug: string): Promise<ContentfulProduct | null> {
@@ -149,19 +147,19 @@ export async function fetchProductBySlug(slug: string): Promise<ContentfulProduc
     // Make the contentful request.
     const productResponse = await fetchContent(query);
 
-    if (productResponse) {
-        // On success get the item data for products.
-        const productCollection: ContentfulProduct[] | null = get(
-            productResponse,
-            'data.data.productCollection.items',
-            null
-        );
+    // On success get the item data for products.
+    const productCollection = safelyParse(
+        productResponse,
+        'data.content.productCollection.items',
+        parseAsArrayOfContentfulProducts,
+        null
+    );
 
-        return productCollection ? productCollection[0] : null;
+    if (!productCollection) {
+        return null;
     }
 
-    // Return both defaults if unsuccessful.
-    return null;
+    return productCollection[0];
 }
 
 export async function fetchProductByProductLink(
@@ -194,23 +192,19 @@ export async function fetchProductByProductLink(
     // Make the contentful request.
     const productResponse = await fetchContent(query);
 
-    if (productResponse) {
-        // On success get the item data for products.
-        const productCollection: ContentfulProductShort[] | null = get(
-            productResponse,
-            'data.data.productCollection.items',
-            null
-        );
+    // On success get the item data for products.
+    const productCollection = safelyParse(
+        productResponse,
+        'data.content.productCollection.items',
+        parseAsArrayOfContentfulProducts,
+        null
+    );
 
-        if (isArray(productLink)) {
-            return productCollection ? productCollection : null;
-        } else {
-            return productCollection ? productCollection[0] : null;
-        }
+    if (!productCollection) {
+        return null;
     }
 
-    // Return both defaults if unsuccessful.
-    return null;
+    return isArray(productLink) ? productCollection : productCollection[0];
 }
 
 export function mergeProductData(products: ContentfulProduct[], skuItems: SkuItem[]): Product[] {

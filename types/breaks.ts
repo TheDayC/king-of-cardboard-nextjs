@@ -74,3 +74,8 @@ export interface BreakSlotWithSku {
     amount: string;
     compare_amount: string;
 }
+
+export interface BreakTypeItem {
+    title: string;
+    link: string;
+}

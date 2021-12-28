@@ -46,7 +46,7 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
                     message: 'Forbidden',
                     description: 'You have recently requested a password reset, please try again later.',
                 });
-                return;
+                return Promise.resolve();
             }
 
             const resetPasswordResponse = await cl.post('/api/customer_password_resets', {

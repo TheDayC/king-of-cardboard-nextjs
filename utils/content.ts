@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 
-import { AxiosData } from '../types/fetch';
+import { errorHandler } from '../middleware/errors';
+import { ErrorResponse } from '../types/api';
 
 export const PRODUCT_QUERY = `
     query {
@@ -50,20 +51,12 @@ export const PAGES_QUERY = `
     }
 `;
 
-export async function fetchContent(query: string): Promise<AxiosResponse<AxiosData> | void> {
+export async function fetchContent(query: string): Promise<AxiosResponse<unknown> | ErrorResponse | ErrorResponse[]> {
     try {
-        const url = `https://graphql.contentful.com/content/v1/spaces/${process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID}/environments/master`;
+        const response = await axios.post('/api/content/fetchContent', { query });
 
-        return await axios.get(url, {
-            params: {
-                query,
-            },
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${process.env.NEXT_PUBLIC_CONTENTFUL_TOKEN}`,
-            },
-        });
-    } catch (e) {
-        console.error(e);
+        return response;
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not create an auth token, please refresh.');
     }
 }

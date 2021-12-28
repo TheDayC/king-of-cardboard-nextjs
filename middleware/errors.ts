@@ -4,7 +4,7 @@ import { parseAsArrayOfCommerceLayerErrors, parseAsNumber, parseAsString, safely
 export function errorHandler(error: unknown, defaultError: string): ErrorResponse | ErrorResponse[] {
     // Intercept commerceLayer errors first as they'll be nested in an axiosError.
     const clErrors = safelyParse(error, 'response.data.errors', parseAsArrayOfCommerceLayerErrors, null);
-    console.log('🚀 ~ file: errors.ts ~ line 7 ~ errorHandler ~ clErrors', clErrors);
+
     if (clErrors) {
         return clErrors.map((err) => ({
             status: parseInt(err.status, 10),
