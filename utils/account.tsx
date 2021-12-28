@@ -235,7 +235,7 @@ export async function editAddress(
     lastName: string,
     phone: string,
     postcode: string
-): Promise<CommerceLayerResponse | null> {
+): Promise<CommerceLayerResponse | ErrorResponse | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
 
@@ -258,11 +258,9 @@ export async function editAddress(
         });
 
         return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
-    } catch (error) {
-        console.log('Error: ', error);
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not get historical order.');
     }
-
-    return null;
 }
 
 export async function requestPasswordReset(

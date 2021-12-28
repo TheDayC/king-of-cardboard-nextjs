@@ -52,8 +52,6 @@ export const Fields: React.FC<FieldProps> = ({
     const { data: session } = useSession();
     const dispatch = useDispatch();
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
-    const [errorMsg, setErrorMsg] = useState<string | null>(null);
-    const [successMsg, setSuccessMsg] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const {
         register,
@@ -68,43 +66,23 @@ export const Fields: React.FC<FieldProps> = ({
             return;
         }
 
+        const { addressLineOne, addressLineTwo, city, company, county, firstName, lastName, phone, postcode } = data;
+
         setIsLoading(true);
 
         if (addressId) {
-            const editAddressResponse = await editAddress(
+            const res = await editAddress(
                 accessToken,
                 addressId,
-                data.addressLineOne,
-                data.addressLineTwo,
-                data.city,
-                data.company,
-                data.county,
-                data.firstName,
-                data.lastName,
-                data.phone,
-                data.postcode
-            );
-
-            if (editAddressResponse) {
-                setSuccessMsg('Address edited!');
-                setErrorMsg(null);
-            } else {
-                setErrorMsg('Unable to edit address.');
-                setSuccessMsg(null);
-            }
-        } else {
-            const res = await addAddress(
-                accessToken,
-                emailAddress,
-                data.addressLineOne,
-                data.addressLineTwo,
-                data.city,
-                data.company,
-                data.county,
-                data.firstName,
-                data.lastName,
-                data.phone,
-                data.postcode
+                addressLineOne,
+                addressLineTwo,
+                city,
+                company,
+                county,
+                firstName,
+                lastName,
+                phone,
+                postcode
             );
 
             if (isError(res)) {
@@ -115,12 +93,38 @@ export const Fields: React.FC<FieldProps> = ({
                 });
             } else {
                 if (res) {
-                    setSuccessMsg('Address successfullly added!');
-                    setErrorMsg(null);
+                    dispatch(addAlert({ message: 'Address edited!', level: AlertLevel.Success }));
+                } else {
+                    dispatch(addAlert({ message: 'Unable to edit address.', level: AlertLevel.Error }));
+                }
+            }
+        } else {
+            const res = await addAddress(
+                accessToken,
+                emailAddress,
+                addressLineOne,
+                addressLineTwo,
+                city,
+                company,
+                county,
+                firstName,
+                lastName,
+                phone,
+                postcode
+            );
+
+            if (isError(res)) {
+                dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
+            } else if (isArrayOfErrors(res)) {
+                res.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                if (res) {
+                    dispatch(addAlert({ message: 'Address successfullly added!', level: AlertLevel.Success }));
                     reset();
                 } else {
-                    setErrorMsg('Unable to add address.');
-                    setSuccessMsg(null);
+                    dispatch(addAlert({ message: 'Unable to add address.', level: AlertLevel.Error }));
                 }
             }
         }
@@ -138,18 +142,6 @@ export const Fields: React.FC<FieldProps> = ({
     const postcodeErr = safelyParse(errors, 'postcode.message', parseAsString, null);
     const countyErr = safelyParse(errors, 'county.message', parseAsString, null);
     const btnText = addressId ? 'Save Address' : 'Add Address';
-
-    useEffect(() => {
-        if (errorMsg) {
-            dispatch(addAlert({ message: errorMsg, level: AlertLevel.Error }));
-        }
-    }, [errorMsg]);
-
-    useEffect(() => {
-        if (successMsg) {
-            dispatch(addAlert({ message: successMsg, level: AlertLevel.Success }));
-        }
-    }, [successMsg]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full">
