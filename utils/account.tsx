@@ -50,28 +50,29 @@ export async function getHistoricalOrder(
     accessToken: string,
     emailAddress: string,
     orderNumber: string
-): Promise<GetOrders | null> {
+): Promise<GetOrders | ErrorResponse | ErrorResponse[] | null> {
     try {
-        const response = await axios.post('/api/account/getHistoricalOrder', {
-            token: accessToken,
-            emailAddress,
-            orderNumber,
-        });
+        const filters = `filter[q][number_eq]=${orderNumber}&filter[q][email_eq]=${emailAddress}`;
+        const orderFields =
+            'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount,formatted_subtotal_amount,formatted_shipping_amount,formatted_discount_amount,shipments_count,placed_at,updated_at,line_items,shipping_address,billing_address,payment_source_details';
+        const include = 'line_items,shipping_address,billing_address,shipments';
+        const lineItemFields = 'fields[line_items]=id,sku_code,image_url,quantity';
+        const addressFields =
+            'fields[addresses]=id,name,first_name,last_name,company,line_1,line_2,city,zip_code,state_code,country_code,phone';
+        const shipmentFields = 'fields[shipments]=id,number,status,formatted_cost_amount';
+        const cl = authClient(accessToken);
+        const res = await cl.get(
+            `/api/orders?${filters}&${orderFields}&include=${include}&${lineItemFields}&${addressFields}&${shipmentFields}`
+        );
 
-        if (response) {
-            const orders = safelyParse(response, 'data.orders', parseAsArrayOfCommerceResponse, null);
-            const included = safelyParse(response, 'data.included', parseAsArrayOfCommerceResponse, null);
-            const meta = safelyParse(response, 'data.meta', parseAsCommerceMeta, null);
-
-            return { orders, included, meta };
-        }
-
-        return null;
-    } catch (error) {
-        console.log('Error: ', error);
+        return {
+            orders: safelyParse(res, 'data.orders', parseAsArrayOfCommerceResponse, null),
+            included: safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null),
+            meta: safelyParse(res, 'data.meta', parseAsCommerceMeta, null),
+        };
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not get historical order.');
     }
-
-    return null;
 }
 
 export function statusColour(status: string): string {
