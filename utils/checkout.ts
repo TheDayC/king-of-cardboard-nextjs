@@ -10,13 +10,7 @@ import { authClient } from './auth';
 import { ErrorResponse } from '../types/api';
 import { errorHandler } from '../middleware/errors';
 import { isArray } from './typeguards';
-import {
-    parseAsArrayOfCommerceResponse,
-    parseAsNumber,
-    parseAsString,
-    safelyParse,
-    parseAsCommerceResponse,
-} from './parsers';
+import { parseAsArrayOfCommerceResponse, parseAsNumber, parseAsString, safelyParse } from './parsers';
 
 function regexEmail(email: string): boolean {
     // eslint-disable-next-line no-useless-escape
@@ -221,23 +215,6 @@ export function fieldPatternMsgs(field: string): string {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function fetchStripeGateway(accessToken: string): Promise<AxiosResponse<AxiosData> | void> {
-    try {
-        const url = `${process.env.NEXT_PUBLIC_ECOM_DOMAIN}/api/stripe_gateways/`;
-
-        return await axios.get(url, {
-            headers: {
-                Accept: 'application/vnd.api+json',
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
-    } catch (e) {
-        console.error(e);
-    }
-}
-
 export async function updateAddress(
     accessToken: string,
     id: string,
@@ -292,7 +269,7 @@ export async function updateAddress(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not fetch delivery lead times.');
+        return errorHandler(error, 'Address could not be updated.');
     }
 }
 

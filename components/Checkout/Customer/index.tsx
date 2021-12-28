@@ -10,6 +10,9 @@ import { setAllowShippingAddress, setCurrentStep, setCustomerDetails } from '../
 import { parseCustomerDetails } from '../../../utils/parsers';
 import { fetchOrder } from '../../../store/slices/cart';
 import { setCheckoutLoading } from '../../../store/slices/global';
+import { isArrayOfErrors, isError } from '../../../utils/typeguards';
+import { addAlert } from '../../../store/slices/alerts';
+import { AlertLevel } from '../../../enums/system';
 
 const Customer: React.FC = () => {
     const { currentStep, customerDetails, order, accessToken, checkoutLoading } = useSelector(selector);
@@ -59,21 +62,33 @@ const Customer: React.FC = () => {
 
         if (order && accessToken) {
             // Update billing address details in commerceLayer
-            const hasBillingAddressUpdated = await updateAddress(accessToken, order.id, customerDetails, false);
-            console.log(
-                '🚀 ~ file: index.tsx ~ line 63 ~ onSubmit ~ hasBillingAddressUpdated',
-                hasBillingAddressUpdated
-            );
+            const billingAddressUpdatedRes = await updateAddress(accessToken, order.id, customerDetails, false);
 
-            if (hasBillingAddressUpdated) {
+            if (isError(billingAddressUpdatedRes)) {
+                dispatch(addAlert({ message: billingAddressUpdatedRes.description, level: AlertLevel.Error }));
+            } else if (isArrayOfErrors(billingAddressUpdatedRes)) {
+                billingAddressUpdatedRes.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
                 // Update shipping address details in commerceLayer
-                await updateAddress(accessToken, order.id, customerDetails, true);
+                const res = await updateAddress(accessToken, order.id, customerDetails, true);
 
-                // Fetch the order with new details.
-                dispatch(fetchOrder(true));
+                if (isError(res)) {
+                    dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
+                } else if (isArrayOfErrors(res)) {
+                    res.forEach((value) => {
+                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                    });
+                } else {
+                    if (res) {
+                        // Fetch the order with new details.
+                        dispatch(fetchOrder(true));
 
-                // Redirect to next stage.
-                dispatch(setCurrentStep(1));
+                        // Redirect to next stage.
+                        dispatch(setCurrentStep(1));
+                    }
+                }
             }
         }
     };
