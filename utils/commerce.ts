@@ -240,23 +240,19 @@ export async function setLineItem(
     }
 }
 
-export async function removeLineItem(accessToken: string, id: string): Promise<boolean> {
+export async function removeLineItem(
+    accessToken: string,
+    id: string
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
-        const response = await axios.post('/api/removeLineItem', {
-            token: accessToken,
-            id,
-        });
+        const cl = authClient(accessToken);
+        const res = cl.delete(`/api/line_items/${id}`);
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        if (response) {
-            const hasDeleted: boolean = get(response, 'data.deleted', false);
-
-            return hasDeleted;
-        }
-    } catch (error) {
-        console.log('Error: ', error);
+        return status === 204;
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not fetch an order.');
     }
-
-    return false;
 }
 
 export async function updateLineItem(accessToken: string, id: string, quantity: number): Promise<boolean> {
