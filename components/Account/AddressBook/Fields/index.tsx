@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/router';
 
 import selector from './selector';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
@@ -53,6 +54,7 @@ export const Fields: React.FC<FieldProps> = ({
     const dispatch = useDispatch();
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
     const {
         register,
         handleSubmit,
@@ -94,6 +96,8 @@ export const Fields: React.FC<FieldProps> = ({
             } else {
                 if (res) {
                     dispatch(addAlert({ message: 'Address edited!', level: AlertLevel.Success }));
+
+                    router.push('/account/addressBook');
                 } else {
                     dispatch(addAlert({ message: 'Unable to edit address.', level: AlertLevel.Error }));
                 }
@@ -123,6 +127,7 @@ export const Fields: React.FC<FieldProps> = ({
                 if (res) {
                     dispatch(addAlert({ message: 'Address successfullly added!', level: AlertLevel.Success }));
                     reset();
+                    router.push('/account/addressBook');
                 } else {
                     dispatch(addAlert({ message: 'Unable to add address.', level: AlertLevel.Error }));
                 }

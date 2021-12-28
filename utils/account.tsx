@@ -182,7 +182,10 @@ export async function addAddress(
     }
 }
 
-export async function deleteAddress(accessToken: string, id: string): Promise<boolean> {
+export async function deleteAddress(
+    accessToken: string,
+    id: string
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
 
@@ -190,11 +193,9 @@ export async function deleteAddress(accessToken: string, id: string): Promise<bo
         const status = safelyParse(response, 'status', parseAsNumber, false);
 
         return status && status === 204 ? true : false;
-    } catch (error) {
-        console.log('Error: ', error);
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not delete the selected address.');
     }
-
-    return false;
 }
 
 export async function getAddress(accessToken: string, id: string): Promise<CommerceLayerResponse | null> {
