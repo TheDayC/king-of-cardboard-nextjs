@@ -9,6 +9,7 @@ import {
     CommerceLayerMeta,
     CommerceLayerObject,
     CommerceLayerResponse,
+    ErrorResponse,
 } from '../types/api';
 import { Order } from '../types/cart';
 import { SkuInventory, SkuOption } from '../types/commerce';
@@ -30,6 +31,10 @@ export function isBoolean(candidate: unknown): candidate is boolean {
 
 export function isArray(candidate: unknown): candidate is unknown[] {
     return Array.isArray(candidate);
+}
+
+export function isObject(candidate: unknown): candidate is object {
+    return typeof candidate === 'object';
 }
 
 export function isNotNullOrUndefined<T>(candidate: unknown): candidate is T {
@@ -62,6 +67,10 @@ export function isCommerceMeta(candidate: unknown): candidate is CommerceLayerMe
 
 export function isArrayOfStrings(candidate: unknown): candidate is string[] {
     return isArray(candidate) && typeof candidate[0] === 'string';
+}
+
+export function isError(candidate: unknown): candidate is ErrorResponse {
+    return isNotNullOrUndefined<object>(candidate) && isObject(candidate) && 'status' in candidate;
 }
 
 export function isAttributes(candidate: unknown): candidate is CommerceLayerObject {

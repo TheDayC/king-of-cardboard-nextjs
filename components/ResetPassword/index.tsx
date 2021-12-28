@@ -8,6 +8,7 @@ import selector from './selector';
 import { requestPasswordReset } from '../../utils/account';
 import { AlertLevel } from '../../enums/system';
 import { addAlert } from '../../store/slices/alerts';
+import { isError } from '../../utils/typeguards';
 
 interface Submit {
     emailAddress?: string;
@@ -36,9 +37,12 @@ export const ResetPassword: React.FC = () => {
             return;
         }
 
-        const hasSent = await requestPasswordReset(accessToken, email);
+        const res = await requestPasswordReset(accessToken, email);
 
-        if (hasSent) {
+        if (isError(res)) {
+            setError(res.description);
+            setSuccess(null);
+        } else if (res) {
             setError(null);
             setSuccess('Reset password link sent!');
         } else {
