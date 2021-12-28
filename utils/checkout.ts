@@ -400,24 +400,29 @@ export async function updateShipmentMethod(
     accessToken: string,
     shipmentId: string,
     methodId: string
-): Promise<boolean> {
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
-        const response = await axios.post('/api/updateShipmentMethod', {
-            token: accessToken,
-            shipmentId,
-            methodId,
+        const cl = authClient(accessToken);
+        const res = cl.patch(`/api/shipments/${shipmentId}`, {
+            data: {
+                type: 'shipments',
+                id: shipmentId,
+                relationships: {
+                    shipping_method: {
+                        data: {
+                            type: 'shipping_methods',
+                            id: methodId,
+                        },
+                    },
+                },
+            },
         });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        if (response) {
-            const hasUpdated: boolean = get(response, 'data.hasUpdated', false);
-
-            return hasUpdated;
-        }
-    } catch (error) {
-        console.log('Error: ', error);
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not fetch delivery lead times.');
     }
-
-    return false;
 }
 
 export async function getShipment(
