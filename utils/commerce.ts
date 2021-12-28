@@ -254,24 +254,28 @@ export async function removeLineItem(
     }
 }
 
-export async function updateLineItem(accessToken: string, id: string, quantity: number): Promise<boolean> {
+export async function updateLineItem(
+    accessToken: string,
+    id: string,
+    quantity: number
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
-        const response = await axios.post('/api/updateLineItem', {
-            token: accessToken,
-            id,
-            quantity,
+        const cl = authClient(accessToken);
+        const res = await cl.patch(`/api/line_items/${id}`, {
+            data: {
+                type: 'line_items',
+                id,
+                attributes: {
+                    quantity,
+                },
+            },
         });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        if (response) {
-            const hasUpdated: boolean = get(response, 'data.hasUpdated', false);
-
-            return hasUpdated;
-        }
-    } catch (error) {
-        console.log('Error: ', error);
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not fetch an order.');
     }
-
-    return false;
 }
 
 export async function createPaymentSource(
