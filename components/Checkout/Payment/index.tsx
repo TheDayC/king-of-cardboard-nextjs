@@ -10,7 +10,7 @@ import selector from './selector';
 import { setCurrentStep } from '../../../store/slices/checkout';
 import Method from './Method';
 import { createPaymentSource } from '../../../utils/commerce';
-import { checkoutOrder, confirmOrder, refreshPayment, sendOrderConfirmation } from '../../../utils/payment';
+import { confirmOrder, refreshPayment, sendOrderConfirmation } from '../../../utils/payment';
 import { CartItem, CustomerDetails } from '../../../store/types/state';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import { setConfirmationData } from '../../../store/slices/confirmation';

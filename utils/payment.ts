@@ -1,30 +1,9 @@
 import axios from 'axios';
 import { get } from 'react-hook-form';
+
 import { CartItem, CustomerDetails } from '../store/types/state';
 import { Order } from '../types/cart';
 import { parseAsBoolean, safelyParse } from './parsers';
-
-export async function checkoutOrder(clientSecret: string): Promise<string | null> {
-    try {
-        const response = await axios.post('/api/checkoutOrder', {
-            clientSecret,
-        });
-
-        if (response) {
-            const status: string | null = get(response, 'data.status', null);
-
-            if (status) {
-                return status;
-            }
-
-            return null;
-        }
-    } catch (error) {
-        console.log('Error: ', error);
-    }
-
-    return null;
-}
 
 export async function confirmOrder(accessToken: string, orderId: string, attribute: string): Promise<boolean> {
     try {
