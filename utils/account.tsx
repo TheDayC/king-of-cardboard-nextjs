@@ -22,7 +22,7 @@ export async function getHistoricalOrders(
     emailAddress: string,
     pageSize: number,
     page: number
-): Promise<GetOrders | ErrorResponse | ErrorResponse[] | null> {
+): Promise<GetOrders | ErrorResponse | ErrorResponse[]> {
     try {
         const filters = `filter[q][email_eq]=${emailAddress}&filter[q][status_not_in]=draft,pending`;
         const pagination = `page[size]=${pageSize}&page[number]=${page}`;
