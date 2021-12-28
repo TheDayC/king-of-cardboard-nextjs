@@ -205,8 +205,8 @@ export async function getOrder(accessToken: string, orderId: string, include: st
         });
 
         if (response) {
-            const order: any[] | null = get(response, 'data.order', null);
-            const included: any[] | null = get(response, 'data.included', null);
+            const order: unknown = get(response, 'data.order', null);
+            const included: unknown[] = get(response, 'data.included', null);
 
             return parseOrderData(order, included);
         }
