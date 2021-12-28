@@ -29,7 +29,7 @@ export async function confirmOrder(
 
         return status === 200 ? true : false;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not place your order.');
+        return errorHandler(error, 'We could not confirm your order.');
     }
 }
 

@@ -286,29 +286,29 @@ export async function createPaymentSource(
     accessToken: string,
     id: string,
     paymentSourceType: string
-): Promise<PaymentSourceResponse> {
+): Promise<PaymentSourceResponse | ErrorResponse | ErrorResponse[]> {
     try {
-        const response = await axios.post('/api/createPaymentSource', {
-            token: accessToken,
-            id,
-            paymentSourceType,
+        const cl = authClient(accessToken);
+        const res = cl.post(`/api/${paymentSourceType}`, {
+            data: {
+                type: paymentSourceType,
+                attributes: {},
+                relationships: {
+                    order: {
+                        data: {
+                            type: 'orders',
+                            id,
+                        },
+                    },
+                },
+            },
         });
 
-        if (response) {
-            const paymentId = safelyParse(response, 'data.paymentId', parseAsString, null);
-            const clientSecret = safelyParse(response, 'data.clientSecret', parseAsString, null);
+        const paymentId = safelyParse(res, 'data.data.id', parseAsString, null);
+        const clientSecret = safelyParse(res, 'data.data.attributes.client_secret', parseAsString, null);
 
-            return {
-                paymentId,
-                clientSecret,
-            };
-        }
-    } catch (error) {
-        console.log('Error: ', error);
+        return { paymentId, clientSecret };
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not create a payment source.');
     }
-
-    return {
-        paymentId: null,
-        clientSecret: null,
-    };
 }
