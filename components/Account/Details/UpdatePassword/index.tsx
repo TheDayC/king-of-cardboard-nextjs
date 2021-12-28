@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
-import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -10,7 +9,7 @@ import selector from './selector';
 import { AlertLevel } from '../../../../enums/system';
 import { addAlert } from '../../../../store/slices/alerts';
 import { updatePassword } from '../../../../utils/account';
-import { isArray, isBoolean, isError } from '../../../../utils/typeguards';
+import { isBoolean, isError } from '../../../../utils/typeguards';
 
 const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
