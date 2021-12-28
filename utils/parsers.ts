@@ -32,6 +32,7 @@ import {
     isItem,
     isArrayofItems,
     isCustomerDetails,
+    isError,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
@@ -215,6 +216,7 @@ export const parseAsNumber = parseAsType(isNumber);
 export const parseAsBoolean = parseAsType(isBoolean);
 export const parseAsArray = parseAsType(isArray);
 export const parseAsArrayOfStrings = parseAsType(isArrayOfStrings);
+export const parseAsError = parseAsType(isError);
 export const parseAsSocialMedia = parseAsType(isSocialMedia);
 export const parseAsCommerceResponse = parseAsType(isCommerceResponse);
 export const parseAsCommerceResponseArray = parseAsType(isCommerceResponseArray);

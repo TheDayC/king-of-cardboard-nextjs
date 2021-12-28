@@ -1,3 +1,9 @@
+export interface ErrorResponse {
+    status: number;
+    message: string;
+    description: string;
+}
+
 export interface StripeLineItems {
     price: string;
     quantity: number;

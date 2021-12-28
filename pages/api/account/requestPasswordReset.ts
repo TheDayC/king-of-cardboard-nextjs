@@ -41,8 +41,8 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
             if (!shouldReset) {
                 res.status(403).json({
                     status: 403,
-                    statusText: 'Forbidden',
-                    message: 'You have sent a reset request in the last 5 minutes, please try again later.',
+                    message: 'Forbidden',
+                    description: 'You have recently sent a reset request, please try again later.',
                 });
                 return;
             }
@@ -122,12 +122,12 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
             }
         } catch (error) {
             const status = safelyParse(error, 'response.status', parseAsNumber, 500);
-            const statusText = safelyParse(error, 'response.statusText', parseAsString, 'Error');
-            const message = safelyParse(error, 'response.data.errors', parseAsArrayOfCommerceLayerErrors, [
+            const message = safelyParse(error, 'response.statusText', parseAsString, 'Error');
+            const errors = safelyParse(error, 'response.data.errors', parseAsArrayOfCommerceLayerErrors, [
                 'We could not send you a password reset email.',
             ]);
 
-            res.status(status).json({ status, statusText, message });
+            res.status(status).json({ status, message, description: errors[0] });
         }
 
         return Promise.resolve();

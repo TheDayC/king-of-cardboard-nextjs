@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 import { DateTime } from 'luxon';
@@ -12,9 +12,13 @@ import {
     parseAsNumber,
     parseAsCommerceResponse,
     parseAsBoolean,
+    parseAsError,
+    parseAsAxiosError,
 } from './parsers';
-import { AddressResponse, CommerceLayerResponse } from '../types/api';
+import { AddressResponse, CommerceLayerResponse, ErrorResponse } from '../types/api';
 import { authClient } from './auth';
+import { isAxiosError } from './typeguards';
+import { axiosErrorHandler } from '../middleware/axiosErrors';
 
 export async function getHistoricalOrders(
     accessToken: string,
@@ -274,7 +278,7 @@ export async function editAddress(
     return null;
 }
 
-export async function requestPasswordReset(accessToken: string, email: string): Promise<boolean> {
+export async function requestPasswordReset(accessToken: string, email: string): Promise<boolean | ErrorResponse> {
     try {
         const response = await axios.post('/api/account/requestPasswordReset', {
             token: accessToken,
@@ -282,11 +286,9 @@ export async function requestPasswordReset(accessToken: string, email: string): 
         });
 
         return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
-    } catch (error) {
-        console.log('Error: ', error);
+    } catch (error: unknown) {
+        return safelyParse(error, 'response.data', parseAsError, false);
     }
-
-    return false;
 }
 
 export function shouldResetPassword(lastSent: DateTime): boolean {
