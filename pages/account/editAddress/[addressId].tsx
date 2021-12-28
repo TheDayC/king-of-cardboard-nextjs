@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import Error from 'next/error';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Header from '../../../components/Header';
 import AccountMenu from '../../../components/Account/Menu';
@@ -12,6 +12,9 @@ import selector from './selector';
 import { CommerceLayerResponse } from '../../../types/api';
 import Loading from '../../../components/Loading';
 import Fields from '../../../components/Account/AddressBook/Fields';
+import { isArrayOfErrors, isError } from '../../../utils/typeguards';
+import { addAlert } from '../../../store/slices/alerts';
+import { AlertLevel } from '../../../enums/system';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -50,6 +53,7 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId, em
     const { accessToken } = useSelector(selector);
     const [currentAddress, setCurrentAddress] = useState<CommerceLayerResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const dispatch = useDispatch();
 
     const fetchAddress = async (token: string, id: string) => {
         const customerAddressResponse = await getCustomerAddress(token, id);
@@ -62,11 +66,19 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId, em
         );
 
         if (originalAddressId) {
-            const addressResponse = await getAddress(token, originalAddressId);
-            setCurrentAddress(addressResponse);
+            const res = await getAddress(token, originalAddressId);
+
+            if (isError(res)) {
+                dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
+            } else if (isArrayOfErrors(res)) {
+                res.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                setCurrentAddress(res);
+            }
         }
 
-        //setAddress(addressResponse);
         setIsLoading(false);
     };
 

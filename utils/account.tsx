@@ -198,17 +198,18 @@ export async function deleteAddress(
     }
 }
 
-export async function getAddress(accessToken: string, id: string): Promise<CommerceLayerResponse | null> {
+export async function getAddress(
+    accessToken: string,
+    id: string
+): Promise<CommerceLayerResponse | ErrorResponse | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
-
         const response = await cl.get(`/api/addresses/${id}`);
-        return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
-    } catch (error) {
-        console.log('Error: ', error);
-    }
 
-    return null;
+        return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not delete the selected address.');
+    }
 }
 
 export async function getCustomerAddress(accessToken: string, id: string): Promise<CommerceLayerResponse | null> {
