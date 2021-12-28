@@ -161,42 +161,30 @@ export async function getSkuDetails(
     }
 }
 
-export async function getPrices(accessToken: string): Promise<Price[] | null> {
+export async function getPrices(accessToken: string): Promise<Price[] | ErrorResponse | ErrorResponse[] | null> {
     try {
-        const response = await axios.post('/api/prices', {
-            token: accessToken,
-        });
+        const cl = authClient(accessToken);
+        const res = await cl.get('/api/prices');
+        const prices = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null);
 
-        if (response) {
-            const prices = get(response, 'data.prices', null);
-
-            return prices.map((price: unknown) => {
-                const id = get(price, 'id', '');
-                const sku_code = get(price, 'attributes.sku_code', '');
-                const created_at = get(price, 'attributes.created_at', '');
-                const formatted_amount = get(price, 'attributes.formatted_amount', '');
-                const currency_code = get(price, 'attributes.currency_code', '');
-                const amount_float = get(price, 'attributes.amount_float', 0);
-                const amount_cents = get(price, 'attributes.amount_cents', 0);
-
-                return {
-                    id,
-                    attributes: {
-                        sku_code,
-                        created_at,
-                        formatted_amount,
-                        currency_code,
-                        amount_float,
-                        amount_cents,
-                    },
-                };
-            });
+        if (!prices) {
+            return null;
         }
-    } catch (error) {
-        console.log('Error: ', error);
-    }
 
-    return null;
+        return prices.map((price) => ({
+            id: price.id,
+            attributes: {
+                sku_code: safelyParse(price, 'attributes.sku_code', parseAsString, ''),
+                created_at: safelyParse(price, 'attributes.created_at', parseAsString, ''),
+                formatted_amount: safelyParse(price, 'attributes.formatted_amount', parseAsString, ''),
+                currency_code: safelyParse(price, 'attributes.currency_code', parseAsString, ''),
+                amount_float: safelyParse(price, 'attributes.amount_float', parseAsNumber, 0),
+                amount_cents: safelyParse(price, 'attributes.amount_cents', parseAsNumber, 0),
+            },
+        }));
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not get a shipment.');
+    }
 }
 
 export async function getOrder(
