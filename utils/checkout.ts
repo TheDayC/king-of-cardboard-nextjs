@@ -353,7 +353,7 @@ export async function getDeliveryLeadTimes(
     try {
         const cl = authClient(accessToken);
         const res = await cl.get('/api/delivery_lead_times?include=shipping_method,stock_location');
-        const deliveryLeadTimes: unknown = get(res, 'data.deliveryLeadTimes', null);
+        const deliveryLeadTimes: unknown = get(res, 'data.data', null);
 
         if (deliveryLeadTimes && isArray(deliveryLeadTimes)) {
             return deliveryLeadTimes.map((leadTime: unknown) => ({

@@ -30,7 +30,7 @@ export async function createOrder(accessToken: string): Promise<Order | ErrorRes
         });
 
         if (res) {
-            const order: unknown = get(res, 'data.order', null);
+            const order: unknown = get(res, 'data.data', null);
             const included: unknown[] = get(res, 'data.included', []);
 
             return parseOrderData(order, included);
@@ -48,7 +48,7 @@ export async function getStockItems(
     try {
         const cl = authClient(accessToken);
         const res = await cl.get('/api/stock_items');
-        const stockItems = safelyParse(res, 'data.stockItems', parseAsArrayOfCommerceResponse, null);
+        const stockItems = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null);
 
         if (!stockItems) {
             return null;
@@ -208,7 +208,7 @@ export async function getOrder(
         const cl = authClient(accessToken);
         const res = await cl.get(apiUrl);
 
-        const order: unknown = get(res, 'data.order', null);
+        const order: unknown = get(res, 'data.data', null);
         const included: unknown[] = get(res, 'data.included', null);
 
         return parseOrderData(order, included);
@@ -300,10 +300,10 @@ export async function createPaymentSource(
             },
         });
 
-        const paymentId = safelyParse(res, 'data.data.id', parseAsString, null);
-        const clientSecret = safelyParse(res, 'data.data.attributes.client_secret', parseAsString, null);
-
-        return { paymentId, clientSecret };
+        return {
+            paymentId: safelyParse(res, 'data.data.id', parseAsString, null),
+            clientSecret: safelyParse(res, 'data.data.attributes.client_secret', parseAsString, null),
+        };
     } catch (error: unknown) {
         return errorHandler(error, 'We could not create a payment source.');
     }

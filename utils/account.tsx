@@ -37,7 +37,7 @@ export async function getHistoricalOrders(
         );
 
         return {
-            orders: safelyParse(res, 'data.orders', parseAsArrayOfCommerceResponse, null),
+            orders: safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null),
             included: safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null),
             meta: safelyParse(res, 'data.meta', parseAsCommerceMeta, null),
         };
@@ -66,7 +66,7 @@ export async function getHistoricalOrder(
         );
 
         return {
-            orders: safelyParse(res, 'data.orders', parseAsArrayOfCommerceResponse, null),
+            orders: safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null),
             included: safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null),
             meta: safelyParse(res, 'data.meta', parseAsCommerceMeta, null),
         };
