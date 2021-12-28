@@ -77,45 +77,47 @@ export async function getStockItems(accessToken: string, sku_codes: string[]): P
     return null;
 }
 
-export async function getSkus(accessToken: string, sku_codes: string[]): Promise<SkuItem[] | null> {
+export async function getSkus(
+    accessToken: string,
+    sku_codes: string[]
+): Promise<SkuItem[] | ErrorResponse | ErrorResponse[] | null> {
     try {
-        const response = await axios.post('/api/getSkus', {
-            token: accessToken,
-            sku_codes,
-        });
+        const cl = authClient(accessToken);
+        const skuFilter = join(sku_codes, ',');
+        const fields =
+            '&fields[skus]=code,image_url,name&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount';
+        const res = await cl.get(
+            `/api/skus?filter[q][code_in]=${skuFilter}&filter[q][stock_items_quantity_gt]=0&include=prices${fields}`
+        );
+        const skuItems = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null);
+        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null);
 
-        if (response) {
-            const skuItems = get(response, 'data.skuItems', null);
-            const included = get(response, 'data.included', null);
-
-            return skuItems.map((item: unknown) => {
-                const id = get(item, 'id', '');
-                const sku_code = get(item, 'attributes.code', '');
-                const image_url = get(item, 'attributes.image_url', '');
-                const name = get(item, 'attributes.name', '');
-
-                // Find price data
-                const prices = included.find((i: any) => i.type === 'prices' && i.attributes.sku_code === sku_code);
-                const amount = get(prices, 'attributes.formatted_amount', '');
-                const compare_amount = get(prices, 'attributes.formatted_compare_at_amount', '');
-
-                return {
-                    id,
-                    sku_code,
-                    image_url,
-                    name,
-                    amount,
-                    compare_amount,
-                };
-            });
+        if (!skuItems) {
+            return null;
         }
 
-        return null;
-    } catch (error) {
-        console.log('Error: ', error);
-    }
+        return skuItems.map((item) => {
+            const sku_code = safelyParse(item, 'attributes.code', parseAsString, '');
 
-    return null;
+            // Find price data
+            const prices = included
+                ? included.find((i) => i.type === 'prices' && i.attributes.sku_code === sku_code)
+                : {};
+            const amount = safelyParse(prices, 'attributes.formatted_amount', parseAsString, '');
+            const compare_amount = safelyParse(prices, 'attributes.formatted_compare_at_amount', parseAsString, '');
+
+            return {
+                id: safelyParse(item, 'id', parseAsString, ''),
+                sku_code,
+                image_url: safelyParse(item, 'attributes.image_url', parseAsString, ''),
+                name: safelyParse(item, 'attributes.name', parseAsString, ''),
+                amount,
+                compare_amount,
+            };
+        });
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not get a shipment.');
+    }
 }
 
 export async function getSkuDetails(
