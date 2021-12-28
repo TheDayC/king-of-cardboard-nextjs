@@ -132,7 +132,7 @@ export async function getAddresses(
     emailAddress: string,
     pageSize: number,
     page: number
-): Promise<AddressResponse | ErrorResponse | ErrorResponse[] | null> {
+): Promise<AddressResponse | ErrorResponse | ErrorResponse[]> {
     try {
         const filters = `filter[q][email_eq]=${emailAddress}`;
         const pagination = `page[size]=${pageSize}&page[number]=${page}`;
