@@ -450,22 +450,31 @@ export async function getShipment(
     }
 }
 
-export async function updatePaymentMethod(accessToken: string, id: string, paymentMethodId: string): Promise<boolean> {
+export async function updatePaymentMethod(
+    accessToken: string,
+    id: string,
+    paymentMethodId: string
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
-        const response = await axios.post('/api/updatePaymentMethod', {
-            token: accessToken,
-            id,
-            paymentMethodId,
+        const cl = authClient(accessToken);
+        const res = await cl.patch(`/api/orders/${id}`, {
+            data: {
+                type: 'orders',
+                id,
+                relationships: {
+                    payment_method: {
+                        data: {
+                            type: 'payment_methods',
+                            id: paymentMethodId,
+                        },
+                    },
+                },
+            },
         });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        if (response) {
-            const hasUpdated: boolean = get(response, 'data.hasUpdated', false);
-
-            return hasUpdated;
-        }
-    } catch (error) {
-        console.log('Error: ', error);
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not get a shipment.');
     }
-
-    return false;
 }
