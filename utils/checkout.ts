@@ -16,6 +16,7 @@ import {
     parseAsNumber,
     parseAsString,
     safelyParse,
+    parseAsCommerceResponse,
 } from './parsers';
 
 function regexEmail(email: string): boolean {
@@ -243,25 +244,57 @@ export async function updateAddress(
     id: string,
     personalDetails: CustomerDetails,
     isShipping: boolean
-): Promise<boolean> {
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
-        const response = await axios.post('/api/updateAddress', {
-            token: accessToken,
-            id,
-            personalDetails,
-            isShipping,
-        });
+        const data = {
+            type: 'addresses',
+            attributes: {
+                first_name: personalDetails.firstName,
+                last_name: personalDetails.lastName,
+                company: personalDetails.company,
+                line_1: isShipping ? personalDetails.shippingAddressLineOne : personalDetails.addressLineOne,
+                line_2: isShipping ? personalDetails.shippingAddressLineTwo : personalDetails.addressLineTwo,
+                city: isShipping ? personalDetails.shippingCity : personalDetails.city,
+                zip_code: isShipping ? personalDetails.shippingPostcode : personalDetails.postcode,
+                state_code: isShipping ? personalDetails.shippingCounty : personalDetails.county,
+                country_code: 'GB',
+                phone: personalDetails.phone,
+            },
+        };
+        const cl = authClient(accessToken);
+        const res = await cl.post('/api/addresses', { data });
+        const addressData = safelyParse(res, 'data', parseAsCommerceResponse, null);
 
-        if (response) {
-            const hasUpdated: boolean = get(response, 'data.hasUpdated', false);
-
-            return hasUpdated;
+        if (!addressData) {
+            return false;
         }
-    } catch (error) {
-        console.log('Error: ', error);
-    }
 
-    return false;
+        const relationshipProp = isShipping ? 'shipping_address' : 'billing_address';
+        const relationships = {
+            [relationshipProp]: {
+                data: {
+                    type: 'addresses',
+                    id: addressData.id,
+                },
+            },
+        };
+
+        const orderRes = cl.patch(`/api/orders/${id}`, {
+            data: {
+                type: 'orders',
+                id,
+                attributes: {
+                    customer_email: personalDetails.email,
+                },
+                relationships,
+            },
+        });
+        const status = safelyParse(orderRes, 'status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not fetch delivery lead times.');
+    }
 }
 
 export async function getShipments(
