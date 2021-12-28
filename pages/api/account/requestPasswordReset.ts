@@ -44,7 +44,7 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
                 res.status(403).json({
                     status: 403,
                     message: 'Forbidden',
-                    description: 'You have recently sent a reset request, please try again later.',
+                    description: 'You have recently requested a password reset, please try again later.',
                 });
                 return;
             }

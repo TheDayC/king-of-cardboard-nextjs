@@ -51,6 +51,6 @@ export async function createToken(): Promise<CreateToken | ErrorResponse | Error
             expires: expiresIso,
         };
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not create a payment source.');
+        return errorHandler(error, 'We could not create an auth token, please refresh.');
     }
 }

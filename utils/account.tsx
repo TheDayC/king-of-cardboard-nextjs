@@ -278,7 +278,7 @@ export async function requestPasswordReset(
 
         return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not create a payment source.');
+        return errorHandler(error, 'We could not reset your password.');
     }
 }
 
@@ -318,7 +318,8 @@ export async function updatePassword(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not create a payment source.');
+        console.log('🚀 ~ file: account.tsx ~ line 321 ~ error', error);
+        return errorHandler(error, 'We could not update your password.');
     }
 }
 
@@ -344,6 +345,6 @@ export async function resetPassword(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not create a payment source.');
+        return errorHandler(error, 'We could not creset your password.');
     }
 }
