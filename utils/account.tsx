@@ -18,7 +18,7 @@ import {
 import { AddressResponse, CommerceLayerResponse, ErrorResponse } from '../types/api';
 import { authClient } from './auth';
 import { isAxiosError } from './typeguards';
-import { axiosErrorHandler } from '../middleware/errors';
+import { axiosErrorHandler, errorHandler } from '../middleware/errors';
 
 export async function getHistoricalOrders(
     accessToken: string,
@@ -278,7 +278,10 @@ export async function editAddress(
     return null;
 }
 
-export async function requestPasswordReset(accessToken: string, email: string): Promise<boolean | ErrorResponse> {
+export async function requestPasswordReset(
+    accessToken: string,
+    email: string
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
     try {
         const response = await axios.post('/api/account/requestPasswordReset', {
             token: accessToken,
@@ -287,7 +290,7 @@ export async function requestPasswordReset(accessToken: string, email: string): 
 
         return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
     } catch (error: unknown) {
-        return safelyParse(error, 'response.data', parseAsError, false);
+        return errorHandler(error, 'We could not create a payment source.');
     }
 }
 
@@ -296,4 +299,37 @@ export function shouldResetPassword(lastSent: DateTime): boolean {
     const expiry = lastSent.plus({ seconds: 300 });
 
     return now >= expiry;
+}
+
+export async function updatePassword(
+    accessToken: string,
+    emailAddress: string,
+    password: string
+): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+    try {
+        const cl = authClient(accessToken);
+        const customer = await cl.get(`/api/customers/?filter[q][email_eq]=${emailAddress}`);
+        const customerRes = safelyParse(customer, 'data.data', parseAsArrayOfCommerceResponse, null);
+
+        if (!customerRes) {
+            return false;
+        }
+
+        const customerId = customerRes[0].id;
+
+        const res = await cl.patch(`/api/customers/${customerId}`, {
+            data: {
+                type: 'customers',
+                id: customerId,
+                attributes: {
+                    password,
+                },
+            },
+        });
+        const status = safelyParse(res, 'response.status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not create a payment source.');
+    }
 }
