@@ -21,13 +21,11 @@ import { isArrayOfErrors, isError } from '../../../utils/typeguards';
 import { addAlert } from '../../../store/slices/alerts';
 import { AlertLevel } from '../../../enums/system';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
-import Alert from '../../Alert';
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
     const { accessToken, currentStep, shipmentsWithMethods, order, checkoutLoading } = useSelector(selector);
     const [shipments, setShipments] = useState<FinalShipments | null>(null);
-    console.log('🚀 ~ file: index.tsx ~ line 29 ~ shipments', shipments);
     const {
         register,
         handleSubmit,
@@ -107,14 +105,20 @@ export const Delivery: React.FC = () => {
 
                 if (chosenMethod) {
                     updateShipmentMethod(accessToken, shipment, chosenMethod).then((res) => {
-                        if (!isError(res)) {
-                            // Fetch the order with new details.
-                            dispatch(fetchOrder(true));
-
-                            // Redirect to next stage.
-                            dispatch(setCurrentStep(2));
-                        } else {
+                        if (isError(res)) {
                             dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
+                        } else if (isArrayOfErrors(res)) {
+                            res.forEach((value) => {
+                                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                            });
+                        } else {
+                            if (res) {
+                                // Fetch the order with new details.
+                                dispatch(fetchOrder(true));
+
+                                // Redirect to next stage.
+                                dispatch(setCurrentStep(2));
+                            }
                         }
                     });
                 }

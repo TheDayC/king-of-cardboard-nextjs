@@ -1,13 +1,17 @@
 import { get } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FieldValues, UseFormRegister } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
 
 import { MergedShipmentMethods } from '../../../../types/checkout';
 import { getShipment } from '../../../../utils/checkout';
 import selector from './selector';
 import styles from './shipment.module.css';
+import { isArrayOfErrors, isError } from '../../../../utils/typeguards';
+import { addAlert } from '../../../../store/slices/alerts';
+import { AlertLevel } from '../../../../enums/system';
+import { parseAsArrayOfStrings, safelyParse } from '../../../../utils/parsers';
 
 interface ShipmentProps {
     id: string;
@@ -28,12 +32,19 @@ export const Shipment: React.FC<ShipmentProps> = ({
 }) => {
     const { accessToken, lineItems } = useSelector(selector);
     const [lineItemSkus, setLineItemSkus] = useState<string[] | null>(null);
+    const dispatch = useDispatch();
 
     const getShipmentLineItems = useCallback(async (accessToken: string, shipmentId: string) => {
-        const shipment = await getShipment(accessToken, shipmentId);
+        const res = await getShipment(accessToken, shipmentId);
 
-        if (shipment) {
-            const lineItemsSkus = get(shipment, 'lineItems', null);
+        if (isError(res)) {
+            dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
+        } else if (isArrayOfErrors(res)) {
+            res.forEach((value) => {
+                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+            });
+        } else {
+            const lineItemsSkus = safelyParse(res, 'lineItems', parseAsArrayOfStrings, null);
 
             if (lineItemsSkus) {
                 setLineItemSkus(lineItemsSkus);

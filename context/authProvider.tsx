@@ -48,60 +48,87 @@ const AuthProvider: React.FC = ({ children }) => {
     // Fetch order with line items.
     const fetchOrder = useCallback(
         async (accessToken: string, orderId: string) => {
-            const fullOrderData = await getOrder(accessToken, orderId, [
+            const orderRes = await getOrder(accessToken, orderId, [
                 'line_items',
                 'available_payment_methods',
                 'payment_method',
             ]);
 
-            if (fullOrderData) {
-                const { included } = fullOrderData;
-                const items = included.filter((data) => data.type === 'line_items');
-                const paymentMethods = included.filter((data) => data.type === 'payment_methods');
-                const shipmentData = await getShipments(accessToken, orderId);
+            if (isError(orderRes)) {
+                dispatch(addAlert({ message: orderRes.description, level: AlertLevel.Error }));
+            } else if (isArrayOfErrors(orderRes)) {
+                orderRes.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                if (orderRes) {
+                    const { included } = orderRes;
+                    const items = included.filter((data) => data.type === 'line_items');
+                    const paymentMethods = included.filter((data) => data.type === 'payment_methods');
 
-                if (items) {
-                    // Put fetched line items into cart.items store.
-                    // Ensure sku_code exists to avoid adding shipping or payment methods.
-                    const cartItems = items
-                        .filter((item) => safelyParse(item, 'attributes.sku_code', parseAsString, null))
-                        .map((item) => ({
-                            ...item.attributes,
-                            id: item.id,
+                    if (items) {
+                        // Put fetched line items into cart.items store.
+                        // Ensure sku_code exists to avoid adding shipping or payment methods.
+                        const cartItems = items
+                            .filter((item) => safelyParse(item, 'attributes.sku_code', parseAsString, null))
+                            .map((item) => ({
+                                ...item.attributes,
+                                id: item.id,
+                            }));
+
+                        dispatch(setLineItems(cartItems));
+                    }
+
+                    if (paymentMethods) {
+                        const cartPaymentMethods = paymentMethods.map((method) => ({
+                            ...method.attributes,
+                            id: method.id,
                         }));
 
-                    dispatch(setLineItems(cartItems));
-                }
+                        dispatch(setPaymentMethods(cartPaymentMethods));
+                    }
 
-                if (paymentMethods) {
-                    const cartPaymentMethods = paymentMethods.map((method) => ({
-                        ...method.attributes,
-                        id: method.id,
-                    }));
+                    const shipmentRes = await getShipments(accessToken, orderId);
 
-                    dispatch(setPaymentMethods(cartPaymentMethods));
-                }
+                    if (isError(shipmentRes)) {
+                        dispatch(addAlert({ message: shipmentRes.description, level: AlertLevel.Error }));
+                    } else if (isArrayOfErrors(shipmentRes)) {
+                        shipmentRes.forEach((value) => {
+                            dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                        });
+                    } else {
+                        if (shipmentRes) {
+                            const { shipments } = shipmentRes;
 
-                if (shipmentData) {
-                    const { shipments } = shipmentData;
+                            shipments.forEach(async (shipment) => {
+                                const shipmentWithMethods = await getShipment(accessToken, shipment);
 
-                    shipments.forEach(async (shipment) => {
-                        const shipmentWithMethods = await getShipment(accessToken, shipment);
-
-                        if (shipmentWithMethods) {
-                            dispatch(addShipmentWithMethod(shipmentWithMethods));
+                                if (isError(shipmentWithMethods)) {
+                                    dispatch(
+                                        addAlert({ message: shipmentWithMethods.description, level: AlertLevel.Error })
+                                    );
+                                } else if (isArrayOfErrors(shipmentWithMethods)) {
+                                    shipmentWithMethods.forEach((value) => {
+                                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                                    });
+                                } else {
+                                    if (shipmentWithMethods) {
+                                        dispatch(addShipmentWithMethod(shipmentWithMethods));
+                                    }
+                                }
+                            });
                         }
-                    });
+                    }
+
+                    // Set the entire order in the store.
+                    dispatch(setOrder(orderRes));
+
+                    // Ensure the cart isn't updating after the order has been fetched.
+                    dispatch(setUpdatingCart(false));
+
+                    // Ensure Checkout loading has also reset on a fetched order.
+                    dispatch(setCheckoutLoading(false));
                 }
-
-                // Set the entire order in the store.
-                dispatch(setOrder(fullOrderData));
-
-                // Ensure the cart isn't updating after the order has been fetched.
-                dispatch(setUpdatingCart(false));
-
-                // Ensure Checkout loading has also reset on a fetched order.
-                dispatch(setCheckoutLoading(false));
             }
         },
         [dispatch]

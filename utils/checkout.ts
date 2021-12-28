@@ -320,7 +320,7 @@ export async function getShipments(
             }),
         };
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not fetch delivery lead times.');
+        return errorHandler(error, 'Failed to fetch shipments.');
     }
 }
 
@@ -344,7 +344,7 @@ export async function getDeliveryLeadTimes(
 
         return null;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not fetch delivery lead times.');
+        return errorHandler(error, 'Failed to fetch delivery lead times.');
     }
 }
 
@@ -398,7 +398,7 @@ export async function updateShipmentMethod(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not fetch delivery lead times.');
+        return errorHandler(error, 'Failed to update shipment method.');
     }
 }
 
@@ -428,7 +428,7 @@ export async function getShipment(
             lineItems: items,
         };
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not get a shipment.');
+        return errorHandler(error, 'Failed to fetch shipment.');
     }
 }
 
