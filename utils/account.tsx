@@ -342,3 +342,18 @@ export async function resetPassword(
         return errorHandler(error, 'We could not reset your password.');
     }
 }
+
+export async function updateUsername(emailAddress: string, username: string): Promise<boolean | ErrorResponse[]> {
+    try {
+        const res = await axios.post('/api/account/updateUsername', {
+            emailAddress,
+            username,
+        });
+
+        const status = safelyParse(res, 'response.status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'Failed to update username.');
+    }
+}
