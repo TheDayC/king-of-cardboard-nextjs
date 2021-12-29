@@ -11,10 +11,10 @@ import {
     CommerceLayerResponse,
     ErrorResponse,
 } from '../types/api';
-import { BreakTypeItem, ContentfulBreak } from '../types/breaks';
+import { BreakSlot, BreakTypeItem, ContentfulBreak } from '../types/breaks';
 import { Order } from '../types/cart';
 import { SkuInventory, SkuOption } from '../types/commerce';
-import { ContentfulPage } from '../types/pages';
+import { Content, ContentfulPage, ContentJSON } from '../types/pages';
 import { ITypeGuard } from '../types/parsers';
 import { ContentfulProduct, ImageCollection, ImageItem } from '../types/products';
 import { SocialMedia } from '../types/profile';
@@ -139,6 +139,10 @@ export function isImageItem(candidate: unknown): candidate is ImageItem {
     return isNotNullOrUndefined<object>(candidate) && 'url' in candidate;
 }
 
+export function isArrayOfImageItems(candidate: unknown): candidate is ImageItem[] {
+    return isArray(candidate) && isImageItem(candidate[0]);
+}
+
 export function isSkuInventory(candidate: unknown): candidate is SkuInventory {
     return isNotNullOrUndefined<object>(candidate) && 'available' in candidate;
 }
@@ -197,4 +201,28 @@ export function isContentfulProduct(candidate: unknown): candidate is Contentful
 
 export function isArrayOfContentfulProducts(candidate: unknown): candidate is ContentfulProduct[] {
     return isArray(candidate) && isContentfulProduct(candidate[0]);
+}
+
+export function isBreakSlot(candidate: unknown): candidate is BreakSlot {
+    return isNotNullOrUndefined<object>(candidate) && 'slotIdentifier' in candidate;
+}
+
+export function isArrayOfBreakSlots(candidate: unknown): candidate is BreakSlot[] {
+    return isArray(candidate) && isBreakSlot(candidate[0]);
+}
+
+export function isContentJSON(candidate: unknown): candidate is ContentJSON {
+    return isNotNullOrUndefined<object>(candidate) && 'content' in candidate;
+}
+
+export function isArrayOfContentJSON(candidate: unknown): candidate is ContentJSON[] {
+    return isArray(candidate) && isContentJSON(candidate[0]);
+}
+
+export function isContent(candidate: unknown): candidate is Content {
+    return isNotNullOrUndefined<object>(candidate) && 'value' in candidate;
+}
+
+export function isArrayOfContent(candidate: unknown): candidate is Content[] {
+    return isArray(candidate) && isContent(candidate[0]);
 }

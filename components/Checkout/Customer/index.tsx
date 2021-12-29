@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { get } from 'lodash';
 
 import selector from './selector';
 import { fieldPatternMsgs, updateAddress } from '../../../utils/checkout';
 import { PersonalDetails } from '../../../types/checkout';
 import { setAllowShippingAddress, setCurrentStep, setCustomerDetails } from '../../../store/slices/checkout';
-import { parseCustomerDetails } from '../../../utils/parsers';
+import { parseAsBoolean, parseAsString, parseCustomerDetails, safelyParse } from '../../../utils/parsers';
 import { fetchOrder } from '../../../store/slices/cart';
 import { setCheckoutLoading } from '../../../store/slices/global';
-import { isArrayOfErrors, isError } from '../../../utils/typeguards';
+import { isArrayOfErrors } from '../../../utils/typeguards';
 import { addAlert } from '../../../store/slices/alerts';
 import { AlertLevel } from '../../../enums/system';
 
@@ -53,7 +52,7 @@ const Customer: React.FC = () => {
         dispatch(setCheckoutLoading(true));
 
         // Fetch allowShipping and also dispatch current state on submission.
-        const allowShipping = get(data, 'allowShippingAddress', false);
+        const allowShipping = safelyParse(data, 'allowShippingAddress', parseAsBoolean, false);
         dispatch(setAllowShippingAddress(allowShipping));
 
         // There are quite a few customer details to parse so ship it off to a helper then store.
@@ -90,21 +89,21 @@ const Customer: React.FC = () => {
     };
 
     // Collect errors.
-    const firstNameErr = get(errors, 'firstName.message', null);
-    const lastNameErr = get(errors, 'lastName.message', null);
-    const companyErr = get(errors, 'company.message', null);
-    const emailErr = get(errors, 'email.message', null);
-    const mobileErr = get(errors, 'mobile.message', null);
-    const billingLineOneErr = get(errors, 'billingAddressLineOne.message', null);
-    const billingLineTwoErr = get(errors, 'billingAddressLineTwo.message', null);
-    const billingCityErr = get(errors, 'billingCity.message', null);
-    const billingPostcodeErr = get(errors, 'billingPostcode.message', null);
-    const billingCountyErr = get(errors, 'billingCounty.message', null);
-    const shippingLineOneErr = get(errors, 'shippingAddressLineOne.message', null);
-    const shippingLineTwoErr = get(errors, 'shippingAddressLineTwo.message', null);
-    const shippingCityErr = get(errors, 'shippingCity.message', null);
-    const shippingPostcodeErr = get(errors, 'shippingPostcode.message', null);
-    const shippingCountyErr = get(errors, 'shippingCounty.message', null);
+    const firstNameErr = safelyParse(errors, 'firstName.message', parseAsString, null);
+    const lastNameErr = safelyParse(errors, 'lastName.message', parseAsString, null);
+    const companyErr = safelyParse(errors, 'company.message', parseAsString, null);
+    const emailErr = safelyParse(errors, 'email.message', parseAsString, null);
+    const mobileErr = safelyParse(errors, 'mobile.message', parseAsString, null);
+    const billingLineOneErr = safelyParse(errors, 'billingAddressLineOne.message', parseAsString, null);
+    const billingLineTwoErr = safelyParse(errors, 'billingAddressLineTwo.message', parseAsString, null);
+    const billingCityErr = safelyParse(errors, 'billingCity.message', parseAsString, null);
+    const billingPostcodeErr = safelyParse(errors, 'billingPostcode.message', parseAsString, null);
+    const billingCountyErr = safelyParse(errors, 'billingCounty.message', parseAsString, null);
+    const shippingLineOneErr = safelyParse(errors, 'shippingAddressLineOne.message', parseAsString, null);
+    const shippingLineTwoErr = safelyParse(errors, 'shippingAddressLineTwo.message', parseAsString, null);
+    const shippingCityErr = safelyParse(errors, 'shippingCity.message', parseAsString, null);
+    const shippingPostcodeErr = safelyParse(errors, 'shippingPostcode.message', parseAsString, null);
+    const shippingCountyErr = safelyParse(errors, 'shippingCounty.message', parseAsString, null);
 
     // Update internal allow shipping state to add / hide address.
     const onAllowShippingAddress = (e: React.ChangeEvent<HTMLInputElement>) => {

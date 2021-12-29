@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ceil, divide, get } from 'lodash';
+import { ceil, divide } from 'lodash';
 import { useRouter } from 'next/router';
 
 import selector from './selector';
@@ -10,22 +10,23 @@ import { setIsLoadingProducts } from '../../../store/slices/shop';
 import { BreakSlot, ContentfulBreak } from '../../../types/breaks';
 import { setIsLoadingBreaks } from '../../../store/slices/breaks';
 import BreakCard from './BreakCard';
+import { parseAsArrayOfBreakSlots, parseAsString, safelyParse } from '../../../utils/parsers';
 
 const PER_PAGE = 9;
 
 export const Grid: React.FC = () => {
-    const { accessToken, filters } = useSelector(selector);
+    const { filters } = useSelector(selector);
     const dispatch = useDispatch();
     const [breaks, setBreaks] = useState<ContentfulBreak[] | null>(null);
     const [totalBreaks, setTotalBreaks] = useState(0);
     const [currentPage, setCurrentPage] = useState(0);
     const router = useRouter();
-    const cat: string = get(router, 'query.cat', '');
+    const cat = safelyParse(router, 'query.cat', parseAsString, '');
 
     const productPageCount = ceil(divide(totalBreaks, PER_PAGE));
 
     const createBreakCollection = useCallback(
-        async (accessToken: string, currentPage: number, productTypes: string) => {
+        async (currentPage: number, productTypes: string) => {
             // First, find our contentful products with links.
             // Use Limit for max products per request.
             // Multiply the currentPage (needs to start at 0) by the limit to skip over the same amount of products each time.
@@ -53,26 +54,26 @@ export const Grid: React.FC = () => {
             dispatch(setIsLoadingProducts(true));
             setCurrentPage(pageNumber);
 
-            if (accessToken) {
-                createBreakCollection(accessToken, pageNumber, cat);
+            if (cat) {
+                createBreakCollection(pageNumber, cat);
             }
         },
-        [accessToken, filters.productTypes]
+        [cat, filters.productTypes]
     );
 
     // Create the product collection on load.
     useEffect(() => {
-        if (!breaks && accessToken) {
-            createBreakCollection(accessToken, 0, cat);
+        if (!breaks && cat) {
+            createBreakCollection(0, cat);
         }
-    }, [breaks, accessToken, cat]);
+    }, [breaks, cat]);
 
     // Filter the collection.
     useEffect(() => {
-        if (accessToken) {
-            createBreakCollection(accessToken, 0, cat);
+        if (cat) {
+            createBreakCollection(0, cat);
         }
-    }, [accessToken, cat]);
+    }, [cat]);
 
     return (
         <div className="flex w-full p-4">
@@ -80,7 +81,12 @@ export const Grid: React.FC = () => {
                 <div className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl2:grid-cols-4 gap-4">
                     {breaks &&
                         breaks.map((b) => {
-                            const breakSlots: BreakSlot[] | null = get(b, 'breakSlotsCollection.items', null);
+                            const breakSlots = safelyParse(
+                                b,
+                                'breakSlotsCollection.items',
+                                parseAsArrayOfBreakSlots,
+                                null
+                            );
                             const sku_codes = breakSlots
                                 ? breakSlots.filter((bS) => bS).map((bS) => bS.productLink)
                                 : [];

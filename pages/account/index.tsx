@@ -1,6 +1,5 @@
 import React from 'react';
-import { get } from 'lodash';
-import { getSession, useSession } from 'next-auth/react';
+import { getSession } from 'next-auth/react';
 import { useSelector } from 'react-redux';
 
 import AccountMenu from '../../components/Account/Menu';
@@ -8,6 +7,7 @@ import Header from '../../components/Header';
 import { ServerSideRedirectProps } from '../../types/pages';
 import selector from './selector';
 import Content from '../../components/Content';
+import { parseAsArrayOfContentJSON, safelyParse } from '../../utils/parsers';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 export async function getServerSideProps(context: any): Promise<ServerSideRedirectProps | object> {
@@ -27,8 +27,7 @@ export async function getServerSideProps(context: any): Promise<ServerSideRedire
 
 export const AccountPage: React.FC = () => {
     const { page } = useSelector(selector);
-    const { data: session, status } = useSession();
-    const content: any[] | null = get(page, 'content.json.content', null);
+    const content = safelyParse(page, 'content.json.content', parseAsArrayOfContentJSON, null);
 
     return (
         <React.Fragment>

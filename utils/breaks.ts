@@ -1,5 +1,3 @@
-import { get } from 'lodash';
-
 import {
     BreakSlot,
     BreakSlotWithSku,
@@ -8,10 +6,20 @@ import {
     ContentfulBreakTypes,
     SingleBreak,
 } from '../types/breaks';
-import { SkuInventory, SkuItem, SkuOption, SkuProduct } from '../types/commerce';
-import { ImageCollection, ImageItem } from '../types/products';
+import { SkuItem, SkuProduct } from '../types/commerce';
 import { fetchContent } from './content';
-import { parseAsArrayOfBreakTypeItems, parseAsArrayOfContentfulBreaks, parseAsNumber, safelyParse } from './parsers';
+import {
+    parseAsArrayOfBreakTypeItems,
+    parseAsArrayOfContentfulBreaks,
+    parseAsArrayOfStrings,
+    parseAsImageItem,
+    parseAsNumber,
+    parseAsString,
+    safelyParse,
+    parseAsImageCollection,
+    parseAsSkuInventory,
+    parseAsArrayOfSkuOptions,
+} from './parsers';
 
 export async function fetchContentfulBreaks(
     limit: number,
@@ -184,11 +192,11 @@ export function mergeBreakSlotData(breaks: BreakSlot[], skuItems: SkuItem[]): Br
         const { productLink: sku_code } = breakSlot;
         const skuItem = skuItems.find((s) => s.sku_code === sku_code) || null;
 
-        const id: string = get(skuItem, 'id', '');
-        const name: string = get(breakSlot, 'slotIdentifier', '');
-        const image: ImageItem | null = get(breakSlot, 'image', null);
-        const amount: string = get(skuItem, 'amount', '');
-        const compare_amount: string = get(skuItem, 'compare_amount', '');
+        const id = safelyParse(skuItem, 'id', parseAsString, '');
+        const name = safelyParse(breakSlot, 'slotIdentifier', parseAsString, '');
+        const image = safelyParse(breakSlot, 'image', parseAsImageItem, null);
+        const amount = safelyParse(skuItem, 'amount', parseAsString, '');
+        const compare_amount = safelyParse(skuItem, 'compare_amount', parseAsString, '');
 
         return {
             id,
@@ -202,19 +210,19 @@ export function mergeBreakSlotData(breaks: BreakSlot[], skuItems: SkuItem[]): Br
 }
 
 export function mergeSkuBreakData(product: ContentfulBreak, skuItem: SkuItem, skuData: SkuProduct): SingleBreak {
-    const id: string = get(skuItem, 'id', '');
-    const title: string = get(product, 'title', '');
-    const slug: string = get(product, 'slug', '');
-    const sku_code: string | null = get(product, 'productLink', null);
-    const description: string | null = get(product, 'description', null);
-    const types: string | null = get(product, 'types', null);
-    const cardImage: ImageItem | null = get(product, 'cardImage', null);
-    const images: ImageCollection | null = get(product, 'imagesCollection', null);
-    const tags: string[] | null = get(product, 'tags', null);
-    const amount: string | null = get(skuData, 'formatted_amount', null);
-    const compare_amount: string | null = get(skuData, 'formatted_compare_at_amount', null);
-    const inventory: SkuInventory | null = get(skuData, 'inventory', null);
-    const options: SkuOption[] | null = get(skuData, 'options', null);
+    const id = safelyParse(skuItem, 'id', parseAsString, '');
+    const title = safelyParse(product, 'title', parseAsString, '');
+    const slug = safelyParse(product, 'slug', parseAsString, '');
+    const sku_code = safelyParse(product, 'productLink', parseAsString, null);
+    const description = safelyParse(product, 'description', parseAsString, null);
+    const types = safelyParse(product, 'types', parseAsString, null);
+    const cardImage = safelyParse(product, 'cardImage', parseAsImageItem, null);
+    const images = safelyParse(product, 'imagesCollection', parseAsImageCollection, null);
+    const tags = safelyParse(product, 'tags', parseAsArrayOfStrings, null);
+    const amount = safelyParse(skuData, 'formatted_amount', parseAsString, null);
+    const compare_amount = safelyParse(skuData, 'formatted_compare_at_amount', parseAsString, null);
+    const inventory = safelyParse(skuData, 'inventory', parseAsSkuInventory, null);
+    const options = safelyParse(skuData, 'options', parseAsArrayOfSkuOptions, null);
 
     return {
         id,

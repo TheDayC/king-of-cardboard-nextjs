@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { round, get } from 'lodash';
+import { round } from 'lodash';
 import { DateTime } from 'luxon';
+import { parseAsNumber, safelyParse } from '../../../../../utils/parsers';
 
 interface BreakProps {
     breakDate: DateTime;
@@ -9,10 +10,10 @@ interface BreakProps {
 export const Countdown: React.FC<BreakProps> = ({ breakDate }) => {
     const [currentDate, setCurrentDate] = useState(DateTime.now().setZone('Europe/London'));
     const duration = currentDate.until(breakDate).toDuration(['days', 'hours', 'minutes', 'seconds']).toObject();
-    const days = get(duration, 'days', 0);
-    const hours = get(duration, 'hours', 0);
-    const minutes = get(duration, 'minutes', 0);
-    const seconds = get(duration, 'seconds', 0);
+    const days = safelyParse(duration, 'days', parseAsNumber, 0);
+    const hours = safelyParse(duration, 'hours', parseAsNumber, 0);
+    const minutes = safelyParse(duration, 'minutes', parseAsNumber, 0);
+    const seconds = safelyParse(duration, 'seconds', parseAsNumber, 0);
     const hasPassed = days <= 0 && hours <= 0 && minutes <= 0 && round(seconds) <= 0;
 
     // Set an interval once.
