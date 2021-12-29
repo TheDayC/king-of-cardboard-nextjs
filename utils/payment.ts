@@ -60,7 +60,7 @@ export async function sendOrderConfirmation(
     order: Order,
     items: CartItem[],
     customerDetails: CustomerDetails
-): Promise<boolean> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const response = await axios.post('/api/sendOrderConfirmation', {
             order,
@@ -69,8 +69,8 @@ export async function sendOrderConfirmation(
         });
 
         return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
-    } catch (error) {
-        console.log('Error: ', error);
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not confirm your order.');
     }
 
     return false;
