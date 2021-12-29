@@ -51,12 +51,12 @@ export const PAGES_QUERY = `
     }
 `;
 
-export async function fetchContent(query: string): Promise<AxiosResponse<unknown> | ErrorResponse[]> {
+export async function fetchContent(query: string): Promise<AxiosResponse<unknown> | void> {
     try {
         const response = await axios.post('/api/content/fetchContent', { query });
 
         return response;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not create an auth token, please refresh.');
+        errorHandler(error, 'We could not create an auth token, please refresh.');
     }
 }
