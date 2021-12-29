@@ -196,5 +196,5 @@ export function isContentfulProduct(candidate: unknown): candidate is Contentful
 }
 
 export function isArrayOfContentfulProducts(candidate: unknown): candidate is ContentfulProduct[] {
-    return isArray(candidate) && isContentfulPage(candidate[0]);
+    return isArray(candidate) && isContentfulProduct(candidate[0]);
 }

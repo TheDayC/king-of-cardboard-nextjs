@@ -99,7 +99,7 @@ export async function fetchContentfulProducts(
     // On success get the item data for products.
     const productCollection = safelyParse(
         productResponse,
-        'data.data.productCollection.items',
+        'data.content.productCollection.items',
         parseAsArrayOfContentfulProducts,
         null
     );
