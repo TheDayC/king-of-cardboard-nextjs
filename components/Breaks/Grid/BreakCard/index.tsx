@@ -51,9 +51,7 @@ export const BreakCard: React.FC<BreakProps> = ({
     const fetchSlotSkuData = useCallback(async (token: string, skus: string[]) => {
         const skuData = await getSkus(token, skus);
 
-        if (isError(skuData)) {
-            dispatch(addAlert({ message: skuData.description, level: AlertLevel.Error }));
-        } else if (isArrayOfErrors(skuData)) {
+        if (isArrayOfErrors(skuData)) {
             skuData.forEach((value) => {
                 dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
             });

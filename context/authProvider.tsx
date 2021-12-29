@@ -31,9 +31,7 @@ const AuthProvider: React.FC = ({ children }) => {
     const fetchToken = useCallback(async () => {
         const res = await createToken();
 
-        if (isError(res)) {
-            dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
-        } else if (isArrayOfErrors(res)) {
+        if (isArrayOfErrors(res)) {
             res.forEach((value) => {
                 dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
             });
@@ -54,9 +52,7 @@ const AuthProvider: React.FC = ({ children }) => {
                 'payment_method',
             ]);
 
-            if (isError(orderRes)) {
-                dispatch(addAlert({ message: orderRes.description, level: AlertLevel.Error }));
-            } else if (isArrayOfErrors(orderRes)) {
+            if (isArrayOfErrors(orderRes)) {
                 orderRes.forEach((value) => {
                     dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                 });
@@ -90,9 +86,7 @@ const AuthProvider: React.FC = ({ children }) => {
 
                     const shipmentRes = await getShipments(accessToken, orderId);
 
-                    if (isError(shipmentRes)) {
-                        dispatch(addAlert({ message: shipmentRes.description, level: AlertLevel.Error }));
-                    } else if (isArrayOfErrors(shipmentRes)) {
+                    if (isArrayOfErrors(shipmentRes)) {
                         shipmentRes.forEach((value) => {
                             dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                         });
@@ -103,11 +97,7 @@ const AuthProvider: React.FC = ({ children }) => {
                             shipments.forEach(async (shipment) => {
                                 const shipmentWithMethods = await getShipment(accessToken, shipment);
 
-                                if (isError(shipmentWithMethods)) {
-                                    dispatch(
-                                        addAlert({ message: shipmentWithMethods.description, level: AlertLevel.Error })
-                                    );
-                                } else if (isArrayOfErrors(shipmentWithMethods)) {
+                                if (isArrayOfErrors(shipmentWithMethods)) {
                                     shipmentWithMethods.forEach((value) => {
                                         dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                                     });
@@ -139,9 +129,7 @@ const AuthProvider: React.FC = ({ children }) => {
         async (accessToken: string) => {
             const order = await createOrder(accessToken);
 
-            if (isError(order)) {
-                dispatch(addAlert({ message: order.description, level: AlertLevel.Error }));
-            } else if (isArrayOfErrors(order)) {
+            if (isArrayOfErrors(order)) {
                 order.forEach((value) => {
                     dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                 });

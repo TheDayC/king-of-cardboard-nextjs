@@ -37,9 +37,7 @@ export const ResetPassword: React.FC = () => {
 
         const res = await requestPasswordReset(accessToken, email);
 
-        if (isError(res)) {
-            dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
-        } else if (isArrayOfErrors(res)) {
+        if (isArrayOfErrors(res)) {
             res.forEach((value) => {
                 dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
             });

@@ -1,7 +1,7 @@
 import { ErrorResponse } from '../types/api';
 import { parseAsArrayOfCommerceLayerErrors, parseAsNumber, parseAsString, safelyParse } from '../utils/parsers';
 
-export function errorHandler(error: unknown, defaultError: string): ErrorResponse | ErrorResponse[] {
+export function errorHandler(error: unknown, defaultError: string): ErrorResponse[] {
     // Intercept commerceLayer errors first as they'll be nested in an axiosError.
     const clErrors = safelyParse(error, 'response.data.errors', parseAsArrayOfCommerceLayerErrors, null);
 
@@ -18,5 +18,5 @@ export function errorHandler(error: unknown, defaultError: string): ErrorRespons
     const message = safelyParse(error, 'response.data.message', parseAsString, 'Internal Server Error');
     const description = safelyParse(error, 'response.data.description', parseAsString, defaultError);
 
-    return { status, message, description };
+    return [{ status, message, description }];
 }

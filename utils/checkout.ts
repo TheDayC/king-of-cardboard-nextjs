@@ -220,7 +220,7 @@ export async function updateAddress(
     id: string,
     personalDetails: CustomerDetails,
     isShipping: boolean
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const data = {
             type: 'addresses',
@@ -273,10 +273,7 @@ export async function updateAddress(
     }
 }
 
-export async function getShipments(
-    accessToken: string,
-    orderId: string
-): Promise<Shipments | ErrorResponse | ErrorResponse[] | null> {
+export async function getShipments(accessToken: string, orderId: string): Promise<Shipments | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
         const include = 'available_shipping_methods,stock_location';
@@ -324,9 +321,7 @@ export async function getShipments(
     }
 }
 
-export async function getDeliveryLeadTimes(
-    accessToken: string
-): Promise<DeliveryLeadTimes[] | ErrorResponse | ErrorResponse[] | null> {
+export async function getDeliveryLeadTimes(accessToken: string): Promise<DeliveryLeadTimes[] | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.get('/api/delivery_lead_times?include=shipping_method,stock_location');
@@ -377,7 +372,7 @@ export async function updateShipmentMethod(
     accessToken: string,
     shipmentId: string,
     methodId: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/shipments/${shipmentId}`, {
@@ -405,7 +400,7 @@ export async function updateShipmentMethod(
 export async function getShipment(
     accessToken: string,
     shipmentId: string
-): Promise<ShipmentsWithLineItems | ErrorResponse | ErrorResponse[] | null> {
+): Promise<ShipmentsWithLineItems | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
         const include = 'shipping_method,delivery_lead_time,shipment_line_items';
@@ -436,7 +431,7 @@ export async function updatePaymentMethod(
     accessToken: string,
     id: string,
     paymentMethodId: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/orders/${id}`, {

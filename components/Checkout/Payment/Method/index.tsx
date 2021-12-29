@@ -34,9 +34,7 @@ export const Method: React.FC<MethodProps> = ({ id, name, sourceType, defaultChe
         async (accessToken: string, orderId: string, paymentMethodId: string) => {
             const hasPatchedMethod = await updatePaymentMethod(accessToken, orderId, paymentMethodId);
 
-            if (isError(hasPatchedMethod)) {
-                dispatch(addAlert({ message: hasPatchedMethod.description, level: AlertLevel.Error }));
-            } else if (isArrayOfErrors(hasPatchedMethod)) {
+            if (isArrayOfErrors(hasPatchedMethod)) {
                 hasPatchedMethod.forEach((value) => {
                     dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                 });

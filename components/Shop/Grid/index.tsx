@@ -44,9 +44,7 @@ export const Grid: React.FC = () => {
                 const sku_codes = productCollection.map((p) => p.productLink);
                 const skuItems = await getSkus(accessToken, sku_codes);
 
-                if (isError(skuItems)) {
-                    dispatch(addAlert({ message: skuItems.description, level: AlertLevel.Error }));
-                } else if (isArrayOfErrors(skuItems)) {
+                if (isArrayOfErrors(skuItems)) {
                     skuItems.forEach((value) => {
                         dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                     });

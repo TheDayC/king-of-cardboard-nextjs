@@ -28,9 +28,7 @@ export const Cart: React.FC = () => {
             cartItems.map((item) => item.sku_code)
         );
 
-        if (isError(fetchedSkuItems)) {
-            dispatch(addAlert({ message: fetchedSkuItems.description, level: AlertLevel.Error }));
-        } else if (isArrayOfErrors(fetchedSkuItems)) {
+        if (isArrayOfErrors(fetchedSkuItems)) {
             fetchedSkuItems.forEach((value) => {
                 dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
             });

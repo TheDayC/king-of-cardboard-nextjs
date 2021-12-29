@@ -87,9 +87,7 @@ export const Fields: React.FC<FieldProps> = ({
                 postcode
             );
 
-            if (isError(res)) {
-                dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
-            } else if (isArrayOfErrors(res)) {
+            if (isArrayOfErrors(res)) {
                 res.forEach((value) => {
                     dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                 });
@@ -117,9 +115,7 @@ export const Fields: React.FC<FieldProps> = ({
                 postcode
             );
 
-            if (isError(res)) {
-                dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
-            } else if (isArrayOfErrors(res)) {
+            if (isArrayOfErrors(res)) {
                 res.forEach((value) => {
                     dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                 });

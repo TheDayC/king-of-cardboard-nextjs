@@ -23,9 +23,7 @@ export const Rewards: React.FC<RewardsProps> = ({ emailAddress, fullWidth }) => 
     const fetchBalance = async (token: string, email: string) => {
         const res = await getGiftCardBalance(token, email);
 
-        if (isError(res)) {
-            dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
-        } else if (isArrayOfErrors(res)) {
+        if (isArrayOfErrors(res)) {
             res.forEach((err) => {
                 dispatch(addAlert({ message: err.description, level: AlertLevel.Error }));
             });

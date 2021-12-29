@@ -45,9 +45,7 @@ export const UpdatePassword: React.FC = () => {
 
         const res = await updatePassword(token, emailAddress, password);
 
-        if (isError(res)) {
-            dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
-        } else if (isArrayOfErrors(res)) {
+        if (isArrayOfErrors(res)) {
             res.forEach((err) => {
                 dispatch(addAlert({ message: err.description, level: AlertLevel.Error }));
             });

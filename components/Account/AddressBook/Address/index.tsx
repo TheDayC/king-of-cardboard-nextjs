@@ -23,9 +23,7 @@ export const Address: React.FC<AddressProps> = ({ id, name, fetchAddresses }) =>
         if (accessToken && id) {
             const res = await deleteAddress(accessToken, id);
 
-            if (isError(res)) {
-                dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
-            } else if (isArrayOfErrors(res)) {
+            if (isArrayOfErrors(res)) {
                 res.forEach((value) => {
                     dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                 });

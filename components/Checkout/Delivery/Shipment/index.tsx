@@ -37,9 +37,7 @@ export const Shipment: React.FC<ShipmentProps> = ({
     const getShipmentLineItems = useCallback(async (accessToken: string, shipmentId: string) => {
         const res = await getShipment(accessToken, shipmentId);
 
-        if (isError(res)) {
-            dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
-        } else if (isArrayOfErrors(res)) {
+        if (isArrayOfErrors(res)) {
             res.forEach((value) => {
                 dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
             });

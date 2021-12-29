@@ -41,8 +41,6 @@ export const Delivery: React.FC = () => {
             const hasResErrors =
                 !shipmentData ||
                 !deliveryLeadTimes ||
-                isError(shipmentData) ||
-                isError(deliveryLeadTimes) ||
                 isArrayOfErrors(shipmentData) ||
                 isArrayOfErrors(deliveryLeadTimes);
 
@@ -55,14 +53,6 @@ export const Delivery: React.FC = () => {
                     shippingMethods: mergedMethods,
                 });
             } else {
-                if (isError(shipmentData)) {
-                    dispatch(addAlert({ message: shipmentData.description, level: AlertLevel.Error }));
-                }
-
-                if (isError(deliveryLeadTimes)) {
-                    dispatch(addAlert({ message: deliveryLeadTimes.description, level: AlertLevel.Error }));
-                }
-
                 if (isArrayOfErrors(shipmentData)) {
                     shipmentData.forEach((shipmentErr) => {
                         dispatch(addAlert({ message: shipmentErr.description, level: AlertLevel.Error }));
@@ -105,9 +95,7 @@ export const Delivery: React.FC = () => {
 
                 if (chosenMethod) {
                     updateShipmentMethod(accessToken, shipment, chosenMethod).then((res) => {
-                        if (isError(res)) {
-                            dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
-                        } else if (isArrayOfErrors(res)) {
+                        if (isArrayOfErrors(res)) {
                             res.forEach((value) => {
                                 dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                             });

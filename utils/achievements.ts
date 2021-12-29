@@ -5,10 +5,7 @@ import { errorHandler } from '../middleware/errors';
 import { ErrorResponse } from '../types/api';
 import { parseAsNumber, safelyParse } from './parsers';
 
-export async function getGiftCardBalance(
-    accessToken: string,
-    emailAddress: string
-): Promise<number | ErrorResponse | ErrorResponse[]> {
+export async function getGiftCardBalance(accessToken: string, emailAddress: string): Promise<number | ErrorResponse[]> {
     try {
         const response = await axios.post('/api/achievements/getGiftCardBalance', {
             token: accessToken,

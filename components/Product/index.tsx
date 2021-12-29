@@ -52,9 +52,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         if (productData) {
             const skuItems = await getSkus(token, [productData.productLink]);
 
-            if (isError(skuItems)) {
-                dispatch(addAlert({ message: skuItems.description, level: AlertLevel.Error }));
-            } else if (isArrayOfErrors(skuItems)) {
+            if (isArrayOfErrors(skuItems)) {
                 skuItems.forEach((value) => {
                     dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                 });
@@ -63,9 +61,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                 if (skuItems && skuItems.length > 0) {
                     const skuItem = await getSkuDetails(token, skuItems[0].id);
 
-                    if (isError(skuItem)) {
-                        dispatch(addAlert({ message: skuItem.description, level: AlertLevel.Error }));
-                    } else if (isArrayOfErrors(skuItem)) {
+                    if (isArrayOfErrors(skuItem)) {
                         skuItem.forEach((value) => {
                             dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                         });

@@ -12,7 +12,7 @@ export async function confirmOrder(
     accessToken: string,
     orderId: string,
     attribute: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/orders/${orderId}`, {
@@ -37,7 +37,7 @@ export async function refreshPayment(
     accessToken: string,
     id: string,
     paymentSourceType: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/${paymentSourceType}/${id}`, {

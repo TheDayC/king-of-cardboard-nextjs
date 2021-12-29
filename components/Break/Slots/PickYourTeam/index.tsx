@@ -33,9 +33,7 @@ export const PickYourTeam: React.FC<PickYourTeamProps> = ({ slots }) => {
     const fetchSkuItems = useCallback(async (token: string, skus: string[]) => {
         const skuItems = await getSkus(token, skus);
 
-        if (isError(skuItems)) {
-            dispatch(addAlert({ message: skuItems.description, level: AlertLevel.Error }));
-        } else if (isArrayOfErrors(skuItems)) {
+        if (isArrayOfErrors(skuItems)) {
             skuItems.forEach((value) => {
                 dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
             });

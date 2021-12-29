@@ -23,9 +23,7 @@ export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
         async (accessToken: string) => {
             const order = await createOrder(accessToken);
 
-            if (isError(order)) {
-                dispatch(addAlert({ message: order.description, level: AlertLevel.Error }));
-            } else if (isArrayOfErrors(order)) {
+            if (isArrayOfErrors(order)) {
                 order.forEach((value) => {
                     dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                 });

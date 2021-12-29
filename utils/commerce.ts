@@ -16,7 +16,7 @@ import {
     parseAsNumber,
 } from './parsers';
 
-export async function createOrder(accessToken: string): Promise<Order | ErrorResponse | ErrorResponse[] | null> {
+export async function createOrder(accessToken: string): Promise<Order | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.post('/api/orders', {
@@ -41,10 +41,7 @@ export async function createOrder(accessToken: string): Promise<Order | ErrorRes
     }
 }
 
-export async function getSkus(
-    accessToken: string,
-    sku_codes: string[]
-): Promise<SkuItem[] | ErrorResponse | ErrorResponse[] | null> {
+export async function getSkus(accessToken: string, sku_codes: string[]): Promise<SkuItem[] | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
         const skuFilter = join(sku_codes, ',');
@@ -84,10 +81,7 @@ export async function getSkus(
     }
 }
 
-export async function getSkuDetails(
-    accessToken: string,
-    id: string
-): Promise<SkuProduct | ErrorResponse | ErrorResponse[] | null> {
+export async function getSkuDetails(accessToken: string, id: string): Promise<SkuProduct | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.get(`/api/skus/${id}?include=prices,sku_options`);
@@ -134,7 +128,7 @@ export async function getSkuDetails(
     }
 }
 
-export async function getPrices(accessToken: string): Promise<Price[] | ErrorResponse | ErrorResponse[] | null> {
+export async function getPrices(accessToken: string): Promise<Price[] | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.get('/api/prices');
@@ -164,7 +158,7 @@ export async function getOrder(
     accessToken: string,
     orderId: string,
     include: string[]
-): Promise<Order | ErrorResponse | ErrorResponse[] | null> {
+): Promise<Order | ErrorResponse[] | null> {
     try {
         const includeJoin = join(include, ',');
         const orderFields =
@@ -194,7 +188,7 @@ export async function setLineItem(
     accessToken: string,
     attributes: LineItemAttributes,
     relationships: LineItemRelationships
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.post('/api/line_items', {
@@ -212,10 +206,7 @@ export async function setLineItem(
     }
 }
 
-export async function removeLineItem(
-    accessToken: string,
-    id: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+export async function removeLineItem(accessToken: string, id: string): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.delete(`/api/line_items/${id}`);
@@ -231,7 +222,7 @@ export async function updateLineItem(
     accessToken: string,
     id: string,
     quantity: number
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/line_items/${id}`, {
@@ -255,7 +246,7 @@ export async function createPaymentSource(
     accessToken: string,
     id: string,
     paymentSourceType: string
-): Promise<PaymentSourceResponse | ErrorResponse | ErrorResponse[]> {
+): Promise<PaymentSourceResponse | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.post(`/api/${paymentSourceType}`, {

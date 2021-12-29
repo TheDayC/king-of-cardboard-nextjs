@@ -30,9 +30,7 @@ export const AddressBook: React.FC = () => {
     const fetchAddresses = async (token: string, email: string, page: number) => {
         const res = await getAddresses(token, email, PER_PAGE, page);
 
-        if (isError(res)) {
-            dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
-        } else if (isArrayOfErrors(res)) {
+        if (isArrayOfErrors(res)) {
             res.forEach((value) => {
                 dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
             });

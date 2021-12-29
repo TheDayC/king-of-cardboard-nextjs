@@ -51,7 +51,7 @@ export const PAGES_QUERY = `
     }
 `;
 
-export async function fetchContent(query: string): Promise<AxiosResponse<unknown> | ErrorResponse | ErrorResponse[]> {
+export async function fetchContent(query: string): Promise<AxiosResponse<unknown> | ErrorResponse[]> {
     try {
         const response = await axios.post('/api/content/fetchContent', { query });
 

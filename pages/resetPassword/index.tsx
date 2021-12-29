@@ -79,9 +79,7 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
 
         const res = await resetPassword(accessToken, password, id, resetToken);
 
-        if (isError(res)) {
-            dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
-        } else if (isArrayOfErrors(res)) {
+        if (isArrayOfErrors(res)) {
             res.forEach((err) => {
                 dispatch(addAlert({ message: err.description, level: AlertLevel.Error }));
             });

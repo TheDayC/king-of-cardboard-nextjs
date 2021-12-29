@@ -131,9 +131,7 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
     const fetchOrder = useCallback(async (token: string, email: string, order: string) => {
         const res = await getHistoricalOrder(token, email, order);
 
-        if (isError(res)) {
-            dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
-        } else if (isArrayOfErrors(res)) {
+        if (isArrayOfErrors(res)) {
             res.forEach((value) => {
                 dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
             });
@@ -153,9 +151,7 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
     const fetchSkuItems = useCallback(async (token: string, skus: string[], includedItems: CommerceLayerResponse[]) => {
         const skuItems = await getSkus(token, skus);
 
-        if (isError(skuItems)) {
-            dispatch(addAlert({ message: skuItems.description, level: AlertLevel.Error }));
-        } else if (isArrayOfErrors(skuItems)) {
+        if (isArrayOfErrors(skuItems)) {
             skuItems.forEach((value) => {
                 dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
             });

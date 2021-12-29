@@ -57,9 +57,7 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId, em
 
     const fetchAddress = async (token: string, id: string) => {
         const customerAddressRes = await getCustomerAddress(token, id);
-        if (isError(customerAddressRes)) {
-            dispatch(addAlert({ message: customerAddressRes.description, level: AlertLevel.Error }));
-        } else if (isArrayOfErrors(customerAddressRes)) {
+        if (isArrayOfErrors(customerAddressRes)) {
             customerAddressRes.forEach((value) => {
                 dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
             });
@@ -75,9 +73,7 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId, em
             if (originalAddressId) {
                 const res = await getAddress(token, originalAddressId);
 
-                if (isError(res)) {
-                    dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
-                } else if (isArrayOfErrors(res)) {
+                if (isArrayOfErrors(res)) {
                     res.forEach((value) => {
                         dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                     });

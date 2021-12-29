@@ -64,9 +64,7 @@ const Customer: React.FC = () => {
             // Update billing address details in commerceLayer
             const billingAddressUpdatedRes = await updateAddress(accessToken, order.id, customerDetails, false);
 
-            if (isError(billingAddressUpdatedRes)) {
-                dispatch(addAlert({ message: billingAddressUpdatedRes.description, level: AlertLevel.Error }));
-            } else if (isArrayOfErrors(billingAddressUpdatedRes)) {
+            if (isArrayOfErrors(billingAddressUpdatedRes)) {
                 billingAddressUpdatedRes.forEach((value) => {
                     dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                 });
@@ -74,9 +72,7 @@ const Customer: React.FC = () => {
                 // Update shipping address details in commerceLayer
                 const res = await updateAddress(accessToken, order.id, customerDetails, true);
 
-                if (isError(res)) {
-                    dispatch(addAlert({ message: res.description, level: AlertLevel.Error }));
-                } else if (isArrayOfErrors(res)) {
+                if (isArrayOfErrors(res)) {
                     res.forEach((value) => {
                         dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                     });

@@ -22,7 +22,7 @@ export async function getHistoricalOrders(
     emailAddress: string,
     pageSize: number,
     page: number
-): Promise<GetOrders | ErrorResponse | ErrorResponse[]> {
+): Promise<GetOrders | ErrorResponse[]> {
     try {
         const filters = `filter[q][email_eq]=${emailAddress}&filter[q][status_not_in]=draft,pending`;
         const pagination = `page[size]=${pageSize}&page[number]=${page}`;
@@ -50,7 +50,7 @@ export async function getHistoricalOrder(
     accessToken: string,
     emailAddress: string,
     orderNumber: string
-): Promise<GetOrders | ErrorResponse | ErrorResponse[]> {
+): Promise<GetOrders | ErrorResponse[]> {
     try {
         const filters = `filter[q][number_eq]=${orderNumber}&filter[q][email_eq]=${emailAddress}`;
         const orderFields =
@@ -132,7 +132,7 @@ export async function getAddresses(
     emailAddress: string,
     pageSize: number,
     page: number
-): Promise<AddressResponse | ErrorResponse | ErrorResponse[]> {
+): Promise<AddressResponse | ErrorResponse[]> {
     try {
         const filters = `filter[q][email_eq]=${emailAddress}`;
         const pagination = `page[size]=${pageSize}&page[number]=${page}`;
@@ -160,7 +160,7 @@ export async function addAddress(
     lastName: string,
     phone: string,
     postcode: string
-): Promise<string | ErrorResponse | ErrorResponse[] | null> {
+): Promise<string | ErrorResponse[] | null> {
     try {
         const response = await axios.post('/api/account/addAddress', {
             token: accessToken,
@@ -182,10 +182,7 @@ export async function addAddress(
     }
 }
 
-export async function deleteAddress(
-    accessToken: string,
-    id: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+export async function deleteAddress(accessToken: string, id: string): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const response = await cl.delete(`/api/customer_addresses/${id}`);
@@ -201,7 +198,7 @@ export async function deleteAddress(
 export async function getAddress(
     accessToken: string,
     id: string
-): Promise<CommerceLayerResponse | ErrorResponse | ErrorResponse[] | null> {
+): Promise<CommerceLayerResponse | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
         const response = await cl.get(`/api/addresses/${id}`);
@@ -215,7 +212,7 @@ export async function getAddress(
 export async function getCustomerAddress(
     accessToken: string,
     id: string
-): Promise<CommerceLayerResponse | ErrorResponse | ErrorResponse[] | null> {
+): Promise<CommerceLayerResponse | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
         const response = await cl.get(`/api/customer_addresses/${id}?include=address`);
@@ -238,7 +235,7 @@ export async function editAddress(
     lastName: string,
     phone: string,
     postcode: string
-): Promise<CommerceLayerResponse | ErrorResponse | ErrorResponse[] | null> {
+): Promise<CommerceLayerResponse | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
 
@@ -266,10 +263,7 @@ export async function editAddress(
     }
 }
 
-export async function requestPasswordReset(
-    accessToken: string,
-    email: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+export async function requestPasswordReset(accessToken: string, email: string): Promise<boolean | ErrorResponse[]> {
     try {
         const response = await axios.post('/api/account/requestPasswordReset', {
             token: accessToken,
@@ -293,7 +287,7 @@ export async function updatePassword(
     accessToken: string,
     emailAddress: string,
     password: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const customer = await cl.get(`/api/customers/?filter[q][email_eq]=${emailAddress}`);
@@ -328,7 +322,7 @@ export async function resetPassword(
     password: string,
     id: string,
     resetToken: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/customer_password_resets/${id}`, {

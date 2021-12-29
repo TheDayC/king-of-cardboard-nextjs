@@ -39,7 +39,7 @@ export function userClient(): AxiosInstance {
 }
 
 // Create commerce layer access token
-export async function createToken(): Promise<CreateToken | ErrorResponse | ErrorResponse[]> {
+export async function createToken(): Promise<CreateToken | ErrorResponse[]> {
     try {
         const res = await axios.get('/api/getAccessToken');
         const token = safelyParse(res, 'data.token', parseAsString, null);
