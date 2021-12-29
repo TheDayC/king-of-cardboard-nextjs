@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios from 'axios';
 import { get, join } from 'lodash';
 
 import { errorHandler } from '../middleware/errors';

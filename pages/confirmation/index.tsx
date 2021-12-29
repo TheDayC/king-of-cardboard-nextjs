@@ -10,6 +10,9 @@ import { resetCart, setOrder } from '../../store/slices/cart';
 import { resetCheckoutDetails } from '../../store/slices/checkout';
 import selector from './selector';
 import { createOrder } from '../../utils/commerce';
+import { isArrayOfErrors, isError } from '../../utils/typeguards';
+import { addAlert } from '../../store/slices/alerts';
+import { AlertLevel } from '../../enums/system';
 
 export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
     const { confirmationOrder, accessToken } = useSelector(selector);
@@ -20,9 +23,16 @@ export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
         async (accessToken: string) => {
             const order = await createOrder(accessToken);
 
-            if (order) {
-                // Add the order to the store.
-                dispatch(setOrder(order));
+            if (isError(order)) {
+                dispatch(addAlert({ message: order.description, level: AlertLevel.Error }));
+            } else if (isArrayOfErrors(order)) {
+                order.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                if (order) {
+                    dispatch(setOrder(order));
+                }
             }
         },
         [dispatch]
