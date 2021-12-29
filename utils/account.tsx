@@ -339,6 +339,6 @@ export async function resetPassword(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not creset your password.');
+        return errorHandler(error, 'We could not reset your password.');
     }
 }
