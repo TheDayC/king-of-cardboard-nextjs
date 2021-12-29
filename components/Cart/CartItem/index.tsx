@@ -10,6 +10,9 @@ import styles from './cartitem.module.css';
 import { fetchProductByProductLink, mergeSkuProductData } from '../../../utils/products';
 import { ContentfulProductShort } from '../../../types/products';
 import { isArray } from 'lodash';
+import { isArrayOfErrors } from '../../../utils/typeguards';
+import { addAlert } from '../../../store/slices/alerts';
+import { AlertLevel } from '../../../enums/system';
 
 interface BasketItemProps {
     id: string;
@@ -47,8 +50,14 @@ export const CartItem: React.FC<BasketItemProps> = ({
             setProduct(cmsProduct);
         }
 
-        if (skuItem && skuItem.inventory) {
-            setStock(skuItem.inventory.quantity);
+        if (isArrayOfErrors(skuItem)) {
+            skuItem.forEach((value) => {
+                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+            });
+        } else {
+            if (skuItem && skuItem.inventory) {
+                setStock(skuItem.inventory.quantity);
+            }
         }
     };
 

@@ -66,17 +66,23 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                             dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                         });
                     } else {
-                        if (skuItem) {
-                            const mergedProduct = mergeSkuProductData(productData, skuItems[0], skuItem);
+                        if (isArrayOfErrors(skuItem)) {
+                            skuItem.forEach((value) => {
+                                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                            });
+                        } else {
+                            if (skuItem) {
+                                const mergedProduct = mergeSkuProductData(productData, skuItems[0], skuItem);
 
-                            if (mergedProduct) {
-                                const quantity =
-                                    mergedProduct.inventory && mergedProduct.inventory.quantity
-                                        ? mergedProduct.inventory.quantity
-                                        : 0;
+                                if (mergedProduct) {
+                                    const quantity =
+                                        mergedProduct.inventory && mergedProduct.inventory.quantity
+                                            ? mergedProduct.inventory.quantity
+                                            : 0;
 
-                                setMaxQuantity(quantity);
-                                setCurrentProduct(mergedProduct);
+                                    setMaxQuantity(quantity);
+                                    setCurrentProduct(mergedProduct);
+                                }
                             }
                         }
                     }
