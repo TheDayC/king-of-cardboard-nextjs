@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { get } from 'react-hook-form';
 
 import { errorHandler } from '../middleware/errors';
 import { CartItem, CustomerDetails } from '../store/types/state';
