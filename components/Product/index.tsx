@@ -180,9 +180,15 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
 
             const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
 
-            if (hasLineItemUpdated) {
-                setLoading(false);
-                dispatch(fetchOrder(true));
+            if (isArrayOfErrors(hasLineItemUpdated)) {
+                hasLineItemUpdated.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                if (hasLineItemUpdated) {
+                    setLoading(false);
+                    dispatch(fetchOrder(true));
+                }
             }
         },
         [hasErrors, accessToken, currentProduct, order, maxQuantity, hasExceededStock]
