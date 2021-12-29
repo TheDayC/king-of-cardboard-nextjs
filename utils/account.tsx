@@ -312,7 +312,6 @@ export async function updatePassword(
 
         return status === 200;
     } catch (error: unknown) {
-        console.log('🚀 ~ file: account.tsx ~ line 321 ~ error', error);
         return errorHandler(error, 'We could not update your password.');
     }
 }

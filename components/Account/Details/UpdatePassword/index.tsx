@@ -9,7 +9,7 @@ import selector from './selector';
 import { AlertLevel } from '../../../../enums/system';
 import { addAlert } from '../../../../store/slices/alerts';
 import { updatePassword } from '../../../../utils/account';
-import { isArrayofCommerceLayerErrors, isArrayOfErrors, isError } from '../../../../utils/typeguards';
+import { isArrayOfErrors } from '../../../../utils/typeguards';
 
 const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
