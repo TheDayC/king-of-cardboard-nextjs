@@ -21,6 +21,7 @@ import {
     parseAsString,
     safelyParse,
 } from './parsers';
+import { isNotNullOrUndefined } from './typeguards';
 
 export function parseProductType(type: string): ProductType {
     switch (type) {
@@ -208,7 +209,14 @@ export async function fetchProductByProductLink(
 }
 
 export function mergeProductData(products: ContentfulProduct[], skuItems: SkuItem[]): Product[] {
-    return products.map((product) => {
+    const filteredProducts = products.filter((product) => {
+        const { productLink: sku_code } = product;
+        const skuItem = skuItems.find((s) => s.sku_code === sku_code) || null;
+
+        return Boolean(skuItem);
+    });
+
+    return filteredProducts.map((product) => {
         const { productLink: sku_code } = product;
         const skuItem = skuItems.find((s) => s.sku_code === sku_code) || null;
 

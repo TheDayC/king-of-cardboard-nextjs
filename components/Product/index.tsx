@@ -47,6 +47,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
 
     const fetchProductData = useCallback(async (token: string, productSlug: string) => {
         const productData = await fetchProductBySlug(productSlug);
+        console.log('🚀 ~ file: index.tsx ~ line 50 ~ fetchProductData ~ productData', productData);
 
         // If we find our product then move on to fetching by SKU in commerce layer.
         if (productData) {

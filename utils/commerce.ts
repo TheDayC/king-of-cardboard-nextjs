@@ -4,7 +4,7 @@ import { get, join } from 'lodash';
 import { errorHandler } from '../middleware/errors';
 import { ErrorResponse, PaymentSourceResponse } from '../types/api';
 import { Order } from '../types/cart';
-import { LineItemAttributes, LineItemRelationships, Price, StockItem, SkuItem, SkuProduct } from '../types/commerce';
+import { LineItemAttributes, LineItemRelationships, SkuItem, SkuProduct } from '../types/commerce';
 import { authClient } from './auth';
 import {
     parseAsCommerceResponse,

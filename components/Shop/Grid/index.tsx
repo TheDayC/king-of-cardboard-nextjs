@@ -43,6 +43,7 @@ export const Grid: React.FC = () => {
             if (productCollection) {
                 const sku_codes = productCollection.map((p) => p.productLink);
                 const skuItems = await getSkus(accessToken, sku_codes);
+                console.log('🚀 ~ file: index.tsx ~ line 46 ~ skuItems', skuItems);
 
                 if (isArrayOfErrors(skuItems)) {
                     skuItems.forEach((value) => {
