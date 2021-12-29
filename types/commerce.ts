@@ -3,7 +3,7 @@ import { Product } from './products';
 
 export interface CreateToken {
     token: string | null;
-    expires: string | null;
+    expires: string;
 }
 
 export interface CommerceAuthProps {

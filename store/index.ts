@@ -21,7 +21,8 @@ const makeConfiguredStore = (rootReducer: any) =>
         devTools: process.env.NODE_ENV !== 'production',
     });
 
-const makeStore = () => {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const makeStore = () => {
     const isServer = typeof window === 'undefined';
 
     if (isServer) {

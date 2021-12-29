@@ -42,9 +42,10 @@ export function userClient(): AxiosInstance {
 export async function createToken(): Promise<CreateToken | ErrorResponse[]> {
     try {
         const res = await axios.get('/api/getAccessToken');
+        const now = DateTime.now().setZone('Europe/London');
         const token = safelyParse(res, 'data.token', parseAsString, null);
-        const expires = safelyParse(res, 'data.expires', parseAsNumber, null);
-        const expiresIso = expires ? DateTime.now().setZone('Europe/London').plus({ seconds: expires }).toISO() : null;
+        const expires = safelyParse(res, 'data.expires', parseAsNumber, now.toSeconds());
+        const expiresIso = DateTime.now().setZone('Europe/London').plus({ seconds: expires }).toISO();
 
         return {
             token,
