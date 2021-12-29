@@ -1,9 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { FieldValues, UseFormRegister } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
+import { AlertLevel } from '../../../../enums/system';
+import { addAlert } from '../../../../store/slices/alerts';
 
 import { fetchOrder } from '../../../../store/slices/cart';
 import { updatePaymentMethod } from '../../../../utils/checkout';
+import { safelyParse } from '../../../../utils/parsers';
+import { isArrayOfErrors, isError } from '../../../../utils/typeguards';
 import Source from '../Source';
 import selector from './selector';
 
@@ -30,8 +34,16 @@ export const Method: React.FC<MethodProps> = ({ id, name, sourceType, defaultChe
         async (accessToken: string, orderId: string, paymentMethodId: string) => {
             const hasPatchedMethod = await updatePaymentMethod(accessToken, orderId, paymentMethodId);
 
-            if (hasPatchedMethod) {
-                dispatch(fetchOrder(true));
+            if (isError(hasPatchedMethod)) {
+                dispatch(addAlert({ message: hasPatchedMethod.description, level: AlertLevel.Error }));
+            } else if (isArrayOfErrors(hasPatchedMethod)) {
+                hasPatchedMethod.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                if (hasPatchedMethod) {
+                    dispatch(fetchOrder(true));
+                }
             }
         },
         [dispatch]
