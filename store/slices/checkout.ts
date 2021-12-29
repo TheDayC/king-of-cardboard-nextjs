@@ -13,15 +13,6 @@ const checkoutSlice = createSlice({
                 currentStep: action.payload,
             };
         },
-        setAllowShippingAddress(state, action) {
-            return {
-                ...state,
-                customerDetails: {
-                    ...state.customerDetails,
-                    allowShippingAddress: action.payload,
-                },
-            };
-        },
         setCustomerDetails(state, action) {
             return {
                 ...state,
@@ -54,6 +45,9 @@ const checkoutSlice = createSlice({
         setCloneAddressId(state, action) {
             state.cloneAddressId = action.payload;
         },
+        setSameAsBilling(state, action) {
+            state.isShippingSameAsBilling = action.payload;
+        },
         resetCheckoutDetails() {
             return checkoutInitialState;
         },
@@ -68,12 +62,12 @@ const checkoutSlice = createSlice({
 
 export const {
     setCurrentStep,
-    setAllowShippingAddress,
     setCustomerDetails,
     setShipmentsWithMethods,
     addShipmentWithMethod,
     resetCheckoutDetails,
     setCloneAddressId,
+    setSameAsBilling,
 } = checkoutSlice.actions;
 
 export default checkoutSlice.reducer;

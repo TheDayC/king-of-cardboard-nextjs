@@ -70,6 +70,7 @@ export interface Checkout {
     shipmentsWithMethods: ShipmentsWithMethods[] | null;
     customerDetails: CustomerDetails;
     cloneAddressId: string | null;
+    isShippingSameAsBilling: boolean;
 }
 
 export interface CustomerDetails {
@@ -83,7 +84,6 @@ export interface CustomerDetails {
     postcode: string | null;
     county: Counties | null;
     phone: string | null;
-    allowShippingAddress: boolean;
     shippingAddressLineOne: string | null;
     shippingAddressLineTwo: string | null;
     shippingCity: string | null;

@@ -291,6 +291,29 @@ export async function updateAddressClone(
     }
 }
 
+export async function updateSameAsBilling(
+    accessToken: string,
+    orderId: string,
+    sameAsBilling: boolean
+): Promise<boolean | ErrorResponse[]> {
+    try {
+        const data = {
+            type: 'orders',
+            id: orderId,
+            attributes: {
+                _shipping_address_same_as_billing: sameAsBilling,
+            },
+        };
+        const cl = authClient(accessToken);
+        const res = await cl.patch(`/api/orders/${orderId}`, { data });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'Failed to set shipping address to the same as billing.');
+    }
+}
+
 export async function getShipments(accessToken: string, orderId: string): Promise<Shipments | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);

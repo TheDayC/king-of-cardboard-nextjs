@@ -115,7 +115,6 @@ export function parseCustomerDetails(data: unknown, allowShipping: boolean): Cus
         company,
         email,
         phone,
-        allowShippingAddress: allowShipping,
         addressLineOne,
         addressLineTwo,
         city,

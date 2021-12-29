@@ -19,7 +19,6 @@ const ExistingAddress: React.FC = () => {
     const { data: session } = useSession();
     const dispatch = useDispatch();
     const { accessToken, checkoutLoading } = useSelector(selector);
-    console.log('🚀 ~ file: index.tsx ~ line 22 ~ checkoutLoading', checkoutLoading);
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
     const [addresses, setAddresses] = useState<CommerceLayerResponse[] | null>(null);
     const [shouldFetchAddresses, setShouldFetchAddresses] = useState(true);

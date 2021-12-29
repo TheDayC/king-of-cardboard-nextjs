@@ -19,10 +19,8 @@ import SelectionWrapper from '../../SelectionWrapper';
 import ExistingAddress from './ExistingAddress';
 
 const Customer: React.FC = () => {
-    const { currentStep, customerDetails, order, accessToken, checkoutLoading } = useSelector(selector);
-    const { allowShippingAddress } = customerDetails;
+    const { currentStep, order, accessToken, checkoutLoading, isShippingSameAsBilling } = useSelector(selector);
     const dispatch = useDispatch();
-    const [allowShippingAddressInternal, setAllowShippingAddressInternal] = useState(allowShippingAddress);
     const [addressEntryChoice, setAddressEntryChoice] = useState('existingBillingAddress');
     const {
         register,
@@ -79,11 +77,6 @@ const Customer: React.FC = () => {
         }
     };
 
-    // Update internal allow shipping state to add / hide address.
-    const onAllowShippingAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setAllowShippingAddressInternal(e.target.checked);
-    };
-
     const handleEdit = () => {
         if (!isCurrentStep) {
             dispatch(setCurrentStep(0));
@@ -122,12 +115,8 @@ const Customer: React.FC = () => {
                             >
                                 <BillingAddress register={register} errors={errors} />
                             </SelectionWrapper>
-                            <AddShippingAddress
-                                register={register}
-                                allowShippingAddress={allowShippingAddressInternal}
-                                onAllowShippingAddress={onAllowShippingAddress}
-                            />
-                            {allowShippingAddressInternal && <ShippingAddress register={register} errors={errors} />}
+                            <AddShippingAddress />
+                            {!isShippingSameAsBilling && <ShippingAddress register={register} errors={errors} />}
                         </div>
                     </div>
                     <div className="flex justify-end p-4">

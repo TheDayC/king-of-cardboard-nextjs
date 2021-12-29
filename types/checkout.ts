@@ -3,7 +3,6 @@ export interface FormErrors {
 }
 
 export interface PersonalDetails extends BillingAddress, ShippingAddress {
-    allowShippingAddress: boolean;
     email: string;
     firstName: string;
     lastName: string;

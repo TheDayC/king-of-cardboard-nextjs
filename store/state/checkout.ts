@@ -4,7 +4,6 @@ const checkoutInitialState: Checkout = {
     currentStep: 0,
     shipmentsWithMethods: null,
     customerDetails: {
-        allowShippingAddress: false,
         email: null,
         firstName: null,
         lastName: null,
@@ -22,6 +21,7 @@ const checkoutInitialState: Checkout = {
         shippingCounty: null,
     },
     cloneAddressId: null,
+    isShippingSameAsBilling: false,
 };
 
 export default checkoutInitialState;
