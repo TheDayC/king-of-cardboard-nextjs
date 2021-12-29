@@ -158,7 +158,19 @@ export const Payment: React.FC = () => {
                                         dispatch(setConfirmationData({ order, items, customerDetails }));
 
                                         // Distribute the confirmation email so the customer has a receipt.
-                                        await sendOrderConfirmation(order, items, customerDetails);
+                                        const orderConfirmationRes = await sendOrderConfirmation(
+                                            order,
+                                            items,
+                                            customerDetails
+                                        );
+
+                                        if (isArrayOfErrors(orderConfirmationRes)) {
+                                            orderConfirmationRes.forEach((value) => {
+                                                dispatch(
+                                                    addAlert({ message: value.description, level: AlertLevel.Error })
+                                                );
+                                            });
+                                        }
 
                                         // Figure out achievement progress now that the order has been confirmed.
                                         if (currentSession) {
