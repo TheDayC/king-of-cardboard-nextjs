@@ -1,3 +1,7 @@
+export interface FormErrors {
+    [x: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
 export interface PersonalDetails extends BillingAddress, ShippingAddress {
     allowShippingAddress: boolean;
     email: string;

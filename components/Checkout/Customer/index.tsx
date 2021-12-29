@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
+import { useSession } from 'next-auth/react';
 
 import selector from './selector';
 import { fieldPatternMsgs, updateAddress } from '../../../utils/checkout';
-import { PersonalDetails } from '../../../types/checkout';
 import { setAllowShippingAddress, setCurrentStep, setCustomerDetails } from '../../../store/slices/checkout';
 import { parseAsBoolean, parseAsString, parseCustomerDetails, safelyParse } from '../../../utils/parsers';
 import { fetchOrder } from '../../../store/slices/cart';
@@ -12,29 +12,27 @@ import { setCheckoutLoading } from '../../../store/slices/global';
 import { isArrayOfErrors } from '../../../utils/typeguards';
 import { addAlert } from '../../../store/slices/alerts';
 import { AlertLevel } from '../../../enums/system';
+import { getAddresses } from '../../../utils/account';
+import { CommerceLayerResponse } from '../../../types/api';
+import BillingAddress from './BillingAddress';
+import ShippingAddress from './ShippingAddress';
+import AddShippingAddress from './AddShippingAddress';
+import PersonalDetails from './PersonalDetails';
+
+const PER_PAGE = 6;
 
 const Customer: React.FC = () => {
+    const { data: session } = useSession();
     const { currentStep, customerDetails, order, accessToken, checkoutLoading } = useSelector(selector);
-    const {
-        firstName,
-        lastName,
-        company,
-        email,
-        phone,
-        addressLineOne,
-        addressLineTwo,
-        city,
-        postcode,
-        county,
-        allowShippingAddress,
-        shippingAddressLineOne,
-        shippingAddressLineTwo,
-        shippingCity,
-        shippingPostcode,
-        shippingCounty,
-    } = customerDetails;
+    const { allowShippingAddress } = customerDetails;
     const dispatch = useDispatch();
     const [allowShippingAddressInternal, setAllowShippingAddressInternal] = useState(allowShippingAddress);
+    const [addresses, setAddresses] = useState<CommerceLayerResponse[] | null>(null);
+    const [pageCount, setPageCount] = useState<number | null>(null);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [shouldFetchAddresses, setShouldFetchAddresses] = useState(true);
+    const [shouldCreateNewAddress, setShouldCreateNewAddress] = useState(true);
+    const [chosenAddress, setChosenAddress] = useState(true);
     const {
         register,
         handleSubmit,
@@ -42,8 +40,9 @@ const Customer: React.FC = () => {
     } = useForm();
     const isCurrentStep = currentStep === 0;
     const hasErrors = Object.keys(errors).length > 0;
+    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
 
-    const onSubmit = async (data: PersonalDetails) => {
+    const onSubmit = async (data: unknown) => {
         if (hasErrors || checkoutLoading) {
             return;
         }
@@ -88,23 +87,6 @@ const Customer: React.FC = () => {
         }
     };
 
-    // Collect errors.
-    const firstNameErr = safelyParse(errors, 'firstName.message', parseAsString, null);
-    const lastNameErr = safelyParse(errors, 'lastName.message', parseAsString, null);
-    const companyErr = safelyParse(errors, 'company.message', parseAsString, null);
-    const emailErr = safelyParse(errors, 'email.message', parseAsString, null);
-    const mobileErr = safelyParse(errors, 'mobile.message', parseAsString, null);
-    const billingLineOneErr = safelyParse(errors, 'billingAddressLineOne.message', parseAsString, null);
-    const billingLineTwoErr = safelyParse(errors, 'billingAddressLineTwo.message', parseAsString, null);
-    const billingCityErr = safelyParse(errors, 'billingCity.message', parseAsString, null);
-    const billingPostcodeErr = safelyParse(errors, 'billingPostcode.message', parseAsString, null);
-    const billingCountyErr = safelyParse(errors, 'billingCounty.message', parseAsString, null);
-    const shippingLineOneErr = safelyParse(errors, 'shippingAddressLineOne.message', parseAsString, null);
-    const shippingLineTwoErr = safelyParse(errors, 'shippingAddressLineTwo.message', parseAsString, null);
-    const shippingCityErr = safelyParse(errors, 'shippingCity.message', parseAsString, null);
-    const shippingPostcodeErr = safelyParse(errors, 'shippingPostcode.message', parseAsString, null);
-    const shippingCountyErr = safelyParse(errors, 'shippingCounty.message', parseAsString, null);
-
     // Update internal allow shipping state to add / hide address.
     const onAllowShippingAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
         setAllowShippingAddressInternal(e.target.checked);
@@ -115,6 +97,41 @@ const Customer: React.FC = () => {
             dispatch(setCurrentStep(0));
         }
     };
+
+    const fetchAddresses = async (token: string, email: string, page: number) => {
+        const res = await getAddresses(token, email, PER_PAGE, page);
+
+        if (isArrayOfErrors(res)) {
+            res.forEach((value) => {
+                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+            });
+        } else {
+            const { addresses, meta } = res;
+            setAddresses(addresses);
+            setPageCount(meta ? meta.page_count : null);
+        }
+
+        dispatch(setCheckoutLoading(false));
+    };
+
+    const handlePageNumber = (nextPage: number) => {
+        const clPage = nextPage + 1;
+
+        if (accessToken && emailAddress) {
+            setCurrentPage(nextPage);
+            fetchAddresses(accessToken, emailAddress, clPage);
+        }
+    };
+
+    useEffect(() => {
+        const clPage = currentPage + 1;
+
+        if (session && shouldFetchAddresses && accessToken && emailAddress && clPage > 0) {
+            fetchAddresses(accessToken, emailAddress, clPage);
+            dispatch(setCheckoutLoading(true));
+            setShouldFetchAddresses(false);
+        }
+    }, [session, accessToken, emailAddress, shouldFetchAddresses, currentPage]);
 
     return (
         <div
@@ -129,371 +146,14 @@ const Customer: React.FC = () => {
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex">
                         <div className="flex-grow">
-                            <div className="card p-2 md:p-4">
-                                <h3 className="card-title">Personal Details</h3>
-                                <div className="grid grid-cols-1 gap-2">
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">First Name</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="First Name"
-                                            {...register('firstName', {
-                                                required: { value: true, message: 'Required' },
-                                                pattern: {
-                                                    value: /^[a-z ,.'-]+$/i,
-                                                    message: fieldPatternMsgs('firstName'),
-                                                },
-                                                value: firstName,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                firstNameErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {firstNameErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{firstNameErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">Last Name</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="Last Name"
-                                            {...register('lastName', {
-                                                required: { value: true, message: 'Required' },
-                                                pattern: {
-                                                    value: /^[a-z ,.'-]+$/i,
-                                                    message: fieldPatternMsgs('lastName'),
-                                                },
-                                                value: lastName,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                lastNameErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {lastNameErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{lastNameErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">Company</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="Company"
-                                            {...register('company', {
-                                                required: false,
-                                                value: company,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                companyErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {companyErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{companyErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">Email</span>
-                                        </label>
-                                        <input
-                                            type="email"
-                                            placeholder="Email"
-                                            {...register('email', {
-                                                required: { value: true, message: 'Required' },
-                                                pattern: {
-                                                    value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                                                    message: fieldPatternMsgs('email'),
-                                                },
-                                                value: email,
-                                            })}
-                                            className={`input input-sm input-bordered${emailErr ? ' input-error' : ''}`}
-                                        />
-                                        {emailErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{emailErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">Mobile No.</span>
-                                        </label>
-                                        <input
-                                            type="tel"
-                                            placeholder="Mobile No."
-                                            {...register('phone', {
-                                                required: { value: true, message: 'Required' },
-                                                pattern: {
-                                                    value: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g,
-                                                    message: fieldPatternMsgs('mobile'),
-                                                },
-                                                value: phone,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                mobileErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {mobileErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{mobileErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="p-4 card">
-                                <h3 className="card-title">Billing Details</h3>
-                                <div className="grid grid-cols-1 gap-2">
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">Address Line One</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="Address Line One"
-                                            {...register('billingAddressLineOne', {
-                                                required: { value: true, message: 'Required' },
-                                                value: addressLineOne,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                billingLineOneErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {billingLineOneErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{billingLineOneErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">Address Line Two</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="Address Line Two"
-                                            {...register('billingAddressLineTwo', { value: addressLineTwo })}
-                                            className={`input input-sm input-bordered${
-                                                billingLineTwoErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {billingLineTwoErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{billingLineTwoErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">City</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="City"
-                                            {...register('billingCity', {
-                                                required: { value: true, message: 'Required' },
-                                                value: city,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                billingCityErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {billingCityErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{billingCityErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">Postcode</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="Postcode"
-                                            {...register('billingPostcode', {
-                                                required: { value: true, message: 'Required' },
-                                                pattern: {
-                                                    value: /^([A-Z][A-HJ-Y]?\d[A-Z\d]? ?\d[A-Z]{2}|GIR ?0A{2})$/gim,
-                                                    message: fieldPatternMsgs('billingPostcode'),
-                                                },
-                                                value: postcode,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                billingPostcodeErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {billingPostcodeErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{billingPostcodeErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">County</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="County"
-                                            {...register('billingCounty', {
-                                                required: { value: true, message: 'Required' },
-                                                value: county,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                billingCountyErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {billingCountyErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{billingCountyErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="p-4 card">
-                                <div className="form-control">
-                                    <label className="cursor-pointer label">
-                                        <span className="label-text">Ship to a different address?</span>
-                                        <input
-                                            type="checkbox"
-                                            placeholder="Ship to a different address?"
-                                            {...register('allowShippingAddress', {})}
-                                            className="checkbox"
-                                            onChange={onAllowShippingAddress}
-                                            defaultChecked={allowShippingAddress}
-                                        />
-                                    </label>
-                                </div>
-                            </div>
-                            {allowShippingAddressInternal && (
-                                <div className="p-4 card">
-                                    <h3 className="card-title">Shipping Details</h3>
-                                    <div className="grid grid-cols-1 gap-2">
-                                        <div className="form-control">
-                                            <label className="label">
-                                                <span className="label-text">Address Line One</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="Address Line One"
-                                                {...register('shippingAddressLineOne', {
-                                                    required: { value: true, message: 'Required' },
-                                                    value: shippingAddressLineOne,
-                                                })}
-                                                className={`input input-sm input-bordered${
-                                                    shippingLineOneErr ? ' input-error' : ''
-                                                }`}
-                                            />
-                                            {shippingLineOneErr && (
-                                                <label className="label">
-                                                    <span className="label-text-alt">{shippingLineOneErr}</span>
-                                                </label>
-                                            )}
-                                        </div>
-                                        <div className="form-control">
-                                            <label className="label">
-                                                <span className="label-text">Address Line Two</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="Address Line Two"
-                                                {...register('shippingAddressLineTwo', {
-                                                    value: shippingAddressLineTwo,
-                                                })}
-                                                className={`input input-sm input-bordered${
-                                                    shippingLineTwoErr ? ' input-error' : ''
-                                                }`}
-                                            />
-                                            {shippingLineTwoErr && (
-                                                <label className="label">
-                                                    <span className="label-text-alt">{shippingLineTwoErr}</span>
-                                                </label>
-                                            )}
-                                        </div>
-                                        <div className="form-control">
-                                            <label className="label">
-                                                <span className="label-text">City</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="City"
-                                                {...register('shippingCity', {
-                                                    required: { value: true, message: 'Required' },
-                                                    value: shippingCity,
-                                                })}
-                                                className={`input input-sm input-bordered${
-                                                    shippingCityErr ? ' input-error' : ''
-                                                }`}
-                                            />
-                                            {shippingCityErr && (
-                                                <label className="label">
-                                                    <span className="label-text-alt">{shippingCityErr}</span>
-                                                </label>
-                                            )}
-                                        </div>
-                                        <div className="form-control">
-                                            <label className="label">
-                                                <span className="label-text">Postcode</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="Postcode"
-                                                {...register('shippingPostcode', {
-                                                    required: { value: true, message: 'Required' },
-                                                    pattern: {
-                                                        value: /^([A-Z][A-HJ-Y]?\d[A-Z\d]? ?\d[A-Z]{2}|GIR ?0A{2})$/gim,
-                                                        message: fieldPatternMsgs('shippingPostcode'),
-                                                    },
-                                                    value: shippingPostcode,
-                                                })}
-                                                className={`input input-sm input-bordered${
-                                                    shippingPostcodeErr ? ' input-error' : ''
-                                                }`}
-                                            />
-                                            {shippingPostcodeErr && (
-                                                <label className="label">
-                                                    <span className="label-text-alt">{shippingPostcodeErr}</span>
-                                                </label>
-                                            )}
-                                        </div>
-                                        <div className="form-control">
-                                            <label className="label">
-                                                <span className="label-text">County</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="County"
-                                                {...register('shippingCounty', {
-                                                    required: { value: true, message: 'Required' },
-                                                    value: shippingCounty,
-                                                })}
-                                                className={`input input-sm input-bordered${
-                                                    shippingCountyErr ? ' input-error' : ''
-                                                }`}
-                                            />
-                                            {shippingCountyErr && (
-                                                <label className="label">
-                                                    <span className="label-text-alt">{shippingCountyErr}</span>
-                                                </label>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+                            <PersonalDetails register={register} errors={errors} />
+                            <BillingAddress register={register} errors={errors} />
+                            <AddShippingAddress
+                                register={register}
+                                allowShippingAddress={allowShippingAddressInternal}
+                                onAllowShippingAddress={onAllowShippingAddress}
+                            />
+                            {allowShippingAddressInternal && <ShippingAddress register={register} errors={errors} />}
                         </div>
                     </div>
                     <div className="flex justify-end p-4">
