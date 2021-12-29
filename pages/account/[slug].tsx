@@ -1,6 +1,5 @@
 import React from 'react';
 import { getSession } from 'next-auth/react';
-import { get } from 'lodash';
 import Error from 'next/error';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
@@ -11,7 +10,7 @@ import { ServerSideRedirectProps } from '../../types/pages';
 import Account from '../../components/Account';
 import selector from './slugSelector';
 import Content from '../../components/Content';
-import { parseAsSlug, safelyParse } from '../../utils/parsers';
+import { parseAsArrayOfContentJSON, parseAsSlug, parseAsString, safelyParse } from '../../utils/parsers';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 export async function getServerSideProps(context: any): Promise<ServerSideRedirectProps | object> {
@@ -43,11 +42,11 @@ interface AccountSubPageProps {
 export const AccountSubPage: React.FC<AccountSubPageProps> = ({ errorCode }) => {
     const { pages } = useSelector(selector);
     const router = useRouter();
-    const slug: string = get(router, 'query.slug', '');
+    const slug = safelyParse(router, 'query.slug', parseAsString, '');
     const page = pages.find((page) => page.title.toLowerCase() === slug);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const content: any[] | null = get(page, 'content.json.content', null);
+    const content = safelyParse(page, 'content.json.content', parseAsArrayOfContentJSON, null);
 
     // Show error page if a code is provided.
     if (errorCode && typeof errorCode === 'number') {

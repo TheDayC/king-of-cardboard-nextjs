@@ -230,13 +230,13 @@ export const Payment: React.FC = () => {
     );
 
     const onSubmit = useCallback(
-        (data: any) => {
-            const methodId = get(data, 'paymentMethod', null);
+        (data: unknown) => {
+            const methodId = safelyParse(data, 'paymentMethod', parseAsString, null);
             if (accessToken && orderId && methodId && stripe && elements) {
                 // Get the card element with Strip hooks.
                 const card = elements.getElement(CardElement);
 
-                // Find the payment method chosen by the user. THIS MIGHT NEED TO BE EARLIER.
+                // Find the payment method chosen by the user.
                 const paymentMethodData = paymentMethods.find((pM) => pM.id === methodId) || null;
 
                 // If both exist then call the payment handler.

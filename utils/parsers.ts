@@ -42,6 +42,13 @@ import {
     isContentfulProduct,
     isArrayOfContentfulProducts,
     isUnknown,
+    isBreakSlot,
+    isArrayOfBreakSlots,
+    isArrayOfImageItems,
+    isContent,
+    isArrayOfContent,
+    isContentJSON,
+    isArrayOfContentJSON,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
@@ -200,6 +207,7 @@ export const parseAsArrayOfCommerceLayerErrors = parseAsType(isArrayofCommerceLa
 export const parseAsSlug = parseAsType(isEnumMember(Slugs));
 export const parseAsImageCollection = parseAsType(isImageCollection);
 export const parseAsImageItem = parseAsType(isImageItem);
+export const parseAsArrayOfImageItems = parseAsType(isArrayOfImageItems);
 export const parseAsSkuInventory = parseAsType(isSkuInventory);
 export const parseAsSkuOption = parseAsType(isSkuOption);
 export const parseAsArrayOfSkuOptions = parseAsType(isArrayofSkuOptions);
@@ -215,3 +223,9 @@ export const parseAsContentfulPage = parseAsType(isContentfulPage);
 export const parseAsArrayOfContentfulPages = parseAsType(isArrayOfContentfulPages);
 export const parseAsContentfulProduct = parseAsType(isContentfulProduct);
 export const parseAsArrayOfContentfulProducts = parseAsType(isArrayOfContentfulProducts);
+export const parseAsBreakSlot = parseAsType(isBreakSlot);
+export const parseAsArrayOfBreakSlots = parseAsType(isArrayOfBreakSlots);
+export const parseAsContent = parseAsType(isContent);
+export const parseAsArrayOfContent = parseAsType(isArrayOfContent);
+export const parseAsContentJSON = parseAsType(isContentJSON);
+export const parseAsArrayOfContentJSON = parseAsType(isArrayOfContentJSON);

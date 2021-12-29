@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import axios, { AxiosResponse } from 'axios';
-import { get } from 'lodash';
-
-import { AxiosData } from '../types/fetch';
 import { Counties } from '../enums/checkout';
 import { CustomerDetails, ShipmentsWithLineItems } from '../store/types/state';
 import { DeliveryLeadTimes, MergedShipmentMethods, Shipments, ShippingMethods } from '../types/checkout';
@@ -10,7 +5,7 @@ import { authClient } from './auth';
 import { ErrorResponse } from '../types/api';
 import { errorHandler } from '../middleware/errors';
 import { isArray } from './typeguards';
-import { parseAsArrayOfCommerceResponse, parseAsNumber, parseAsString, safelyParse } from './parsers';
+import { parseAsArrayOfCommerceResponse, parseAsNumber, parseAsString, parseAsUnknown, safelyParse } from './parsers';
 
 function regexEmail(email: string): boolean {
     // eslint-disable-next-line no-useless-escape
@@ -325,7 +320,7 @@ export async function getDeliveryLeadTimes(accessToken: string): Promise<Deliver
     try {
         const cl = authClient(accessToken);
         const res = await cl.get('/api/delivery_lead_times?include=shipping_method,stock_location');
-        const deliveryLeadTimes: unknown = get(res, 'data.data', null);
+        const deliveryLeadTimes = safelyParse(res, 'data.data', parseAsUnknown, null);
 
         if (deliveryLeadTimes && isArray(deliveryLeadTimes)) {
             return deliveryLeadTimes.map((leadTime: unknown) => ({

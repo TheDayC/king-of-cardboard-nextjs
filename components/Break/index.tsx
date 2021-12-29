@@ -8,8 +8,9 @@ import { get, split } from 'lodash';
 import Images from './Images';
 import Details from './Details';
 import { fetchBreakBySlug } from '../../utils/breaks';
-import { BreakSlot, ContentfulBreak } from '../../types/breaks';
+import { ContentfulBreak } from '../../types/breaks';
 import Slots from './Slots';
+import { parseAsArrayOfBreakSlots, parseAsArrayOfImageItems, safelyParse } from '../../utils/parsers';
 
 interface BreakProps {
     slug: string;
@@ -47,14 +48,15 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
 
     if (currentBreak) {
         const description = currentBreak.description ? split(currentBreak.description, '\n\n') : [];
-        const slots: BreakSlot[] | null = get(currentBreak, 'breakSlotsCollection.items', null);
+        const slots = safelyParse(currentBreak, 'breakSlotsCollection.items', parseAsArrayOfBreakSlots, null);
+        const imageItems = safelyParse(currentBreak, 'images.items', parseAsArrayOfImageItems, null);
 
         return (
             <div className="p-4 lg:p-6 relative">
                 <Loading show={loading} />
                 <div className="container mx-auto">
                     <div className="flex flex-col lg:flex-row">
-                        <Images mainImage={currentImage} imageCollection={get(currentBreak, 'images.items', null)} />
+                        <Images mainImage={currentImage} imageCollection={imageItems} />
 
                         <div id="productDetails" className="flex flex-col items-center w-full lg:w-3/4">
                             <div className="card rounded-md shadow-lg bordered p-4 w-full lg:p-6">

@@ -1,20 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BiErrorCircle } from 'react-icons/bi';
 import { useForm } from 'react-hook-form';
+import { inRange, isNaN, split } from 'lodash';
 
 import { ImageItem, SingleProduct } from '../../types/products';
 import { getSkus, getSkuDetails, setLineItem } from '../../utils/commerce';
 import { fetchProductBySlug, mergeSkuProductData } from '../../utils/products';
 import Loading from '../Loading';
 import selector from './selector';
-import { get, inRange, isNaN, split } from 'lodash';
 import { fetchOrder } from '../../store/slices/cart';
 import Images from './Images';
 import Details from './Details';
 import { AlertLevel } from '../../enums/system';
 import { addAlert } from '../../store/slices/alerts';
-import { isArrayOfErrors, isError } from '../../utils/typeguards';
+import { isArrayOfErrors } from '../../utils/typeguards';
+import { parseAsArrayOfImageItems, parseAsString, safelyParse } from '../../utils/parsers';
 
 interface ProductProps {
     slug: string;
@@ -40,10 +40,9 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         currentProduct && currentProduct.amount && currentProduct.inventory ? currentProduct.inventory.quantity : 0;
     const currentLineItem = items && currentProduct ? items.find((c) => c.sku_code === currentProduct.sku_code) : null;
     const hasExceededStock = currentLineItem ? currentLineItem.quantity >= stock : false;
-    const hasOptions = Boolean(currentProduct && currentProduct.options);
 
     // Collect errors.
-    const qtyErr: string | null = get(errors, 'qty.message', null);
+    const qtyErr = safelyParse(errors, 'qty.message', parseAsString, null);
 
     const fetchProductData = useCallback(async (token: string, productSlug: string) => {
         const productData = await fetchProductBySlug(productSlug);
@@ -206,12 +205,13 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         const isAvailable = Boolean(currentProduct.inventory && currentProduct.inventory.available);
         const quantity =
             currentProduct.inventory && currentProduct.inventory.quantity ? currentProduct.inventory.quantity : 0;
+        const imageItems = safelyParse(currentProduct, 'images.items', parseAsArrayOfImageItems, null);
         return (
             <div className="p-2 lg:p-8 relative">
                 <Loading show={loading} />
                 <div className="container mx-auto">
                     <div className="flex flex-col lg:flex-row lg:space-x-16">
-                        <Images mainImage={currentImage} imageCollection={get(currentProduct, 'images.items', null)} />
+                        <Images mainImage={currentImage} imageCollection={imageItems} />
 
                         <div id="productDetails" className="flex-grow">
                             <div className="card rounded-md shadow-lg p-2 lg:p-6">

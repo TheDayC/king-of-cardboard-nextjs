@@ -1,14 +1,14 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { get } from 'lodash';
 
 import Header from '../../components/Header';
 import { CommerceStaticProps } from '../../types/commerce';
 import Product from '../../components/Product';
+import { parseAsString, safelyParse } from '../../utils/parsers';
 
 export const ProductPage: React.FC<CommerceStaticProps> = () => {
     const router = useRouter();
-    const slug = get(router, 'query.slug', null);
+    const slug = safelyParse(router, 'query.slug', parseAsString, null);
 
     return (
         <React.Fragment>
