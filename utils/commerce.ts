@@ -128,32 +128,6 @@ export async function getSkuDetails(accessToken: string, id: string): Promise<Sk
     }
 }
 
-export async function getPrices(accessToken: string): Promise<Price[] | ErrorResponse[] | null> {
-    try {
-        const cl = authClient(accessToken);
-        const res = await cl.get('/api/prices');
-        const prices = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null);
-
-        if (!prices) {
-            return null;
-        }
-
-        return prices.map((price) => ({
-            id: price.id,
-            attributes: {
-                sku_code: safelyParse(price, 'attributes.sku_code', parseAsString, ''),
-                created_at: safelyParse(price, 'attributes.created_at', parseAsString, ''),
-                formatted_amount: safelyParse(price, 'attributes.formatted_amount', parseAsString, ''),
-                currency_code: safelyParse(price, 'attributes.currency_code', parseAsString, ''),
-                amount_float: safelyParse(price, 'attributes.amount_float', parseAsNumber, 0),
-                amount_cents: safelyParse(price, 'attributes.amount_cents', parseAsNumber, 0),
-            },
-        }));
-    } catch (error: unknown) {
-        return errorHandler(error, 'We could not get a shipment.');
-    }
-}
-
 export async function getOrder(
     accessToken: string,
     orderId: string,
