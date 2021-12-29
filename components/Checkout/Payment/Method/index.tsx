@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { FieldValues, UseFormRegister } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
+
 import { AlertLevel } from '../../../../enums/system';
 import { addAlert } from '../../../../store/slices/alerts';
-
 import { fetchOrder } from '../../../../store/slices/cart';
 import { updatePaymentMethod } from '../../../../utils/checkout';
-import { safelyParse } from '../../../../utils/parsers';
-import { isArrayOfErrors, isError } from '../../../../utils/typeguards';
+import { isArrayOfErrors } from '../../../../utils/typeguards';
 import Source from '../Source';
 import selector from './selector';
 
