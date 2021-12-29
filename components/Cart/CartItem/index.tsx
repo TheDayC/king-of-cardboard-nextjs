@@ -118,8 +118,14 @@ export const CartItem: React.FC<BasketItemProps> = ({
             dispatch(setUpdatingCart(true));
             const hasDeleted = await removeLineItem(accessToken, id);
 
-            if (hasDeleted) {
-                dispatch(fetchOrder(true));
+            if (isArrayOfErrors(hasDeleted)) {
+                hasDeleted.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                if (hasDeleted) {
+                    dispatch(fetchOrder(true));
+                }
             }
         }
     };
