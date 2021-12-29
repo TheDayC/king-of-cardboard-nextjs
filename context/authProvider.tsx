@@ -26,6 +26,9 @@ const AuthProvider: React.FC = ({ children }) => {
     const { accessToken, expires, order, shouldFetchOrder } = useSelector(selector);
     const dispatch = useDispatch();
     const [shouldCreateOrder, setShouldCreateOrder] = useState(true);
+    const currentDate = DateTime.now().setZone('Europe/London');
+    const expiryDate = DateTime.fromISO(expires || currentDate.toISO(), { zone: 'Europe/London' });
+    const hasExpired = Boolean(expires && expiryDate < currentDate);
 
     // Fetch an auth token for the user to interact with commerceLayer.
     const fetchToken = useCallback(async () => {
@@ -157,24 +160,10 @@ const AuthProvider: React.FC = ({ children }) => {
 
     // If accessToken doesn't exist create a new one.
     useIsomorphicLayoutEffect(() => {
-        if (!accessToken) {
+        if (!accessToken || hasExpired) {
             fetchToken();
         }
-    }, [accessToken]);
-
-    // If expiry date has passed, refresh token.
-    useIsomorphicLayoutEffect(() => {
-        if (accessToken && expires) {
-            const expiryDate = DateTime.fromISO(expires, { zone: 'Europe/London' });
-            const currentDate = DateTime.now();
-            currentDate.setZone('Europe/London');
-
-            // Check to see where our current token has expired.
-            if (expiryDate < currentDate) {
-                fetchToken();
-            }
-        }
-    }, [accessToken, expires]);
+    }, [accessToken, hasExpired]);
 
     // If the order doesn't exist then create one.
     useIsomorphicLayoutEffect(() => {

@@ -1,16 +1,33 @@
+import { makeStore } from '../store';
+import { setAccessToken, setExpires } from '../store/slices/global';
 import { ErrorResponse } from '../types/api';
 import { parseAsArrayOfCommerceLayerErrors, parseAsNumber, parseAsString, safelyParse } from '../utils/parsers';
+
+function checkForForbidden(errors: ErrorResponse[]): ErrorResponse[] {
+    const store = makeStore();
+    const has401 = errors.filter((err) => err.status === 401).length > 0;
+
+    if (has401) {
+        store.dispatch(setAccessToken(null));
+        store.dispatch(setExpires(null));
+    }
+
+    return errors.filter((err) => err.status !== 401);
+}
 
 export function errorHandler(error: unknown, defaultError: string): ErrorResponse[] {
     // Intercept commerceLayer errors first as they'll be nested in an axiosError.
     const clErrors = safelyParse(error, 'response.data.errors', parseAsArrayOfCommerceLayerErrors, null);
 
     if (clErrors) {
-        return clErrors.map((err) => ({
+        const errors = clErrors.map((err) => ({
             status: parseInt(err.status, 10),
             message: err.title,
             description: err.detail,
         }));
+        const errorsNo401 = checkForForbidden(errors);
+
+        return errorsNo401;
     }
 
     // Next catch all axios and remaining errors
