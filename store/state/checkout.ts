@@ -21,6 +21,7 @@ const checkoutInitialState: Checkout = {
         shippingPostcode: null,
         shippingCounty: null,
     },
+    cloneAddressId: null,
 };
 
 export default checkoutInitialState;

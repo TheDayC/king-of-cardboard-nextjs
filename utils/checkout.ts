@@ -268,6 +268,29 @@ export async function updateAddress(
     }
 }
 
+export async function updateAddressClone(
+    accessToken: string,
+    orderId: string,
+    cloneId: string
+): Promise<boolean | ErrorResponse[]> {
+    try {
+        const data = {
+            type: 'orders',
+            id: orderId,
+            attributes: {
+                _billing_address_clone_id: cloneId,
+            },
+        };
+        const cl = authClient(accessToken);
+        const res = await cl.patch(`/api/orders/${orderId}`, { data });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'Address could not be updated.');
+    }
+}
+
 export async function getShipments(accessToken: string, orderId: string): Promise<Shipments | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);

@@ -69,6 +69,7 @@ export interface Checkout {
     currentStep: number;
     shipmentsWithMethods: ShipmentsWithMethods[] | null;
     customerDetails: CustomerDetails;
+    cloneAddressId: string | null;
 }
 
 export interface CustomerDetails {

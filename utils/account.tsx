@@ -134,10 +134,11 @@ export async function getAddresses(
     page: number
 ): Promise<AddressResponse | ErrorResponse[]> {
     try {
+        const include = 'address';
         const filters = `filter[q][email_eq]=${emailAddress}`;
         const pagination = `page[size]=${pageSize}&page[number]=${page}`;
         const cl = authClient(accessToken);
-        const res = await cl.get(`/api/customer_addresses?${filters}&${pagination}`);
+        const res = await cl.get(`/api/customer_addresses?${filters}&${pagination}&include=${include}`);
 
         return {
             addresses: safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null),

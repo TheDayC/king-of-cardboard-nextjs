@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import selector from './selector';
 import { deleteAddress } from '../../../../utils/account';
-import { isArrayOfErrors, isError } from '../../../../utils/typeguards';
+import { isArrayOfErrors } from '../../../../utils/typeguards';
 import { addAlert } from '../../../../store/slices/alerts';
 import { AlertLevel } from '../../../../enums/system';
 

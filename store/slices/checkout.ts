@@ -51,6 +51,9 @@ const checkoutSlice = createSlice({
                 state.shipmentsWithMethods = [{ shipmentId, methodId }];
             }
         },
+        setCloneAddressId(state, action) {
+            state.cloneAddressId = action.payload;
+        },
         resetCheckoutDetails() {
             return checkoutInitialState;
         },
@@ -70,6 +73,7 @@ export const {
     setShipmentsWithMethods,
     addShipmentWithMethod,
     resetCheckoutDetails,
+    setCloneAddressId,
 } = checkoutSlice.actions;
 
 export default checkoutSlice.reducer;
