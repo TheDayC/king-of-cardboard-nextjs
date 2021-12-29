@@ -127,7 +127,7 @@ export function safelyParse<T, F>(
     property: string,
     parse: IParser<T>,
     fallback: F,
-    logErrorOnUndefined: boolean = true
+    logErrorOnUndefined: boolean = false
 ): T | F {
     // Always split properties, first must always exist, spread any leftover.
     const [first, ...chainedProperties] = property.split('.');
@@ -158,7 +158,7 @@ export function safelyParse<T, F>(
 }
 
 export function parseAsType<T>(isExpectedType: ITypeGuard<T>): IParser<T> {
-    return (value: unknown, fallback: any, property: string = 'unknown', logError: boolean = true) => {
+    return (value: unknown, fallback: any, property: string = 'unknown', logError: boolean = false) => {
         // Check our typeguard, if acceptable return value else error.
         if (isExpectedType(value)) {
             return value;
