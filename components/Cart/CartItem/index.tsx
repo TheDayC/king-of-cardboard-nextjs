@@ -73,8 +73,14 @@ export const CartItem: React.FC<BasketItemProps> = ({
                 dispatch(setUpdatingCart(true));
                 const hasLineItemUpdated = await updateLineItem(accessToken, id, newQuantity);
 
-                if (hasLineItemUpdated) {
-                    dispatch(fetchOrder(true));
+                if (isArrayOfErrors(hasLineItemUpdated)) {
+                    hasLineItemUpdated.forEach((value) => {
+                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                    });
+                } else {
+                    if (hasLineItemUpdated) {
+                        dispatch(fetchOrder(true));
+                    }
                 }
             } else {
                 // If the new quantity is zero or less remove the item from the cart.
@@ -101,8 +107,14 @@ export const CartItem: React.FC<BasketItemProps> = ({
 
                 const hasLineItemUpdated = await updateLineItem(accessToken, id, newQuantity);
 
-                if (hasLineItemUpdated) {
-                    dispatch(fetchOrder(true));
+                if (isArrayOfErrors(hasLineItemUpdated)) {
+                    hasLineItemUpdated.forEach((value) => {
+                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                    });
+                } else {
+                    if (hasLineItemUpdated) {
+                        dispatch(fetchOrder(true));
+                    }
                 }
             }
 
