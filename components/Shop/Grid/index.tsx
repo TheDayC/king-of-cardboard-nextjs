@@ -53,13 +53,15 @@ export const Grid: React.FC = () => {
                     if (skuItems) {
                         const mergedProducts = mergeProductData(productCollection, skuItems);
                         setProducts(mergedProducts);
-                        dispatch(setIsLoadingProducts(false));
                     }
                 }
+            } else {
+                setProducts(null);
             }
 
             // Set the total number of products for pagination.
             setTotalProducts(total);
+            dispatch(setIsLoadingProducts(false));
         },
         [dispatch]
     );
@@ -113,6 +115,7 @@ export const Grid: React.FC = () => {
                                 amount={amount}
                                 compareAmount={compare_amount}
                                 slug={slug}
+                                key={`product-card-${name}`}
                             />
                         );
                     })}

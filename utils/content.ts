@@ -1,7 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 
 import { errorHandler } from '../middleware/errors';
-import { ErrorResponse } from '../types/api';
 
 export const PRODUCT_QUERY = `
     query {
