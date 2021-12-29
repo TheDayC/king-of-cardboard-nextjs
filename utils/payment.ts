@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { get } from 'react-hook-form';
 
 import { errorHandler } from '../middleware/errors';
 import { CartItem, CustomerDetails } from '../store/types/state';
@@ -12,7 +11,7 @@ export async function confirmOrder(
     accessToken: string,
     orderId: string,
     attribute: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/orders/${orderId}`, {
@@ -37,7 +36,7 @@ export async function refreshPayment(
     accessToken: string,
     id: string,
     paymentSourceType: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/${paymentSourceType}/${id}`, {
@@ -61,7 +60,7 @@ export async function sendOrderConfirmation(
     order: Order,
     items: CartItem[],
     customerDetails: CustomerDetails
-): Promise<boolean> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const response = await axios.post('/api/sendOrderConfirmation', {
             order,
@@ -70,8 +69,8 @@ export async function sendOrderConfirmation(
         });
 
         return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
-    } catch (error) {
-        console.log('Error: ', error);
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not confirm your order.');
     }
 
     return false;

@@ -11,6 +11,9 @@ import { getSkus } from '../../utils/commerce';
 import { SkuItem } from '../../types/commerce';
 import { CartItem as CartItemType } from '../../store/types/state';
 import { setUpdatingCart } from '../../store/slices/cart';
+import { isArrayOfErrors, isError } from '../../utils/typeguards';
+import { addAlert } from '../../store/slices/alerts';
+import { AlertLevel } from '../../enums/system';
 
 export const Cart: React.FC = () => {
     const { cartItemCount, items, isUpdatingCart, accessToken } = useSelector(selector);
@@ -25,9 +28,15 @@ export const Cart: React.FC = () => {
             cartItems.map((item) => item.sku_code)
         );
 
-        if (fetchedSkuItems) {
-            setSkuItems(fetchedSkuItems);
-            dispatch(setUpdatingCart(false));
+        if (isArrayOfErrors(fetchedSkuItems)) {
+            fetchedSkuItems.forEach((value) => {
+                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+            });
+        } else {
+            if (fetchedSkuItems) {
+                setSkuItems(fetchedSkuItems);
+                dispatch(setUpdatingCart(false));
+            }
         }
     }, []);
 

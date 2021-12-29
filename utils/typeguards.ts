@@ -11,10 +11,12 @@ import {
     CommerceLayerResponse,
     ErrorResponse,
 } from '../types/api';
+import { BreakTypeItem, ContentfulBreak } from '../types/breaks';
 import { Order } from '../types/cart';
 import { SkuInventory, SkuOption } from '../types/commerce';
+import { ContentfulPage } from '../types/pages';
 import { ITypeGuard } from '../types/parsers';
-import { ImageCollection, ImageItem } from '../types/products';
+import { ContentfulProduct, ImageCollection, ImageItem } from '../types/products';
 import { SocialMedia } from '../types/profile';
 
 export function isString(candidate: unknown): candidate is string {
@@ -31,6 +33,10 @@ export function isBoolean(candidate: unknown): candidate is boolean {
 
 export function isArray(candidate: unknown): candidate is unknown[] {
     return Array.isArray(candidate);
+}
+
+export function isUnknown(candidate: unknown): candidate is unknown {
+    return true;
 }
 
 export function isObject(candidate: unknown): candidate is object {
@@ -159,4 +165,36 @@ export function isArrayofItems(candidate: unknown): candidate is CartItem[] {
 
 export function isCustomerDetails(candidate: unknown): candidate is CustomerDetails {
     return isNotNullOrUndefined<object>(candidate) && 'firstName' in candidate;
+}
+
+export function isContentfulBreak(candidate: unknown): candidate is ContentfulBreak {
+    return isNotNullOrUndefined<object>(candidate) && 'slug' in candidate;
+}
+
+export function isArrayOfContentfulBreaks(candidate: unknown): candidate is ContentfulBreak[] {
+    return isArray(candidate) && isContentfulBreak(candidate[0]);
+}
+
+export function isBreakTypeItem(candidate: unknown): candidate is BreakTypeItem {
+    return isNotNullOrUndefined<object>(candidate) && 'title' in candidate;
+}
+
+export function isArrayOfBreakTypeItems(candidate: unknown): candidate is BreakTypeItem[] {
+    return isArray(candidate) && isBreakTypeItem(candidate[0]);
+}
+
+export function isContentfulPage(candidate: unknown): candidate is ContentfulPage {
+    return isNotNullOrUndefined<object>(candidate) && 'content' in candidate;
+}
+
+export function isArrayOfContentfulPages(candidate: unknown): candidate is ContentfulPage[] {
+    return isArray(candidate) && isContentfulPage(candidate[0]);
+}
+
+export function isContentfulProduct(candidate: unknown): candidate is ContentfulProduct {
+    return isNotNullOrUndefined<object>(candidate) && 'productLink' in candidate;
+}
+
+export function isArrayOfContentfulProducts(candidate: unknown): candidate is ContentfulProduct[] {
+    return isArray(candidate) && isContentfulProduct(candidate[0]);
 }

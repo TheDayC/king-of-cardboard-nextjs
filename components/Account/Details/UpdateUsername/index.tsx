@@ -8,6 +8,9 @@ import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import { useDispatch } from 'react-redux';
 import { AlertLevel } from '../../../../enums/system';
 import { addAlert } from '../../../../store/slices/alerts';
+import { errorHandler } from '../../../../middleware/errors';
+import { updateUsername } from '../../../../utils/account';
+import { isArrayOfErrors } from '../../../../utils/typeguards';
 
 const USER_PATTERN = /^[a-zA-Z]{4,}$/;
 
@@ -37,25 +40,17 @@ export const UpdateUsername: React.FC = () => {
 
         setLoading(true);
 
-        try {
-            const response = await axios.post('/api/account/updateUsername', {
-                emailAddress,
-                username,
+        const hasUpdatedUsername = updateUsername(emailAddress, username);
+
+        if (isArrayOfErrors(hasUpdatedUsername)) {
+            hasUpdatedUsername.forEach((value) => {
+                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
             });
-
-            if (response) {
-                setSuccess('Username Updated!');
-                setLoading(false);
-            }
-        } catch (error) {
-            setLoading(false);
-
-            if (axios.isAxiosError(error)) {
-                console.log('🚀 ~ file: index.tsx ~ line 50 ~ onSubmit ~ error', error);
-            } else {
-                console.log('🚀 ~ file: index.tsx ~ line 50 ~ onSubmit ~ error', error);
-            }
+        } else {
+            dispatch(addAlert({ message: 'Username Updated!', level: AlertLevel.Success }));
         }
+
+        setLoading(false);
     };
 
     useEffect(() => {

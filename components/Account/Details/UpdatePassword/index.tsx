@@ -9,7 +9,7 @@ import selector from './selector';
 import { AlertLevel } from '../../../../enums/system';
 import { addAlert } from '../../../../store/slices/alerts';
 import { updatePassword } from '../../../../utils/account';
-import { isBoolean, isError } from '../../../../utils/typeguards';
+import { isArrayOfErrors } from '../../../../utils/typeguards';
 
 const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -45,10 +45,16 @@ export const UpdatePassword: React.FC = () => {
 
         const res = await updatePassword(token, emailAddress, password);
 
-        if (isBoolean(res)) {
-            dispatch(addAlert({ message: 'Password Updated!', level: AlertLevel.Success }));
-        } else if (isError(res)) {
-            dispatch(addAlert({ message: res.message, level: AlertLevel.Error }));
+        if (isArrayOfErrors(res)) {
+            res.forEach((err) => {
+                dispatch(addAlert({ message: err.description, level: AlertLevel.Error }));
+            });
+        } else {
+            if (res) {
+                dispatch(addAlert({ message: 'Password updated!', level: AlertLevel.Success }));
+            } else {
+                dispatch(addAlert({ message: 'Password could not be updated!', level: AlertLevel.Error }));
+            }
         }
 
         setLoading(false);

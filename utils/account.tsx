@@ -22,7 +22,7 @@ export async function getHistoricalOrders(
     emailAddress: string,
     pageSize: number,
     page: number
-): Promise<GetOrders | ErrorResponse | ErrorResponse[] | null> {
+): Promise<GetOrders | ErrorResponse[]> {
     try {
         const filters = `filter[q][email_eq]=${emailAddress}&filter[q][status_not_in]=draft,pending`;
         const pagination = `page[size]=${pageSize}&page[number]=${page}`;
@@ -50,7 +50,7 @@ export async function getHistoricalOrder(
     accessToken: string,
     emailAddress: string,
     orderNumber: string
-): Promise<GetOrders | ErrorResponse | ErrorResponse[] | null> {
+): Promise<GetOrders | ErrorResponse[]> {
     try {
         const filters = `filter[q][number_eq]=${orderNumber}&filter[q][email_eq]=${emailAddress}`;
         const orderFields =
@@ -132,7 +132,7 @@ export async function getAddresses(
     emailAddress: string,
     pageSize: number,
     page: number
-): Promise<AddressResponse | ErrorResponse | ErrorResponse[] | null> {
+): Promise<AddressResponse | ErrorResponse[]> {
     try {
         const filters = `filter[q][email_eq]=${emailAddress}`;
         const pagination = `page[size]=${pageSize}&page[number]=${page}`;
@@ -160,7 +160,7 @@ export async function addAddress(
     lastName: string,
     phone: string,
     postcode: string
-): Promise<string | null> {
+): Promise<string | ErrorResponse[] | null> {
     try {
         const response = await axios.post('/api/account/addAddress', {
             token: accessToken,
@@ -177,52 +177,50 @@ export async function addAddress(
         });
 
         return safelyParse(response, 'data.customerAddressId', parseAsString, null);
-    } catch (error) {
-        console.log('Error: ', error);
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not fetch your saved addresses.');
     }
-
-    return null;
 }
 
-export async function deleteAddress(accessToken: string, id: string): Promise<boolean> {
+export async function deleteAddress(accessToken: string, id: string): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
-
         const response = await cl.delete(`/api/customer_addresses/${id}`);
+
         const status = safelyParse(response, 'status', parseAsNumber, false);
 
         return status && status === 204 ? true : false;
-    } catch (error) {
-        console.log('Error: ', error);
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not delete the selected address.');
     }
-
-    return false;
 }
 
-export async function getAddress(accessToken: string, id: string): Promise<CommerceLayerResponse | null> {
+export async function getAddress(
+    accessToken: string,
+    id: string
+): Promise<CommerceLayerResponse | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
-
         const response = await cl.get(`/api/addresses/${id}`);
-        return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
-    } catch (error) {
-        console.log('Error: ', error);
-    }
 
-    return null;
+        return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not delete the selected address.');
+    }
 }
 
-export async function getCustomerAddress(accessToken: string, id: string): Promise<CommerceLayerResponse | null> {
+export async function getCustomerAddress(
+    accessToken: string,
+    id: string
+): Promise<CommerceLayerResponse | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
-
         const response = await cl.get(`/api/customer_addresses/${id}?include=address`);
-        return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
-    } catch (error) {
-        console.log('Error: ', error);
-    }
 
-    return null;
+        return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not delete the selected address.');
+    }
 }
 
 export async function editAddress(
@@ -237,7 +235,7 @@ export async function editAddress(
     lastName: string,
     phone: string,
     postcode: string
-): Promise<CommerceLayerResponse | null> {
+): Promise<CommerceLayerResponse | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
 
@@ -260,17 +258,12 @@ export async function editAddress(
         });
 
         return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
-    } catch (error) {
-        console.log('Error: ', error);
+    } catch (error: unknown) {
+        return errorHandler(error, 'We could not get historical order.');
     }
-
-    return null;
 }
 
-export async function requestPasswordReset(
-    accessToken: string,
-    email: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+export async function requestPasswordReset(accessToken: string, email: string): Promise<boolean | ErrorResponse[]> {
     try {
         const response = await axios.post('/api/account/requestPasswordReset', {
             token: accessToken,
@@ -279,7 +272,7 @@ export async function requestPasswordReset(
 
         return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not create a payment source.');
+        return errorHandler(error, 'We could not reset your password.');
     }
 }
 
@@ -294,7 +287,7 @@ export async function updatePassword(
     accessToken: string,
     emailAddress: string,
     password: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const customer = await cl.get(`/api/customers/?filter[q][email_eq]=${emailAddress}`);
@@ -319,7 +312,7 @@ export async function updatePassword(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not create a payment source.');
+        return errorHandler(error, 'We could not update your password.');
     }
 }
 
@@ -328,7 +321,7 @@ export async function resetPassword(
     password: string,
     id: string,
     resetToken: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/customer_password_resets/${id}`, {
@@ -345,6 +338,47 @@ export async function resetPassword(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not create a payment source.');
+        return errorHandler(error, 'We could not reset your password.');
+    }
+}
+
+export async function updateUsername(emailAddress: string, username: string): Promise<boolean | ErrorResponse[]> {
+    try {
+        const res = await axios.post('/api/account/updateUsername', {
+            emailAddress,
+            username,
+        });
+
+        const status = safelyParse(res, 'response.status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'Failed to update username.');
+    }
+}
+
+export async function updateSocialMedia(
+    emailAddress: string,
+    instagram: string,
+    twitter: string,
+    twitch: string,
+    youtube: string,
+    ebay: string
+): Promise<boolean | ErrorResponse[]> {
+    try {
+        const res = await axios.post('/api/account/updateSocialMedia', {
+            emailAddress,
+            instagram,
+            twitter,
+            twitch,
+            youtube,
+            ebay,
+        });
+
+        const status = safelyParse(res, 'response.status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'Failed to update social media.');
     }
 }

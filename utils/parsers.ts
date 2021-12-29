@@ -33,6 +33,15 @@ import {
     isArrayofItems,
     isCustomerDetails,
     isError,
+    isContentfulBreak,
+    isArrayOfContentfulBreaks,
+    isBreakTypeItem,
+    isArrayOfBreakTypeItems,
+    isContentfulPage,
+    isArrayOfContentfulPages,
+    isContentfulProduct,
+    isArrayOfContentfulProducts,
+    isUnknown,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
@@ -118,7 +127,7 @@ export function safelyParse<T, F>(
     property: string,
     parse: IParser<T>,
     fallback: F,
-    logErrorOnUndefined: boolean = true
+    logErrorOnUndefined: boolean = false
 ): T | F {
     // Always split properties, first must always exist, spread any leftover.
     const [first, ...chainedProperties] = property.split('.');
@@ -149,7 +158,7 @@ export function safelyParse<T, F>(
 }
 
 export function parseAsType<T>(isExpectedType: ITypeGuard<T>): IParser<T> {
-    return (value: unknown, fallback: any, property: string = 'unknown', logError: boolean = true) => {
+    return (value: unknown, fallback: any, property: string = 'unknown', logError: boolean = false) => {
         // Check our typeguard, if acceptable return value else error.
         if (isExpectedType(value)) {
             return value;
@@ -170,6 +179,7 @@ export const parseAsString = parseAsType(isString);
 export const parseAsNumber = parseAsType(isNumber);
 export const parseAsBoolean = parseAsType(isBoolean);
 export const parseAsArray = parseAsType(isArray);
+export const parseAsUnknown = parseAsType(isUnknown);
 export const parseAsArrayOfStrings = parseAsType(isArrayOfStrings);
 export const parseAsError = parseAsType(isError);
 export const parseAsSocialMedia = parseAsType(isSocialMedia);
@@ -197,3 +207,11 @@ export const parseAsOrder = parseAsType(isOrder);
 export const parseAsItem = parseAsType(isItem);
 export const parseAsArrayOfItems = parseAsType(isArrayofItems);
 export const parseAsCustomerDetails = parseAsType(isCustomerDetails);
+export const parseAsContentfulBreak = parseAsType(isContentfulBreak);
+export const parseAsArrayOfContentfulBreaks = parseAsType(isArrayOfContentfulBreaks);
+export const parseAsBreakTypeItem = parseAsType(isBreakTypeItem);
+export const parseAsArrayOfBreakTypeItems = parseAsType(isArrayOfBreakTypeItems);
+export const parseAsContentfulPage = parseAsType(isContentfulPage);
+export const parseAsArrayOfContentfulPages = parseAsType(isArrayOfContentfulPages);
+export const parseAsContentfulProduct = parseAsType(isContentfulProduct);
+export const parseAsArrayOfContentfulProducts = parseAsType(isArrayOfContentfulProducts);

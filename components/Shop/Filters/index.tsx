@@ -20,6 +20,8 @@ export const Filters: React.FC = () => {
                 case FilterTypes.ProductType:
                     dispatch(addProductType(filter));
                     break;
+                default:
+                    break;
             }
         } else {
             switch (filterType) {
@@ -28,6 +30,8 @@ export const Filters: React.FC = () => {
                     break;
                 case FilterTypes.ProductType:
                     dispatch(removeProductType(filter));
+                    break;
+                default:
                     break;
             }
         }

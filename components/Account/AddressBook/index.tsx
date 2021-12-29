@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useSession } from 'next-auth/react';
 
 import selector from './selector';
@@ -10,6 +10,9 @@ import Add from './Add';
 import { CommerceLayerResponse } from '../../../types/api';
 import Address from './Address';
 import Pagination from '../../Pagination';
+import { isArrayOfErrors, isError } from '../../../utils/typeguards';
+import { addAlert } from '../../../store/slices/alerts';
+import { AlertLevel } from '../../../enums/system';
 
 const PER_PAGE = 7;
 
@@ -22,13 +25,19 @@ export const AddressBook: React.FC = () => {
     const [addresses, setAddresses] = useState<CommerceLayerResponse[] | null>(null);
     const [pageCount, setPageCount] = useState<number | null>(null);
     const [currentPage, setCurrentPage] = useState(0);
+    const dispatch = useDispatch();
 
     const fetchAddresses = async (token: string, email: string, page: number) => {
-        const addressData = await getAddresses(token, email, PER_PAGE, page);
+        const res = await getAddresses(token, email, PER_PAGE, page);
 
-        if (addressData) {
-            setAddresses(addressData.addresses);
-            setPageCount(addressData.meta ? addressData.meta.page_count : null);
+        if (isArrayOfErrors(res)) {
+            res.forEach((value) => {
+                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+            });
+        } else {
+            const { addresses, meta } = res;
+            setAddresses(addresses);
+            setPageCount(meta ? meta.page_count : null);
         }
 
         setIsLoading(false);

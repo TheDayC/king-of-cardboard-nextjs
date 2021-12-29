@@ -1,9 +1,7 @@
 import { get } from 'lodash';
 
 import {
-    Break,
     BreakSlot,
-    BreakSlotsCollection,
     BreakSlotWithSku,
     ContentfulBreak,
     ContentfulBreaksResponse,
@@ -11,8 +9,9 @@ import {
     SingleBreak,
 } from '../types/breaks';
 import { SkuInventory, SkuItem, SkuOption, SkuProduct } from '../types/commerce';
-import { ImageCollection, ImageItem, SingleProduct } from '../types/products';
+import { ImageCollection, ImageItem } from '../types/products';
 import { fetchContent } from './content';
+import { parseAsArrayOfBreakTypeItems, parseAsArrayOfContentfulBreaks, parseAsNumber, safelyParse } from './parsers';
 
 export async function fetchContentfulBreaks(
     limit: number,
@@ -70,22 +69,21 @@ export async function fetchContentfulBreaks(
     // Make the contentful request.
     const response = await fetchContent(query);
 
-    if (response) {
-        // On a successful request get the total number of items for pagination.
-        const total: number = get(response, 'data.data.breaksCollection.total', 0);
+    // On a successful request get the total number of items for pagination.
+    const total = safelyParse(response, 'data.content.breaksCollection.total', parseAsNumber, 0);
 
-        // On success get the item data for products.
-        const breaksCollection: ContentfulBreak[] | null = get(response, 'data.data.breaksCollection.items', null);
+    // On success get the item data for products.
+    const breaksCollection = safelyParse(
+        response,
+        'data.content.breaksCollection.items',
+        parseAsArrayOfContentfulBreaks,
+        null
+    );
 
-        // Return both.
-        return {
-            total,
-            breaksCollection,
-        };
-    }
-
-    // Return both defaults if unsuccessful.
-    return { total: 0, breaksCollection: null };
+    return {
+        total,
+        breaksCollection,
+    };
 }
 
 export async function fetchContentfulBreakTypes(): Promise<ContentfulBreakTypes[] | null> {
@@ -101,18 +99,21 @@ export async function fetchContentfulBreakTypes(): Promise<ContentfulBreakTypes[
     `;
 
     const response = await fetchContent(query);
+    const breakTypesCollection = safelyParse(
+        response,
+        'data.content.breakTypesCollection.items',
+        parseAsArrayOfBreakTypeItems,
+        null
+    );
 
-    if (response) {
-        const breakTypesCollection: any | null = get(response, 'data.data.breakTypesCollection.items', null);
-
-        // Return both.
-        return breakTypesCollection.map((type: any) => ({
-            title: type.title,
-            link: type.link,
-        }));
+    if (!breakTypesCollection) {
+        return null;
     }
 
-    return null;
+    return breakTypesCollection.map((type) => ({
+        title: type.title,
+        link: type.link,
+    }));
 }
 
 export async function fetchBreakBySlug(slug: string): Promise<ContentfulBreak | null> {
@@ -163,15 +164,19 @@ export async function fetchBreakBySlug(slug: string): Promise<ContentfulBreak | 
     // Make the contentful request.
     const response = await fetchContent(query);
 
-    if (response) {
-        // On success get the item data for products.
-        const breaksCollection: ContentfulBreak[] | null = get(response, 'data.data.breaksCollection.items', null);
+    // On success get the item data for products.
+    const breaksCollection = safelyParse(
+        response,
+        'data.content.breaksCollection.items',
+        parseAsArrayOfContentfulBreaks,
+        null
+    );
 
-        return breaksCollection ? breaksCollection[0] : null;
+    if (!breaksCollection) {
+        return null;
     }
 
-    // Return both defaults if unsuccessful.
-    return null;
+    return breaksCollection[0];
 }
 
 export function mergeBreakSlotData(breaks: BreakSlot[], skuItems: SkuItem[]): BreakSlotWithSku[] {

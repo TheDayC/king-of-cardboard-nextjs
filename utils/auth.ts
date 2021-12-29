@@ -39,7 +39,7 @@ export function userClient(): AxiosInstance {
 }
 
 // Create commerce layer access token
-export async function createToken(): Promise<CreateToken | ErrorResponse | ErrorResponse[] | null> {
+export async function createToken(): Promise<CreateToken | ErrorResponse[]> {
     try {
         const res = await axios.get('/api/getAccessToken');
         const token = safelyParse(res, 'data.token', parseAsString, null);
@@ -51,6 +51,6 @@ export async function createToken(): Promise<CreateToken | ErrorResponse | Error
             expires: expiresIso,
         };
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not create a payment source.');
+        return errorHandler(error, 'We could not create an auth token, please refresh.');
     }
 }

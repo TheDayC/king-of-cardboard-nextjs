@@ -1,20 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types,@typescript-eslint/ban-ts-comment */
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { get } from 'lodash';
 
 import { ContentfulPage } from '../types/pages';
 import { fetchContent } from './content';
+import { parseAsArrayOfContentfulPages, safelyParse } from './parsers';
 
 export async function fetchPageCollection(query: string): Promise<ContentfulPage[] | null> {
     const pages = await fetchContent(query);
 
-    if (pages) {
-        const productCollection: ContentfulPage[] | null = get(pages, 'data.data.pagesCollection.items', null);
-
-        return productCollection;
-    }
-
-    return null;
+    return safelyParse(pages, 'data.content.pagesCollection.items', parseAsArrayOfContentfulPages, null);
 }
 
 export const useRecursiveTimeout = (callback: any, delay: number): any => {

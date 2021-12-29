@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import selector from './selector';
 import { parseAsArrayOfLineItemRelationships, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
+import { isError, isArrayOfErrors } from '../../../utils/typeguards';
 import { getHistoricalOrders } from '../../../utils/account';
 import { CommerceLayerResponse } from '../../../types/api';
 import ShortOrder from './ShortOrder';
 import Loading from '../../Loading';
 import Pagination from '../../Pagination';
 import { OrderHistoryLineItem } from '../../../types/account';
+import { addAlert } from '../../../store/slices/alerts';
+import { AlertLevel } from '../../../enums/system';
 
 const ORDERS_PER_PAGE = 5;
 
@@ -21,6 +24,7 @@ export const OrderHistory: React.FC = () => {
     const [pageCount, setPageCount] = useState<number | null>(null);
     const [currentPage, setCurrentPage] = useState(0);
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
+    const dispatch = useDispatch();
 
     const fetchOrderHistory = async (
         token: string,
@@ -28,10 +32,14 @@ export const OrderHistory: React.FC = () => {
         page: number = 0,
         perPage: number = ORDERS_PER_PAGE
     ) => {
-        const response = await getHistoricalOrders(token, email, perPage, page + 1);
+        const res = await getHistoricalOrders(token, email, perPage, page + 1);
 
-        if (response) {
-            const { orders: responseOrders, included: responseIncluded, meta } = response;
+        if (isArrayOfErrors(res)) {
+            res.forEach((value) => {
+                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+            });
+        } else {
+            const { orders: responseOrders, included: responseIncluded, meta } = res;
 
             setOrders(responseOrders);
             setIncluded(responseIncluded);

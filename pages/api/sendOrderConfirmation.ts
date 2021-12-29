@@ -91,10 +91,6 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
                         path: item.image_url.length > 0 ? item.image_url : 'https://via.placeholder.com/50',
                         cid: item.id, //same cid value as in the html img src
                     }));
-                    console.log(
-                        '🚀 ~ file: sendOrderConfirmation.ts ~ line 67 ~ sendOrderConfirmation ~ itemsImgData',
-                        itemsImgData
-                    );
                     const htmlData = fs.readFileSync(filePath, 'utf8');
                     const html = htmlData
                         .replace('{{name}}', firstName || '')

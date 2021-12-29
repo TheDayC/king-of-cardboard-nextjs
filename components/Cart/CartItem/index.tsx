@@ -10,6 +10,9 @@ import styles from './cartitem.module.css';
 import { fetchProductByProductLink, mergeSkuProductData } from '../../../utils/products';
 import { ContentfulProductShort } from '../../../types/products';
 import { isArray } from 'lodash';
+import { isArrayOfErrors } from '../../../utils/typeguards';
+import { addAlert } from '../../../store/slices/alerts';
+import { AlertLevel } from '../../../enums/system';
 
 interface BasketItemProps {
     id: string;
@@ -47,8 +50,14 @@ export const CartItem: React.FC<BasketItemProps> = ({
             setProduct(cmsProduct);
         }
 
-        if (skuItem && skuItem.inventory) {
-            setStock(skuItem.inventory.quantity);
+        if (isArrayOfErrors(skuItem)) {
+            skuItem.forEach((value) => {
+                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+            });
+        } else {
+            if (skuItem && skuItem.inventory) {
+                setStock(skuItem.inventory.quantity);
+            }
         }
     };
 
@@ -64,8 +73,14 @@ export const CartItem: React.FC<BasketItemProps> = ({
                 dispatch(setUpdatingCart(true));
                 const hasLineItemUpdated = await updateLineItem(accessToken, id, newQuantity);
 
-                if (hasLineItemUpdated) {
-                    dispatch(fetchOrder(true));
+                if (isArrayOfErrors(hasLineItemUpdated)) {
+                    hasLineItemUpdated.forEach((value) => {
+                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                    });
+                } else {
+                    if (hasLineItemUpdated) {
+                        dispatch(fetchOrder(true));
+                    }
                 }
             } else {
                 // If the new quantity is zero or less remove the item from the cart.
@@ -92,8 +107,14 @@ export const CartItem: React.FC<BasketItemProps> = ({
 
                 const hasLineItemUpdated = await updateLineItem(accessToken, id, newQuantity);
 
-                if (hasLineItemUpdated) {
-                    dispatch(fetchOrder(true));
+                if (isArrayOfErrors(hasLineItemUpdated)) {
+                    hasLineItemUpdated.forEach((value) => {
+                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                    });
+                } else {
+                    if (hasLineItemUpdated) {
+                        dispatch(fetchOrder(true));
+                    }
                 }
             }
 
@@ -109,8 +130,14 @@ export const CartItem: React.FC<BasketItemProps> = ({
             dispatch(setUpdatingCart(true));
             const hasDeleted = await removeLineItem(accessToken, id);
 
-            if (hasDeleted) {
-                dispatch(fetchOrder(true));
+            if (isArrayOfErrors(hasDeleted)) {
+                hasDeleted.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                if (hasDeleted) {
+                    dispatch(fetchOrder(true));
+                }
             }
         }
     };

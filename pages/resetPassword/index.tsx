@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import { GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
 
 import Header from '../../components/Header';
 import { parseAsString, safelyParse } from '../../utils/parsers';
@@ -12,7 +13,7 @@ import { addAlert } from '../../store/slices/alerts';
 import { AlertLevel } from '../../enums/system';
 import selector from './selector';
 import { resetPassword } from '../../utils/account';
-import { isBoolean, isError } from '../../utils/typeguards';
+import { isArrayOfErrors, isError } from '../../utils/typeguards';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -63,6 +64,7 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
     const password = watch('password', ''); // Watch password field for changes.
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
+    const router = useRouter();
 
     const hasErrors = Object.keys(errors).length > 0;
     const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
@@ -77,10 +79,19 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
 
         const res = await resetPassword(accessToken, password, id, resetToken);
 
-        if (isBoolean(res)) {
-            dispatch(addAlert({ message: 'Password Reset!', level: AlertLevel.Success }));
-        } else if (isError(res)) {
-            dispatch(addAlert({ message: res.message, level: AlertLevel.Error }));
+        if (isArrayOfErrors(res)) {
+            res.forEach((err) => {
+                dispatch(addAlert({ message: err.description, level: AlertLevel.Error }));
+            });
+        } else {
+            if (res) {
+                dispatch(addAlert({ message: 'Password reset!', level: AlertLevel.Success }));
+
+                setLoading(false);
+                router.push('/login');
+            } else {
+                dispatch(addAlert({ message: 'Password could not be reset...', level: AlertLevel.Error }));
+            }
         }
 
         setLoading(false);

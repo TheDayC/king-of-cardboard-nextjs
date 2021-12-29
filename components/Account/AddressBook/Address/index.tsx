@@ -1,10 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
 import { BiTrash, BiEdit } from 'react-icons/bi';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import selector from './selector';
 import { deleteAddress } from '../../../../utils/account';
+import { isArrayOfErrors, isError } from '../../../../utils/typeguards';
+import { addAlert } from '../../../../store/slices/alerts';
+import { AlertLevel } from '../../../../enums/system';
 
 interface AddressProps {
     id: string;
@@ -14,11 +17,24 @@ interface AddressProps {
 
 export const Address: React.FC<AddressProps> = ({ id, name, fetchAddresses }) => {
     const { accessToken } = useSelector(selector);
+    const dispatch = useDispatch();
 
     const handleDelete = async () => {
         if (accessToken && id) {
-            await deleteAddress(accessToken, id);
-            fetchAddresses(true);
+            const res = await deleteAddress(accessToken, id);
+
+            if (isArrayOfErrors(res)) {
+                res.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                if (res) {
+                    dispatch(addAlert({ message: 'Address deleted!', level: AlertLevel.Success }));
+                    fetchAddresses(true);
+                } else {
+                    dispatch(addAlert({ message: 'Unable to delete address.', level: AlertLevel.Error }));
+                }
+            }
         }
     };
 

@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios from 'axios';
 import { get, join } from 'lodash';
 
 import { errorHandler } from '../middleware/errors';
 import { ErrorResponse, PaymentSourceResponse } from '../types/api';
 import { Order } from '../types/cart';
-import { LineItemAttributes, LineItemRelationships, Price, StockItem, SkuItem, SkuProduct } from '../types/commerce';
+import { LineItemAttributes, LineItemRelationships, SkuItem, SkuProduct } from '../types/commerce';
 import { authClient } from './auth';
 import {
     parseAsCommerceResponse,
@@ -17,7 +16,7 @@ import {
     parseAsNumber,
 } from './parsers';
 
-export async function createOrder(accessToken: string): Promise<Order | ErrorResponse | ErrorResponse[] | null> {
+export async function createOrder(accessToken: string): Promise<Order | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.post('/api/orders', {
@@ -42,36 +41,7 @@ export async function createOrder(accessToken: string): Promise<Order | ErrorRes
     }
 }
 
-export async function getStockItems(
-    accessToken: string
-): Promise<StockItem[] | ErrorResponse | ErrorResponse[] | null> {
-    try {
-        const cl = authClient(accessToken);
-        const res = await cl.get('/api/stock_items');
-        const stockItems = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null);
-
-        if (!stockItems) {
-            return null;
-        }
-
-        return stockItems.map((item) => ({
-            id: item.id,
-            attributes: {
-                sku_code: safelyParse(item, 'attributes.sku_code', parseAsString, ''),
-                reference: safelyParse(item, 'attributes.reference', parseAsString, ''),
-                quantity: safelyParse(item, 'attributes.quantity', parseAsNumber, 0),
-                created_at: safelyParse(item, 'attributes.created_at', parseAsString, ''),
-            },
-        }));
-    } catch (error: unknown) {
-        return errorHandler(error, 'We could not get a shipment.');
-    }
-}
-
-export async function getSkus(
-    accessToken: string,
-    sku_codes: string[]
-): Promise<SkuItem[] | ErrorResponse | ErrorResponse[] | null> {
+export async function getSkus(accessToken: string, sku_codes: string[]): Promise<SkuItem[] | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
         const skuFilter = join(sku_codes, ',');
@@ -111,10 +81,7 @@ export async function getSkus(
     }
 }
 
-export async function getSkuDetails(
-    accessToken: string,
-    id: string
-): Promise<SkuProduct | ErrorResponse | ErrorResponse[] | null> {
+export async function getSkuDetails(accessToken: string, id: string): Promise<SkuProduct | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.get(`/api/skus/${id}?include=prices,sku_options`);
@@ -161,37 +128,11 @@ export async function getSkuDetails(
     }
 }
 
-export async function getPrices(accessToken: string): Promise<Price[] | ErrorResponse | ErrorResponse[] | null> {
-    try {
-        const cl = authClient(accessToken);
-        const res = await cl.get('/api/prices');
-        const prices = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null);
-
-        if (!prices) {
-            return null;
-        }
-
-        return prices.map((price) => ({
-            id: price.id,
-            attributes: {
-                sku_code: safelyParse(price, 'attributes.sku_code', parseAsString, ''),
-                created_at: safelyParse(price, 'attributes.created_at', parseAsString, ''),
-                formatted_amount: safelyParse(price, 'attributes.formatted_amount', parseAsString, ''),
-                currency_code: safelyParse(price, 'attributes.currency_code', parseAsString, ''),
-                amount_float: safelyParse(price, 'attributes.amount_float', parseAsNumber, 0),
-                amount_cents: safelyParse(price, 'attributes.amount_cents', parseAsNumber, 0),
-            },
-        }));
-    } catch (error: unknown) {
-        return errorHandler(error, 'We could not get a shipment.');
-    }
-}
-
 export async function getOrder(
     accessToken: string,
     orderId: string,
     include: string[]
-): Promise<Order | ErrorResponse | ErrorResponse[] | null> {
+): Promise<Order | ErrorResponse[] | null> {
     try {
         const includeJoin = join(include, ',');
         const orderFields =
@@ -221,7 +162,7 @@ export async function setLineItem(
     accessToken: string,
     attributes: LineItemAttributes,
     relationships: LineItemRelationships
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.post('/api/line_items', {
@@ -239,10 +180,7 @@ export async function setLineItem(
     }
 }
 
-export async function removeLineItem(
-    accessToken: string,
-    id: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+export async function removeLineItem(accessToken: string, id: string): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.delete(`/api/line_items/${id}`);
@@ -258,7 +196,7 @@ export async function updateLineItem(
     accessToken: string,
     id: string,
     quantity: number
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/line_items/${id}`, {
@@ -282,7 +220,7 @@ export async function createPaymentSource(
     accessToken: string,
     id: string,
     paymentSourceType: string
-): Promise<PaymentSourceResponse | ErrorResponse | ErrorResponse[]> {
+): Promise<PaymentSourceResponse | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.post(`/api/${paymentSourceType}`, {

@@ -7,6 +7,9 @@ import selector from './selector';
 import { getGiftCardBalance } from '../../../utils/achievements';
 import { setShouldFetchRewards } from '../../../store/slices/account';
 import { setBalance } from '../../../store/slices/account';
+import { isArrayOfErrors, isError } from '../../../utils/typeguards';
+import { addAlert } from '../../../store/slices/alerts';
+import { AlertLevel } from '../../../enums/system';
 
 interface RewardsProps {
     emailAddress: string | null;
@@ -18,10 +21,14 @@ export const Rewards: React.FC<RewardsProps> = ({ emailAddress, fullWidth }) => 
     const dispatch = useDispatch();
 
     const fetchBalance = async (token: string, email: string) => {
-        const balanceResponse = await getGiftCardBalance(token, email);
+        const res = await getGiftCardBalance(token, email);
 
-        if (balanceResponse) {
-            dispatch(setBalance(balanceResponse));
+        if (isArrayOfErrors(res)) {
+            res.forEach((err) => {
+                dispatch(addAlert({ message: err.description, level: AlertLevel.Error }));
+            });
+        } else {
+            dispatch(setBalance(res));
         }
     };
 

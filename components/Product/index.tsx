@@ -14,6 +14,7 @@ import Images from './Images';
 import Details from './Details';
 import { AlertLevel } from '../../enums/system';
 import { addAlert } from '../../store/slices/alerts';
+import { isArrayOfErrors, isError } from '../../utils/typeguards';
 
 interface ProductProps {
     slug: string;
@@ -51,21 +52,39 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         if (productData) {
             const skuItems = await getSkus(token, [productData.productLink]);
 
-            // If we hit some skuItems then put them in the store.
-            if (skuItems && skuItems.length > 0) {
-                const skuItem = await getSkuDetails(token, skuItems[0].id);
+            if (isArrayOfErrors(skuItems)) {
+                skuItems.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                // If we hit some skuItems then put them in the store.
+                if (skuItems && skuItems.length > 0) {
+                    const skuItem = await getSkuDetails(token, skuItems[0].id);
 
-                if (skuItem) {
-                    const mergedProduct = mergeSkuProductData(productData, skuItems[0], skuItem);
+                    if (isArrayOfErrors(skuItem)) {
+                        skuItem.forEach((value) => {
+                            dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                        });
+                    } else {
+                        if (isArrayOfErrors(skuItem)) {
+                            skuItem.forEach((value) => {
+                                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                            });
+                        } else {
+                            if (skuItem) {
+                                const mergedProduct = mergeSkuProductData(productData, skuItems[0], skuItem);
 
-                    if (mergedProduct) {
-                        const quantity =
-                            mergedProduct.inventory && mergedProduct.inventory.quantity
-                                ? mergedProduct.inventory.quantity
-                                : 0;
+                                if (mergedProduct) {
+                                    const quantity =
+                                        mergedProduct.inventory && mergedProduct.inventory.quantity
+                                            ? mergedProduct.inventory.quantity
+                                            : 0;
 
-                        setMaxQuantity(quantity);
-                        setCurrentProduct(mergedProduct);
+                                    setMaxQuantity(quantity);
+                                    setCurrentProduct(mergedProduct);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -161,9 +180,15 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
 
             const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
 
-            if (hasLineItemUpdated) {
-                setLoading(false);
-                dispatch(fetchOrder(true));
+            if (isArrayOfErrors(hasLineItemUpdated)) {
+                hasLineItemUpdated.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                if (hasLineItemUpdated) {
+                    setLoading(false);
+                    dispatch(fetchOrder(true));
+                }
             }
         },
         [hasErrors, accessToken, currentProduct, order, maxQuantity, hasExceededStock]

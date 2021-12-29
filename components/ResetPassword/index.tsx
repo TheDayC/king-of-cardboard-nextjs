@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { MdOutlineMailOutline } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,7 +8,7 @@ import selector from './selector';
 import { requestPasswordReset } from '../../utils/account';
 import { AlertLevel } from '../../enums/system';
 import { addAlert } from '../../store/slices/alerts';
-import { isError } from '../../utils/typeguards';
+import { isArrayOfErrors, isError } from '../../utils/typeguards';
 
 interface Submit {
     emailAddress?: string;
@@ -21,8 +21,6 @@ export const ResetPassword: React.FC = () => {
         formState: { errors },
     } = useForm();
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<string | null>(null);
     const hasErrors = Object.keys(errors).length > 0;
     const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
@@ -39,31 +37,25 @@ export const ResetPassword: React.FC = () => {
 
         const res = await requestPasswordReset(accessToken, email);
 
-        if (isError(res)) {
-            setError(res.description);
-            setSuccess(null);
-        } else if (res) {
-            setError(null);
-            setSuccess('Reset password link sent!');
+        if (isArrayOfErrors(res)) {
+            res.forEach((value) => {
+                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+            });
         } else {
-            setError('We were unable to reset your password.');
-            setSuccess(null);
+            if (res) {
+                dispatch(
+                    addAlert({
+                        message: 'A reset password link has been sent to your email!',
+                        level: AlertLevel.Success,
+                    })
+                );
+            } else {
+                dispatch(addAlert({ message: 'We were unable to reset your password.', level: AlertLevel.Error }));
+            }
         }
 
         setLoading(false);
     };
-
-    useEffect(() => {
-        if (error) {
-            dispatch(addAlert({ message: error, level: AlertLevel.Error }));
-        }
-    }, [error]);
-
-    useEffect(() => {
-        if (success) {
-            dispatch(addAlert({ message: success, level: AlertLevel.Success }));
-        }
-    }, [success]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/router';
 
 import selector from './selector';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
@@ -9,6 +10,7 @@ import { fieldPatternMsgs } from '../../../../utils/checkout';
 import { addAddress, editAddress } from '../../../../utils/account';
 import { AlertLevel } from '../../../../enums/system';
 import { addAlert } from '../../../../store/slices/alerts';
+import { isArrayOfErrors, isError } from '../../../../utils/typeguards';
 
 interface FormData {
     addressLineOne: string;
@@ -51,9 +53,8 @@ export const Fields: React.FC<FieldProps> = ({
     const { data: session } = useSession();
     const dispatch = useDispatch();
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
-    const [errorMsg, setErrorMsg] = useState<string | null>(null);
-    const [successMsg, setSuccessMsg] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
     const {
         register,
         handleSubmit,
@@ -67,52 +68,65 @@ export const Fields: React.FC<FieldProps> = ({
             return;
         }
 
+        const { addressLineOne, addressLineTwo, city, company, county, firstName, lastName, phone, postcode } = data;
+
         setIsLoading(true);
 
         if (addressId) {
-            const editAddressResponse = await editAddress(
+            const res = await editAddress(
                 accessToken,
                 addressId,
-                data.addressLineOne,
-                data.addressLineTwo,
-                data.city,
-                data.company,
-                data.county,
-                data.firstName,
-                data.lastName,
-                data.phone,
-                data.postcode
+                addressLineOne,
+                addressLineTwo,
+                city,
+                company,
+                county,
+                firstName,
+                lastName,
+                phone,
+                postcode
             );
 
-            if (editAddressResponse) {
-                setSuccessMsg('Address edited!');
-                setErrorMsg(null);
+            if (isArrayOfErrors(res)) {
+                res.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
             } else {
-                setErrorMsg('Unable to edit address.');
-                setSuccessMsg(null);
+                if (res) {
+                    dispatch(addAlert({ message: 'Address edited!', level: AlertLevel.Success }));
+
+                    router.push('/account/addressBook');
+                } else {
+                    dispatch(addAlert({ message: 'Unable to edit address.', level: AlertLevel.Error }));
+                }
             }
         } else {
-            const customerAddressId = await addAddress(
+            const res = await addAddress(
                 accessToken,
                 emailAddress,
-                data.addressLineOne,
-                data.addressLineTwo,
-                data.city,
-                data.company,
-                data.county,
-                data.firstName,
-                data.lastName,
-                data.phone,
-                data.postcode
+                addressLineOne,
+                addressLineTwo,
+                city,
+                company,
+                county,
+                firstName,
+                lastName,
+                phone,
+                postcode
             );
 
-            if (customerAddressId) {
-                setSuccessMsg('Address successfullly added!');
-                setErrorMsg(null);
-                reset();
+            if (isArrayOfErrors(res)) {
+                res.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
             } else {
-                setErrorMsg('Unable to add address.');
-                setSuccessMsg(null);
+                if (res) {
+                    dispatch(addAlert({ message: 'Address successfullly added!', level: AlertLevel.Success }));
+                    reset();
+                    router.push('/account/addressBook');
+                } else {
+                    dispatch(addAlert({ message: 'Unable to add address.', level: AlertLevel.Error }));
+                }
             }
         }
 
@@ -129,18 +143,6 @@ export const Fields: React.FC<FieldProps> = ({
     const postcodeErr = safelyParse(errors, 'postcode.message', parseAsString, null);
     const countyErr = safelyParse(errors, 'county.message', parseAsString, null);
     const btnText = addressId ? 'Save Address' : 'Add Address';
-
-    useEffect(() => {
-        if (errorMsg) {
-            dispatch(addAlert({ message: errorMsg, level: AlertLevel.Error }));
-        }
-    }, [errorMsg]);
-
-    useEffect(() => {
-        if (successMsg) {
-            dispatch(addAlert({ message: successMsg, level: AlertLevel.Success }));
-        }
-    }, [successMsg]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full">

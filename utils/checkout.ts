@@ -10,13 +10,7 @@ import { authClient } from './auth';
 import { ErrorResponse } from '../types/api';
 import { errorHandler } from '../middleware/errors';
 import { isArray } from './typeguards';
-import {
-    parseAsArrayOfCommerceResponse,
-    parseAsNumber,
-    parseAsString,
-    safelyParse,
-    parseAsCommerceResponse,
-} from './parsers';
+import { parseAsArrayOfCommerceResponse, parseAsNumber, parseAsString, safelyParse } from './parsers';
 
 function regexEmail(email: string): boolean {
     // eslint-disable-next-line no-useless-escape
@@ -221,29 +215,12 @@ export function fieldPatternMsgs(field: string): string {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function fetchStripeGateway(accessToken: string): Promise<AxiosResponse<AxiosData> | void> {
-    try {
-        const url = `${process.env.NEXT_PUBLIC_ECOM_DOMAIN}/api/stripe_gateways/`;
-
-        return await axios.get(url, {
-            headers: {
-                Accept: 'application/vnd.api+json',
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
-    } catch (e) {
-        console.error(e);
-    }
-}
-
 export async function updateAddress(
     accessToken: string,
     id: string,
     personalDetails: CustomerDetails,
     isShipping: boolean
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const data = {
             type: 'addresses',
@@ -292,14 +269,11 @@ export async function updateAddress(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not fetch delivery lead times.');
+        return errorHandler(error, 'Address could not be updated.');
     }
 }
 
-export async function getShipments(
-    accessToken: string,
-    orderId: string
-): Promise<Shipments | ErrorResponse | ErrorResponse[] | null> {
+export async function getShipments(accessToken: string, orderId: string): Promise<Shipments | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
         const include = 'available_shipping_methods,stock_location';
@@ -343,13 +317,11 @@ export async function getShipments(
             }),
         };
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not fetch delivery lead times.');
+        return errorHandler(error, 'Failed to fetch shipments.');
     }
 }
 
-export async function getDeliveryLeadTimes(
-    accessToken: string
-): Promise<DeliveryLeadTimes[] | ErrorResponse | ErrorResponse[] | null> {
+export async function getDeliveryLeadTimes(accessToken: string): Promise<DeliveryLeadTimes[] | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.get('/api/delivery_lead_times?include=shipping_method,stock_location');
@@ -367,7 +339,7 @@ export async function getDeliveryLeadTimes(
 
         return null;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not fetch delivery lead times.');
+        return errorHandler(error, 'Failed to fetch delivery lead times.');
     }
 }
 
@@ -400,7 +372,7 @@ export async function updateShipmentMethod(
     accessToken: string,
     shipmentId: string,
     methodId: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/shipments/${shipmentId}`, {
@@ -421,14 +393,14 @@ export async function updateShipmentMethod(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not fetch delivery lead times.');
+        return errorHandler(error, 'Failed to update shipment method.');
     }
 }
 
 export async function getShipment(
     accessToken: string,
     shipmentId: string
-): Promise<ShipmentsWithLineItems | ErrorResponse | ErrorResponse[] | null> {
+): Promise<ShipmentsWithLineItems | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
         const include = 'shipping_method,delivery_lead_time,shipment_line_items';
@@ -451,7 +423,7 @@ export async function getShipment(
             lineItems: items,
         };
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not get a shipment.');
+        return errorHandler(error, 'Failed to fetch shipment.');
     }
 }
 
@@ -459,7 +431,7 @@ export async function updatePaymentMethod(
     accessToken: string,
     id: string,
     paymentMethodId: string
-): Promise<boolean | ErrorResponse | ErrorResponse[]> {
+): Promise<boolean | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/orders/${id}`, {
