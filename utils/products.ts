@@ -1,4 +1,4 @@
-import { get, isArray } from 'lodash';
+import { isArray } from 'lodash';
 
 import { Categories, ProductType } from '../enums/shop';
 import { SkuItem, SkuProduct } from '../types/commerce';

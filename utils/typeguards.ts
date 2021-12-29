@@ -11,7 +11,7 @@ import {
     CommerceLayerResponse,
     ErrorResponse,
 } from '../types/api';
-import { BreakTypeItem, BreakTypeItems, ContentfulBreak } from '../types/breaks';
+import { BreakTypeItem, ContentfulBreak } from '../types/breaks';
 import { Order } from '../types/cart';
 import { SkuInventory, SkuOption } from '../types/commerce';
 import { ContentfulPage } from '../types/pages';
