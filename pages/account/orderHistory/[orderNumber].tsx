@@ -153,23 +153,31 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
     const fetchSkuItems = useCallback(async (token: string, skus: string[], includedItems: CommerceLayerResponse[]) => {
         const skuItems = await getSkus(token, skus);
 
-        if (skuItems) {
-            const lineItems: OrderHistoryLineItemWithSkuData[] = includedItems.map((lineItem) => {
-                const skuCode = safelyParse(lineItem, 'attributes.sku_code', parseAsString, null);
-                const skuItem = skuItems ? skuItems.find((item) => item.sku_code === skuCode) : null;
-
-                return {
-                    lineItemId: safelyParse(lineItem, 'id', parseAsString, ''),
-                    skuId: safelyParse(skuItem, 'id', parseAsString, ''),
-                    name: safelyParse(skuItem, 'name', parseAsString, null),
-                    skuCode: skuCode,
-                    imageUrl: safelyParse(skuItem, 'image_url', parseAsString, null),
-                    quantity: safelyParse(lineItem, 'attributes.quantity', parseAsNumber, 0),
-                    amount: safelyParse(skuItem, 'amount', parseAsString, null),
-                    compareAmount: safelyParse(skuItem, 'amount', parseAsString, null),
-                };
+        if (isError(skuItems)) {
+            dispatch(addAlert({ message: skuItems.description, level: AlertLevel.Error }));
+        } else if (isArrayOfErrors(skuItems)) {
+            skuItems.forEach((value) => {
+                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
             });
-            setLineItems(lineItems);
+        } else {
+            if (skuItems) {
+                const lineItems: OrderHistoryLineItemWithSkuData[] = includedItems.map((lineItem) => {
+                    const skuCode = safelyParse(lineItem, 'attributes.sku_code', parseAsString, null);
+                    const skuItem = skuItems ? skuItems.find((item) => item.sku_code === skuCode) : null;
+
+                    return {
+                        lineItemId: safelyParse(lineItem, 'id', parseAsString, ''),
+                        skuId: safelyParse(skuItem, 'id', parseAsString, ''),
+                        name: safelyParse(skuItem, 'name', parseAsString, null),
+                        skuCode: skuCode,
+                        imageUrl: safelyParse(skuItem, 'image_url', parseAsString, null),
+                        quantity: safelyParse(lineItem, 'attributes.quantity', parseAsNumber, 0),
+                        amount: safelyParse(skuItem, 'amount', parseAsString, null),
+                        compareAmount: safelyParse(skuItem, 'amount', parseAsString, null),
+                    };
+                });
+                setLineItems(lineItems);
+            }
         }
     }, []);
 
