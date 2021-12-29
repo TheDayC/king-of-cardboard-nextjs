@@ -357,3 +357,29 @@ export async function updateUsername(emailAddress: string, username: string): Pr
         return errorHandler(error, 'Failed to update username.');
     }
 }
+
+export async function updateSocialMedia(
+    emailAddress: string,
+    instagram: string,
+    twitter: string,
+    twitch: string,
+    youtube: string,
+    ebay: string
+): Promise<boolean | ErrorResponse[]> {
+    try {
+        const res = await axios.post('/api/account/updateSocialMedia', {
+            emailAddress,
+            instagram,
+            twitter,
+            twitch,
+            youtube,
+            ebay,
+        });
+
+        const status = safelyParse(res, 'response.status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'Failed to update social media.');
+    }
+}

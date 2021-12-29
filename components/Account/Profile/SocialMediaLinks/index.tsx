@@ -9,6 +9,8 @@ import { setSocialMedia } from '../../../../store/slices/account';
 import selector from './selector';
 import { AlertLevel } from '../../../../enums/system';
 import { addAlert } from '../../../../store/slices/alerts';
+import { updateSocialMedia } from '../../../../utils/account';
+import { isArrayOfErrors } from '../../../../utils/typeguards';
 
 interface SubmitData {
     instagram: string;
@@ -40,33 +42,23 @@ export const SocialMediaLinks: React.FC = () => {
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
 
     const onSubmit = async (data: SubmitData) => {
+        if (!emailAddress) return;
+
         const { instagram, twitter, twitch, youtube, ebay } = data;
 
         setLoading(true);
 
-        try {
-            const response = await axios.post('/api/account/updateSocialMedia', {
-                emailAddress,
-                instagram,
-                twitter,
-                twitch,
-                youtube,
-                ebay,
+        const hasUpdatedSocialMedia = await updateSocialMedia(emailAddress, instagram, twitter, twitch, youtube, ebay);
+
+        if (isArrayOfErrors(hasUpdatedSocialMedia)) {
+            hasUpdatedSocialMedia.forEach((value) => {
+                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
             });
-
-            if (response) {
-                setSuccess('Social Media Updated!');
-                setLoading(false);
-            }
-        } catch (error) {
-            setLoading(false);
-
-            if (axios.isAxiosError(error)) {
-                console.log('🚀 ~ file: index.tsx ~ line 50 ~ onSubmit ~ error', error);
-            } else {
-                console.log('🚀 ~ file: index.tsx ~ line 50 ~ onSubmit ~ error', error);
-            }
+        } else {
+            dispatch(addAlert({ message: 'Social Media Updated!', level: AlertLevel.Success }));
         }
+
+        setLoading(false);
     };
 
     const fetchSocialMedia = useCallback(
