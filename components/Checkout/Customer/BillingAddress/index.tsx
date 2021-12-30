@@ -68,27 +68,25 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                         </label>
                     )}
                 </div>
-                {
-                    <div className="form-control">
+                <div className="form-control">
+                    <label className="label">
+                        <span className="label-text">Company</span>
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Company"
+                        {...register('billingCompany', {
+                            required: false,
+                            value: company,
+                        })}
+                        className={`input input-sm input-bordered${billingCompanyErr ? ' input-error' : ''}`}
+                    />
+                    {billingCompanyErr && (
                         <label className="label">
-                            <span className="label-text">Company</span>
+                            <span className="label-text-alt">{billingCompanyErr}</span>
                         </label>
-                        <input
-                            type="text"
-                            placeholder="Company"
-                            {...register('billingCompany', {
-                                required: false,
-                                value: company,
-                            })}
-                            className={`input input-sm input-bordered${billingCompanyErr ? ' input-error' : ''}`}
-                        />
-                        {billingCompanyErr && (
-                            <label className="label">
-                                <span className="label-text-alt">{billingCompanyErr}</span>
-                            </label>
-                        )}
-                    </div>
-                }
+                    )}
+                </div>
                 <div className="form-control">
                     <label className="label">
                         <span className="label-text">City</span>

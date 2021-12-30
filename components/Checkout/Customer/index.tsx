@@ -38,8 +38,11 @@ const Customer: React.FC = () => {
         cloneShippingAddressId,
     } = useSelector(selector);
     const dispatch = useDispatch();
-    const [billingAddressEntryChoice, setBillingAddressEntryChoice] = useState('existingBillingAddress');
-    const [shippingAddressEntryChoice, setShippingAddressEntryChoice] = useState('existingShippingAddress');
+    const defaultBilling = Boolean(session) ? 'existingBillingAddress' : 'newBillingAddress';
+    const defaultShipping = Boolean(session) ? 'existingShippingAddress' : 'newShippingAddress';
+    const [billingAddressEntryChoice, setBillingAddressEntryChoice] = useState(defaultBilling);
+    const [shippingAddressEntryChoice, setShippingAddressEntryChoice] = useState(defaultShipping);
+    console.log('🚀 ~ file: index.tsx ~ line 43 ~ shippingAddressEntryChoice', shippingAddressEntryChoice);
     const {
         register,
         handleSubmit,
@@ -194,7 +197,7 @@ const Customer: React.FC = () => {
     };
 
     const handleShippingSelect = (id: string) => {
-        setBillingAddressEntryChoice(id);
+        setShippingAddressEntryChoice(id);
 
         if (id === 'newShippingAddress') {
             dispatch(setCloneShippingAddressId(null));
@@ -215,7 +218,8 @@ const Customer: React.FC = () => {
                     <div className="flex">
                         <div className="flex flex-col w-full">
                             <PersonalDetails register={register} errors={errors} />
-                            <h3 className="text-2xl px-5 mt-4 font-semibold">Billing Details</h3>
+                            <div className="divider lightDivider"></div>
+                            <h3 className="text-2xl px-5 font-semibold">Billing Details</h3>
                             {session && (
                                 <SelectionWrapper
                                     id="existingBillingAddress"
@@ -239,15 +243,17 @@ const Customer: React.FC = () => {
                                 <BillingAddress register={register} errors={errors} />
                             </SelectionWrapper>
                             <ShipToBilling />
+                            <div className="divider lightDivider"></div>
                             {!isShippingSameAsBilling && (
                                 <React.Fragment>
+                                    <h3 className="text-2xl px-5 font-semibold">Shipping Details</h3>
                                     {session && (
                                         <SelectionWrapper
                                             id="existingShippingAddress"
                                             title="Choose an existing shipping address"
                                             name="shippingAddress"
                                             isChecked={shippingAddressEntryChoice === 'existingShippingAddress'}
-                                            defaultChecked={Boolean(session)}
+                                            defaultChecked={shippingAddressEntryChoice === 'existingShippingAddress'}
                                             onSelect={handleShippingSelect}
                                         >
                                             <ExistingAddress isShipping={true} />
@@ -258,7 +264,7 @@ const Customer: React.FC = () => {
                                         title="Add a new shipping address"
                                         name="shippingAddress"
                                         isChecked={shippingAddressEntryChoice === 'newShippingAddress'}
-                                        defaultChecked={!Boolean(session)}
+                                        defaultChecked={shippingAddressEntryChoice === 'newShippingAddress'}
                                         onSelect={handleShippingSelect}
                                     >
                                         <ShippingAddress register={register} errors={errors} />
