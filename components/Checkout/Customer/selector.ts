@@ -9,6 +9,8 @@ const selector = createSelector([selectCheckoutData, selectCartData, selectGloba
     accessToken: global.accessToken,
     checkoutLoading: global.checkoutLoading,
     isShippingSameAsBilling: checkout.isShippingSameAsBilling,
+    cloneBillingAddressId: checkout.cloneBillingAddressId,
+    cloneShippingAddressId: checkout.cloneShippingAddressId,
 }));
 
 export default selector;

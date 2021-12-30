@@ -5,7 +5,8 @@ import { selectGlobalData, selectCartData, selectCheckoutData } from '../../../.
 const selector = createSelector([selectGlobalData, selectCartData, selectCheckoutData], (global, cart, checkout) => ({
     accessToken: global.accessToken,
     orderId: cart.order ? cart.order.id : null,
-    cloneAddressId: checkout.cloneAddressId,
+    cloneBillingAddressId: checkout.cloneBillingAddressId,
+    cloneShippingAddressId: checkout.cloneShippingAddressId,
 }));
 
 export default selector;

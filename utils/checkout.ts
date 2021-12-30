@@ -1,5 +1,5 @@
 import { Counties } from '../enums/checkout';
-import { CustomerDetails, ShipmentsWithLineItems } from '../store/types/state';
+import { CustomerAddress, CustomerDetails, ShipmentsWithLineItems } from '../store/types/state';
 import { DeliveryLeadTimes, MergedShipmentMethods, Shipments, ShippingMethods } from '../types/checkout';
 import { authClient } from './auth';
 import { ErrorResponse } from '../types/api';
@@ -213,23 +213,16 @@ export function fieldPatternMsgs(field: string): string {
 export async function updateAddress(
     accessToken: string,
     id: string,
-    personalDetails: CustomerDetails,
+    details: CustomerDetails,
+    address: Partial<CustomerAddress>,
     isShipping: boolean
 ): Promise<boolean | ErrorResponse[]> {
     try {
         const data = {
             type: 'addresses',
             attributes: {
-                first_name: personalDetails.firstName,
-                last_name: personalDetails.lastName,
-                company: personalDetails.company,
-                line_1: isShipping ? personalDetails.shippingAddressLineOne : personalDetails.addressLineOne,
-                line_2: isShipping ? personalDetails.shippingAddressLineTwo : personalDetails.addressLineTwo,
-                city: isShipping ? personalDetails.shippingCity : personalDetails.city,
-                zip_code: isShipping ? personalDetails.shippingPostcode : personalDetails.postcode,
-                state_code: isShipping ? personalDetails.shippingCounty : personalDetails.county,
-                country_code: 'GB',
-                phone: personalDetails.phone,
+                ...details,
+                ...address,
             },
         };
         const cl = authClient(accessToken);
@@ -255,7 +248,7 @@ export async function updateAddress(
                 type: 'orders',
                 id,
                 attributes: {
-                    customer_email: personalDetails.email,
+                    customer_email: details.email,
                 },
                 relationships,
             },

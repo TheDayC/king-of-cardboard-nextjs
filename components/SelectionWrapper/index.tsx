@@ -5,6 +5,7 @@ interface SelectionWrapperProps {
     title: string;
     name: string;
     isChecked: boolean;
+    defaultChecked: boolean;
     onSelect(id: string): void;
 }
 
@@ -14,28 +15,31 @@ export const SelectionWrapper: React.FC<SelectionWrapperProps> = ({
     title,
     name,
     isChecked,
+    defaultChecked,
     onSelect,
 }) => {
-    const wrapperClass = isChecked ? 'block' : 'hidden';
-
     const handleSelect = () => {
         onSelect(id);
     };
 
+    const radioPropsBase = {
+        type: 'radio',
+        className: 'radio',
+        value: id,
+        name,
+    };
+
     return (
-        <div className="flex flex-col p-4">
-            <label className="label cursor-pointer mb-2">
+        <div className="flex flex-col px-4">
+            <label className="label cursor-pointer" onClick={handleSelect}>
                 <span className="label-text text-lg">{title}</span>
-                <input
-                    type="radio"
-                    className="radio"
-                    value={id}
-                    checked={isChecked}
-                    onChange={handleSelect}
-                    name={name}
-                />
+                {defaultChecked ? (
+                    <input {...radioPropsBase} defaultChecked={defaultChecked} />
+                ) : (
+                    <input {...radioPropsBase} />
+                )}
             </label>
-            <div className={`${wrapperClass}`}>{children}</div>
+            {isChecked && <div className="mb-4">{children}</div>}
         </div>
     );
 };

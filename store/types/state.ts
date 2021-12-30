@@ -69,26 +69,48 @@ export interface Checkout {
     currentStep: number;
     shipmentsWithMethods: ShipmentsWithMethods[] | null;
     customerDetails: CustomerDetails;
-    cloneAddressId: string | null;
+    billingAddress: CustomerAddress;
+    shippingAddress: CustomerAddress;
+    cloneBillingAddressId: string | null;
+    cloneShippingAddressId: string | null;
     isShippingSameAsBilling: boolean;
 }
 
 export interface CustomerDetails {
     email: string | null;
-    firstName: string | null;
-    lastName: string | null;
-    company: string | null;
-    addressLineOne: string | null;
-    addressLineTwo: string | null;
-    city: string | null;
-    postcode: string | null;
-    county: Counties | null;
+    first_name: string | null;
+    last_name: string | null;
     phone: string | null;
-    shippingAddressLineOne: string | null;
-    shippingAddressLineTwo: string | null;
-    shippingCity: string | null;
-    shippingPostcode: string | null;
-    shippingCounty: Counties | null;
+}
+
+export interface CustomerAddress {
+    id: string | null;
+    billing_info: string | null;
+    business: boolean;
+    city: string | null;
+    company: string | null;
+    country_code: string | null;
+    email: string | null;
+    first_name: string | null;
+    full_address: string | null;
+    full_name: string | null;
+    is_geocoded: boolean;
+    is_localized: boolean;
+    last_name: string | null;
+    lat: number | null;
+    line_1: string | null;
+    line_2: string | null;
+    lng: number | null;
+    map_url: string | null;
+    name: string | null;
+    notes: string | null;
+    phone: string | null;
+    provider_name: string | null;
+    reference: string | null;
+    reference_origin: string | null;
+    state_code: string | null;
+    static_map_url: string | null;
+    zip_code: string | null;
 }
 
 export interface ShipmentsWithMethods {

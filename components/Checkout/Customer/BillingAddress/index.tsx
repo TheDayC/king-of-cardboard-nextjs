@@ -13,18 +13,25 @@ interface BillingAddressProps {
 }
 
 const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => {
-    const { customerDetails } = useSelector(selector);
-    const { addressLineOne, addressLineTwo, city, postcode, county } = customerDetails;
+    const { billingAddress } = useSelector(selector);
+    const {
+        line_1: addressLineOne,
+        line_2: addressLineTwo,
+        city,
+        zip_code: postcode,
+        state_code: county,
+        company,
+    } = billingAddress;
 
     const billingLineOneErr = safelyParse(errors, 'billingAddressLineOne.message', parseAsString, null);
     const billingLineTwoErr = safelyParse(errors, 'billingAddressLineTwo.message', parseAsString, null);
     const billingCityErr = safelyParse(errors, 'billingCity.message', parseAsString, null);
     const billingPostcodeErr = safelyParse(errors, 'billingPostcode.message', parseAsString, null);
     const billingCountyErr = safelyParse(errors, 'billingCounty.message', parseAsString, null);
+    const billingCompanyErr = safelyParse(errors, 'billingCompany.message', parseAsString, null);
 
     return (
         <div className="p-4 card">
-            <h3 className="card-title">Billing Details</h3>
             <div className="grid grid-cols-1 gap-2">
                 <div className="form-control">
                     <label className="label">
@@ -61,26 +68,27 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                         </label>
                     )}
                 </div>
-                {/* <div className="form-control">
-                    <label className="label">
-                        <span className="label-text">Company</span>
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Company"
-                        {...register('company', {
-                            required: false,
-                            value: company,
-                        })}
-                        className={`input input-sm input-bordered${companyErr ? ' input-error' : ''
-                            }`}
-                    />
-                    {companyErr && (
+                {
+                    <div className="form-control">
                         <label className="label">
-                            <span className="label-text-alt">{companyErr}</span>
+                            <span className="label-text">Company</span>
                         </label>
-                    )}
-                </div> */}
+                        <input
+                            type="text"
+                            placeholder="Company"
+                            {...register('billingCompany', {
+                                required: false,
+                                value: company,
+                            })}
+                            className={`input input-sm input-bordered${billingCompanyErr ? ' input-error' : ''}`}
+                        />
+                        {billingCompanyErr && (
+                            <label className="label">
+                                <span className="label-text-alt">{billingCompanyErr}</span>
+                            </label>
+                        )}
+                    </div>
+                }
                 <div className="form-control">
                     <label className="label">
                         <span className="label-text">City</span>

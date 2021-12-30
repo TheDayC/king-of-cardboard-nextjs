@@ -5,11 +5,16 @@ import { BsCheck2Circle } from 'react-icons/bs';
 
 import { AlertLevel } from '../../../../../enums/system';
 import { addAlert } from '../../../../../store/slices/alerts';
-import { setCloneAddressId } from '../../../../../store/slices/checkout';
+import {
+    setShippingAddress,
+    setBillingAddress,
+    setCloneBillingAddressId,
+    setCloneShippingAddressId,
+} from '../../../../../store/slices/checkout';
 import { CommerceLayerResponse } from '../../../../../types/api';
 import { getAddress } from '../../../../../utils/account';
 import { updateAddressClone } from '../../../../../utils/checkout';
-import { parseAsString, safelyParse } from '../../../../../utils/parsers';
+import { parseAsString, safelyParse, parseAddress } from '../../../../../utils/parsers';
 import { isArrayOfErrors } from '../../../../../utils/typeguards';
 import selector from './selector';
 import { setCheckoutLoading } from '../../../../../store/slices/global';
@@ -17,10 +22,11 @@ import { setCheckoutLoading } from '../../../../../store/slices/global';
 interface AddressProps {
     id: string;
     name: string;
+    isShipping: boolean;
 }
 
-export const Address: React.FC<AddressProps> = ({ id, name }) => {
-    const { accessToken, orderId, cloneAddressId } = useSelector(selector);
+export const Address: React.FC<AddressProps> = ({ id, name, isShipping }) => {
+    const { accessToken, orderId, cloneBillingAddressId, cloneShippingAddressId } = useSelector(selector);
     const [address, setAddress] = useState<CommerceLayerResponse | null>(null);
     const dispatch = useDispatch();
     const [shouldFetchAddress, setShouldFetchAddress] = useState(true);
@@ -29,7 +35,7 @@ export const Address: React.FC<AddressProps> = ({ id, name }) => {
     const city = safelyParse(address, 'attributes.city', parseAsString, '');
     const postcode = safelyParse(address, 'attributes.zip_code', parseAsString, '');
     const county = safelyParse(address, 'attributes.state_code', parseAsString, '');
-    const isSelected = Boolean(cloneAddressId === id);
+    const isSelected = isShipping ? Boolean(cloneShippingAddressId === id) : Boolean(cloneBillingAddressId === id);
 
     const handleClick = async () => {
         if (orderId && accessToken) {
@@ -42,7 +48,19 @@ export const Address: React.FC<AddressProps> = ({ id, name }) => {
                 });
             } else {
                 if (res) {
-                    dispatch(setCloneAddressId(id));
+                    if (isShipping) {
+                        dispatch(setCloneShippingAddressId(id));
+                    } else {
+                        dispatch(setCloneBillingAddressId(id));
+                    }
+
+                    const addressPayload = parseAddress(address);
+
+                    if (isShipping) {
+                        dispatch(setShippingAddress(addressPayload));
+                    } else {
+                        dispatch(setBillingAddress(addressPayload));
+                    }
                 }
             }
             dispatch(setCheckoutLoading(false));

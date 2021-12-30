@@ -8,25 +8,19 @@ const checkoutSlice = createSlice({
     initialState: checkoutInitialState,
     reducers: {
         setCurrentStep(state, action) {
-            return {
-                ...state,
-                currentStep: action.payload,
-            };
+            state.currentStep = action.payload;
         },
         setCustomerDetails(state, action) {
-            return {
-                ...state,
-                customerDetails: {
-                    ...state.customerDetails,
-                    ...action.payload,
-                },
-            };
+            state.customerDetails = action.payload;
+        },
+        setBillingAddress(state, action) {
+            state.billingAddress = action.payload;
+        },
+        setShippingAddress(state, action) {
+            state.shippingAddress = action.payload;
         },
         setShipmentsWithMethods(state, action) {
-            return {
-                ...state,
-                shipmentsWithMethods: action.payload,
-            };
+            state.shipmentsWithMethods = action.payload;
         },
         addShipmentWithMethod(state, action) {
             const { shipmentId, methodId } = action.payload;
@@ -42,8 +36,11 @@ const checkoutSlice = createSlice({
                 state.shipmentsWithMethods = [{ shipmentId, methodId }];
             }
         },
-        setCloneAddressId(state, action) {
-            state.cloneAddressId = action.payload;
+        setCloneBillingAddressId(state, action) {
+            state.cloneBillingAddressId = action.payload;
+        },
+        setCloneShippingAddressId(state, action) {
+            state.cloneShippingAddressId = action.payload;
         },
         setSameAsBilling(state, action) {
             state.isShippingSameAsBilling = action.payload;
@@ -63,10 +60,13 @@ const checkoutSlice = createSlice({
 export const {
     setCurrentStep,
     setCustomerDetails,
+    setBillingAddress,
+    setShippingAddress,
     setShipmentsWithMethods,
     addShipmentWithMethod,
     resetCheckoutDetails,
-    setCloneAddressId,
+    setCloneBillingAddressId,
+    setCloneShippingAddressId,
     setSameAsBilling,
 } = checkoutSlice.actions;
 

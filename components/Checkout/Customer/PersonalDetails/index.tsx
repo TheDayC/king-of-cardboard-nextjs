@@ -24,7 +24,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
 
     return (
         <div className="card p-2 md:p-4">
-            <h3 className="card-title">Personal Details</h3>
+            <h3 className="card-title text-2xl">Personal Details</h3>
             <div className="grid grid-cols-1 gap-2">
                 <div className="form-control">
                     <label className="label">

@@ -15,7 +15,11 @@ import Loading from '../../../Loading';
 
 const PER_PAGE = 6;
 
-const ExistingAddress: React.FC = () => {
+interface ExistingAddressProps {
+    isShipping: boolean;
+}
+
+const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping }) => {
     const { data: session } = useSession();
     const dispatch = useDispatch();
     const { accessToken, checkoutLoading } = useSelector(selector);
@@ -54,7 +58,7 @@ const ExistingAddress: React.FC = () => {
                         const id = safelyParse(address, 'relationships.address.data.id', parseAsString, '');
                         const name = safelyParse(address, 'attributes.name', parseAsString, '');
 
-                        return <Address id={id} name={name} />;
+                        return <Address id={id} name={name} isShipping={isShipping} key={`address-${id}`} />;
                     })}
             </div>
         </div>
