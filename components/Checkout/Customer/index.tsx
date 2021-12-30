@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { useSession } from 'next-auth/react';
@@ -38,15 +38,13 @@ const Customer: React.FC = () => {
         cloneShippingAddressId,
     } = useSelector(selector);
     const dispatch = useDispatch();
-    const defaultBilling = Boolean(session) ? 'existingBillingAddress' : 'newBillingAddress';
-    const defaultShipping = Boolean(session) ? 'existingShippingAddress' : 'newShippingAddress';
-    const [billingAddressEntryChoice, setBillingAddressEntryChoice] = useState(defaultBilling);
-    const [shippingAddressEntryChoice, setShippingAddressEntryChoice] = useState(defaultShipping);
-    console.log('🚀 ~ file: index.tsx ~ line 43 ~ shippingAddressEntryChoice', shippingAddressEntryChoice);
+    const [billingAddressEntryChoice, setBillingAddressEntryChoice] = useState('existingBillingAddress');
+    const [shippingAddressEntryChoice, setShippingAddressEntryChoice] = useState('existingShippingAddress');
     const {
         register,
         handleSubmit,
         formState: { errors },
+        setValue,
     } = useForm();
     const isCurrentStep = currentStep === 0;
     const hasErrors = Object.keys(errors).length > 0;
@@ -204,6 +202,26 @@ const Customer: React.FC = () => {
         }
     };
 
+    // Session doesn't load in immediately so we need to update the defaults on change.
+    useEffect(() => {
+        const hasSession = Boolean(session);
+
+        if (hasSession) {
+            setBillingAddressEntryChoice('existingBillingAddress');
+            setShippingAddressEntryChoice('existingShippingAddress');
+        } else {
+            setBillingAddressEntryChoice('newBillingAddress');
+            setShippingAddressEntryChoice('newShippingAddress');
+        }
+    }, [session]);
+
+    // If we click the sameAs checkbox I want to reset the shipping address.
+    useEffect(() => {
+        if (isShippingSameAsBilling) {
+            setShippingAddressEntryChoice('existingShippingAddress');
+        }
+    }, [isShippingSameAsBilling]);
+
     return (
         <div
             className={`collapse collapse-plus card bordered mb-4 rounded-md lg:mb-6 collapse-${
@@ -217,7 +235,7 @@ const Customer: React.FC = () => {
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex">
                         <div className="flex flex-col w-full">
-                            <PersonalDetails register={register} errors={errors} />
+                            <PersonalDetails register={register} errors={errors} setValue={setValue} />
                             <div className="divider lightDivider"></div>
                             <h3 className="text-2xl px-5 font-semibold">Billing Details</h3>
                             {session && (
@@ -253,7 +271,7 @@ const Customer: React.FC = () => {
                                             title="Choose an existing shipping address"
                                             name="shippingAddress"
                                             isChecked={shippingAddressEntryChoice === 'existingShippingAddress'}
-                                            defaultChecked={shippingAddressEntryChoice === 'existingShippingAddress'}
+                                            defaultChecked={Boolean(session)}
                                             onSelect={handleShippingSelect}
                                         >
                                             <ExistingAddress isShipping={true} />
@@ -264,7 +282,7 @@ const Customer: React.FC = () => {
                                         title="Add a new shipping address"
                                         name="shippingAddress"
                                         isChecked={shippingAddressEntryChoice === 'newShippingAddress'}
-                                        defaultChecked={shippingAddressEntryChoice === 'newShippingAddress'}
+                                        defaultChecked={!Boolean(session)}
                                         onSelect={handleShippingSelect}
                                     >
                                         <ShippingAddress register={register} errors={errors} />

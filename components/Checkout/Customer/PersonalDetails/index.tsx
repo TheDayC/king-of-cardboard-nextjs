@@ -1,5 +1,5 @@
-import React from 'react';
-import { UseFormRegister, FieldValues } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { UseFormRegister, FieldValues, UseFormSetValue } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
 import { FormErrors } from '../../../../types/checkout';
@@ -10,17 +10,41 @@ import selector from './selector';
 interface PersonalDetailsProps {
     register: UseFormRegister<FieldValues>;
     errors: FormErrors;
+    setValue: UseFormSetValue<FieldValues>;
 }
 
-const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) => {
+const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, setValue }) => {
     const { customerDetails } = useSelector(selector);
-    const { firstName, lastName, company, email, phone } = customerDetails;
+    const { first_name: firstName, last_name: lastName, email, phone } = customerDetails;
 
     const firstNameErr = safelyParse(errors, 'firstName.message', parseAsString, null);
     const lastNameErr = safelyParse(errors, 'lastName.message', parseAsString, null);
-    const companyErr = safelyParse(errors, 'company.message', parseAsString, null);
     const emailErr = safelyParse(errors, 'email.message', parseAsString, null);
     const mobileErr = safelyParse(errors, 'mobile.message', parseAsString, null);
+
+    useEffect(() => {
+        if (email) {
+            setValue('email', email);
+        }
+    }, [email]);
+
+    useEffect(() => {
+        if (firstName) {
+            setValue('firstName', firstName);
+        }
+    }, [firstName]);
+
+    useEffect(() => {
+        if (lastName) {
+            setValue('lastName', lastName);
+        }
+    }, [lastName]);
+
+    useEffect(() => {
+        if (phone) {
+            setValue('phone', phone);
+        }
+    }, [phone]);
 
     return (
         <div className="card p-2 md:p-4">
@@ -39,7 +63,6 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                                 value: /^[a-z ,.'-]+$/i,
                                 message: fieldPatternMsgs('firstName'),
                             },
-                            value: firstName,
                         })}
                         className={`input input-sm input-bordered${firstNameErr ? ' input-error' : ''}`}
                     />
@@ -62,7 +85,6 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                                 value: /^[a-z ,.'-]+$/i,
                                 message: fieldPatternMsgs('lastName'),
                             },
-                            value: lastName,
                         })}
                         className={`input input-sm input-bordered${lastNameErr ? ' input-error' : ''}`}
                     />
@@ -85,7 +107,6 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                                 value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                                 message: fieldPatternMsgs('email'),
                             },
-                            value: email,
                         })}
                         className={`input input-sm input-bordered${emailErr ? ' input-error' : ''}`}
                     />
@@ -108,7 +129,6 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                                 value: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g,
                                 message: fieldPatternMsgs('mobile'),
                             },
-                            value: phone,
                         })}
                         className={`input input-sm input-bordered${mobileErr ? ' input-error' : ''}`}
                     />
