@@ -16,7 +16,7 @@ const ShipToBilling: React.FC = () => {
         <div className="p-4 card">
             <div className="form-control">
                 <label className="cursor-pointer label">
-                    <span className="label-text">Ship to your billing address?</span>
+                    <span className="label-text text-lg">Ship to your billing address?</span>
                     <input
                         type="checkbox"
                         className="checkbox"
