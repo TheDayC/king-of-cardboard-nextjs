@@ -321,7 +321,7 @@ export async function updateSameAsBilling(
 export async function getShipments(accessToken: string, orderId: string): Promise<Shipments | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
-        const include = 'available_shipping_methods,stock_location';
+        const include = 'available_shipping_methods';
         const res = await cl.get(`/api/orders/${orderId}/shipments?include=${include}`);
         const shipments = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null);
         const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null);
@@ -332,34 +332,41 @@ export async function getShipments(accessToken: string, orderId: string): Promis
 
         return {
             shipments: shipments.map((shipment) => shipment.id),
-            shippingMethods: included.map((method) => {
-                return {
-                    id: safelyParse(method, 'id', parseAsString, ''),
-                    name: safelyParse(method, 'attributes.name', parseAsString, ''),
-                    price_amount_cents: safelyParse(method, 'attributes.price_amount_cents', parseAsNumber, 0),
-                    price_amount_float: safelyParse(method, 'attributes.price_amount_float', parseAsNumber, 0),
-                    price_amount_for_shipment_cents: safelyParse(
-                        method,
-                        'attributes.price_amount_for_shipment_cents',
-                        parseAsNumber,
-                        0
-                    ),
-                    price_amount_for_shipment_float: safelyParse(
-                        method,
-                        'attributes.price_amount_for_shipment_float',
-                        parseAsNumber,
-                        0
-                    ),
-                    currency_code: safelyParse(method, 'attributes.currency_code', parseAsString, ''),
-                    formatted_price_amount: safelyParse(method, 'attributes.formatted_price_amount', parseAsString, ''),
-                    formatted_price_amount_for_shipment: safelyParse(
-                        method,
-                        'attributes.formatted_price_amount_for_shipment',
-                        parseAsString,
-                        ''
-                    ),
-                };
-            }),
+            shippingMethods: included
+                .filter((i) => i.type === 'shipping_methods')
+                .map((method) => {
+                    return {
+                        id: safelyParse(method, 'id', parseAsString, ''),
+                        name: safelyParse(method, 'attributes.name', parseAsString, ''),
+                        price_amount_cents: safelyParse(method, 'attributes.price_amount_cents', parseAsNumber, 0),
+                        price_amount_float: safelyParse(method, 'attributes.price_amount_float', parseAsNumber, 0),
+                        price_amount_for_shipment_cents: safelyParse(
+                            method,
+                            'attributes.price_amount_for_shipment_cents',
+                            parseAsNumber,
+                            0
+                        ),
+                        price_amount_for_shipment_float: safelyParse(
+                            method,
+                            'attributes.price_amount_for_shipment_float',
+                            parseAsNumber,
+                            0
+                        ),
+                        currency_code: safelyParse(method, 'attributes.currency_code', parseAsString, ''),
+                        formatted_price_amount: safelyParse(
+                            method,
+                            'attributes.formatted_price_amount',
+                            parseAsString,
+                            ''
+                        ),
+                        formatted_price_amount_for_shipment: safelyParse(
+                            method,
+                            'attributes.formatted_price_amount_for_shipment',
+                            parseAsString,
+                            ''
+                        ),
+                    };
+                }),
         };
     } catch (error: unknown) {
         return errorHandler(error, 'Failed to fetch shipments.');
@@ -369,7 +376,7 @@ export async function getShipments(accessToken: string, orderId: string): Promis
 export async function getDeliveryLeadTimes(accessToken: string): Promise<DeliveryLeadTimes[] | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
-        const res = await cl.get('/api/delivery_lead_times?include=shipping_method,stock_location');
+        const res = await cl.get('/api/delivery_lead_times?include=shipping_method');
         const deliveryLeadTimes = safelyParse(res, 'data.data', parseAsUnknown, null);
 
         if (deliveryLeadTimes && isArray(deliveryLeadTimes)) {
