@@ -332,34 +332,41 @@ export async function getShipments(accessToken: string, orderId: string): Promis
 
         return {
             shipments: shipments.map((shipment) => shipment.id),
-            shippingMethods: included.map((method) => {
-                return {
-                    id: safelyParse(method, 'id', parseAsString, ''),
-                    name: safelyParse(method, 'attributes.name', parseAsString, ''),
-                    price_amount_cents: safelyParse(method, 'attributes.price_amount_cents', parseAsNumber, 0),
-                    price_amount_float: safelyParse(method, 'attributes.price_amount_float', parseAsNumber, 0),
-                    price_amount_for_shipment_cents: safelyParse(
-                        method,
-                        'attributes.price_amount_for_shipment_cents',
-                        parseAsNumber,
-                        0
-                    ),
-                    price_amount_for_shipment_float: safelyParse(
-                        method,
-                        'attributes.price_amount_for_shipment_float',
-                        parseAsNumber,
-                        0
-                    ),
-                    currency_code: safelyParse(method, 'attributes.currency_code', parseAsString, ''),
-                    formatted_price_amount: safelyParse(method, 'attributes.formatted_price_amount', parseAsString, ''),
-                    formatted_price_amount_for_shipment: safelyParse(
-                        method,
-                        'attributes.formatted_price_amount_for_shipment',
-                        parseAsString,
-                        ''
-                    ),
-                };
-            }),
+            shippingMethods: included
+                .filter((i) => i.type === 'shipping_methods')
+                .map((method) => {
+                    return {
+                        id: safelyParse(method, 'id', parseAsString, ''),
+                        name: safelyParse(method, 'attributes.name', parseAsString, ''),
+                        price_amount_cents: safelyParse(method, 'attributes.price_amount_cents', parseAsNumber, 0),
+                        price_amount_float: safelyParse(method, 'attributes.price_amount_float', parseAsNumber, 0),
+                        price_amount_for_shipment_cents: safelyParse(
+                            method,
+                            'attributes.price_amount_for_shipment_cents',
+                            parseAsNumber,
+                            0
+                        ),
+                        price_amount_for_shipment_float: safelyParse(
+                            method,
+                            'attributes.price_amount_for_shipment_float',
+                            parseAsNumber,
+                            0
+                        ),
+                        currency_code: safelyParse(method, 'attributes.currency_code', parseAsString, ''),
+                        formatted_price_amount: safelyParse(
+                            method,
+                            'attributes.formatted_price_amount',
+                            parseAsString,
+                            ''
+                        ),
+                        formatted_price_amount_for_shipment: safelyParse(
+                            method,
+                            'attributes.formatted_price_amount_for_shipment',
+                            parseAsString,
+                            ''
+                        ),
+                    };
+                }),
         };
     } catch (error: unknown) {
         return errorHandler(error, 'Failed to fetch shipments.');
