@@ -11,7 +11,7 @@ import { setCurrentStep } from '../../../store/slices/checkout';
 import Method from './Method';
 import { createPaymentSource } from '../../../utils/commerce';
 import { confirmOrder, refreshPayment, sendOrderConfirmation } from '../../../utils/payment';
-import { CartItem, CustomerDetails } from '../../../store/types/state';
+import { CartItem, CustomerAddress, CustomerDetails } from '../../../store/types/state';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import { Order } from '../../../types/cart';
@@ -21,7 +21,7 @@ import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { Session } from 'next-auth';
 import { setShouldFetchRewards } from '../../../store/slices/account';
 import { addAlert } from '../../../store/slices/alerts';
-import { isArray, isArrayOfErrors } from '../../../utils/typeguards';
+import { isArrayOfErrors } from '../../../utils/typeguards';
 import { AlertLevel } from '../../../enums/system';
 
 export const Payment: React.FC = () => {
@@ -39,6 +39,8 @@ export const Payment: React.FC = () => {
         order,
         items,
         confirmationDetails,
+        billingAddress,
+        shippingAddress,
     } = useSelector(selector);
     const {
         register,
@@ -46,7 +48,6 @@ export const Payment: React.FC = () => {
         formState: { errors },
     } = useForm();
     const { data: session } = useSession();
-    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
     const isCurrentStep = currentStep === 2;
 
     const handleEdit = () => {
@@ -65,7 +66,9 @@ export const Payment: React.FC = () => {
             order: Order,
             items: CartItem[],
             customerDetails: CustomerDetails,
-            currentSession: Session | null
+            currentSession: Session | null,
+            billingAddress: CustomerAddress,
+            shippingAddress: CustomerAddress
         ) => {
             if (!stripe || checkoutLoading) {
                 return;
@@ -89,16 +92,16 @@ export const Payment: React.FC = () => {
                         payment_method: {
                             card,
                             billing_details: {
-                                name: `${customerDetails.firstName || ''} ${customerDetails.lastName || ''}`,
+                                name: `${customerDetails.first_name || ''} ${customerDetails.last_name || ''}`,
                                 email: customerDetails.email || '',
                                 phone: customerDetails.phone || '',
                                 address: {
-                                    city: customerDetails.city || '',
-                                    country: 'GB',
-                                    line1: customerDetails.addressLineOne || '',
-                                    line2: customerDetails.addressLineTwo || '',
-                                    postal_code: customerDetails.postcode || '',
-                                    state: customerDetails.county || '',
+                                    city: billingAddress.city || '',
+                                    country: billingAddress.country_code || 'GB',
+                                    line1: billingAddress.line_1 || '',
+                                    line2: billingAddress.line_2 || '',
+                                    postal_code: billingAddress.zip_code || '',
+                                    state: billingAddress.state_code || '',
                                 },
                             },
                         },
@@ -155,7 +158,15 @@ export const Payment: React.FC = () => {
                                     // Set the confirmation data in the store.
                                     if (hasBeenRefreshed && hasBeenAuthorized && hasBeenApproved) {
                                         // Set the confirmation data in the store.
-                                        dispatch(setConfirmationData({ order, items, customerDetails }));
+                                        dispatch(
+                                            setConfirmationData({
+                                                order,
+                                                items,
+                                                customerDetails,
+                                                billingAddress,
+                                                shippingAddress,
+                                            })
+                                        );
 
                                         // Distribute the confirmation email so the customer has a receipt.
                                         const orderConfirmationRes = await sendOrderConfirmation(
@@ -261,7 +272,9 @@ export const Payment: React.FC = () => {
                         order,
                         items,
                         customerDetails,
-                        session
+                        session,
+                        billingAddress,
+                        shippingAddress
                     );
                 }
             }
@@ -277,6 +290,8 @@ export const Payment: React.FC = () => {
             items,
             customerDetails,
             session,
+            billingAddress,
+            shippingAddress,
         ]
     );
 

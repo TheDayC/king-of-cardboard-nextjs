@@ -20,6 +20,8 @@ const selector = createSelector(
         order: cart.order,
         items: cart.items,
         confirmationDetails: confirmation,
+        billingAddress: checkout.billingAddress,
+        shippingAddress: checkout.shippingAddress,
     })
 );
 

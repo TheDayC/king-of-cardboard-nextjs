@@ -4,6 +4,7 @@ import { Counties } from '../../enums/checkout';
 import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
 import { Order } from '../../types/cart';
+import { BillingAddress, ShippingAddress } from '../../types/checkout';
 import { SkuItem } from '../../types/commerce';
 import { ContentfulPage } from '../../types/pages';
 import { SocialMedia } from '../../types/profile';
@@ -126,6 +127,8 @@ export interface Confirmation {
     order: Order | null;
     items: CartItem[];
     customerDetails: CustomerDetails;
+    billingAddress: CustomerAddress;
+    shippingAddress: CustomerAddress;
 }
 
 export interface PagesState {
