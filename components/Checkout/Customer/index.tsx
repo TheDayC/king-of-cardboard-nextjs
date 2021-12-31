@@ -1,113 +1,183 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
+import { useSession } from 'next-auth/react';
 
 import selector from './selector';
-import { fieldPatternMsgs, updateAddress } from '../../../utils/checkout';
-import { PersonalDetails } from '../../../types/checkout';
-import { setAllowShippingAddress, setCurrentStep, setCustomerDetails } from '../../../store/slices/checkout';
-import { parseAsBoolean, parseAsString, parseCustomerDetails, safelyParse } from '../../../utils/parsers';
+import { updateAddress, updateAddressClone, updateSameAsBilling } from '../../../utils/checkout';
+import {
+    setBillingAddress,
+    setCloneBillingAddressId,
+    setCloneShippingAddressId,
+    setCurrentStep,
+    setCustomerDetails,
+    setShippingAddress,
+} from '../../../store/slices/checkout';
+import { parseAddress, parseBillingAddress, parseCustomerDetails, parseShippingAddress } from '../../../utils/parsers';
 import { fetchOrder } from '../../../store/slices/cart';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import { isArrayOfErrors } from '../../../utils/typeguards';
 import { addAlert } from '../../../store/slices/alerts';
 import { AlertLevel } from '../../../enums/system';
+import BillingAddress from './BillingAddress';
+import ShippingAddress from './ShippingAddress';
+import ShipToBilling from './ShipToBilling';
+import PersonalDetails from './PersonalDetails';
+import SelectionWrapper from '../../SelectionWrapper';
+import ExistingAddress from './ExistingAddress';
 
 const Customer: React.FC = () => {
-    const { currentStep, customerDetails, order, accessToken, checkoutLoading } = useSelector(selector);
+    const { data: session } = useSession();
     const {
-        firstName,
-        lastName,
-        company,
-        email,
-        phone,
-        addressLineOne,
-        addressLineTwo,
-        city,
-        postcode,
-        county,
-        allowShippingAddress,
-        shippingAddressLineOne,
-        shippingAddressLineTwo,
-        shippingCity,
-        shippingPostcode,
-        shippingCounty,
-    } = customerDetails;
+        currentStep,
+        order,
+        accessToken,
+        checkoutLoading,
+        isShippingSameAsBilling,
+        cloneBillingAddressId,
+        cloneShippingAddressId,
+    } = useSelector(selector);
     const dispatch = useDispatch();
-    const [allowShippingAddressInternal, setAllowShippingAddressInternal] = useState(allowShippingAddress);
+    const [billingAddressEntryChoice, setBillingAddressEntryChoice] = useState('existingBillingAddress');
+    const [shippingAddressEntryChoice, setShippingAddressEntryChoice] = useState('existingShippingAddress');
     const {
         register,
         handleSubmit,
         formState: { errors },
+        setValue,
     } = useForm();
     const isCurrentStep = currentStep === 0;
     const hasErrors = Object.keys(errors).length > 0;
 
-    const onSubmit = async (data: PersonalDetails) => {
-        if (hasErrors || checkoutLoading) {
+    const onSubmit = async (data: unknown) => {
+        if (hasErrors || checkoutLoading || !order || !accessToken) {
             return;
         }
+
+        let shouldSubmit = true;
 
         // Set loading in current form.
         dispatch(setCheckoutLoading(true));
 
-        // Fetch allowShipping and also dispatch current state on submission.
-        const allowShipping = safelyParse(data, 'allowShippingAddress', parseAsBoolean, false);
-        dispatch(setAllowShippingAddress(allowShipping));
-
-        // There are quite a few customer details to parse so ship it off to a helper then store.
-        const customerDetails = parseCustomerDetails(data, allowShipping);
+        // Parse the customer details like name, email, phone etc
+        const customerDetails = parseCustomerDetails(data);
         dispatch(setCustomerDetails(customerDetails));
 
-        if (order && accessToken) {
+        // Update the shipping same as billing field regardless of value.
+        handleSameAsBilling();
+
+        // Handle billing address first
+        if (billingAddressEntryChoice === 'newBillingAddress') {
+            // Parse the billing address into a customer address partial.
+            const billingAddress = parseBillingAddress(data);
+
             // Update billing address details in commerceLayer
-            const billingAddressUpdatedRes = await updateAddress(accessToken, order.id, customerDetails, false);
+            const billingAddressUpdatedRes = await updateAddress(
+                accessToken,
+                order.id,
+                customerDetails,
+                billingAddress,
+                false
+            );
 
             if (isArrayOfErrors(billingAddressUpdatedRes)) {
                 billingAddressUpdatedRes.forEach((value) => {
                     dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                 });
+                shouldSubmit = false;
             } else {
-                // Update shipping address details in commerceLayer
-                const res = await updateAddress(accessToken, order.id, customerDetails, true);
+                dispatch(setBillingAddress(parseAddress(billingAddress)));
+
+                // If we're cloning a new address to shipping, simply update the details with isShipping as true.
+                if (isShippingSameAsBilling) {
+                    // Update shipping address details in commerceLayer
+                    const res = await updateAddress(accessToken, order.id, customerDetails, billingAddress, true);
+
+                    if (isArrayOfErrors(res)) {
+                        res.forEach((value) => {
+                            dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                        });
+                        shouldSubmit = false;
+                    }
+                }
+            }
+        } else if (billingAddressEntryChoice === 'existingBillingAddress') {
+            // If we're choosing an existing address then check for a clone id and add as shipping.
+            if (isShippingSameAsBilling && cloneBillingAddressId) {
+                const res = await updateAddressClone(accessToken, order.id, cloneBillingAddressId);
 
                 if (isArrayOfErrors(res)) {
                     res.forEach((value) => {
                         dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                     });
-                } else {
-                    if (res) {
-                        // Fetch the order with new details.
-                        dispatch(fetchOrder(true));
-
-                        // Redirect to next stage.
-                        dispatch(setCurrentStep(1));
-                    }
+                    shouldSubmit = false;
                 }
+            }
+
+            if (!cloneBillingAddressId) {
+                dispatch(addAlert({ message: 'Please select a billing address', level: AlertLevel.Warning }));
+                shouldSubmit = false;
+            }
+        }
+
+        // Handle shipping address, no need to check for existing or as we handle that onClick.
+        if (shippingAddressEntryChoice === 'newShippingAddress') {
+            // Parse the shipping address into a customer address partial.
+            const shippingAddress = parseShippingAddress(data);
+
+            // Update shipping address details in commerceLayer. No check for same as billing here.
+            const shippingAddressUpdatedRes = await updateAddress(
+                accessToken,
+                order.id,
+                customerDetails,
+                shippingAddress,
+                true
+            );
+
+            if (isArrayOfErrors(shippingAddressUpdatedRes)) {
+                shippingAddressUpdatedRes.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+                shouldSubmit = false;
+            } else {
+                dispatch(setShippingAddress(parseAddress(shippingAddress)));
+            }
+        } else if (shippingAddressEntryChoice === 'existingShippingAddress') {
+            if (!cloneShippingAddressId) {
+                dispatch(addAlert({ message: 'Please select a shipping address', level: AlertLevel.Warning }));
+                shouldSubmit = false;
+            }
+        }
+
+        // Remove load blockers.
+        dispatch(setCheckoutLoading(false));
+
+        // If any errors were found then block the form.
+        if (!shouldSubmit) {
+            return;
+        }
+
+        submissionCleanup();
+    };
+
+    const handleSameAsBilling = async () => {
+        if (order && accessToken) {
+            const sameAsBillingRes = await updateSameAsBilling(accessToken, order.id, isShippingSameAsBilling);
+
+            if (isArrayOfErrors(sameAsBillingRes)) {
+                sameAsBillingRes.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
             }
         }
     };
 
-    // Collect errors.
-    const firstNameErr = safelyParse(errors, 'firstName.message', parseAsString, null);
-    const lastNameErr = safelyParse(errors, 'lastName.message', parseAsString, null);
-    const companyErr = safelyParse(errors, 'company.message', parseAsString, null);
-    const emailErr = safelyParse(errors, 'email.message', parseAsString, null);
-    const mobileErr = safelyParse(errors, 'mobile.message', parseAsString, null);
-    const billingLineOneErr = safelyParse(errors, 'billingAddressLineOne.message', parseAsString, null);
-    const billingLineTwoErr = safelyParse(errors, 'billingAddressLineTwo.message', parseAsString, null);
-    const billingCityErr = safelyParse(errors, 'billingCity.message', parseAsString, null);
-    const billingPostcodeErr = safelyParse(errors, 'billingPostcode.message', parseAsString, null);
-    const billingCountyErr = safelyParse(errors, 'billingCounty.message', parseAsString, null);
-    const shippingLineOneErr = safelyParse(errors, 'shippingAddressLineOne.message', parseAsString, null);
-    const shippingLineTwoErr = safelyParse(errors, 'shippingAddressLineTwo.message', parseAsString, null);
-    const shippingCityErr = safelyParse(errors, 'shippingCity.message', parseAsString, null);
-    const shippingPostcodeErr = safelyParse(errors, 'shippingPostcode.message', parseAsString, null);
-    const shippingCountyErr = safelyParse(errors, 'shippingCounty.message', parseAsString, null);
+    const submissionCleanup = () => {
+        // Fetch the order with new details.
+        dispatch(fetchOrder(true));
 
-    // Update internal allow shipping state to add / hide address.
-    const onAllowShippingAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setAllowShippingAddressInternal(e.target.checked);
+        // Redirect to next stage.
+        dispatch(setCurrentStep(1));
     };
 
     const handleEdit = () => {
@@ -115,6 +185,42 @@ const Customer: React.FC = () => {
             dispatch(setCurrentStep(0));
         }
     };
+
+    const handleBillingSelect = (id: string) => {
+        setBillingAddressEntryChoice(id);
+
+        if (id === 'newBillingAddress') {
+            dispatch(setCloneBillingAddressId(null));
+        }
+    };
+
+    const handleShippingSelect = (id: string) => {
+        setShippingAddressEntryChoice(id);
+
+        if (id === 'newShippingAddress') {
+            dispatch(setCloneShippingAddressId(null));
+        }
+    };
+
+    // Session doesn't load in immediately so we need to update the defaults on change.
+    useEffect(() => {
+        const hasSession = Boolean(session);
+
+        if (hasSession) {
+            setBillingAddressEntryChoice('existingBillingAddress');
+            setShippingAddressEntryChoice('existingShippingAddress');
+        } else {
+            setBillingAddressEntryChoice('newBillingAddress');
+            setShippingAddressEntryChoice('newShippingAddress');
+        }
+    }, [session]);
+
+    // If we click the sameAs checkbox I want to reset the shipping address.
+    useEffect(() => {
+        if (isShippingSameAsBilling) {
+            setShippingAddressEntryChoice('existingShippingAddress');
+        }
+    }, [isShippingSameAsBilling]);
 
     return (
         <div
@@ -128,371 +234,60 @@ const Customer: React.FC = () => {
             <div className="collapse-content bg-base-100 p-0">
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex">
-                        <div className="flex-grow">
-                            <div className="card p-2 md:p-4">
-                                <h3 className="card-title">Personal Details</h3>
-                                <div className="grid grid-cols-1 gap-2">
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">First Name</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="First Name"
-                                            {...register('firstName', {
-                                                required: { value: true, message: 'Required' },
-                                                pattern: {
-                                                    value: /^[a-z ,.'-]+$/i,
-                                                    message: fieldPatternMsgs('firstName'),
-                                                },
-                                                value: firstName,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                firstNameErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {firstNameErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{firstNameErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">Last Name</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="Last Name"
-                                            {...register('lastName', {
-                                                required: { value: true, message: 'Required' },
-                                                pattern: {
-                                                    value: /^[a-z ,.'-]+$/i,
-                                                    message: fieldPatternMsgs('lastName'),
-                                                },
-                                                value: lastName,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                lastNameErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {lastNameErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{lastNameErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">Company</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="Company"
-                                            {...register('company', {
-                                                required: false,
-                                                value: company,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                companyErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {companyErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{companyErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">Email</span>
-                                        </label>
-                                        <input
-                                            type="email"
-                                            placeholder="Email"
-                                            {...register('email', {
-                                                required: { value: true, message: 'Required' },
-                                                pattern: {
-                                                    value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                                                    message: fieldPatternMsgs('email'),
-                                                },
-                                                value: email,
-                                            })}
-                                            className={`input input-sm input-bordered${emailErr ? ' input-error' : ''}`}
-                                        />
-                                        {emailErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{emailErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">Mobile No.</span>
-                                        </label>
-                                        <input
-                                            type="tel"
-                                            placeholder="Mobile No."
-                                            {...register('phone', {
-                                                required: { value: true, message: 'Required' },
-                                                pattern: {
-                                                    value: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g,
-                                                    message: fieldPatternMsgs('mobile'),
-                                                },
-                                                value: phone,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                mobileErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {mobileErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{mobileErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="p-4 card">
-                                <h3 className="card-title">Billing Details</h3>
-                                <div className="grid grid-cols-1 gap-2">
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">Address Line One</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="Address Line One"
-                                            {...register('billingAddressLineOne', {
-                                                required: { value: true, message: 'Required' },
-                                                value: addressLineOne,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                billingLineOneErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {billingLineOneErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{billingLineOneErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">Address Line Two</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="Address Line Two"
-                                            {...register('billingAddressLineTwo', { value: addressLineTwo })}
-                                            className={`input input-sm input-bordered${
-                                                billingLineTwoErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {billingLineTwoErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{billingLineTwoErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">City</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="City"
-                                            {...register('billingCity', {
-                                                required: { value: true, message: 'Required' },
-                                                value: city,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                billingCityErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {billingCityErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{billingCityErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">Postcode</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="Postcode"
-                                            {...register('billingPostcode', {
-                                                required: { value: true, message: 'Required' },
-                                                pattern: {
-                                                    value: /^([A-Z][A-HJ-Y]?\d[A-Z\d]? ?\d[A-Z]{2}|GIR ?0A{2})$/gim,
-                                                    message: fieldPatternMsgs('billingPostcode'),
-                                                },
-                                                value: postcode,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                billingPostcodeErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {billingPostcodeErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{billingPostcodeErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text">County</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="County"
-                                            {...register('billingCounty', {
-                                                required: { value: true, message: 'Required' },
-                                                value: county,
-                                            })}
-                                            className={`input input-sm input-bordered${
-                                                billingCountyErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                        {billingCountyErr && (
-                                            <label className="label">
-                                                <span className="label-text-alt">{billingCountyErr}</span>
-                                            </label>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="p-4 card">
-                                <div className="form-control">
-                                    <label className="cursor-pointer label">
-                                        <span className="label-text">Ship to a different address?</span>
-                                        <input
-                                            type="checkbox"
-                                            placeholder="Ship to a different address?"
-                                            {...register('allowShippingAddress', {})}
-                                            className="checkbox"
-                                            onChange={onAllowShippingAddress}
-                                            defaultChecked={allowShippingAddress}
-                                        />
-                                    </label>
-                                </div>
-                            </div>
-                            {allowShippingAddressInternal && (
-                                <div className="p-4 card">
-                                    <h3 className="card-title">Shipping Details</h3>
-                                    <div className="grid grid-cols-1 gap-2">
-                                        <div className="form-control">
-                                            <label className="label">
-                                                <span className="label-text">Address Line One</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="Address Line One"
-                                                {...register('shippingAddressLineOne', {
-                                                    required: { value: true, message: 'Required' },
-                                                    value: shippingAddressLineOne,
-                                                })}
-                                                className={`input input-sm input-bordered${
-                                                    shippingLineOneErr ? ' input-error' : ''
-                                                }`}
-                                            />
-                                            {shippingLineOneErr && (
-                                                <label className="label">
-                                                    <span className="label-text-alt">{shippingLineOneErr}</span>
-                                                </label>
-                                            )}
-                                        </div>
-                                        <div className="form-control">
-                                            <label className="label">
-                                                <span className="label-text">Address Line Two</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="Address Line Two"
-                                                {...register('shippingAddressLineTwo', {
-                                                    value: shippingAddressLineTwo,
-                                                })}
-                                                className={`input input-sm input-bordered${
-                                                    shippingLineTwoErr ? ' input-error' : ''
-                                                }`}
-                                            />
-                                            {shippingLineTwoErr && (
-                                                <label className="label">
-                                                    <span className="label-text-alt">{shippingLineTwoErr}</span>
-                                                </label>
-                                            )}
-                                        </div>
-                                        <div className="form-control">
-                                            <label className="label">
-                                                <span className="label-text">City</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="City"
-                                                {...register('shippingCity', {
-                                                    required: { value: true, message: 'Required' },
-                                                    value: shippingCity,
-                                                })}
-                                                className={`input input-sm input-bordered${
-                                                    shippingCityErr ? ' input-error' : ''
-                                                }`}
-                                            />
-                                            {shippingCityErr && (
-                                                <label className="label">
-                                                    <span className="label-text-alt">{shippingCityErr}</span>
-                                                </label>
-                                            )}
-                                        </div>
-                                        <div className="form-control">
-                                            <label className="label">
-                                                <span className="label-text">Postcode</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="Postcode"
-                                                {...register('shippingPostcode', {
-                                                    required: { value: true, message: 'Required' },
-                                                    pattern: {
-                                                        value: /^([A-Z][A-HJ-Y]?\d[A-Z\d]? ?\d[A-Z]{2}|GIR ?0A{2})$/gim,
-                                                        message: fieldPatternMsgs('shippingPostcode'),
-                                                    },
-                                                    value: shippingPostcode,
-                                                })}
-                                                className={`input input-sm input-bordered${
-                                                    shippingPostcodeErr ? ' input-error' : ''
-                                                }`}
-                                            />
-                                            {shippingPostcodeErr && (
-                                                <label className="label">
-                                                    <span className="label-text-alt">{shippingPostcodeErr}</span>
-                                                </label>
-                                            )}
-                                        </div>
-                                        <div className="form-control">
-                                            <label className="label">
-                                                <span className="label-text">County</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="County"
-                                                {...register('shippingCounty', {
-                                                    required: { value: true, message: 'Required' },
-                                                    value: shippingCounty,
-                                                })}
-                                                className={`input input-sm input-bordered${
-                                                    shippingCountyErr ? ' input-error' : ''
-                                                }`}
-                                            />
-                                            {shippingCountyErr && (
-                                                <label className="label">
-                                                    <span className="label-text-alt">{shippingCountyErr}</span>
-                                                </label>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
+                        <div className="flex flex-col w-full">
+                            <PersonalDetails register={register} errors={errors} setValue={setValue} />
+                            <div className="divider lightDivider"></div>
+                            <h3 className="text-2xl px-5 font-semibold">Billing Details</h3>
+                            {session && (
+                                <SelectionWrapper
+                                    id="existingBillingAddress"
+                                    title="Choose an existing billing address"
+                                    name="billingAddress"
+                                    isChecked={billingAddressEntryChoice === 'existingBillingAddress'}
+                                    defaultChecked={Boolean(session)}
+                                    onSelect={handleBillingSelect}
+                                >
+                                    <ExistingAddress isShipping={false} />
+                                </SelectionWrapper>
+                            )}
+                            <SelectionWrapper
+                                id="newBillingAddress"
+                                title="Add a new billing address"
+                                name="billingAddress"
+                                isChecked={billingAddressEntryChoice === 'newBillingAddress'}
+                                defaultChecked={!Boolean(session)}
+                                onSelect={handleBillingSelect}
+                            >
+                                <BillingAddress register={register} errors={errors} />
+                            </SelectionWrapper>
+                            <ShipToBilling />
+                            <div className="divider lightDivider"></div>
+                            {!isShippingSameAsBilling && (
+                                <React.Fragment>
+                                    <h3 className="text-2xl px-5 font-semibold">Shipping Details</h3>
+                                    {session && (
+                                        <SelectionWrapper
+                                            id="existingShippingAddress"
+                                            title="Choose an existing shipping address"
+                                            name="shippingAddress"
+                                            isChecked={shippingAddressEntryChoice === 'existingShippingAddress'}
+                                            defaultChecked={Boolean(session)}
+                                            onSelect={handleShippingSelect}
+                                        >
+                                            <ExistingAddress isShipping={true} />
+                                        </SelectionWrapper>
+                                    )}
+                                    <SelectionWrapper
+                                        id="newShippingAddress"
+                                        title="Add a new shipping address"
+                                        name="shippingAddress"
+                                        isChecked={shippingAddressEntryChoice === 'newShippingAddress'}
+                                        defaultChecked={!Boolean(session)}
+                                        onSelect={handleShippingSelect}
+                                    >
+                                        <ShippingAddress register={register} errors={errors} />
+                                    </SelectionWrapper>
+                                </React.Fragment>
                             )}
                         </div>
                     </div>

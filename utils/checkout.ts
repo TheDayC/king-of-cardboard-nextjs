@@ -1,5 +1,5 @@
 import { Counties } from '../enums/checkout';
-import { CustomerDetails, ShipmentsWithLineItems } from '../store/types/state';
+import { CustomerAddress, CustomerDetails, ShipmentsWithLineItems } from '../store/types/state';
 import { DeliveryLeadTimes, MergedShipmentMethods, Shipments, ShippingMethods } from '../types/checkout';
 import { authClient } from './auth';
 import { ErrorResponse } from '../types/api';
@@ -213,23 +213,16 @@ export function fieldPatternMsgs(field: string): string {
 export async function updateAddress(
     accessToken: string,
     id: string,
-    personalDetails: CustomerDetails,
+    details: CustomerDetails,
+    address: Partial<CustomerAddress>,
     isShipping: boolean
 ): Promise<boolean | ErrorResponse[]> {
     try {
         const data = {
             type: 'addresses',
             attributes: {
-                first_name: personalDetails.firstName,
-                last_name: personalDetails.lastName,
-                company: personalDetails.company,
-                line_1: isShipping ? personalDetails.shippingAddressLineOne : personalDetails.addressLineOne,
-                line_2: isShipping ? personalDetails.shippingAddressLineTwo : personalDetails.addressLineTwo,
-                city: isShipping ? personalDetails.shippingCity : personalDetails.city,
-                zip_code: isShipping ? personalDetails.shippingPostcode : personalDetails.postcode,
-                state_code: isShipping ? personalDetails.shippingCounty : personalDetails.county,
-                country_code: 'GB',
-                phone: personalDetails.phone,
+                ...details,
+                ...address,
             },
         };
         const cl = authClient(accessToken);
@@ -255,7 +248,7 @@ export async function updateAddress(
                 type: 'orders',
                 id,
                 attributes: {
-                    customer_email: personalDetails.email,
+                    customer_email: details.email,
                 },
                 relationships,
             },
@@ -265,6 +258,63 @@ export async function updateAddress(
         return status === 200;
     } catch (error: unknown) {
         return errorHandler(error, 'Address could not be updated.');
+    }
+}
+
+export async function updateAddressClone(
+    accessToken: string,
+    orderId: string,
+    cloneId: string,
+    isShipping: boolean
+): Promise<boolean | ErrorResponse[]> {
+    try {
+        const baseData = {
+            type: 'orders',
+            id: orderId,
+        };
+        const data = isShipping
+            ? {
+                  ...baseData,
+                  attributes: {
+                      _shipping_address_clone_id: cloneId,
+                  },
+              }
+            : {
+                  ...baseData,
+                  attributes: {
+                      _billing_address_clone_id: cloneId,
+                  },
+              };
+        const cl = authClient(accessToken);
+        const res = await cl.patch(`/api/orders/${orderId}`, { data });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'Address could not be updated.');
+    }
+}
+
+export async function updateSameAsBilling(
+    accessToken: string,
+    orderId: string,
+    sameAsBilling: boolean
+): Promise<boolean | ErrorResponse[]> {
+    try {
+        const data = {
+            type: 'orders',
+            id: orderId,
+            attributes: {
+                _shipping_address_same_as_billing: sameAsBilling,
+            },
+        };
+        const cl = authClient(accessToken);
+        const res = await cl.patch(`/api/orders/${orderId}`, { data });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'Failed to set shipping address to the same as billing.');
     }
 }
 

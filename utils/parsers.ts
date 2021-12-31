@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types */
 import { Counties } from '../enums/checkout';
-import { CustomerDetails } from '../store/types/state';
+import { CustomerAddress, CustomerDetails } from '../store/types/state';
 import { Order } from '../types/cart';
 import {
     isString,
@@ -52,6 +52,7 @@ import {
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
+import { CommerceLayerResponse } from '../types/api';
 
 export function parseOrderData(order: unknown, included: unknown[]): Order | null {
     if (!order) {
@@ -87,45 +88,114 @@ export function parseOrderData(order: unknown, included: unknown[]): Order | nul
     };
 }
 
-export function parseCustomerDetails(data: unknown, allowShipping: boolean): CustomerDetails {
-    const firstName = safelyParse(data, 'firstName', parseAsString, null);
-    const lastName = safelyParse(data, 'lastName', parseAsString, null);
-    const company = safelyParse(data, 'company', parseAsString, null);
-    const email = safelyParse(data, 'email', parseAsString, null);
-    const phone = safelyParse(data, 'phone', parseAsString, null);
-    const addressLineOne = safelyParse(data, 'billingAddressLineOne', parseAsString, null);
-    const addressLineTwo = safelyParse(data, 'billingAddressLineTwo', parseAsString, null);
-    const city = safelyParse(data, 'billingCity', parseAsString, null);
-    const postcode = safelyParse(data, 'billingPostcode', parseAsString, null);
-    const county = safelyParse(data, 'billingCounty', parseAsCounties, null);
-
-    const shippingAddressLineOne = allowShipping
-        ? safelyParse(data, 'shippingAddressLineOne', parseAsString, null)
-        : addressLineOne;
-    const shippingAddressLineTwo = allowShipping
-        ? safelyParse(data, 'shippingAddressLineTwo', parseAsString, null)
-        : addressLineTwo;
-    const shippingCity = allowShipping ? safelyParse(data, 'shippingCity', parseAsString, null) : city;
-    const shippingPostcode = allowShipping ? safelyParse(data, 'shippingPostcode', parseAsString, null) : postcode;
-    const shippingCounty = allowShipping ? safelyParse(data, 'shippingCounty', parseAsCounties, null) : county;
-
+export function parseCustomerDetails(data: unknown): CustomerDetails {
     return {
-        firstName,
-        lastName,
-        company,
-        email,
-        phone,
-        allowShippingAddress: allowShipping,
-        addressLineOne,
-        addressLineTwo,
-        city,
-        postcode,
-        county,
-        shippingAddressLineOne,
-        shippingAddressLineTwo,
-        shippingCity,
-        shippingPostcode,
-        shippingCounty,
+        first_name: safelyParse(data, 'firstName', parseAsString, null),
+        last_name: safelyParse(data, 'lastName', parseAsString, null),
+        email: safelyParse(data, 'email', parseAsString, null),
+        phone: safelyParse(data, 'phone', parseAsString, null),
+    };
+}
+
+export function parseAddress(data: unknown): CustomerAddress {
+    return {
+        id: safelyParse(data, 'id', parseAsString, null),
+        billing_info:
+            safelyParse(data, 'attributes.billing_info', parseAsString, null) ||
+            safelyParse(data, 'billing_info', parseAsString, null),
+        business:
+            safelyParse(data, 'attributes.business', parseAsBoolean, false) ||
+            safelyParse(data, 'business', parseAsBoolean, false),
+        city:
+            safelyParse(data, 'attributes.city', parseAsString, null) || safelyParse(data, 'city', parseAsString, null),
+        company:
+            safelyParse(data, 'attributes.company', parseAsString, null) ||
+            safelyParse(data, 'company', parseAsString, null),
+        country_code:
+            safelyParse(data, 'attributes.country_code', parseAsString, null) ||
+            safelyParse(data, 'country_code', parseAsString, null),
+        email:
+            safelyParse(data, 'attributes.email', parseAsString, null) ||
+            safelyParse(data, 'email', parseAsString, null),
+        first_name:
+            safelyParse(data, 'attributes.first_name', parseAsString, null) ||
+            safelyParse(data, 'first_name', parseAsString, null),
+        full_address:
+            safelyParse(data, 'attributes.full_address', parseAsString, null) ||
+            safelyParse(data, 'full_address', parseAsString, null),
+        full_name:
+            safelyParse(data, 'attributes.full_name', parseAsString, null) ||
+            safelyParse(data, 'full_name', parseAsString, null),
+        is_geocoded:
+            safelyParse(data, 'attributes.is_geocoded', parseAsBoolean, false) ||
+            safelyParse(data, 'is_geocoded', parseAsBoolean, false),
+        is_localized:
+            safelyParse(data, 'attributes.is_localized', parseAsBoolean, false) ||
+            safelyParse(data, 'is_localized', parseAsBoolean, false),
+        last_name:
+            safelyParse(data, 'attributes.last_name', parseAsString, null) ||
+            safelyParse(data, 'last_name', parseAsString, null),
+        lat: safelyParse(data, 'attributes.lat', parseAsNumber, null) || safelyParse(data, 'lat', parseAsNumber, null),
+        line_1:
+            safelyParse(data, 'attributes.line_1', parseAsString, null) ||
+            safelyParse(data, 'line_1', parseAsString, null),
+        line_2:
+            safelyParse(data, 'attributes.line_2', parseAsString, null) ||
+            safelyParse(data, 'line_2', parseAsString, null),
+        lng: safelyParse(data, 'attributes.lng', parseAsNumber, null) || safelyParse(data, 'lng', parseAsNumber, null),
+        map_url:
+            safelyParse(data, 'attributes.map_url', parseAsString, null) ||
+            safelyParse(data, 'map_url', parseAsString, null),
+        name:
+            safelyParse(data, 'attributes.name', parseAsString, null) || safelyParse(data, 'name', parseAsString, null),
+        notes:
+            safelyParse(data, 'attributes.notes', parseAsString, null) ||
+            safelyParse(data, 'notes', parseAsString, null),
+        phone:
+            safelyParse(data, 'attributes.phone', parseAsString, null) ||
+            safelyParse(data, 'phone', parseAsString, null),
+        provider_name:
+            safelyParse(data, 'attributes.provider_name', parseAsString, null) ||
+            safelyParse(data, 'provider_name', parseAsString, null),
+        reference:
+            safelyParse(data, 'attributes.reference', parseAsString, null) ||
+            safelyParse(data, 'reference', parseAsString, null),
+        reference_origin:
+            safelyParse(data, 'attributes.reference_origin', parseAsString, null) ||
+            safelyParse(data, 'reference_origin', parseAsString, null),
+        state_code:
+            safelyParse(data, 'attributes.state_code', parseAsString, null) ||
+            safelyParse(data, 'state_code', parseAsString, null),
+        static_map_url:
+            safelyParse(data, 'attributes.static_map_url', parseAsString, null) ||
+            safelyParse(data, 'static_map_url', parseAsString, null),
+        zip_code:
+            safelyParse(data, 'attributes.zip_code', parseAsString, null) ||
+            safelyParse(data, 'zip_code', parseAsString, null),
+    };
+}
+
+export function parseBillingAddress(data: unknown): Partial<CustomerAddress> {
+    return {
+        city: safelyParse(data, 'billingCity', parseAsString, null),
+        company: safelyParse(data, 'billingCompany', parseAsString, null),
+        country_code: 'GB',
+        line_1: safelyParse(data, 'billingAddressLineOne', parseAsString, null),
+        line_2: safelyParse(data, 'billingAddressLineTwo', parseAsString, null),
+        state_code: safelyParse(data, 'billingCounty', parseAsString, null),
+        zip_code: safelyParse(data, 'billingPostcode', parseAsString, null),
+    };
+}
+
+export function parseShippingAddress(data: unknown): Partial<CustomerAddress> {
+    return {
+        city: safelyParse(data, 'shippingCity', parseAsString, null),
+        company: safelyParse(data, 'shippingCompany', parseAsString, null),
+        country_code: 'GB',
+        line_1: safelyParse(data, 'shippingAddressLineOne', parseAsString, null),
+        line_2: safelyParse(data, 'shippingAddressLineTwo', parseAsString, null),
+        state_code: safelyParse(data, 'shippingCounty', parseAsString, null),
+        zip_code: safelyParse(data, 'shippingPostcode', parseAsString, null),
     };
 }
 

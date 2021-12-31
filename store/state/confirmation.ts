@@ -4,7 +4,6 @@ const confirmationInitialState: Confirmation = {
     order: null,
     items: [],
     customerDetails: {
-        allowShippingAddress: false,
         email: null,
         firstName: null,
         lastName: null,
