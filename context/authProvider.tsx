@@ -53,6 +53,8 @@ const AuthProvider: React.FC = ({ children }) => {
                 'line_items',
                 'available_payment_methods',
                 'payment_method',
+                'billing_address',
+                'shipping_address',
             ]);
             if (isArrayOfErrors(orderRes)) {
                 orderRes.forEach((value) => {

@@ -40,7 +40,7 @@ export const Address: React.FC<AddressProps> = ({ id, name, isShipping }) => {
     const handleClick = async () => {
         if (orderId && accessToken) {
             dispatch(setCheckoutLoading(true));
-            const res = await updateAddressClone(accessToken, orderId, id);
+            const res = await updateAddressClone(accessToken, orderId, id, isShipping);
 
             if (isArrayOfErrors(res)) {
                 res.forEach((value) => {

@@ -264,16 +264,27 @@ export async function updateAddress(
 export async function updateAddressClone(
     accessToken: string,
     orderId: string,
-    cloneId: string
+    cloneId: string,
+    isShipping: boolean
 ): Promise<boolean | ErrorResponse[]> {
     try {
-        const data = {
+        const baseData = {
             type: 'orders',
             id: orderId,
-            attributes: {
-                _billing_address_clone_id: cloneId,
-            },
         };
+        const data = isShipping
+            ? {
+                  ...baseData,
+                  attributes: {
+                      _shipping_address_clone_id: cloneId,
+                  },
+              }
+            : {
+                  ...baseData,
+                  attributes: {
+                      _billing_address_clone_id: cloneId,
+                  },
+              };
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/orders/${orderId}`, { data });
         const status = safelyParse(res, 'status', parseAsNumber, 500);
