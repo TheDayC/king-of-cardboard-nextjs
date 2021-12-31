@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { Session } from 'next-auth';
+import { errorHandler } from '../../middleware/errors';
 
 import { Achievement, ObjectId, Objective } from '../../types/achievements';
+import { ErrorResponse } from '../../types/api';
 import { authClient } from '../../utils/auth';
 import {
     parseAsArrayOfAchievements,
@@ -10,6 +12,7 @@ import {
     parseAsString,
     safelyParse,
 } from '../../utils/parsers';
+import { isArrayOfErrors } from '../../utils/typeguards';
 
 class Achievements {
     private _email: string | null = null;
@@ -39,35 +42,49 @@ class Achievements {
         return current % milestone === 0;
     }
 
-    private async fetchAchievments(): Promise<void> {
-        const response = await axios.post('/api/achievements/getAchievements', { emailAddress: this._email });
+    private async fetchAchievments(): Promise<void | ErrorResponse[]> {
+        try {
+            const response = await axios.post('/api/achievements/getAchievements', { emailAddress: this._email });
 
-        if (response) {
-            this._giftCardId = safelyParse(response, 'data.giftCardId', parseAsString, null);
-            this._achievements = safelyParse(response, 'data.achievements', parseAsArrayOfAchievements, null);
-        } else {
-            this._achievements = null;
-            this._giftCardId = null;
+            if (response) {
+                this._giftCardId = safelyParse(response, 'data.giftCardId', parseAsString, null);
+                this._achievements = safelyParse(response, 'data.achievements', parseAsArrayOfAchievements, null);
+            } else {
+                this._achievements = null;
+                this._giftCardId = null;
+            }
+        } catch (error: unknown) {
+            const errors = errorHandler(error, 'Failed to fetch achievements.');
+
+            errors.forEach((value) => {
+                console.error(`Error: ${value.description}`);
+            });
         }
+
+        return;
     }
 
     public async fetchObjectives(
         categories: string[] | null = null,
         types: string[] | null = null,
         page: number = 1
-    ): Promise<boolean> {
-        const response = await axios.post('/api/achievements/getObjectives', { categories, types, page });
+    ): Promise<boolean | ErrorResponse[]> {
+        try {
+            const response = await axios.post('/api/achievements/getObjectives', { categories, types, page });
 
-        if (response) {
-            this._objectives = safelyParse(response, 'data.objectives', parseAsArrayOfObjectives, null);
-            this._objectives_count = safelyParse(response, 'data.count', parseAsNumber, 0);
+            if (response) {
+                this._objectives = safelyParse(response, 'data.objectives', parseAsArrayOfObjectives, null);
+                this._objectives_count = safelyParse(response, 'data.count', parseAsNumber, 0);
 
-            return true;
-        } else {
-            this._objectives = null;
-
-            return false;
+                return true;
+            } else {
+                this._objectives = null;
+            }
+        } catch (error: unknown) {
+            return errorHandler(error, 'Failed to fetch objectives.');
         }
+
+        return false;
     }
 
     public async updateAchievements(): Promise<void> {
