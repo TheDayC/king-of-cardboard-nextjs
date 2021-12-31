@@ -182,33 +182,44 @@ export const Payment: React.FC = () => {
                                                     types
                                                 );
 
-                                                if (hasFetchedObjectives && achievements.objectives) {
-                                                    achievements.objectives.forEach((objective) => {
-                                                        const {
-                                                            _id,
-                                                            min,
-                                                            max,
-                                                            milestone,
-                                                            reward,
-                                                            milestoneMultiplier: multiplier,
-                                                        } = objective;
-
-                                                        // Increment the achievement based on the objective found.
-                                                        achievements.incrementAchievement(
-                                                            _id,
-                                                            min,
-                                                            max,
-                                                            reward,
-                                                            milestone,
-                                                            multiplier
+                                                if (isArrayOfErrors(hasFetchedObjectives)) {
+                                                    hasFetchedObjectives.forEach((value) => {
+                                                        dispatch(
+                                                            addAlert({
+                                                                message: value.description,
+                                                                level: AlertLevel.Error,
+                                                            })
                                                         );
                                                     });
+                                                } else {
+                                                    if (hasFetchedObjectives && achievements.objectives) {
+                                                        achievements.objectives.forEach((objective) => {
+                                                            const {
+                                                                _id,
+                                                                min,
+                                                                max,
+                                                                milestone,
+                                                                reward,
+                                                                milestoneMultiplier: multiplier,
+                                                            } = objective;
 
-                                                    // Update achievements and points once all increments have been achieved.
-                                                    achievements.updateAchievements();
+                                                            // Increment the achievement based on the objective found.
+                                                            achievements.incrementAchievement(
+                                                                _id,
+                                                                min,
+                                                                max,
+                                                                reward,
+                                                                milestone,
+                                                                multiplier
+                                                            );
+                                                        });
 
-                                                    // Dispatch coin update
-                                                    dispatch(setShouldFetchRewards(true));
+                                                        // Update achievements and points once all increments have been achieved.
+                                                        achievements.updateAchievements();
+
+                                                        // Dispatch coin update
+                                                        dispatch(setShouldFetchRewards(true));
+                                                    }
                                                 }
                                             });
                                         }
