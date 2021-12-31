@@ -321,7 +321,7 @@ export async function updateSameAsBilling(
 export async function getShipments(accessToken: string, orderId: string): Promise<Shipments | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
-        const include = 'available_shipping_methods,stock_location';
+        const include = 'available_shipping_methods';
         const res = await cl.get(`/api/orders/${orderId}/shipments?include=${include}`);
         const shipments = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null);
         const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null);
@@ -369,7 +369,7 @@ export async function getShipments(accessToken: string, orderId: string): Promis
 export async function getDeliveryLeadTimes(accessToken: string): Promise<DeliveryLeadTimes[] | ErrorResponse[] | null> {
     try {
         const cl = authClient(accessToken);
-        const res = await cl.get('/api/delivery_lead_times?include=shipping_method,stock_location');
+        const res = await cl.get('/api/delivery_lead_times?include=shipping_method');
         const deliveryLeadTimes = safelyParse(res, 'data.data', parseAsUnknown, null);
 
         if (deliveryLeadTimes && isArray(deliveryLeadTimes)) {
