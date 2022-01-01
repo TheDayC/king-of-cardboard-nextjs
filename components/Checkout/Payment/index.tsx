@@ -6,8 +6,7 @@ import { StripeCardElement, Stripe } from '@stripe/stripe-js';
 import { useRouter } from 'next/router';
 import { Session } from 'next-auth';
 import { useSession } from 'next-auth/react';
-import { BsPaypal } from 'react-icons/bs';
-import { FaStripeS } from 'react-icons/fa';
+import { BsPaypal, BsFillCreditCard2BackFill } from 'react-icons/bs';
 
 import { setCurrentStep } from '../../../store/slices/checkout';
 import { createPaymentSource } from '../../../utils/commerce';
@@ -50,7 +49,7 @@ export const Payment: React.FC = () => {
     const [paymentMethod, setPaymentMethod] = useState('stripe_payments');
     const btnText = paymentBtnText(paymentMethod);
     const paypalClass = 'inline-block mr-3 text-md -mt-0.5 text-blue-800';
-    const stripeClass = 'inline-block mr-3 text-md -mt-0.5 text-indigo-400';
+    const stripeClass = 'inline-block mr-3 text-md -mt-0.5 text-gray-500';
 
     const handleEdit = () => {
         if (!isCurrentStep) {
@@ -352,9 +351,9 @@ export const Payment: React.FC = () => {
                             const logo = isPayPal ? (
                                 <BsPaypal className={paypalClass} />
                             ) : (
-                                <FaStripeS className={stripeClass} />
+                                <BsFillCreditCard2BackFill className={stripeClass} />
                             );
-                            const title = isPayPal ? 'PayPal' : 'Credit / Debit Card (Stripe)';
+                            const title = isPayPal ? 'PayPal' : 'Credit / Debit Card';
 
                             return (
                                 <SelectionWrapper
