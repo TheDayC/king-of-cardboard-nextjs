@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSession } from 'next-auth/react';
 
@@ -10,7 +10,7 @@ import Add from './Add';
 import { CommerceLayerResponse } from '../../../types/api';
 import Address from './Address';
 import Pagination from '../../Pagination';
-import { isArrayOfErrors, isError } from '../../../utils/typeguards';
+import { isArrayOfErrors } from '../../../utils/typeguards';
 import { addAlert } from '../../../store/slices/alerts';
 import { AlertLevel } from '../../../enums/system';
 
@@ -27,21 +27,24 @@ export const AddressBook: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const dispatch = useDispatch();
 
-    const fetchAddresses = async (token: string, email: string, page: number) => {
-        const res = await getAddresses(token, email, PER_PAGE, page);
+    const fetchAddresses = useCallback(
+        async (token: string, email: string, page: number) => {
+            const res = await getAddresses(token, email, PER_PAGE, page);
 
-        if (isArrayOfErrors(res)) {
-            res.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
-        } else {
-            const { addresses, meta } = res;
-            setAddresses(addresses);
-            setPageCount(meta ? meta.page_count : null);
-        }
+            if (isArrayOfErrors(res)) {
+                res.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                const { addresses, meta } = res;
+                setAddresses(addresses);
+                setPageCount(meta ? meta.page_count : null);
+            }
 
-        setIsLoading(false);
-    };
+            setIsLoading(false);
+        },
+        [dispatch]
+    );
 
     const handlePageNumber = (nextPage: number) => {
         const clPage = nextPage + 1;
@@ -60,7 +63,7 @@ export const AddressBook: React.FC = () => {
             setIsLoading(true);
             setShouldFetchAddresses(false);
         }
-    }, [accessToken, emailAddress, shouldFetchAddresses, currentPage]);
+    }, [accessToken, emailAddress, shouldFetchAddresses, currentPage, fetchAddresses]);
 
     return (
         <div className="flex flex-col relative w-full">
@@ -70,7 +73,7 @@ export const AddressBook: React.FC = () => {
                     addresses.map((address) => (
                         <Address
                             id={address.id}
-                            name={address.attributes.name}
+                            name={safelyParse(address, 'attributes.name', parseAsString, '')}
                             key={`address-${address.id}`}
                             fetchAddresses={setShouldFetchAddresses}
                         />

@@ -4,6 +4,7 @@ import { get, join } from 'lodash';
 import { errorHandler } from '../middleware/errors';
 import { ErrorResponse, PaymentSourceResponse } from '../types/api';
 import { Order } from '../types/cart';
+import { PaymentAttributes } from '../types/checkout';
 import { LineItemAttributes, LineItemRelationships, SkuItem, SkuProduct } from '../types/commerce';
 import { authClient } from './auth';
 import {
@@ -219,14 +220,15 @@ export async function updateLineItem(
 export async function createPaymentSource(
     accessToken: string,
     id: string,
-    paymentSourceType: string
+    paymentSourceType: string,
+    attributes: PaymentAttributes
 ): Promise<PaymentSourceResponse | ErrorResponse[]> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.post(`/api/${paymentSourceType}`, {
             data: {
                 type: paymentSourceType,
-                attributes: {},
+                attributes: { ...attributes },
                 relationships: {
                     order: {
                         data: {
@@ -241,6 +243,7 @@ export async function createPaymentSource(
         return {
             paymentId: safelyParse(res, 'data.data.id', parseAsString, null),
             clientSecret: safelyParse(res, 'data.data.attributes.client_secret', parseAsString, null),
+            approvalUrl: safelyParse(res, 'data.data.attributes.approval_url', parseAsString, null),
         };
     } catch (error: unknown) {
         return errorHandler(error, 'We could not create a payment source.');

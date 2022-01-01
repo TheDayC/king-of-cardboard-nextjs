@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 
-import { CartItem, CustomerDetails } from '../store/types/state';
+import { CartItem, CustomerAddress, CustomerDetails } from '../store/types/state';
 import { OrderHistoryAddress, OrderHistoryPaymentMethod } from '../types/account';
 import { Achievement, Objective } from '../types/achievements';
 import {
@@ -169,6 +169,10 @@ export function isArrayofItems(candidate: unknown): candidate is CartItem[] {
 
 export function isCustomerDetails(candidate: unknown): candidate is CustomerDetails {
     return isNotNullOrUndefined<object>(candidate) && 'firstName' in candidate;
+}
+
+export function isCustomerAddress(candidate: unknown): candidate is CustomerAddress {
+    return isNotNullOrUndefined<object>(candidate) && 'line_1' in candidate;
 }
 
 export function isContentfulBreak(candidate: unknown): candidate is ContentfulBreak {

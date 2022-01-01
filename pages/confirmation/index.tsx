@@ -10,7 +10,7 @@ import { resetCart, setOrder } from '../../store/slices/cart';
 import { resetCheckoutDetails } from '../../store/slices/checkout';
 import selector from './selector';
 import { createOrder } from '../../utils/commerce';
-import { isArrayOfErrors, isError } from '../../utils/typeguards';
+import { isArrayOfErrors } from '../../utils/typeguards';
 import { addAlert } from '../../store/slices/alerts';
 import { AlertLevel } from '../../enums/system';
 
@@ -51,7 +51,7 @@ export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
             // Checkout has finished loading by moving to the confirmation.
             dispatch(setCheckoutLoading(false));
         }
-    }, [confirmationOrder, accessToken]);
+    }, [confirmationOrder, accessToken, dispatch, generateOrder]);
 
     if (!confirmationOrder) {
         return null;

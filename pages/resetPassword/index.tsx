@@ -13,7 +13,7 @@ import { addAlert } from '../../store/slices/alerts';
 import { AlertLevel } from '../../enums/system';
 import selector from './selector';
 import { resetPassword } from '../../utils/account';
-import { isArrayOfErrors, isError } from '../../utils/typeguards';
+import { isArrayOfErrors } from '../../utils/typeguards';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);

@@ -11,6 +11,8 @@ const selector = createSelector([selectCheckoutData, selectCartData, selectGloba
     isShippingSameAsBilling: checkout.isShippingSameAsBilling,
     cloneBillingAddressId: checkout.cloneBillingAddressId,
     cloneShippingAddressId: checkout.cloneShippingAddressId,
+    billingAddress: checkout.billingAddress,
+    shippingAddress: checkout.shippingAddress,
 }));
 
 export default selector;

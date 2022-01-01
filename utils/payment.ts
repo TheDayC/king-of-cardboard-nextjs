@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { errorHandler } from '../middleware/errors';
-import { CartItem, CustomerDetails } from '../store/types/state';
+import { CartItem, CustomerAddress, CustomerDetails } from '../store/types/state';
 import { ErrorResponse } from '../types/api';
 import { Order } from '../types/cart';
 import { authClient } from './auth';
@@ -52,26 +52,28 @@ export async function refreshPayment(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not confirm your order.');
+        return errorHandler(error, 'We could not refresh the payment source.');
     }
 }
 
 export async function sendOrderConfirmation(
     order: Order,
     items: CartItem[],
-    customerDetails: CustomerDetails
+    customerDetails: CustomerDetails,
+    billingAddress: CustomerAddress,
+    shippingAddress: CustomerAddress
 ): Promise<boolean | ErrorResponse[]> {
     try {
         const response = await axios.post('/api/sendOrderConfirmation', {
             order,
             items,
             customerDetails,
+            billingAddress,
+            shippingAddress,
         });
 
         return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not confirm your order.');
+        return errorHandler(error, 'We could not send your order confirmation.');
     }
-
-    return false;
 }

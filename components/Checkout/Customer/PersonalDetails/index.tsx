@@ -26,25 +26,25 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
         if (email) {
             setValue('email', email);
         }
-    }, [email]);
+    }, [email, setValue]);
 
     useEffect(() => {
         if (firstName) {
             setValue('firstName', firstName);
         }
-    }, [firstName]);
+    }, [firstName, setValue]);
 
     useEffect(() => {
         if (lastName) {
             setValue('lastName', lastName);
         }
-    }, [lastName]);
+    }, [lastName, setValue]);
 
     useEffect(() => {
         if (phone) {
             setValue('phone', phone);
         }
-    }, [phone]);
+    }, [phone, setValue]);
 
     return (
         <div className="card p-2 md:p-4">

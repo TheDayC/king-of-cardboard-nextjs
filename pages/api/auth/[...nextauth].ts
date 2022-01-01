@@ -9,7 +9,7 @@ import axios from 'axios';
 import { connectToDatabase } from '../../../middleware/database';
 import {
     parseAsArrayOfCommerceLayerErrors,
-    parseAsCommerceResponseArray,
+    parseAsArrayOfCommerceResponse,
     parseAsNumber,
     parseAsString,
     safelyParse,
@@ -137,7 +137,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
             newUser: '/account',
         },
         callbacks: {
-            async signIn({ user, account, profile, email, credentials }) {
+            async signIn({ user, email, credentials }) {
                 if (!credentials) {
                     const { db } = await connectToDatabase();
 
@@ -273,7 +273,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                                     const customer = safelyParse(
                                         customerData,
                                         'data.data',
-                                        parseAsCommerceResponseArray,
+                                        parseAsArrayOfCommerceResponse,
                                         null
                                     );
 
@@ -304,10 +304,10 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
 
                 return true;
             },
-            async session({ session, user, token }) {
+            async session({ session }) {
                 return session;
             },
-            async jwt({ token, user, account, profile, isNewUser }) {
+            async jwt({ token }) {
                 return token;
             },
         },

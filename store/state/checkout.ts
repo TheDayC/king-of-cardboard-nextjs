@@ -5,8 +5,8 @@ const checkoutInitialState: Checkout = {
     shipmentsWithMethods: null,
     customerDetails: {
         email: null,
-        firstName: null,
-        lastName: null,
+        first_name: null,
+        last_name: null,
         phone: null,
     },
     billingAddress: {

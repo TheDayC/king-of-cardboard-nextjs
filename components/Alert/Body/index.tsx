@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { DateTime } from 'luxon';
 import { AiOutlineClose } from 'react-icons/ai';
 
 import { AlertLevel } from '../../../enums/system';
@@ -12,22 +11,21 @@ interface ErrorAlertProps {
     id: string;
     message: string;
     level: AlertLevel;
-    timestamp: DateTime;
 }
 
-export const Body: React.FC<ErrorAlertProps> = ({ id, message, level, timestamp }) => {
+export const Body: React.FC<ErrorAlertProps> = ({ id, message, level }) => {
     const dispatch = useDispatch();
     const className = alertClass(level);
 
     // Handle the closing the alert.
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         dispatch(removeAlert(id));
-    };
+    }, [id, dispatch]);
 
     // Set a timeout once when the alert is loaded to remove it after 5 seconds.
     useEffect(() => {
         setTimeout(handleClose, 5000);
-    }, []);
+    }, [handleClose]);
 
     return (
         <div

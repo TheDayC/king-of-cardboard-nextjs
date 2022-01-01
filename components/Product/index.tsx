@@ -14,7 +14,7 @@ import Details from './Details';
 import { AlertLevel } from '../../enums/system';
 import { addAlert } from '../../store/slices/alerts';
 import { isArrayOfErrors } from '../../utils/typeguards';
-import { parseAsArrayOfImageItems, parseAsString, safelyParse } from '../../utils/parsers';
+import { parseAsArrayOfImageItems, parseAsNumber, parseAsString, safelyParse } from '../../utils/parsers';
 
 interface ProductProps {
     slug: string;
@@ -26,7 +26,6 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
     const [loading, setLoading] = useState(false);
     const [currentImage, setCurrentImage] = useState<ImageItem | null>(null);
     const [currentProduct, setCurrentProduct] = useState<SingleProduct | null>(null);
-    const [chosenQuantity, setChosenQuantity] = useState(1);
     const [maxQuantity, setMaxQuantity] = useState(1);
     const {
         register,
@@ -44,59 +43,62 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
     // Collect errors.
     const qtyErr = safelyParse(errors, 'qty.message', parseAsString, null);
 
-    const fetchProductData = useCallback(async (token: string, productSlug: string) => {
-        const productData = await fetchProductBySlug(productSlug);
+    const fetchProductData = useCallback(
+        async (token: string, productSlug: string) => {
+            const productData = await fetchProductBySlug(productSlug);
 
-        // If we find our product then move on to fetching by SKU in commerce layer.
-        if (productData) {
-            const skuItems = await getSkus(token, [productData.productLink]);
+            // If we find our product then move on to fetching by SKU in commerce layer.
+            if (productData) {
+                const skuItems = await getSkus(token, [productData.productLink]);
 
-            if (isArrayOfErrors(skuItems)) {
-                skuItems.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
-                // If we hit some skuItems then put them in the store.
-                if (skuItems && skuItems.length > 0) {
-                    const skuItem = await getSkuDetails(token, skuItems[0].id);
+                if (isArrayOfErrors(skuItems)) {
+                    skuItems.forEach((value) => {
+                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                    });
+                } else {
+                    // If we hit some skuItems then put them in the store.
+                    if (skuItems && skuItems.length > 0) {
+                        const skuItem = await getSkuDetails(token, skuItems[0].id);
 
-                    if (isArrayOfErrors(skuItem)) {
-                        skuItem.forEach((value) => {
-                            dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                        });
-                    } else {
                         if (isArrayOfErrors(skuItem)) {
                             skuItem.forEach((value) => {
                                 dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                             });
                         } else {
-                            if (skuItem) {
-                                const mergedProduct = mergeSkuProductData(productData, skuItems[0], skuItem);
+                            if (isArrayOfErrors(skuItem)) {
+                                skuItem.forEach((value) => {
+                                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                                });
+                            } else {
+                                if (skuItem) {
+                                    const mergedProduct = mergeSkuProductData(productData, skuItems[0], skuItem);
 
-                                if (mergedProduct) {
-                                    const quantity =
-                                        mergedProduct.inventory && mergedProduct.inventory.quantity
-                                            ? mergedProduct.inventory.quantity
-                                            : 0;
+                                    if (mergedProduct) {
+                                        const quantity =
+                                            mergedProduct.inventory && mergedProduct.inventory.quantity
+                                                ? mergedProduct.inventory.quantity
+                                                : 0;
 
-                                    setMaxQuantity(quantity);
-                                    setCurrentProduct(mergedProduct);
+                                        setMaxQuantity(quantity);
+                                        setCurrentProduct(mergedProduct);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
 
-        setLoading(false);
-    }, []);
+            setLoading(false);
+        },
+        [dispatch]
+    );
 
     useEffect(() => {
         if (accessToken) {
             fetchProductData(accessToken, slug);
         }
-    }, [accessToken, slug]);
+    }, [accessToken, slug, fetchProductData]);
 
     // Set first image.
     useEffect(() => {
@@ -105,39 +107,37 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         }
     }, [currentProduct]);
 
-    const handleFieldChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.currentTarget.value;
-        const replacedValue = value.replace(/[^0-9]/g, '');
+    const handleFieldChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = e.currentTarget.value;
+            const replacedValue = value.replace(/[^0-9]/g, '');
 
-        setValue('qty', replacedValue, { shouldValidate: true });
-    }, []);
+            setValue('qty', replacedValue, { shouldValidate: true });
+        },
+        [setValue]
+    );
 
-    const handleQtyError = useCallback((message: string) => {
-        setError('qty', {
-            type: 'manual',
-            message: message,
-        });
-        setLoading(false);
-    }, []);
-
-    useEffect(() => {
-        if (!currentLineItem) {
-            return;
-        }
-
-        setChosenQuantity(currentLineItem.quantity);
-    }, [currentLineItem && currentLineItem.quantity]);
+    const handleQtyError = useCallback(
+        (message: string) => {
+            setError('qty', {
+                type: 'manual',
+                message: message,
+            });
+            setLoading(false);
+        },
+        [setError]
+    );
 
     useEffect(() => {
         if (hasExceededStock) {
             handleQtyError(`Maximum quantity of ${maxQuantity} is currently in your cart.`);
         }
-    }, [hasExceededStock]);
+    }, [hasExceededStock, handleQtyError, maxQuantity]);
 
     // Handle the form submission.
     const onSubmit = useCallback(
-        async (data: any) => {
-            const { qty } = data;
+        async (data: unknown) => {
+            const qty = safelyParse(data, 'qty', parseAsNumber, 0);
             setLoading(true);
 
             if (isNaN(qty) || hasErrors || !accessToken || !currentProduct || !order) {
@@ -190,14 +190,24 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                 }
             }
         },
-        [hasErrors, accessToken, currentProduct, order, maxQuantity, hasExceededStock]
+        [
+            hasErrors,
+            accessToken,
+            currentProduct,
+            order,
+            maxQuantity,
+            hasExceededStock,
+            currentImage,
+            dispatch,
+            handleQtyError,
+        ]
     );
 
     useEffect(() => {
         if (qtyErr) {
             dispatch(addAlert({ message: qtyErr, level: AlertLevel.Error }));
         }
-    }, [qtyErr]);
+    }, [qtyErr, dispatch]);
 
     if (currentProduct) {
         const description = currentProduct.description ? split(currentProduct.description, '\n\n') : [];

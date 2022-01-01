@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Image from 'next/image';
-import Link from 'next/link';
 import { ceil, divide } from 'lodash';
 
 import selector from './selector';
@@ -13,7 +11,7 @@ import { Categories, ProductType } from '../../../enums/shop';
 import { setIsLoadingProducts } from '../../../store/slices/shop';
 import ProductCard from './ProductCard';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
-import { isArrayOfErrors, isError } from '../../../utils/typeguards';
+import { isArrayOfErrors } from '../../../utils/typeguards';
 import { addAlert } from '../../../store/slices/alerts';
 import { AlertLevel } from '../../../enums/system';
 
@@ -76,7 +74,7 @@ export const Grid: React.FC = () => {
                 createProductCollection(accessToken, pageNumber, filters.categories, filters.productTypes);
             }
         },
-        [accessToken, filters.categories, filters.productTypes]
+        [accessToken, filters.categories, filters.productTypes, createProductCollection, dispatch]
     );
 
     // Create the product collection on load.
@@ -84,14 +82,14 @@ export const Grid: React.FC = () => {
         if (!products && accessToken) {
             createProductCollection(accessToken, 0, filters.categories, filters.productTypes);
         }
-    }, [products, accessToken, filters.categories, filters.productTypes]);
+    }, [products, accessToken, filters.categories, filters.productTypes, createProductCollection]);
 
     // Filter the collection.
     useEffect(() => {
         if (accessToken) {
             createProductCollection(accessToken, 0, filters.categories, filters.productTypes);
         }
-    }, [accessToken, filters.categories, filters.productTypes]);
+    }, [accessToken, filters.categories, filters.productTypes, createProductCollection]);
 
     return (
         <div className="flex-1">

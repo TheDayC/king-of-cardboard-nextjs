@@ -13,7 +13,13 @@ import {
     setCustomerDetails,
     setShippingAddress,
 } from '../../../store/slices/checkout';
-import { parseAddress, parseBillingAddress, parseCustomerDetails, parseShippingAddress } from '../../../utils/parsers';
+import {
+    parseAddress,
+    parseBillingAddress,
+    parseCustomerDetails,
+    parseExistingAddress,
+    parseShippingAddress,
+} from '../../../utils/parsers';
 import { fetchOrder } from '../../../store/slices/cart';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import { isArrayOfErrors } from '../../../utils/typeguards';
@@ -36,6 +42,8 @@ const Customer: React.FC = () => {
         isShippingSameAsBilling,
         cloneBillingAddressId,
         cloneShippingAddressId,
+        billingAddress,
+        shippingAddress,
     } = useSelector(selector);
     const dispatch = useDispatch();
     const [billingAddressEntryChoice, setBillingAddressEntryChoice] = useState('existingBillingAddress');
@@ -48,6 +56,16 @@ const Customer: React.FC = () => {
     } = useForm();
     const isCurrentStep = currentStep === 0;
     const hasErrors = Object.keys(errors).length > 0;
+
+    const handleSameAsBilling = async (token: string, orderId: string, sameAsBilling: boolean) => {
+        const sameAsBillingRes = await updateSameAsBilling(token, orderId, sameAsBilling);
+
+        if (isArrayOfErrors(sameAsBillingRes)) {
+            sameAsBillingRes.forEach((value) => {
+                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+            });
+        }
+    };
 
     const onSubmit = async (data: unknown) => {
         if (hasErrors || checkoutLoading || !order || !accessToken) {
@@ -63,20 +81,17 @@ const Customer: React.FC = () => {
         const customerDetails = parseCustomerDetails(data);
         dispatch(setCustomerDetails(customerDetails));
 
-        // Update the shipping same as billing field regardless of value.
-        handleSameAsBilling();
-
         // Handle billing address first
         if (billingAddressEntryChoice === 'newBillingAddress') {
             // Parse the billing address into a customer address partial.
-            const billingAddress = parseBillingAddress(data);
+            const billingAddressParsed = parseBillingAddress(data);
 
             // Update billing address details in commerceLayer
             const billingAddressUpdatedRes = await updateAddress(
                 accessToken,
                 order.id,
                 customerDetails,
-                billingAddress,
+                billingAddressParsed,
                 false
             );
 
@@ -86,12 +101,12 @@ const Customer: React.FC = () => {
                 });
                 shouldSubmit = false;
             } else {
-                dispatch(setBillingAddress(parseAddress(billingAddress)));
+                dispatch(setBillingAddress(parseAddress(billingAddressParsed)));
 
                 // If we're cloning a new address to shipping, simply update the details with isShipping as true.
                 if (isShippingSameAsBilling) {
                     // Update shipping address details in commerceLayer
-                    const res = await updateAddress(accessToken, order.id, customerDetails, billingAddress, true);
+                    const res = await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, true);
 
                     if (isArrayOfErrors(res)) {
                         res.forEach((value) => {
@@ -102,9 +117,28 @@ const Customer: React.FC = () => {
                 }
             }
         } else if (billingAddressEntryChoice === 'existingBillingAddress') {
+            // Parse the billing address into a customer address partial.
+            const billingAddressParsed = parseExistingAddress(billingAddress);
+
+            // Update billing address details in commerceLayer
+            const billingAddressUpdatedRes = await updateAddress(
+                accessToken,
+                order.id,
+                customerDetails,
+                billingAddressParsed,
+                false
+            );
+
+            if (isArrayOfErrors(billingAddressUpdatedRes)) {
+                billingAddressUpdatedRes.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+                shouldSubmit = false;
+            }
+
             // If we're choosing an existing address then check for a clone id and add as shipping.
-            if (isShippingSameAsBilling && cloneBillingAddressId) {
-                const res = await updateAddressClone(accessToken, order.id, cloneBillingAddressId);
+            if (cloneBillingAddressId) {
+                const res = await updateAddressClone(accessToken, order.id, cloneBillingAddressId, false);
 
                 if (isArrayOfErrors(res)) {
                     res.forEach((value) => {
@@ -112,40 +146,77 @@ const Customer: React.FC = () => {
                     });
                     shouldSubmit = false;
                 }
-            }
-
-            if (!cloneBillingAddressId) {
+            } else {
                 dispatch(addAlert({ message: 'Please select a billing address', level: AlertLevel.Warning }));
                 shouldSubmit = false;
             }
         }
 
-        // Handle shipping address, no need to check for existing or as we handle that onClick.
-        if (shippingAddressEntryChoice === 'newShippingAddress') {
-            // Parse the shipping address into a customer address partial.
-            const shippingAddress = parseShippingAddress(data);
+        // If our shipping is the same as the billing address then we need to add the billing clone id to shipping.
+        if (isShippingSameAsBilling) {
+            // Update the shipping same as billing field regardless of value.
+            handleSameAsBilling(accessToken, order.id, isShippingSameAsBilling);
 
-            // Update shipping address details in commerceLayer. No check for same as billing here.
-            const shippingAddressUpdatedRes = await updateAddress(
-                accessToken,
-                order.id,
-                customerDetails,
-                shippingAddress,
-                true
-            );
+            if (cloneBillingAddressId) {
+                const res = await updateAddressClone(accessToken, order.id, cloneBillingAddressId, true);
 
-            if (isArrayOfErrors(shippingAddressUpdatedRes)) {
-                shippingAddressUpdatedRes.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-                shouldSubmit = false;
+                if (isArrayOfErrors(res)) {
+                    res.forEach((value) => {
+                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                    });
+                    shouldSubmit = false;
+                }
             } else {
-                dispatch(setShippingAddress(parseAddress(shippingAddress)));
-            }
-        } else if (shippingAddressEntryChoice === 'existingShippingAddress') {
-            if (!cloneShippingAddressId) {
-                dispatch(addAlert({ message: 'Please select a shipping address', level: AlertLevel.Warning }));
+                dispatch(addAlert({ message: 'Please select a billing address', level: AlertLevel.Warning }));
                 shouldSubmit = false;
+            }
+        } else {
+            // Handle shipping address, no need to check for existing or as we handle that onClick.
+            if (shippingAddressEntryChoice === 'newShippingAddress') {
+                // Parse the shipping address into a customer address partial.
+                const shippingAddressParsed = parseShippingAddress(data);
+
+                // Update shipping address details in commerceLayer. No check for same as billing here.
+                const shippingAddressUpdatedRes = await updateAddress(
+                    accessToken,
+                    order.id,
+                    customerDetails,
+                    shippingAddressParsed,
+                    true
+                );
+
+                if (isArrayOfErrors(shippingAddressUpdatedRes)) {
+                    shippingAddressUpdatedRes.forEach((value) => {
+                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                    });
+                    shouldSubmit = false;
+                } else {
+                    dispatch(setShippingAddress(parseAddress(shippingAddressParsed)));
+                }
+            } else if (shippingAddressEntryChoice === 'existingShippingAddress') {
+                // Parse the shipping address into a customer address partial.
+                const shippingAddressParsed = parseExistingAddress(shippingAddress);
+
+                // Update shipping address details in commerceLayer. No check for same as billing here.
+                const shippingAddressUpdatedRes = await updateAddress(
+                    accessToken,
+                    order.id,
+                    customerDetails,
+                    shippingAddressParsed,
+                    true
+                );
+
+                if (isArrayOfErrors(shippingAddressUpdatedRes)) {
+                    shippingAddressUpdatedRes.forEach((value) => {
+                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                    });
+                    shouldSubmit = false;
+                }
+
+                if (!cloneShippingAddressId) {
+                    dispatch(addAlert({ message: 'Please select a shipping address', level: AlertLevel.Warning }));
+                    shouldSubmit = false;
+                }
             }
         }
 
@@ -158,18 +229,6 @@ const Customer: React.FC = () => {
         }
 
         submissionCleanup();
-    };
-
-    const handleSameAsBilling = async () => {
-        if (order && accessToken) {
-            const sameAsBillingRes = await updateSameAsBilling(accessToken, order.id, isShippingSameAsBilling);
-
-            if (isArrayOfErrors(sameAsBillingRes)) {
-                sameAsBillingRes.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            }
-        }
     };
 
     const submissionCleanup = () => {

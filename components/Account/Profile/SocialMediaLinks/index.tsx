@@ -29,7 +29,6 @@ export const SocialMediaLinks: React.FC = () => {
         formState: { errors },
     } = useForm();
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState<string | null>(null);
     const { data: session } = useSession();
     const dispatch = useDispatch();
 
@@ -75,14 +74,14 @@ export const SocialMediaLinks: React.FC = () => {
                 }
             }
         },
-        [emailAddress]
+        [dispatch]
     );
 
     useEffect(() => {
         if (emailAddress) {
             fetchSocialMedia(emailAddress);
         }
-    }, [emailAddress]);
+    }, [emailAddress, fetchSocialMedia]);
 
     useEffect(() => {
         if (savedSocialMedia) {
@@ -92,13 +91,7 @@ export const SocialMediaLinks: React.FC = () => {
             setValue('youtube', savedSocialMedia.youtube);
             setValue('ebay', savedSocialMedia.ebay);
         }
-    }, [savedSocialMedia]);
-
-    useEffect(() => {
-        if (success) {
-            dispatch(addAlert({ message: success, level: AlertLevel.Success }));
-        }
-    }, [success]);
+    }, [savedSocialMedia, setValue]);
 
     return (
         <React.Fragment>

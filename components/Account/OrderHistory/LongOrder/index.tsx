@@ -158,7 +158,7 @@ export const LongOrder: React.FC<OrderProps> = ({
                                 skuCode={lineItem.skuCode}
                                 quantity={lineItem.quantity}
                                 amount={lineItem.amount}
-                                compareAmount={lineItem.compareAmount}
+                                //compareAmount={lineItem.compareAmount}
                             />
 
                             <div className="divider lightDivider w-full"></div>

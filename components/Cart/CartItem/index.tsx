@@ -2,24 +2,24 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { MdDeleteForever, MdRemoveCircleOutline, MdAddCircleOutline } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
+import { isArray } from 'lodash';
 
 import { fetchOrder, setUpdatingCart } from '../../../store/slices/cart';
-import { getSkuDetails, getSkus, removeLineItem, updateLineItem } from '../../../utils/commerce';
-import selector from './selector';
-import styles from './cartitem.module.css';
-import { fetchProductByProductLink, mergeSkuProductData } from '../../../utils/products';
+import { getSkuDetails, removeLineItem, updateLineItem } from '../../../utils/commerce';
+import { fetchProductByProductLink } from '../../../utils/products';
 import { ContentfulProductShort } from '../../../types/products';
-import { isArray } from 'lodash';
 import { isArrayOfErrors } from '../../../utils/typeguards';
 import { addAlert } from '../../../store/slices/alerts';
 import { AlertLevel } from '../../../enums/system';
+import selector from './selector';
+import styles from './cartitem.module.css';
 
 interface BasketItemProps {
     id: string;
     skuId: string | null;
     sku: string | null;
     name: string | null;
-    image_url: string | null;
+    // image_url: string | null;
     unitAmount: string | null;
     totalAmount: string | null;
     quantity: number | null;
@@ -30,36 +30,56 @@ export const CartItem: React.FC<BasketItemProps> = ({
     skuId,
     sku,
     name,
-    image_url,
+    // image_url,
     unitAmount,
     totalAmount,
     quantity,
 }) => {
-    const { products, accessToken } = useSelector(selector);
+    const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
     const [isIncreaseDisabled, setIsIncreaseDisabled] = useState(false);
     const [stock, setStock] = useState(0);
     const [product, setProduct] = useState<ContentfulProductShort | null>(null);
     const productName = product ? product.name : name;
 
-    const fetchCurrentLineItem = async (token: string, skuItemId: string, skuCode: string) => {
-        const skuItem = await getSkuDetails(token, skuItemId);
-        const cmsProduct = await fetchProductByProductLink(skuCode);
+    const fetchCurrentLineItem = useCallback(
+        async (token: string, skuItemId: string, skuCode: string) => {
+            const skuItem = await getSkuDetails(token, skuItemId);
+            const cmsProduct = await fetchProductByProductLink(skuCode);
 
-        if (cmsProduct && !isArray(cmsProduct)) {
-            setProduct(cmsProduct);
-        }
+            if (cmsProduct && !isArray(cmsProduct)) {
+                setProduct(cmsProduct);
+            }
 
-        if (isArrayOfErrors(skuItem)) {
-            skuItem.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
-        } else {
-            if (skuItem && skuItem.inventory) {
-                setStock(skuItem.inventory.quantity);
+            if (isArrayOfErrors(skuItem)) {
+                skuItem.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                if (skuItem && skuItem.inventory) {
+                    setStock(skuItem.inventory.quantity);
+                }
+            }
+        },
+        [dispatch]
+    );
+
+    const handleRemoveItem = useCallback(async () => {
+        if (accessToken && id) {
+            dispatch(setUpdatingCart(true));
+            const hasDeleted = await removeLineItem(accessToken, id);
+
+            if (isArrayOfErrors(hasDeleted)) {
+                hasDeleted.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                if (hasDeleted) {
+                    dispatch(fetchOrder(true));
+                }
             }
         }
-    };
+    }, [dispatch, accessToken, id]);
 
     const handleDecreaseAmount = useCallback(async () => {
         // Check if the access token, line item id and quantity are available.
@@ -87,7 +107,7 @@ export const CartItem: React.FC<BasketItemProps> = ({
                 handleRemoveItem();
             }
         }
-    }, [accessToken, id, quantity]);
+    }, [accessToken, id, quantity, dispatch, handleRemoveItem]);
 
     const handleIncreaseAmount = useCallback(async () => {
         // If we're not allowed to increase anymore then just return.
@@ -123,36 +143,19 @@ export const CartItem: React.FC<BasketItemProps> = ({
                 setIsIncreaseDisabled(true);
             }
         }
-    }, [accessToken, id, quantity, stock]);
-
-    const handleRemoveItem = async () => {
-        if (accessToken && id) {
-            dispatch(setUpdatingCart(true));
-            const hasDeleted = await removeLineItem(accessToken, id);
-
-            if (isArrayOfErrors(hasDeleted)) {
-                hasDeleted.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
-                if (hasDeleted) {
-                    dispatch(fetchOrder(true));
-                }
-            }
-        }
-    };
+    }, [accessToken, id, quantity, stock, dispatch, isIncreaseDisabled]);
 
     useEffect(() => {
         if (accessToken && skuId && sku) {
             fetchCurrentLineItem(accessToken, skuId, sku);
         }
-    }, [accessToken, skuId, sku]);
+    }, [accessToken, skuId, sku, fetchCurrentLineItem]);
 
     useEffect(() => {
         if (quantity === stock) {
             setIsIncreaseDisabled(true);
         }
-    }, [stock]);
+    }, [stock, quantity]);
 
     return (
         <div className="grid grid-cols-3 lg:grid-cols-5 bg-white p-4 border-b p-4">

@@ -2,6 +2,10 @@ export interface FormErrors {
     [x: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
+export interface PaymentAttributes {
+    [x: string]: string;
+}
+
 export interface PersonalDetails extends BillingAddress, ShippingAddress {
     email: string;
     firstName: string;

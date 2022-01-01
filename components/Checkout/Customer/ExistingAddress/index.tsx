@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -27,19 +27,22 @@ const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping }) => {
     const [addresses, setAddresses] = useState<CommerceLayerResponse[] | null>(null);
     const [shouldFetchAddresses, setShouldFetchAddresses] = useState(true);
 
-    const fetchAddresses = async (token: string, email: string, page: number) => {
-        const res = await getAddresses(token, email, PER_PAGE, page);
+    const fetchAddresses = useCallback(
+        async (token: string, email: string, page: number) => {
+            const res = await getAddresses(token, email, PER_PAGE, page);
 
-        if (isArrayOfErrors(res)) {
-            res.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
-        } else {
-            setAddresses(res.addresses);
-        }
+            if (isArrayOfErrors(res)) {
+                res.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                setAddresses(res.addresses);
+            }
 
-        dispatch(setCheckoutLoading(false));
-    };
+            dispatch(setCheckoutLoading(false));
+        },
+        [dispatch]
+    );
 
     useEffect(() => {
         if (session && shouldFetchAddresses && accessToken && emailAddress) {
@@ -47,7 +50,7 @@ const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping }) => {
             dispatch(setCheckoutLoading(true));
             fetchAddresses(accessToken, emailAddress, 1);
         }
-    }, [session, accessToken, emailAddress, shouldFetchAddresses]);
+    }, [session, accessToken, emailAddress, shouldFetchAddresses, dispatch, fetchAddresses]);
 
     return (
         <div className="w-full block relative">

@@ -4,6 +4,7 @@ import { Counties } from '../../enums/checkout';
 import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
 import { Order } from '../../types/cart';
+import { BillingAddress, ShippingAddress } from '../../types/checkout';
 import { SkuItem } from '../../types/commerce';
 import { ContentfulPage } from '../../types/pages';
 import { SocialMedia } from '../../types/profile';
@@ -113,6 +114,35 @@ export interface CustomerAddress {
     zip_code: string | null;
 }
 
+export interface ExistingAddress {
+    title: string | null;
+    billing_info: string | null;
+    business: boolean;
+    city: string | null;
+    company: string | null;
+    country_code: string | null;
+    email: string | null;
+    first_name: string | null;
+    full_name: string | null;
+    is_geocoded: boolean;
+    is_localized: boolean;
+    last_name: string | null;
+    lat: number | null;
+    line_1: string | null;
+    line_2: string | null;
+    lng: number | null;
+    map_url: string | null;
+    name: string | null;
+    notes: string | null;
+    phone: string | null;
+    provider_name: string | null;
+    reference: string | null;
+    reference_origin: string | null;
+    state_code: string | null;
+    static_map_url: string | null;
+    zip_code: string | null;
+}
+
 export interface ShipmentsWithMethods {
     shipmentId: string;
     methodId: string;
@@ -126,6 +156,8 @@ export interface Confirmation {
     order: Order | null;
     items: CartItem[];
     customerDetails: CustomerDetails;
+    billingAddress: CustomerAddress;
+    shippingAddress: CustomerAddress;
 }
 
 export interface PagesState {

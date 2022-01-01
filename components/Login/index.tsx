@@ -2,13 +2,13 @@ import React, { useEffect } from 'react';
 import { ClientSafeProvider, LiteralUnion } from 'next-auth/react';
 import { BuiltInProviderType } from 'next-auth/providers';
 import { useRouter } from 'next/router';
+import { useDispatch } from 'react-redux';
 
 import Credentials from './credentials';
 import Google from './google';
 import Twitch from './twitch';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { AlertLevel } from '../../enums/system';
-import { useDispatch } from 'react-redux';
 import { addAlert } from '../../store/slices/alerts';
 
 interface LoginProps {
@@ -26,13 +26,13 @@ export const Login: React.FC<LoginProps> = ({ providers, showRegistrationSuccess
         if (error) {
             dispatch(addAlert({ message: 'Invalid Credentials.', level: AlertLevel.Error }));
         }
-    }, [error]);
+    }, [error, dispatch]);
 
     useEffect(() => {
         if (showRegistrationSuccess) {
             dispatch(addAlert({ message: 'Registration Successful!', level: AlertLevel.Success }));
         }
-    }, [showRegistrationSuccess]);
+    }, [showRegistrationSuccess, dispatch]);
 
     return (
         <React.Fragment>

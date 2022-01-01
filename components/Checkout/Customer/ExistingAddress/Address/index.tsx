@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { IoLocationSharp } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
 import { BsCheck2Circle } from 'react-icons/bs';
@@ -13,8 +13,8 @@ import {
 } from '../../../../../store/slices/checkout';
 import { CommerceLayerResponse } from '../../../../../types/api';
 import { getAddress } from '../../../../../utils/account';
-import { updateAddressClone } from '../../../../../utils/checkout';
-import { parseAsString, safelyParse, parseAddress } from '../../../../../utils/parsers';
+import { updateAddress, updateAddressClone } from '../../../../../utils/checkout';
+import { parseAsString, safelyParse, parseAddress, parseBillingAddress } from '../../../../../utils/parsers';
 import { isArrayOfErrors } from '../../../../../utils/typeguards';
 import selector from './selector';
 import { setCheckoutLoading } from '../../../../../store/slices/global';
@@ -48,17 +48,13 @@ export const Address: React.FC<AddressProps> = ({ id, name, isShipping }) => {
                 });
             } else {
                 if (res) {
-                    if (isShipping) {
-                        dispatch(setCloneShippingAddressId(id));
-                    } else {
-                        dispatch(setCloneBillingAddressId(id));
-                    }
-
                     const addressPayload = parseAddress(address);
 
                     if (isShipping) {
+                        dispatch(setCloneShippingAddressId(id));
                         dispatch(setShippingAddress(addressPayload));
                     } else {
+                        dispatch(setCloneBillingAddressId(id));
                         dispatch(setBillingAddress(addressPayload));
                     }
                 }
@@ -67,26 +63,29 @@ export const Address: React.FC<AddressProps> = ({ id, name, isShipping }) => {
         }
     };
 
-    const fetchAddress = async (token: string) => {
-        const res = await getAddress(token, id);
+    const fetchAddress = useCallback(
+        async (token: string, addressId: string) => {
+            const res = await getAddress(token, addressId);
 
-        if (isArrayOfErrors(res)) {
-            res.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
-        } else {
-            setAddress(res);
-        }
-    };
+            if (isArrayOfErrors(res)) {
+                res.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                setAddress(res);
+            }
+        },
+        [dispatch]
+    );
 
     useEffect(() => {
         if (accessToken && id && shouldFetchAddress) {
             // Stop multiple requests using internal state.
             setShouldFetchAddress(false);
 
-            fetchAddress(accessToken);
+            fetchAddress(accessToken, id);
         }
-    }, [id, accessToken, shouldFetchAddress]);
+    }, [id, accessToken, shouldFetchAddress, fetchAddress]);
 
     return (
         <div

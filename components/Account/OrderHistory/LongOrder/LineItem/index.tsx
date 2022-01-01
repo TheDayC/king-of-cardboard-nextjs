@@ -7,10 +7,10 @@ interface OrderProps {
     imageUrl: string | null;
     quantity: number;
     amount: string | null;
-    compareAmount: string | null;
+    // compareAmount: string | null;
 }
 
-export const LineItem: React.FC<OrderProps> = ({ name, skuCode, imageUrl, quantity, amount, compareAmount }) => {
+export const LineItem: React.FC<OrderProps> = ({ name, skuCode, imageUrl, quantity, amount }) => {
     return (
         <div className="flex flex-row w-full">
             <div className="flex flex-row w-full justify-between items-center px-4">

@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { get } from 'lodash';
-import { BsArrowLeftCircle } from 'react-icons/bs';
 
 import selector from './selector';
 import { setCurrentStep, setShipmentsWithMethods } from '../../../store/slices/checkout';
@@ -17,7 +15,7 @@ import Shipment from './Shipment';
 import { fetchOrder } from '../../../store/slices/cart';
 import { ShipmentsWithMethods } from '../../../store/types/state';
 import { setCheckoutLoading } from '../../../store/slices/global';
-import { isArrayOfErrors, isError } from '../../../utils/typeguards';
+import { isArrayOfErrors } from '../../../utils/typeguards';
 import { addAlert } from '../../../store/slices/alerts';
 import { AlertLevel } from '../../../enums/system';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -34,39 +32,42 @@ export const Delivery: React.FC = () => {
     const isCurrentStep = currentStep === 1;
     const hasErrors = Object.keys(errors).length > 0;
 
-    const fetchAllShipments = useCallback(async (accessToken: string, orderId: string) => {
-        if (accessToken && orderId) {
-            const shipmentData = await getShipments(accessToken, orderId);
-            const deliveryLeadTimes = await getDeliveryLeadTimes(accessToken);
-            const hasResErrors =
-                !shipmentData ||
-                !deliveryLeadTimes ||
-                isArrayOfErrors(shipmentData) ||
-                isArrayOfErrors(deliveryLeadTimes);
+    const fetchAllShipments = useCallback(
+        async (accessToken: string, orderId: string) => {
+            if (accessToken && orderId) {
+                const shipmentData = await getShipments(accessToken, orderId);
+                const deliveryLeadTimes = await getDeliveryLeadTimes(accessToken);
+                const hasResErrors =
+                    !shipmentData ||
+                    !deliveryLeadTimes ||
+                    isArrayOfErrors(shipmentData) ||
+                    isArrayOfErrors(deliveryLeadTimes);
 
-            if (!hasResErrors) {
-                const { shipments, shippingMethods } = shipmentData;
-                const mergedMethods = mergeMethodsAndLeadTimes(shippingMethods, deliveryLeadTimes);
+                if (!hasResErrors) {
+                    const { shipments, shippingMethods } = shipmentData;
+                    const mergedMethods = mergeMethodsAndLeadTimes(shippingMethods, deliveryLeadTimes);
 
-                setShipments({
-                    shipments,
-                    shippingMethods: mergedMethods,
-                });
-            } else {
-                if (isArrayOfErrors(shipmentData)) {
-                    shipmentData.forEach((shipmentErr) => {
-                        dispatch(addAlert({ message: shipmentErr.description, level: AlertLevel.Error }));
+                    setShipments({
+                        shipments,
+                        shippingMethods: mergedMethods,
                     });
-                }
+                } else {
+                    if (isArrayOfErrors(shipmentData)) {
+                        shipmentData.forEach((shipmentErr) => {
+                            dispatch(addAlert({ message: shipmentErr.description, level: AlertLevel.Error }));
+                        });
+                    }
 
-                if (isArrayOfErrors(deliveryLeadTimes)) {
-                    deliveryLeadTimes.forEach((leadErr) => {
-                        dispatch(addAlert({ message: leadErr.description, level: AlertLevel.Error }));
-                    });
+                    if (isArrayOfErrors(deliveryLeadTimes)) {
+                        deliveryLeadTimes.forEach((leadErr) => {
+                            dispatch(addAlert({ message: leadErr.description, level: AlertLevel.Error }));
+                        });
+                    }
                 }
             }
-        }
-    }, []);
+        },
+        [dispatch]
+    );
 
     useEffect(() => {
         if (accessToken && order) {

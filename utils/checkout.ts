@@ -1,11 +1,24 @@
 import { Counties } from '../enums/checkout';
 import { CustomerAddress, CustomerDetails, ShipmentsWithLineItems } from '../store/types/state';
-import { DeliveryLeadTimes, MergedShipmentMethods, Shipments, ShippingMethods } from '../types/checkout';
+import {
+    DeliveryLeadTimes,
+    MergedShipmentMethods,
+    PaymentAttributes,
+    Shipments,
+    ShippingMethods,
+} from '../types/checkout';
 import { authClient } from './auth';
-import { ErrorResponse } from '../types/api';
+import { CommerceLayerResponse, ErrorResponse } from '../types/api';
 import { errorHandler } from '../middleware/errors';
 import { isArray } from './typeguards';
-import { parseAsArrayOfCommerceResponse, parseAsNumber, parseAsString, parseAsUnknown, safelyParse } from './parsers';
+import {
+    parseAsArrayOfCommerceResponse,
+    parseAsCommerceResponse,
+    parseAsNumber,
+    parseAsString,
+    parseAsUnknown,
+    safelyParse,
+} from './parsers';
 
 function regexEmail(email: string): boolean {
     // eslint-disable-next-line no-useless-escape
@@ -505,5 +518,69 @@ export async function updatePaymentMethod(
         return status === 200;
     } catch (error: unknown) {
         return errorHandler(error, 'We could not get a shipment.');
+    }
+}
+
+export function buildPaymentAttributes(method: string, orderId: string): PaymentAttributes {
+    const complete = process.env.NEXT_PUBLIC_COMPLETE_ORDER;
+    const cancel = process.env.NEXT_PUBLIC_CANCEL_ORDER;
+
+    switch (method) {
+        case 'paypal_payments':
+            return {
+                return_url: `${complete}/${orderId}`,
+                cancel_url: `${cancel}/${orderId}`,
+            };
+        case 'stripe_payments':
+        default:
+            return {};
+    }
+}
+
+export async function getPayPalPaymentIdByOrder(
+    accessToken: string,
+    orderId: string
+): Promise<string | null | ErrorResponse[]> {
+    try {
+        const cl = authClient(accessToken);
+        const res = await cl.get(`/api/paypal_payments?include=order&filter[q][order_id_eq]=${orderId}`);
+        const resArray = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, [] as CommerceLayerResponse[]);
+
+        return safelyParse(resArray[0], 'id', parseAsString, null);
+    } catch (error: unknown) {
+        return errorHandler(error, 'Failed to confirm your paypal order, please try again.');
+    }
+}
+
+export async function completePayPalOrder(
+    accessToken: string,
+    paymentId: string,
+    payerId: string
+): Promise<boolean | ErrorResponse[]> {
+    try {
+        const cl = authClient(accessToken);
+        const res = await cl.patch(`/api/paypal_payments/${paymentId}`, {
+            data: {
+                type: 'paypal_payments',
+                id: paymentId,
+                attributes: {
+                    paypal_payer_id: payerId,
+                },
+            },
+        });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        return errorHandler(error, 'Failed to confirm your paypal order, please try again.');
+    }
+}
+
+export function paymentBtnText(method: string): string {
+    switch (method) {
+        case 'paypal_payments':
+            return 'Checkout with PayPal';
+        default:
+            return 'Checkout';
     }
 }

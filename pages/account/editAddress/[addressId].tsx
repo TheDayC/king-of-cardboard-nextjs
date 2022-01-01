@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import Error from 'next/error';
@@ -12,7 +12,7 @@ import selector from './selector';
 import { CommerceLayerResponse } from '../../../types/api';
 import Loading from '../../../components/Loading';
 import Fields from '../../../components/Account/AddressBook/Fields';
-import { isArrayOfErrors, isError } from '../../../utils/typeguards';
+import { isArrayOfErrors } from '../../../utils/typeguards';
 import { addAlert } from '../../../store/slices/alerts';
 import { AlertLevel } from '../../../enums/system';
 
@@ -55,42 +55,45 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId, em
     const [isLoading, setIsLoading] = useState(true);
     const dispatch = useDispatch();
 
-    const fetchAddress = async (token: string, id: string) => {
-        const customerAddressRes = await getCustomerAddress(token, id);
-        if (isArrayOfErrors(customerAddressRes)) {
-            customerAddressRes.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
-        } else {
-            // CL separates customer and original addresses.
-            const originalAddressId = safelyParse(
-                customerAddressRes,
-                'relationships.address.data.id',
-                parseAsString,
-                null
-            );
+    const fetchAddress = useCallback(
+        async (token: string, id: string) => {
+            const customerAddressRes = await getCustomerAddress(token, id);
+            if (isArrayOfErrors(customerAddressRes)) {
+                customerAddressRes.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                // CL separates customer and original addresses.
+                const originalAddressId = safelyParse(
+                    customerAddressRes,
+                    'relationships.address.data.id',
+                    parseAsString,
+                    null
+                );
 
-            if (originalAddressId) {
-                const res = await getAddress(token, originalAddressId);
+                if (originalAddressId) {
+                    const res = await getAddress(token, originalAddressId);
 
-                if (isArrayOfErrors(res)) {
-                    res.forEach((value) => {
-                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                    });
-                } else {
-                    setCurrentAddress(res);
+                    if (isArrayOfErrors(res)) {
+                        res.forEach((value) => {
+                            dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                        });
+                    } else {
+                        setCurrentAddress(res);
+                    }
                 }
             }
-        }
 
-        setIsLoading(false);
-    };
+            setIsLoading(false);
+        },
+        [dispatch]
+    );
 
     useEffect(() => {
         if (accessToken && emailAddress && addressId) {
             fetchAddress(accessToken, addressId);
         }
-    }, [accessToken, emailAddress, addressId]);
+    }, [accessToken, emailAddress, addressId, fetchAddress]);
 
     // Show error page if a code is provided.
     if (errorCode && typeof errorCode === 'number') {
@@ -117,15 +120,15 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId, em
                             {currentAddress && (
                                 <Fields
                                     addressId={currentAddress.id}
-                                    addressLineOne={currentAddress.attributes.line_1}
-                                    addressLineTwo={currentAddress.attributes.line_2}
-                                    city={currentAddress.attributes.city}
-                                    company={currentAddress.attributes.company}
-                                    county={currentAddress.attributes.state_code}
-                                    firstName={currentAddress.attributes.first_name}
-                                    lastName={currentAddress.attributes.last_name}
-                                    phone={currentAddress.attributes.phone}
-                                    postcode={currentAddress.attributes.zip_code}
+                                    addressLineOne={safelyParse(currentAddress, 'attributes.line_1', parseAsString, '')}
+                                    addressLineTwo={safelyParse(currentAddress, 'attributes.line_2', parseAsString, '')}
+                                    city={safelyParse(currentAddress, 'attributes.city', parseAsString, '')}
+                                    company={safelyParse(currentAddress, 'attributes.company', parseAsString, '')}
+                                    county={safelyParse(currentAddress, 'attributes.state_code', parseAsString, '')}
+                                    firstName={safelyParse(currentAddress, 'attributes.first_name', parseAsString, '')}
+                                    lastName={safelyParse(currentAddress, 'attributes.last_name', parseAsString, '')}
+                                    phone={safelyParse(currentAddress, 'attributes.phone', parseAsString, '')}
+                                    postcode={safelyParse(currentAddress, 'attributes.zip_code', parseAsString, '')}
                                 />
                             )}
                         </div>
