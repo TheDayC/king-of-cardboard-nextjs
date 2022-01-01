@@ -24,10 +24,10 @@ interface ObjectiveProps {
 }
 
 export const Objective: React.FC<ObjectiveProps> = ({
-    id,
+    // id,
     name,
-    category,
-    min,
+    // category,
+    // min,
     max,
     milestone,
     milestoneMultiplier,

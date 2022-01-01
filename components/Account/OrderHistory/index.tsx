@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import selector from './selector';
 import { parseAsArrayOfLineItemRelationships, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
-import { isError, isArrayOfErrors } from '../../../utils/typeguards';
+import { isArrayOfErrors } from '../../../utils/typeguards';
 import { getHistoricalOrders } from '../../../utils/account';
 import { CommerceLayerResponse } from '../../../types/api';
 import ShortOrder from './ShortOrder';
@@ -26,31 +26,29 @@ export const OrderHistory: React.FC = () => {
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
     const dispatch = useDispatch();
 
-    const fetchOrderHistory = async (
-        token: string,
-        email: string,
-        page: number = 0,
-        perPage: number = ORDERS_PER_PAGE
-    ) => {
-        const res = await getHistoricalOrders(token, email, perPage, page + 1);
+    const fetchOrderHistory = useCallback(
+        async (token: string, email: string, page: number = 0, perPage: number = ORDERS_PER_PAGE) => {
+            const res = await getHistoricalOrders(token, email, perPage, page + 1);
 
-        if (isArrayOfErrors(res)) {
-            res.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
-        } else {
-            const { orders: responseOrders, included: responseIncluded, meta } = res;
+            if (isArrayOfErrors(res)) {
+                res.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                const { orders: responseOrders, included: responseIncluded, meta } = res;
 
-            setOrders(responseOrders);
-            setIncluded(responseIncluded);
+                setOrders(responseOrders);
+                setIncluded(responseIncluded);
 
-            if (meta) {
-                setPageCount(meta.page_count);
+                if (meta) {
+                    setPageCount(meta.page_count);
+                }
+
+                setCurrentPage(page);
             }
-
-            setCurrentPage(page);
-        }
-    };
+        },
+        [dispatch]
+    );
 
     const handlePageNumber = (nextPage: number) => {
         if (accessToken && emailAddress) {
@@ -63,7 +61,7 @@ export const OrderHistory: React.FC = () => {
         if (accessToken && emailAddress) {
             fetchOrderHistory(accessToken, emailAddress);
         }
-    }, [accessToken, emailAddress]);
+    }, [accessToken, emailAddress, fetchOrderHistory]);
 
     return (
         <React.Fragment>

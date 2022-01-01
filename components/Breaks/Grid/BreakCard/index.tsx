@@ -10,7 +10,7 @@ import { ImageItem } from '../../../../types/products';
 import selector from './selector';
 import { getSkus } from '../../../../utils/commerce';
 import Countdown from './Countdown';
-import { isArrayOfErrors, isError } from '../../../../utils/typeguards';
+import { isArrayOfErrors } from '../../../../utils/typeguards';
 import { addAlert } from '../../../../store/slices/alerts';
 import { AlertLevel } from '../../../../enums/system';
 
@@ -48,27 +48,30 @@ export const BreakCard: React.FC<BreakProps> = ({
     const isActive = !isLive && !isComplete;
     const dispatch = useDispatch();
 
-    const fetchSlotSkuData = useCallback(async (token: string, skus: string[]) => {
-        const skuData = await getSkus(token, skus);
+    const fetchSlotSkuData = useCallback(
+        async (token: string, skus: string[]) => {
+            const skuData = await getSkus(token, skus);
 
-        if (isArrayOfErrors(skuData)) {
-            skuData.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
-        } else {
-            if (skuData) {
-                setSlotsAvailable(skuData.length);
+            if (isArrayOfErrors(skuData)) {
+                skuData.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
             } else {
-                setSlotsAvailable(0);
+                if (skuData) {
+                    setSlotsAvailable(skuData.length);
+                } else {
+                    setSlotsAvailable(0);
+                }
             }
-        }
-    }, []);
+        },
+        [dispatch]
+    );
 
     useEffect(() => {
         if (accessToken) {
             fetchSlotSkuData(accessToken, slotSkus);
         }
-    }, [accessToken, slotSkus]);
+    }, [accessToken, slotSkus, fetchSlotSkuData]);
 
     return (
         <div className="card shadow-md rounded-md bordered pt-4">

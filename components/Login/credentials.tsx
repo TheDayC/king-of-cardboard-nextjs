@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { MdOutlineMailOutline } from 'react-icons/md';
 import { RiLockPasswordLine } from 'react-icons/ri';
-import { signIn, useSession } from 'next-auth/react';
-import { useSelector } from 'react-redux';
+import { signIn } from 'next-auth/react';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
-import selector from './selector';
 
 interface Submit {
     emailAddress?: string;
@@ -14,8 +12,6 @@ interface Submit {
 }
 
 export const Credentials: React.FC = () => {
-    const { accessToken } = useSelector(selector);
-    const { data: session } = useSession();
     const {
         register,
         handleSubmit,
@@ -29,7 +25,11 @@ export const Credentials: React.FC = () => {
     const onSubmit = async (data: Submit) => {
         const { emailAddress, password } = data;
 
+        setLoading(true);
+
         await signIn('credentials', { emailAddress, password });
+
+        setLoading(false);
     };
 
     return (

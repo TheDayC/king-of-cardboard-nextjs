@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { split } from 'lodash';
 
 import { ImageItem } from '../../types/products';
 import Loading from '../Loading';
 import selector from './selector';
-import { get, split } from 'lodash';
 import Images from './Images';
 import Details from './Details';
 import { fetchBreakBySlug } from '../../utils/breaks';
@@ -37,7 +37,7 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
         if (accessToken) {
             fetchBreakData(accessToken, slug);
         }
-    }, [accessToken, slug]);
+    }, [accessToken, slug, fetchBreakData]);
 
     // Set first image.
     useEffect(() => {
@@ -61,7 +61,7 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
                         <div id="productDetails" className="flex flex-col items-center w-full lg:w-3/4">
                             <div className="card rounded-md shadow-lg bordered p-4 w-full lg:p-6">
                                 <Details name={currentBreak.title} tags={currentBreak.tags} description={description} />
-                                {slots && <Slots slots={slots} format={currentBreak.format} />}
+                                {slots && <Slots slots={slots} /* format={currentBreak.format} */ />}
                             </div>
                         </div>
                     </div>

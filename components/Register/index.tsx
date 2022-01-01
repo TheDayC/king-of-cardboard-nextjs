@@ -83,7 +83,7 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
         if (responseError) {
             dispatch(addAlert({ message: responseError, level: AlertLevel.Error }));
         }
-    }, [responseError]);
+    }, [responseError, dispatch]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>

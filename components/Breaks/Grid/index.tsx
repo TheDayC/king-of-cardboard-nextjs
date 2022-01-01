@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { ceil, divide } from 'lodash';
 import { useRouter } from 'next/router';
 
-import selector from './selector';
 import { fetchContentfulBreaks } from '../../../utils/breaks';
 import Pagination from '../../Pagination';
 import { setIsLoadingProducts } from '../../../store/slices/shop';
-import { BreakSlot, ContentfulBreak } from '../../../types/breaks';
+import { ContentfulBreak } from '../../../types/breaks';
 import { setIsLoadingBreaks } from '../../../store/slices/breaks';
 import BreakCard from './BreakCard';
 import { parseAsArrayOfBreakSlots, parseAsString, safelyParse } from '../../../utils/parsers';
@@ -15,7 +14,6 @@ import { parseAsArrayOfBreakSlots, parseAsString, safelyParse } from '../../../u
 const PER_PAGE = 9;
 
 export const Grid: React.FC = () => {
-    const { filters } = useSelector(selector);
     const dispatch = useDispatch();
     const [breaks, setBreaks] = useState<ContentfulBreak[] | null>(null);
     const [totalBreaks, setTotalBreaks] = useState(0);
@@ -58,7 +56,7 @@ export const Grid: React.FC = () => {
                 createBreakCollection(pageNumber, cat);
             }
         },
-        [cat, filters.productTypes]
+        [cat, createBreakCollection, dispatch]
     );
 
     // Create the product collection on load.
@@ -66,14 +64,14 @@ export const Grid: React.FC = () => {
         if (!breaks && cat) {
             createBreakCollection(0, cat);
         }
-    }, [breaks, cat]);
+    }, [breaks, cat, createBreakCollection]);
 
     // Filter the collection.
     useEffect(() => {
         if (cat) {
             createBreakCollection(0, cat);
         }
-    }, [cat]);
+    }, [cat, createBreakCollection]);
 
     return (
         <div className="flex w-full p-4">

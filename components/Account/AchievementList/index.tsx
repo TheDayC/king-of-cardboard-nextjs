@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useSession } from 'next-auth/react';
 
@@ -14,21 +14,18 @@ export const AchievementList: React.FC = () => {
     const [shouldFetchAchievements, setShouldFetchAchievements] = useState(true);
     const [objectives, setObjectives] = useState<ObjectiveType[] | null>(null);
     const [achievements, setAchievements] = useState<Achievement[] | null>(null);
-    const [page, setPage] = useState(0);
-    const [count, setCount] = useState(0);
 
-    const fetchObjectives = async (service: Achievements) => {
-        const hasFetchedObjectives = await service.fetchObjectives(null, null, page);
+    const fetchObjectives = useCallback(async (service: Achievements) => {
+        const hasFetchedObjectives = await service.fetchObjectives(null, null, 0);
 
         if (hasFetchedObjectives) {
             setObjectives(service.objectives);
-            setCount(service.objectivesCount);
         }
 
         if (service.achievements) {
             setAchievements(service.achievements);
         }
-    };
+    }, []);
 
     // Fetch achievements
     useEffect(() => {
@@ -38,7 +35,7 @@ export const AchievementList: React.FC = () => {
             fetchObjectives(achievementService);
             setShouldFetchAchievements(false);
         }
-    }, [accessToken, session, shouldFetchAchievements]);
+    }, [accessToken, session, shouldFetchAchievements, fetchObjectives]);
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative">

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { round } from 'lodash';
 import { DateTime } from 'luxon';
+
 import { parseAsNumber, safelyParse } from '../../../../../utils/parsers';
 
 interface BreakProps {
@@ -28,14 +29,14 @@ export const Countdown: React.FC<BreakProps> = ({ breakDate }) => {
         return () => {
             clearInterval(interval);
         };
-    }, []);
+    }, [interval]);
 
     // If the duration has passed then clear the interval.
     useEffect(() => {
         if (hasPassed) {
             clearInterval(interval);
         }
-    }, [hasPassed]);
+    }, [hasPassed, interval]);
 
     if (hasPassed) {
         return null;

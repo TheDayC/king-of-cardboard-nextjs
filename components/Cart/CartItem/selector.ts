@@ -1,9 +1,8 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectCartData, selectGlobalData, selectProductData } from '../../../store/state/selectors';
+import { selectGlobalData } from '../../../store/state/selectors';
 
-const selector = createSelector([selectCartData, selectProductData, selectGlobalData], (cart, products, global) => ({
-    products,
+const selector = createSelector([selectGlobalData], (global) => ({
     accessToken: global.accessToken,
 }));
 

@@ -8,7 +8,7 @@ import selector from './selector';
 import { requestPasswordReset } from '../../utils/account';
 import { AlertLevel } from '../../enums/system';
 import { addAlert } from '../../store/slices/alerts';
-import { isArrayOfErrors, isError } from '../../utils/typeguards';
+import { isArrayOfErrors } from '../../utils/typeguards';
 
 interface Submit {
     emailAddress?: string;

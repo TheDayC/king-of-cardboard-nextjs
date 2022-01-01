@@ -226,7 +226,6 @@ export async function createPaymentSource(
         const res = await cl.post(`/api/${paymentSourceType}`, {
             data: {
                 type: paymentSourceType,
-                attributes: {},
                 relationships: {
                     order: {
                         data: {

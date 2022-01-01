@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { IoLocationSharp } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
 import { BsCheck2Circle } from 'react-icons/bs';
@@ -67,26 +67,29 @@ export const Address: React.FC<AddressProps> = ({ id, name, isShipping }) => {
         }
     };
 
-    const fetchAddress = async (token: string) => {
-        const res = await getAddress(token, id);
+    const fetchAddress = useCallback(
+        async (token: string, addressId: string) => {
+            const res = await getAddress(token, addressId);
 
-        if (isArrayOfErrors(res)) {
-            res.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
-        } else {
-            setAddress(res);
-        }
-    };
+            if (isArrayOfErrors(res)) {
+                res.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                setAddress(res);
+            }
+        },
+        [dispatch]
+    );
 
     useEffect(() => {
         if (accessToken && id && shouldFetchAddress) {
             // Stop multiple requests using internal state.
             setShouldFetchAddress(false);
 
-            fetchAddress(accessToken);
+            fetchAddress(accessToken, id);
         }
-    }, [id, accessToken, shouldFetchAddress]);
+    }, [id, accessToken, shouldFetchAddress, fetchAddress]);
 
     return (
         <div

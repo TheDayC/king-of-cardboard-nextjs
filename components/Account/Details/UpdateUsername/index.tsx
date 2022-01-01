@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AiOutlineUser } from 'react-icons/ai';
-import axios from 'axios';
 import { useSession } from 'next-auth/react';
+import { useDispatch } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
-import { useDispatch } from 'react-redux';
 import { AlertLevel } from '../../../../enums/system';
 import { addAlert } from '../../../../store/slices/alerts';
-import { errorHandler } from '../../../../middleware/errors';
 import { updateUsername } from '../../../../utils/account';
 import { isArrayOfErrors } from '../../../../utils/typeguards';
 
@@ -25,7 +23,6 @@ export const UpdateUsername: React.FC = () => {
         formState: { errors },
     } = useForm();
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState<string | null>(null);
     const { data: session } = useSession();
     const dispatch = useDispatch();
 
@@ -52,12 +49,6 @@ export const UpdateUsername: React.FC = () => {
 
         setLoading(false);
     };
-
-    useEffect(() => {
-        if (success) {
-            dispatch(addAlert({ message: success, level: AlertLevel.Success }));
-        }
-    }, [success]);
 
     return (
         <React.Fragment>

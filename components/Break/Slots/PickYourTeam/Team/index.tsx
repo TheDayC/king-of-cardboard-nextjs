@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 
-import { SkuItem } from '../../../../../types/commerce';
-import { getSkuDetails, setLineItem } from '../../../../../utils/commerce';
+import { setLineItem } from '../../../../../utils/commerce';
 import selector from './selector';
 import { BreakSlotWithSku } from '../../../../../types/breaks';
 import { fetchOrder } from '../../../../../store/slices/cart';
@@ -60,7 +59,7 @@ export const Team: React.FC<TeamProps> = ({ skuItem, setLoading }) => {
         if (!shouldFetchOrder && isInBasket) {
             setLoading(false);
         }
-    }, [shouldFetchOrder, isInBasket]);
+    }, [shouldFetchOrder, isInBasket, setLoading]);
 
     return (
         <div

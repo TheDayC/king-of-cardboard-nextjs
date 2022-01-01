@@ -11,7 +11,7 @@ import { getSkus } from '../../utils/commerce';
 import { SkuItem } from '../../types/commerce';
 import { CartItem as CartItemType } from '../../store/types/state';
 import { setUpdatingCart } from '../../store/slices/cart';
-import { isArrayOfErrors, isError } from '../../utils/typeguards';
+import { isArrayOfErrors } from '../../utils/typeguards';
 import { addAlert } from '../../store/slices/alerts';
 import { AlertLevel } from '../../enums/system';
 
@@ -22,34 +22,37 @@ export const Cart: React.FC = () => {
 
     const itemPlural = cartItemCount === 1 ? 'item' : 'items';
 
-    const fetchMatchingSkuItems = useCallback(async (token: string, cartItems: CartItemType[]) => {
-        const fetchedSkuItems = await getSkus(
-            token,
-            cartItems.map((item) => item.sku_code)
-        );
+    const fetchMatchingSkuItems = useCallback(
+        async (token: string, cartItems: CartItemType[]) => {
+            const fetchedSkuItems = await getSkus(
+                token,
+                cartItems.map((item) => item.sku_code)
+            );
 
-        if (isArrayOfErrors(fetchedSkuItems)) {
-            fetchedSkuItems.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
-        } else {
-            if (fetchedSkuItems) {
-                setSkuItems(fetchedSkuItems);
-                dispatch(setUpdatingCart(false));
+            if (isArrayOfErrors(fetchedSkuItems)) {
+                fetchedSkuItems.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                if (fetchedSkuItems) {
+                    setSkuItems(fetchedSkuItems);
+                    dispatch(setUpdatingCart(false));
+                }
             }
-        }
-    }, []);
+        },
+        [dispatch]
+    );
 
     useEffect(() => {
         dispatch(resetConfirmationDetails());
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
         if (accessToken && items) {
             dispatch(setUpdatingCart(true));
             fetchMatchingSkuItems(accessToken, items);
         }
-    }, [accessToken, items]);
+    }, [accessToken, items, dispatch, fetchMatchingSkuItems]);
 
     return (
         <div className="flex flex-col">
@@ -78,7 +81,7 @@ export const Cart: React.FC = () => {
                                             skuId={matchingSkuItem ? matchingSkuItem.id : null}
                                             sku={item.sku_code || null}
                                             name={item.name || null}
-                                            image_url={item.image_url || null}
+                                            //image_url={item.image_url || null}
                                             unitAmount={item.formatted_unit_amount || null}
                                             totalAmount={item.formatted_total_amount || null}
                                             quantity={item.quantity || null}

@@ -56,7 +56,8 @@ export const Header: React.FC = () => {
                             <div className="avatar cursor-pointer relative" tabIndex={0}>
                                 {icon ? (
                                     <div className="rounded-full w-8 h-8 m-1 bg-white">
-                                        <img src={icon || ''} />
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src={icon || ''} alt="user icon" title="User Icon" />
                                     </div>
                                 ) : (
                                     <div

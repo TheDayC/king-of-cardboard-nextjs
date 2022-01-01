@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { BreakSlot, BreakSlotWithSku } from '../../../../types/breaks';
-import { SkuItem } from '../../../../types/commerce';
 import { getSkus } from '../../../../utils/commerce';
 import Team from './Team';
 import selector from './selector';
@@ -10,7 +9,7 @@ import { mergeBreakSlotData } from '../../../../utils/breaks';
 import Loading from '../../../Loading';
 import { addAlert } from '../../../../store/slices/alerts';
 import { AlertLevel } from '../../../../enums/system';
-import { isArrayOfErrors, isError } from '../../../../utils/typeguards';
+import { isArrayOfErrors } from '../../../../utils/typeguards';
 
 interface PickYourTeamProps {
     slots: BreakSlot[];
@@ -30,29 +29,32 @@ export const PickYourTeam: React.FC<PickYourTeamProps> = ({ slots }) => {
         }
     }, [slots]);
 
-    const fetchSkuItems = useCallback(async (token: string, skus: string[]) => {
-        const skuItems = await getSkus(token, skus);
+    const fetchSkuItems = useCallback(
+        async (token: string, skus: string[]) => {
+            const skuItems = await getSkus(token, skus);
 
-        if (isArrayOfErrors(skuItems)) {
-            skuItems.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
-        } else {
-            if (skuItems) {
-                const slotWithSkuData = mergeBreakSlotData(slots, skuItems);
+            if (isArrayOfErrors(skuItems)) {
+                skuItems.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                if (skuItems) {
+                    const slotWithSkuData = mergeBreakSlotData(slots, skuItems);
 
-                if (slotWithSkuData) {
-                    setSkuItemData(slotWithSkuData);
+                    if (slotWithSkuData) {
+                        setSkuItemData(slotWithSkuData);
+                    }
                 }
             }
-        }
-    }, []);
+        },
+        [dispatch, slots]
+    );
 
     useEffect(() => {
         if (accessToken && sku_codes) {
             fetchSkuItems(accessToken, sku_codes);
         }
-    }, [accessToken, sku_codes]);
+    }, [accessToken, sku_codes, fetchSkuItems]);
 
     if (skuItemData) {
         return (

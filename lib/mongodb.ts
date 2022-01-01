@@ -2,7 +2,6 @@
 import { MongoClient } from 'mongodb';
 
 const MONGODB_URI = process.env.MONGODB_URI || '';
-const MONGODB_DB = process.env.DB_NAME || '';
 const isDev = process.env.NODE_ENV === 'development';
 
 if (!process.env.MONGODB_URI) {

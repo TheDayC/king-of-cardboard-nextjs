@@ -8,6 +8,7 @@ import * as aws from '@aws-sdk/client-ses';
 import {
     parseAsArrayOfCommerceLayerErrors,
     parseAsArrayOfItems,
+    parseAsCustomerAddress,
     parseAsCustomerDetails,
     parseAsNumber,
     parseAsOrder,
@@ -34,25 +35,26 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
             const order = safelyParse(req, 'body.order', parseAsOrder, null);
             const items = safelyParse(req, 'body.items', parseAsArrayOfItems, null);
             const customerDetails = safelyParse(req, 'body.customerDetails', parseAsCustomerDetails, null);
+            const billingAddress = safelyParse(req, 'body.billingAddress', parseAsCustomerAddress, null);
+            const shippingAddress = safelyParse(req, 'body.shippingAddress', parseAsCustomerAddress, null);
 
-            if (order && items && customerDetails) {
+            if (order && items && customerDetails && billingAddress && shippingAddress) {
                 try {
+                    const { first_name: firstName, last_name: lastName, phone, email } = customerDetails;
                     const {
-                        firstName,
-                        lastName,
-                        addressLineOne,
-                        addressLineTwo,
+                        line_1: addressLineOne,
+                        line_2: addressLineTwo,
                         city,
-                        postcode,
-                        county,
-                        phone,
-                        email,
-                        shippingAddressLineOne,
-                        shippingAddressLineTwo,
-                        shippingCity,
-                        shippingCounty,
-                        shippingPostcode,
-                    } = customerDetails;
+                        zip_code: postcode,
+                        state_code: county,
+                    } = billingAddress;
+                    const {
+                        line_1: shippingAddressLineOne,
+                        line_2: shippingAddressLineTwo,
+                        city: shippingCity,
+                        zip_code: shippingPostcode,
+                        state_code: shippingCounty,
+                    } = shippingAddress;
                     const {
                         formatted_shipping_amount: shipping,
                         formatted_subtotal_amount: subTotal,

@@ -3,12 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { StripeCardElement, Stripe } from '@stripe/stripe-js';
-import { get } from 'lodash';
 import { useRouter } from 'next/router';
+import { Session } from 'next-auth';
+import { useSession } from 'next-auth/react';
 
-import selector from './selector';
 import { setCurrentStep } from '../../../store/slices/checkout';
-import Method from './Method';
 import { createPaymentSource } from '../../../utils/commerce';
 import { confirmOrder, refreshPayment, sendOrderConfirmation } from '../../../utils/payment';
 import { CartItem, CustomerAddress, CustomerDetails } from '../../../store/types/state';
@@ -16,13 +15,13 @@ import { setCheckoutLoading } from '../../../store/slices/global';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import { Order } from '../../../types/cart';
 import Achievements from '../../../services/achievments';
-import { useSession } from 'next-auth/react';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
-import { Session } from 'next-auth';
 import { setShouldFetchRewards } from '../../../store/slices/account';
 import { addAlert } from '../../../store/slices/alerts';
 import { isArrayOfErrors } from '../../../utils/typeguards';
 import { AlertLevel } from '../../../enums/system';
+import selector from './selector';
+import Method from './Method';
 
 export const Payment: React.FC = () => {
     const dispatch = useDispatch();
@@ -42,11 +41,7 @@ export const Payment: React.FC = () => {
         billingAddress,
         shippingAddress,
     } = useSelector(selector);
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm();
+    const { register, handleSubmit } = useForm();
     const { data: session } = useSession();
     const isCurrentStep = currentStep === 2;
 
@@ -92,9 +87,9 @@ export const Payment: React.FC = () => {
                         payment_method: {
                             card,
                             billing_details: {
-                                name: `${customerDetails.first_name || ''} ${customerDetails.last_name || ''}`,
-                                email: customerDetails.email || '',
-                                phone: customerDetails.phone || '',
+                                name: `${billingAddress.first_name || ''} ${billingAddress.last_name || ''}`,
+                                email: billingAddress.email || '',
+                                phone: billingAddress.phone || '',
                                 address: {
                                     city: billingAddress.city || '',
                                     country: billingAddress.country_code || 'GB',
@@ -126,6 +121,7 @@ export const Payment: React.FC = () => {
                                     paymentSourceType
                                 );
                                 const hasBeenAuthorized = await confirmOrder(accessToken, orderId, '_authorize');
+
                                 const hasBeenApproved = await confirmOrder(
                                     accessToken,
                                     orderId,
@@ -172,7 +168,9 @@ export const Payment: React.FC = () => {
                                         const orderConfirmationRes = await sendOrderConfirmation(
                                             order,
                                             items,
-                                            customerDetails
+                                            customerDetails,
+                                            billingAddress,
+                                            shippingAddress
                                         );
 
                                         if (isArrayOfErrors(orderConfirmationRes)) {
@@ -247,8 +245,10 @@ export const Payment: React.FC = () => {
                     }
                 }
             }
+
+            dispatch(setCheckoutLoading(false));
         },
-        [dispatch]
+        [dispatch, checkoutLoading]
     );
 
     const onSubmit = useCallback(
@@ -299,7 +299,7 @@ export const Payment: React.FC = () => {
         if (confirmationDetails.order && confirmationDetails.items.length > 0) {
             router.push('/confirmation');
         }
-    }, [confirmationDetails]);
+    }, [confirmationDetails, router]);
 
     return (
         <div

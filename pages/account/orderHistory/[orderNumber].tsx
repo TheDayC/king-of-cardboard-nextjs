@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import Error from 'next/error';
@@ -16,12 +16,11 @@ import {
 } from '../../../utils/parsers';
 import selector from './selector';
 import { CommerceLayerResponse } from '../../../types/api';
-import { OrderHistoryLineItem, OrderHistoryLineItemWithSkuData } from '../../../types/account';
+import { OrderHistoryLineItemWithSkuData } from '../../../types/account';
 import LongOrder from '../../../components/Account/OrderHistory/LongOrder';
 import { getSkus } from '../../../utils/commerce';
-import { SkuItem } from '../../../types/commerce';
 import Loading from '../../../components/Loading';
-import { isArrayOfErrors, isError } from '../../../utils/typeguards';
+import { isArrayOfErrors } from '../../../utils/typeguards';
 import { addAlert } from '../../../store/slices/alerts';
 import { AlertLevel } from '../../../enums/system';
 
@@ -89,105 +88,98 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
     const total = safelyParse(order, 'attributes.formatted_total_amount', parseAsString, '');
     const placedAt = safelyParse(order, 'attributes.placed_at', parseAsString, '');
     const updatedAt = safelyParse(order, 'attributes.updated_at', parseAsString, '');
-
-    const includedLineItems = useMemo(
-        () => (included ? included.filter((include) => include.attributes.sku_code) : null),
-        [included]
+    const paymentMethodDetails = safelyParse(
+        order,
+        'attributes.payment_source_details.payment_method_details',
+        parseAsPaymentMethodDetails,
+        null
     );
-    const lineItemSkus = useMemo(
-        () => (includedLineItems ? includedLineItems.map((include) => include.attributes.sku_code) : []),
-        [includedLineItems]
-    );
+    const shippingAddressId = safelyParse(order, 'relationships.shipping_address.data.id', parseAsString, '');
+    const shippingAddressInclude = included
+        ? included.find((include) => include.type === 'addresses' && include.id === shippingAddressId)
+        : null;
+    const shippingAddress = safelyParse(shippingAddressInclude, 'attributes', parseAsHistoricalAddress, blankAddress);
+    const billingAddressId = safelyParse(order, 'relationships.billing_address.data.id', parseAsString, '');
+    const billingAddressInclude = included
+        ? included.find((include) => include.type === 'addresses' && include.id === billingAddressId)
+        : null;
+    const billingAddress = safelyParse(billingAddressInclude, 'attributes', parseAsHistoricalAddress, blankAddress);
 
-    const shippingAddress = useMemo(() => {
-        const shippingAddressId = safelyParse(order, 'relationships.shipping_address.data.id', parseAsString, '');
-        const shippingAddressInclude = included
-            ? included.find((include) => include.type === 'addresses' && include.id === shippingAddressId)
-            : null;
+    const fetchOrder = useCallback(
+        async (token: string, email: string, order: string) => {
+            const res = await getHistoricalOrder(token, email, order);
 
-        return safelyParse(shippingAddressInclude, 'attributes', parseAsHistoricalAddress, blankAddress);
-    }, [included]);
-
-    const billingAddress = useMemo(() => {
-        const billingAddressId = safelyParse(order, 'relationships.billing_address.data.id', parseAsString, '');
-        const billingAddressInclude = included
-            ? included.find((include) => include.type === 'addresses' && include.id === billingAddressId)
-            : null;
-
-        return safelyParse(billingAddressInclude, 'attributes', parseAsHistoricalAddress, blankAddress);
-    }, [included]);
-
-    const paymentMethodDetails = useMemo(
-        () =>
-            safelyParse(
-                order,
-                'attributes.payment_source_details.payment_method_details',
-                parseAsPaymentMethodDetails,
-                null
-            ),
-        [order]
-    );
-
-    const fetchOrder = useCallback(async (token: string, email: string, order: string) => {
-        const res = await getHistoricalOrder(token, email, order);
-
-        if (isArrayOfErrors(res)) {
-            res.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
-        } else {
-            const { orders: responseOrders, included: responseIncluded } = res;
-
-            if (responseOrders) {
-                setOrder(responseOrders[0]);
-            }
-
-            if (responseIncluded) {
-                setIncluded(responseIncluded);
-            }
-        }
-    }, []);
-
-    const fetchSkuItems = useCallback(async (token: string, skus: string[], includedItems: CommerceLayerResponse[]) => {
-        const skuItems = await getSkus(token, skus);
-
-        if (isArrayOfErrors(skuItems)) {
-            skuItems.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
-        } else {
-            if (skuItems) {
-                const lineItems: OrderHistoryLineItemWithSkuData[] = includedItems.map((lineItem) => {
-                    const skuCode = safelyParse(lineItem, 'attributes.sku_code', parseAsString, null);
-                    const skuItem = skuItems ? skuItems.find((item) => item.sku_code === skuCode) : null;
-
-                    return {
-                        lineItemId: safelyParse(lineItem, 'id', parseAsString, ''),
-                        skuId: safelyParse(skuItem, 'id', parseAsString, ''),
-                        name: safelyParse(skuItem, 'name', parseAsString, null),
-                        skuCode: skuCode,
-                        imageUrl: safelyParse(skuItem, 'image_url', parseAsString, null),
-                        quantity: safelyParse(lineItem, 'attributes.quantity', parseAsNumber, 0),
-                        amount: safelyParse(skuItem, 'amount', parseAsString, null),
-                        compareAmount: safelyParse(skuItem, 'amount', parseAsString, null),
-                    };
+            if (isArrayOfErrors(res)) {
+                res.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
                 });
-                setLineItems(lineItems);
+            } else {
+                const { orders: responseOrders, included: responseIncluded } = res;
+
+                if (responseOrders) {
+                    setOrder(responseOrders[0]);
+                }
+
+                if (responseIncluded) {
+                    setIncluded(responseIncluded);
+                }
             }
-        }
-    }, []);
+        },
+        [dispatch]
+    );
+
+    const fetchSkuItems = useCallback(
+        async (token: string, skus: string[], includedItems: CommerceLayerResponse[]) => {
+            const skuItems = await getSkus(token, skus);
+
+            if (isArrayOfErrors(skuItems)) {
+                skuItems.forEach((value) => {
+                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                });
+            } else {
+                if (skuItems) {
+                    const lineItems: OrderHistoryLineItemWithSkuData[] = includedItems.map((lineItem) => {
+                        const skuCode = safelyParse(lineItem, 'attributes.sku_code', parseAsString, null);
+                        const skuItem = skuItems ? skuItems.find((item) => item.sku_code === skuCode) : null;
+
+                        return {
+                            lineItemId: safelyParse(lineItem, 'id', parseAsString, ''),
+                            skuId: safelyParse(skuItem, 'id', parseAsString, ''),
+                            name: safelyParse(skuItem, 'name', parseAsString, null),
+                            skuCode: skuCode,
+                            imageUrl: safelyParse(skuItem, 'image_url', parseAsString, null),
+                            quantity: safelyParse(lineItem, 'attributes.quantity', parseAsNumber, 0),
+                            amount: safelyParse(skuItem, 'amount', parseAsString, null),
+                            compareAmount: safelyParse(skuItem, 'amount', parseAsString, null),
+                        };
+                    });
+                    setLineItems(lineItems);
+                }
+            }
+        },
+        [dispatch]
+    );
 
     useEffect(() => {
         if (accessToken && emailAddress && orderNumber) {
             fetchOrder(accessToken, emailAddress, orderNumber);
         }
-    }, [accessToken, emailAddress, orderNumber]);
+    }, [accessToken, emailAddress, orderNumber, fetchOrder]);
 
     useEffect(() => {
+        const includedLineItems = included
+            ? included.filter((include) => safelyParse(include, 'attributes.sku_code', parseAsString, null))
+            : null;
+        const lineItemSkus = includedLineItems
+            ? includedLineItems
+                  .map((include) => safelyParse(include, 'attributes.sku_code', parseAsString, ''))
+                  .filter((include) => include.length <= 0)
+            : [];
+
         if (accessToken && lineItemSkus && includedLineItems) {
             fetchSkuItems(accessToken, lineItemSkus, includedLineItems);
         }
-    }, [accessToken, lineItemSkus, includedLineItems]);
+    }, [accessToken, included, fetchSkuItems]);
 
     // Show error page if a code is provided.
     if (errorCode && typeof errorCode === 'number') {
@@ -200,8 +192,14 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
             <div className="flex p-4 relative">
                 <div className="container mx-auto">
                     <div className="flex flex-row w-full justify-start items-start">
-                        <div className="w-1/4">
-                            <AccountMenu />
+                        <div className="hidden w-1/4 md:block">
+                            <AccountMenu isDropdown={false} />
+                        </div>
+                        <div className="dropdown w-full p-2 md:hidden">
+                            <div tabIndex={0} className="btn btn-block">
+                                Account Menu
+                            </div>
+                            <AccountMenu isDropdown />
                         </div>
                         <div className="flex flex-col py-4 px-8 w-3/4 relative">
                             <Loading show={Boolean(!order || !lineItems)} />
