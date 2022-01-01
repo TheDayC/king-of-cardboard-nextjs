@@ -13,8 +13,8 @@ import {
 } from '../../../../../store/slices/checkout';
 import { CommerceLayerResponse } from '../../../../../types/api';
 import { getAddress } from '../../../../../utils/account';
-import { updateAddressClone } from '../../../../../utils/checkout';
-import { parseAsString, safelyParse, parseAddress } from '../../../../../utils/parsers';
+import { updateAddress, updateAddressClone } from '../../../../../utils/checkout';
+import { parseAsString, safelyParse, parseAddress, parseBillingAddress } from '../../../../../utils/parsers';
 import { isArrayOfErrors } from '../../../../../utils/typeguards';
 import selector from './selector';
 import { setCheckoutLoading } from '../../../../../store/slices/global';
@@ -48,17 +48,13 @@ export const Address: React.FC<AddressProps> = ({ id, name, isShipping }) => {
                 });
             } else {
                 if (res) {
-                    if (isShipping) {
-                        dispatch(setCloneShippingAddressId(id));
-                    } else {
-                        dispatch(setCloneBillingAddressId(id));
-                    }
-
                     const addressPayload = parseAddress(address);
 
                     if (isShipping) {
+                        dispatch(setCloneShippingAddressId(id));
                         dispatch(setShippingAddress(addressPayload));
                     } else {
+                        dispatch(setCloneBillingAddressId(id));
                         dispatch(setBillingAddress(addressPayload));
                     }
                 }

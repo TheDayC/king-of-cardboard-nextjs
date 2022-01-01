@@ -180,7 +180,7 @@ export function parseBillingAddress(data: unknown): Partial<CustomerAddress> {
     return {
         city: safelyParse(data, 'billingCity', parseAsString, null),
         company: safelyParse(data, 'billingCompany', parseAsString, null),
-        country_code: 'GB',
+        country_code: safelyParse(data, 'country_code', parseAsString, 'GB'),
         line_1: safelyParse(data, 'billingAddressLineOne', parseAsString, null),
         line_2: safelyParse(data, 'billingAddressLineTwo', parseAsString, null),
         state_code: safelyParse(data, 'billingCounty', parseAsString, null),
@@ -192,11 +192,23 @@ export function parseShippingAddress(data: unknown): Partial<CustomerAddress> {
     return {
         city: safelyParse(data, 'shippingCity', parseAsString, null),
         company: safelyParse(data, 'shippingCompany', parseAsString, null),
-        country_code: 'GB',
+        country_code: safelyParse(data, 'country_code', parseAsString, 'GB'),
         line_1: safelyParse(data, 'shippingAddressLineOne', parseAsString, null),
         line_2: safelyParse(data, 'shippingAddressLineTwo', parseAsString, null),
         state_code: safelyParse(data, 'shippingCounty', parseAsString, null),
         zip_code: safelyParse(data, 'shippingPostcode', parseAsString, null),
+    };
+}
+
+export function parseExistingAddress(data: unknown): Partial<CustomerAddress> {
+    return {
+        city: safelyParse(data, 'city', parseAsString, null),
+        company: safelyParse(data, 'company', parseAsString, null),
+        country_code: safelyParse(data, 'country_code', parseAsString, 'GB'),
+        line_1: safelyParse(data, 'line_1', parseAsString, null),
+        line_2: safelyParse(data, 'line_2', parseAsString, null),
+        state_code: safelyParse(data, 'state_code', parseAsString, null),
+        zip_code: safelyParse(data, 'zip_code', parseAsString, null),
     };
 }
 
