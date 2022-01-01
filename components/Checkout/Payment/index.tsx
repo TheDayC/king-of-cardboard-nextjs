@@ -6,6 +6,8 @@ import { StripeCardElement, Stripe } from '@stripe/stripe-js';
 import { useRouter } from 'next/router';
 import { Session } from 'next-auth';
 import { useSession } from 'next-auth/react';
+import { BsPaypal } from 'react-icons/bs';
+import { FaStripeS } from 'react-icons/fa';
 
 import { setCurrentStep } from '../../../store/slices/checkout';
 import { createPaymentSource } from '../../../utils/commerce';
@@ -22,7 +24,7 @@ import { AlertLevel } from '../../../enums/system';
 import selector from './selector';
 import SelectionWrapper from '../../SelectionWrapper';
 import Source from './Source';
-import { buildPaymentAttributes, updatePaymentMethod } from '../../../utils/checkout';
+import { buildPaymentAttributes, paymentBtnText, updatePaymentMethod } from '../../../utils/checkout';
 
 export const Payment: React.FC = () => {
     const dispatch = useDispatch();
@@ -46,6 +48,9 @@ export const Payment: React.FC = () => {
     const { data: session } = useSession();
     const isCurrentStep = currentStep === 2;
     const [paymentMethod, setPaymentMethod] = useState('stripe_payments');
+    const btnText = paymentBtnText(paymentMethod);
+    const paypalClass = 'inline-block mr-3 text-md -mt-0.5 text-blue-800';
+    const stripeClass = 'inline-block mr-3 text-md -mt-0.5 text-indigo-400';
 
     const handleEdit = () => {
         if (!isCurrentStep) {
@@ -338,23 +343,31 @@ export const Payment: React.FC = () => {
             <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
                 {!isCurrentStep ? 'Payment - Edit' : 'Payment'}
             </h3>
-            <div className="collapse-content">
+            <div className="collapse-content p-4">
                 <form onSubmit={handleSubmit(onSubmit)}>
                     {paymentMethods &&
                         paymentMethods.map((method) => {
                             const sourceType = method.payment_source_type;
+                            const isPayPal = sourceType === 'paypal_payments';
+                            const logo = isPayPal ? (
+                                <BsPaypal className={paypalClass} />
+                            ) : (
+                                <FaStripeS className={stripeClass} />
+                            );
+                            const title = isPayPal ? 'PayPal' : 'Credit / Debit Card (Stripe)';
 
                             return (
                                 <SelectionWrapper
                                     id={sourceType}
-                                    title={method.name}
+                                    title={title}
                                     name="paymentMethod"
                                     isChecked={paymentMethod === sourceType}
                                     defaultChecked={sourceType === 'stripe_payments'}
+                                    titleLogo={logo}
                                     onSelect={handlePaymentMethodSelect}
                                     key={`payment-method-${method.id}`}
                                 >
-                                    <Source sourceType={sourceType} />
+                                    {!isPayPal && <Source sourceType={sourceType} />}
                                 </SelectionWrapper>
                             );
                         })}
@@ -364,7 +377,7 @@ export const Payment: React.FC = () => {
                                 !stripe || checkoutLoading ? ' btn-disabled' : ''
                             }`}
                         >
-                            {!checkoutLoading ? 'Place Order' : ''}
+                            {!checkoutLoading ? btnText : ''}
                         </button>
                     </div>
                 </form>

@@ -575,3 +575,12 @@ export async function completePayPalOrder(
         return errorHandler(error, 'Failed to confirm your paypal order, please try again.');
     }
 }
+
+export function paymentBtnText(method: string): string {
+    switch (method) {
+        case 'paypal_payments':
+            return 'Checkout with PayPal';
+        default:
+            return 'Checkout';
+    }
+}
