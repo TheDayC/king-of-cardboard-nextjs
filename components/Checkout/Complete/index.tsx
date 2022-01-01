@@ -10,6 +10,7 @@ import selector from './selector';
 import { confirmOrder, sendOrderConfirmation } from '../../../utils/payment';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import { setCheckoutLoading } from '../../../store/slices/global';
+import Addresses from './Addresses';
 
 interface CompleteProps {
     paymentId: string | null;
@@ -117,7 +118,18 @@ const Complete: React.FC<CompleteProps> = ({ paymentId, payerId, orderId }) => {
     return (
         <div className="flex flex-col w-full">
             <h1 className="text-2xl mb-4">Complete Order</h1>
-            <p className="mb-4">Please review your details below and complete your order.</p>
+            <p>Please review your details below and complete your order.</p>
+            <div className="divider lightDivider"></div>
+            <div className="flex-1 flex-col mb-4">
+                <h4 className="text-lg font-bold">Email Address:</h4>
+                <p>{customerDetails.email || ''}</p>
+            </div>
+            <Addresses />
+            <div className="divider lightDivider"></div>
+            <p>
+                If the personal and item details are correct please click the complete order button below to finalise
+                your payment.
+            </p>
             <div className="flex justify-end p-4">
                 <button
                     type="submit"
