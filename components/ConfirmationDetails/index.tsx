@@ -22,7 +22,7 @@ export const ConfirmationDetails: React.FC = () => {
                 <div className="divider"></div>
                 <div className="flex flex-col">
                     <div className="flex-1 flex-col mb-4">
-                        <h4 className="text-lg font-bold">Customer:</h4>
+                        <h4 className="text-lg font-bold">Email Address:</h4>
                         <p>{customerDetails.email || ''}</p>
                     </div>
                     <div className="flex flex-col lg:flex-row justify-between">
