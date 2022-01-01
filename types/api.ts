@@ -35,6 +35,7 @@ export interface CommerceLayerLineItemRelationship {
 export interface PaymentSourceResponse {
     paymentId: string | null;
     clientSecret: string | null;
+    approvalUrl: string | null;
 }
 
 export interface CommerceLayerError {

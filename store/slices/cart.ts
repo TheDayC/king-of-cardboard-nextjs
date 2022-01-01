@@ -8,22 +8,13 @@ const cartSlice = createSlice({
     initialState: cartInitialState,
     reducers: {
         setOrder(state, action) {
-            return {
-                ...state,
-                order: action.payload,
-            };
+            state.order = action.payload;
         },
         setLineItems(state, action) {
-            return {
-                ...state,
-                items: action.payload,
-            };
+            state.items = action.payload;
         },
         setPaymentMethods(state, action) {
-            return {
-                ...state,
-                paymentMethods: action.payload,
-            };
+            state.paymentMethods = action.payload;
         },
         fetchOrder(state, action) {
             state.shouldFetchOrder = action.payload;
