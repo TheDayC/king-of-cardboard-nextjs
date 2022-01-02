@@ -7,22 +7,13 @@ import { CommerceAuthProps } from '../../types/commerce';
 import Summary from '../../components/Checkout/Summary';
 import ConfirmationDetails from '../../components/ConfirmationDetails';
 import { setCheckoutLoading } from '../../store/slices/global';
-import { createCLOrder, resetCart } from '../../store/slices/cart';
+import { resetCart, setShouldCreateOrder } from '../../store/slices/cart';
 import { resetCheckoutDetails } from '../../store/slices/checkout';
 import selector from './selector';
 
 export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
     const { confirmationOrderNumber, accessToken } = useSelector(selector);
     const dispatch = useDispatch();
-    const { data: session } = useSession();
-    const isGuest = !Boolean(session);
-
-    // Create a brand new order and set the id in the store.
-    const generateOrder = useCallback(async () => {
-        if (accessToken) {
-            dispatch(createCLOrder({ accessToken, isGuest }));
-        }
-    }, [dispatch, isGuest, accessToken]);
 
     useEffect(() => {
         // Check to see if we've just arrived here from a successful order.
@@ -34,12 +25,12 @@ export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
             dispatch(resetCheckoutDetails());
 
             // Tell the system to generate a new order
-            generateOrder();
+            dispatch(setShouldCreateOrder(true));
 
             // Checkout has finished loading by moving to the confirmation.
             dispatch(setCheckoutLoading(false));
         }
-    }, [confirmationOrderNumber, accessToken, dispatch, generateOrder]);
+    }, [confirmationOrderNumber, accessToken, dispatch]);
 
     if (!confirmationOrderNumber) {
         return null;

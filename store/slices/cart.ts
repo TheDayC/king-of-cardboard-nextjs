@@ -2,31 +2,22 @@ import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { CartTotals, CreateOrder } from '../../types/cart';
-import { getCartTotals, getItemCount } from '../../utils/cart';
+import { CartItem, CartTotals, CreateOrder } from '../../types/cart';
+import { getCartItems, getCartTotals, getItemCount } from '../../utils/cart';
 import { createOrder } from '../../utils/commerce';
 import cartInitialState from '../state/cart';
-
-interface FetchItemCountInput {
-    accessToken: string;
-    orderId: string;
-}
+import { CommonThunkInput } from '../types/state';
 
 interface CreateOrderInput {
     accessToken: string;
     isGuest: boolean;
 }
 
-interface FetchSummaryInput {
-    accessToken: string;
-    orderId: string;
-}
-
 const hydrate = createAction<AppState>(HYDRATE);
 
 export const fetchItemCount = createAsyncThunk(
     'cart/fetchItemCount',
-    async (data: FetchItemCountInput): Promise<number> => {
+    async (data: CommonThunkInput): Promise<number> => {
         const { accessToken, orderId } = data;
 
         return await getItemCount(accessToken, orderId);
@@ -44,10 +35,19 @@ export const createCLOrder = createAsyncThunk(
 
 export const fetchCartTotals = createAsyncThunk(
     'cart/fetchCartTotals',
-    async (data: FetchSummaryInput): Promise<CartTotals> => {
+    async (data: CommonThunkInput): Promise<CartTotals> => {
         const { accessToken, orderId } = data;
 
         return await getCartTotals(accessToken, orderId);
+    }
+);
+
+export const fetchCartItems = createAsyncThunk(
+    'cart/fetchCartItems',
+    async (data: CommonThunkInput): Promise<CartItem[] | null> => {
+        const { accessToken, orderId } = data;
+
+        return await getCartItems(accessToken, orderId);
     }
 );
 
@@ -64,8 +64,14 @@ const cartSlice = createSlice({
         fetchOrder(state, action) {
             state.shouldFetchOrder = action.payload;
         },
+        setShouldCreateOrder(state, action) {
+            state.shouldCreateOrder = action.payload;
+        },
         setUpdatingCart(state, action) {
             state.isUpdatingCart = action.payload;
+        },
+        setShouldUpdateCart(state, action) {
+            state.shouldUpdateCart = action.payload;
         },
         resetCart() {
             return cartInitialState;
@@ -81,6 +87,7 @@ const cartSlice = createSlice({
 
                 state.orderId = orderId;
                 state.orderNumber = orderNumber;
+                state.shouldCreateOrder = false;
             }),
             builder.addCase(fetchCartTotals.fulfilled, (state, action) => {
                 const { subTotal, shipping, total } = action.payload;
@@ -89,6 +96,9 @@ const cartSlice = createSlice({
                 state.shipping = shipping;
                 state.total = total;
             }),
+            builder.addCase(fetchCartItems.fulfilled, (state, action) => {
+                state.items = action.payload;
+            }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,
                 ...action.payload[cartSlice.name],
@@ -96,5 +106,13 @@ const cartSlice = createSlice({
     },
 });
 
-export const { setLineItems, setPaymentMethods, fetchOrder, resetCart, setUpdatingCart } = cartSlice.actions;
+export const {
+    setLineItems,
+    setPaymentMethods,
+    fetchOrder,
+    resetCart,
+    setUpdatingCart,
+    setShouldCreateOrder,
+    setShouldUpdateCart,
+} = cartSlice.actions;
 export default cartSlice.reducer;

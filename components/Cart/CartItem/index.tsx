@@ -1,131 +1,95 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import { MdDeleteForever, MdRemoveCircleOutline, MdAddCircleOutline } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
-import { isArray } from 'lodash';
 
-import { fetchOrder, setUpdatingCart } from '../../../store/slices/cart';
-import { getSkuDetails, removeLineItem, updateLineItem } from '../../../utils/commerce';
-import { fetchProductByProductLink } from '../../../utils/products';
-import { ContentfulProductShort } from '../../../types/products';
+import { setShouldUpdateCart, setUpdatingCart } from '../../../store/slices/cart';
+import { removeLineItem, updateLineItem } from '../../../utils/commerce';
+import { ImageItem } from '../../../types/products';
 import selector from './selector';
 import styles from './cartitem.module.css';
+import { addError } from '../../../store/slices/alerts';
 
 interface BasketItemProps {
     id: string;
-    skuId: string | null;
-    sku: string | null;
-    name: string | null;
-    // image_url: string | null;
-    unitAmount: string | null;
-    totalAmount: string | null;
-    quantity: number | null;
+    sku: string;
+    name: string;
+    image: ImageItem;
+    unitAmount: string;
+    totalAmount: string;
+    quantity: number;
+    stock: number;
 }
 
 export const CartItem: React.FC<BasketItemProps> = ({
     id,
-    skuId,
     sku,
     name,
-    // image_url,
+    image,
     unitAmount,
     totalAmount,
     quantity,
+    stock,
 }) => {
     const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
-    const [isIncreaseDisabled, setIsIncreaseDisabled] = useState(false);
-    const [stock, setStock] = useState(0);
-    const [product, setProduct] = useState<ContentfulProductShort | null>(null);
-    const productName = product ? product.name : name;
-
-    const fetchCurrentLineItem = useCallback(async (token: string, skuItemId: string, skuCode: string) => {
-        const skuItem = await getSkuDetails(token, skuItemId);
-        const cmsProduct = await fetchProductByProductLink(skuCode);
-
-        if (cmsProduct && !isArray(cmsProduct)) {
-            setProduct(cmsProduct);
-        }
-
-        if (skuItem && skuItem.inventory) {
-            setStock(skuItem.inventory.quantity);
-        }
-    }, []);
 
     const handleRemoveItem = useCallback(async () => {
-        if (accessToken && id) {
-            dispatch(setUpdatingCart(true));
-            const hasDeleted = await removeLineItem(accessToken, id);
+        if (!accessToken || !id) return;
 
-            if (hasDeleted) {
-                dispatch(fetchOrder(true));
-            }
+        dispatch(setUpdatingCart(true));
+        const hasDeleted = await removeLineItem(accessToken, id);
+
+        if (hasDeleted) {
+            dispatch(setShouldUpdateCart(true));
+        } else {
+            dispatch(addError('Could not remove this item.'));
+            dispatch(setUpdatingCart(false));
         }
     }, [dispatch, accessToken, id]);
 
     const handleDecreaseAmount = useCallback(async () => {
-        // Check if the access token, line item id and quantity are available.
-        if (accessToken && id && quantity) {
-            // If they are, set a new quantity to check and remove the increase blocker.
-            const newQuantity = quantity - 1;
-            setIsIncreaseDisabled(false);
+        if (!accessToken || !id) return;
 
-            if (newQuantity > 0) {
-                // If the quantity is still above zero then add load blocker and update line item.
-                dispatch(setUpdatingCart(true));
-                const hasLineItemUpdated = await updateLineItem(accessToken, id, newQuantity);
+        const newQuantity = quantity - 1;
 
-                if (hasLineItemUpdated) {
-                    dispatch(fetchOrder(true));
-                }
+        if (newQuantity > 0) {
+            // If the quantity is still above zero then add load blocker and update line item.
+            dispatch(setUpdatingCart(true));
+            const hasLineItemUpdated = await updateLineItem(accessToken, id, newQuantity);
+
+            if (hasLineItemUpdated) {
+                dispatch(setShouldUpdateCart(true));
             } else {
-                // If the new quantity is zero or less remove the item from the cart.
-                handleRemoveItem();
+                dispatch(setUpdatingCart(false));
             }
+        } else {
+            // If the new quantity is zero or less remove the item from the cart.
+            handleRemoveItem();
         }
     }, [accessToken, id, quantity, dispatch, handleRemoveItem]);
 
     const handleIncreaseAmount = useCallback(async () => {
+        if (!accessToken || !id) return;
+
+        const newQuantity = quantity + 1;
+
         // If we're not allowed to increase anymore then just return.
-        if (isIncreaseDisabled) {
+        if (newQuantity >= stock) {
             return;
         }
 
-        // Check for our 3 required variables + currentProduct for comparison
-        if (accessToken && id && quantity && stock) {
-            // Create the new quantity for comparison.
-            const newQuantity = quantity + 1;
+        // If the new qty is still within stock levles then update the line item.
+        dispatch(setUpdatingCart(true));
 
-            // If the new qty is still within stock levles then update the line item.
-            if (newQuantity <= stock) {
-                dispatch(setUpdatingCart(true));
-                setIsIncreaseDisabled(false);
+        const hasLineItemUpdated = await updateLineItem(accessToken, id, newQuantity);
 
-                const hasLineItemUpdated = await updateLineItem(accessToken, id, newQuantity);
-
-                if (hasLineItemUpdated) {
-                    dispatch(fetchOrder(true));
-                }
-            }
-
-            // If it matches the stock level then disable the increase button.
-            if (newQuantity === stock) {
-                setIsIncreaseDisabled(true);
-            }
+        if (hasLineItemUpdated) {
+            dispatch(setShouldUpdateCart(true));
+        } else {
+            dispatch(setUpdatingCart(false));
         }
-    }, [accessToken, id, quantity, stock, dispatch, isIncreaseDisabled]);
-
-    useEffect(() => {
-        if (accessToken && skuId && sku) {
-            fetchCurrentLineItem(accessToken, skuId, sku);
-        }
-    }, [accessToken, skuId, sku, fetchCurrentLineItem]);
-
-    useEffect(() => {
-        if (quantity === stock) {
-            setIsIncreaseDisabled(true);
-        }
-    }, [stock, quantity]);
+    }, [accessToken, id, quantity, stock, dispatch]);
 
     return (
         <div className="grid grid-cols-3 lg:grid-cols-5 bg-white p-4 border-b p-4">
@@ -136,19 +100,19 @@ export const CartItem: React.FC<BasketItemProps> = ({
             </div>
             <div className="text-center">
                 <div className="flex flex-col lg:flex-row justify-center items-center lg:space-x-4">
-                    {product && product.cardImage && (
+                    {image && (
                         <div className={`mb-2 lg:mb-0 ${styles.imageContainer}`}>
                             <Image
-                                src={product.cardImage.url}
-                                alt={product.cardImage.description}
-                                title={product.cardImage.title}
+                                src={image.url}
+                                alt={image.description}
+                                title={image.title}
                                 layout="fill"
                                 objectFit="scale-down"
                             />
                         </div>
                     )}
                     <div className="text-center lg:text-left">
-                        <h4 className="text-xs lg:text-md">{productName || name}</h4>
+                        <h4 className="text-xs lg:text-md">{name}</h4>
                         <p className="text-xs text-base-200">{sku || ''}</p>
                     </div>
                 </div>
@@ -166,7 +130,7 @@ export const CartItem: React.FC<BasketItemProps> = ({
                 <button
                     aria-label="add one item"
                     onClick={handleIncreaseAmount}
-                    className={`btn btn-xs btn-circle${isIncreaseDisabled ? ' btn-disabled' : ' btn-secondary'}`}
+                    className={`btn btn-xs btn-circle${quantity >= stock ? ' btn-disabled' : ' btn-secondary'}`}
                 >
                     <MdAddCircleOutline />
                 </button>

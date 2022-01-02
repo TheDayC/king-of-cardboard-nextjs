@@ -208,6 +208,46 @@ export async function fetchProductByProductLink(
     return isArray(productLink) ? productCollection : productCollection[0];
 }
 
+export async function fetchProductImagesByProductLink(productLink: string[]): Promise<ContentfulProductShort[] | null> {
+    const productQuery = isArray(productLink) ? 'productLink_in' : 'productLink';
+
+    // Piece together query.
+    const query = `
+        query {
+            productCollection (where: {${productQuery}: ${JSON.stringify(productLink)}}) {
+                items {
+                    name
+                    productLink
+                    cardImage {
+                        title
+                        description
+                        url
+                        width
+                        height
+                    }
+                }
+            }
+        }
+    `;
+
+    // Make the contentful request.
+    const productResponse = await fetchContent(query);
+
+    // On success get the item data for products.
+    const productCollection = safelyParse(
+        productResponse,
+        'data.content.productCollection.items',
+        parseAsArrayOfContentfulProducts,
+        null
+    );
+
+    if (!productCollection) {
+        return null;
+    }
+
+    return productCollection;
+}
+
 export function mergeProductData(products: ContentfulProduct[], skuItems: SkuItem[]): Product[] {
     const filteredProducts = products.filter((product) => {
         const { productLink: sku_code } = product;

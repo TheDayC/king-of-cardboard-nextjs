@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 
 import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
+import { CartItem } from '../../types/cart';
 import { SkuItem } from '../../types/commerce';
 import { ContentfulPage } from '../../types/pages';
 import { SocialMedia } from '../../types/profile';
@@ -23,30 +24,18 @@ export interface IAppState {
 }
 
 export interface CartState {
+    shouldCreateOrder: boolean;
+    shouldUpdateCart: boolean;
     orderId: string | null;
     orderNumber: number | null;
     itemCount: number;
-    items: CartItem[];
+    items: CartItem[] | null;
     paymentMethods: CartPaymentMethod[];
     shouldFetchOrder: boolean;
     isUpdatingCart: boolean;
     subTotal: string | null;
     shipping: string | null;
     total: string | null;
-}
-
-export interface CartItem {
-    id: string;
-    sku_code: string;
-    name: string;
-    quantity: number;
-    formatted_unit_amount: string;
-    formatted_total_amount: string;
-    image_url: string;
-    metadata: {
-        categories: string[];
-        types: string[];
-    };
 }
 
 export interface CartPaymentMethod {
@@ -195,4 +184,9 @@ export interface CustomAlert {
     level: AlertLevel;
     message: string;
     timestamp: DateTime;
+}
+
+export interface CommonThunkInput {
+    accessToken: string;
+    orderId: string;
 }

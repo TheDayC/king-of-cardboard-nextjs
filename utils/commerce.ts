@@ -194,7 +194,7 @@ export async function removeLineItem(accessToken: string, id: string): Promise<b
 
         return status === 204;
     } catch (error: unknown) {
-        errorHandler(error, 'We could not fetch an order.');
+        errorHandler(error, 'We could not remove this item.');
     }
 
     return false;

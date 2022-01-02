@@ -1,7 +1,8 @@
 import { CartState } from '../types/state';
 
 const cartInitialState: CartState = {
-    order: null,
+    shouldCreateOrder: true,
+    shouldUpdateCart: false,
     orderId: null,
     orderNumber: null,
     itemCount: 0,

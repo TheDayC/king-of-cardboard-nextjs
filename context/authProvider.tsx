@@ -19,9 +19,8 @@ import { createToken } from '../utils/auth';
 import { parseAsString, safelyParse } from '../utils/parsers';
 
 const AuthProvider: React.FC = ({ children }) => {
-    const { accessToken, expires, orderId, shouldFetchOrder } = useSelector(selector);
+    const { accessToken, expires, orderId, shouldFetchOrder, shouldCreateOrder } = useSelector(selector);
     const dispatch = useDispatch();
-    const [shouldCreateOrder, setShouldCreateOrder] = useState(true);
     const currentDate = DateTime.now().setZone('Europe/London');
     const expiryDate = DateTime.fromISO(expires || currentDate.toISO(), { zone: 'Europe/London' });
     const hasExpired = Boolean(expires && expiryDate < currentDate);
@@ -79,12 +78,11 @@ const AuthProvider: React.FC = ({ children }) => {
     ); */
 
     // Create a brand new order and set the id in the store.
-    const generateOrder = useCallback(
-        async (accessToken: string) => {
+    const generateOrder = useCallback(async () => {
+        if (shouldCreateOrder && accessToken) {
             dispatch(createCLOrder({ accessToken, isGuest }));
-        },
-        [dispatch, isGuest]
-    );
+        }
+    }, [dispatch, isGuest, shouldCreateOrder, accessToken]);
 
     // If order does exist then hydrate with line items.
     /* useIsomorphicLayoutEffect(() => {
@@ -103,11 +101,10 @@ const AuthProvider: React.FC = ({ children }) => {
 
     // If the order doesn't exist then create one.
     useIsomorphicLayoutEffect(() => {
-        if (!orderId && accessToken && shouldCreateOrder) {
-            generateOrder(accessToken);
-            setShouldCreateOrder(false);
+        if (shouldCreateOrder) {
+            generateOrder();
         }
-    }, [orderId, accessToken, shouldCreateOrder]);
+    }, [shouldCreateOrder]);
 
     return <React.Fragment>{children}</React.Fragment>;
 };
