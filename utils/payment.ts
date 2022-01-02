@@ -2,9 +2,8 @@ import axios from 'axios';
 
 import { errorHandler } from '../middleware/errors';
 import { CartItem, CustomerAddress, CustomerDetails } from '../store/types/state';
-import { Order } from '../types/cart';
 import { authClient } from './auth';
-import { parseAsBoolean, parseAsNumber, safelyParse } from './parsers';
+import { parseAsNumber, safelyParse } from './parsers';
 
 export async function confirmOrder(accessToken: string, orderId: string, attribute: string): Promise<boolean> {
     try {
