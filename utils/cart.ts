@@ -116,7 +116,7 @@ export async function getCartItems(accessToken: string, orderId: string): Promis
             };
         });
     } catch (error: unknown) {
-        errorHandler(error, 'Failed to fetch cart item count.');
+        errorHandler(error, 'Failed to fetch cart items.');
     }
 
     return null;
