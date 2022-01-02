@@ -1,7 +1,7 @@
 import { errorHandler } from '../middleware/errors';
 import { CartTotals } from '../types/cart';
 import { authClient } from './auth';
-import { parseAsNumber, safelyParse } from './parsers';
+import { parseAsNumber, parseAsString, safelyParse } from './parsers';
 
 export async function getItemCount(accessToken: string, orderId: string): Promise<number> {
     try {
@@ -21,6 +21,12 @@ export async function getCartTotals(accessToken: string, orderId: string): Promi
         const cl = authClient(accessToken);
         const fields = 'formatted_subtotal_amount,formatted_shipping_amount,formatted_total_amount_with_taxes';
         const res = await cl.get(`/api/orders/${orderId}?fields[orders]=${fields}`);
+
+        return {
+            subTotal: safelyParse(res, 'data.data.attributes.formatted_subtotal_amount', parseAsString, null),
+            shipping: safelyParse(res, 'data.data.attributes.formatted_shipping_amount', parseAsString, null),
+            total: safelyParse(res, 'data.data.attributes.formatted_total_amount_with_taxes', parseAsString, null),
+        };
     } catch (error: unknown) {
         errorHandler(error, 'Failed to fetch cart item count.');
     }
