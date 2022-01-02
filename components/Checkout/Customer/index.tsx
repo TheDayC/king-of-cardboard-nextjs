@@ -162,10 +162,8 @@ const Customer: React.FC = () => {
         // Handle a new billing address.
         if (billingAddressEntryChoice === 'newBillingAddress') {
             handleNewBillingAddress(data, customerDetails);
-        }
-
-        // Handle existing billing address.
-        if (billingAddressEntryChoice === 'existingBillingAddress') {
+        } else if (billingAddressEntryChoice === 'existingBillingAddress') {
+            // Handle existing billing address.
             handleExistingBillingAddress(customerDetails);
         }
 
@@ -179,6 +177,7 @@ const Customer: React.FC = () => {
             if (shippingAddressEntryChoice === 'newShippingAddress') {
                 handleNewShippingAddress(data, customerDetails);
             } else if (shippingAddressEntryChoice === 'existingShippingAddress') {
+                // Handle existing shipping address.
                 handleExistingShippingAddress(customerDetails);
             }
         }
