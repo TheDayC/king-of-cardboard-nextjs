@@ -92,14 +92,14 @@ const Customer: React.FC = () => {
             // Set the billing address in full in our local store.
             dispatch(setBillingAddress(parseAddress(billingAddressParsed)));
 
+            // If we're cloning a new address to shipping then update the shipping details with CommerceLayer.
+            if (isShippingSameAsBilling) {
+                await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, true);
+            }
+
             // Ensure we have a clone id and update clone address field.
             if (cloneBillingAddressId) {
                 await updateAddressClone(accessToken, order.id, cloneBillingAddressId, false);
-
-                // If we're cloning a new address to shipping then update the shipping details with CommerceLayer.
-                if (isShippingSameAsBilling) {
-                    await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, true);
-                }
             } else {
                 dispatch(addWarning('Please select a billing address'));
             }
