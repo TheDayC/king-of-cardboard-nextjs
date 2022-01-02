@@ -14,36 +14,36 @@ interface TeamProps {
 }
 
 export const Team: React.FC<TeamProps> = ({ skuItem, setLoading }) => {
-    const { accessToken, order, items, shouldFetchOrder } = useSelector(selector);
+    const { accessToken, orderId, items, shouldFetchOrder } = useSelector(selector);
     const dispatch = useDispatch();
     const shouldShowCompare = skuItem.amount !== skuItem.compare_amount;
     const isInBasket = Boolean(items.find((item) => item.sku_code === skuItem.sku_code));
 
     const handleClick = async () => {
-        if (accessToken && order && !isInBasket) {
-            setLoading(true);
-            const attributes = {
-                quantity: 1,
-                sku_code: skuItem.sku_code || '',
-                _external_price: false,
-                _update_quantity: true,
-            };
+        if (!accessToken || !orderId || isInBasket) return;
 
-            const relationships = {
-                order: {
-                    data: {
-                        id: order.id,
-                        type: 'orders',
-                    },
+        setLoading(true);
+        const attributes = {
+            quantity: 1,
+            sku_code: skuItem.sku_code || '',
+            _external_price: false,
+            _update_quantity: true,
+        };
+
+        const relationships = {
+            order: {
+                data: {
+                    id: orderId,
+                    type: 'orders',
                 },
-            };
+            },
+        };
 
-            const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
+        const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
 
-            if (hasLineItemUpdated) {
-                dispatch(fetchItemCount({ accessToken, orderId: order.id }));
-                dispatch(fetchOrder(true));
-            }
+        if (hasLineItemUpdated) {
+            dispatch(fetchItemCount({ accessToken, orderId }));
+            dispatch(fetchOrder(true));
         }
     };
 

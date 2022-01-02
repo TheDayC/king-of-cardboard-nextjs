@@ -31,7 +31,6 @@ export const Payment: React.FC = () => {
         orderId,
         customerDetails,
         checkoutLoading,
-        order,
         items,
         confirmationDetails,
         billingAddress,
@@ -100,7 +99,7 @@ export const Payment: React.FC = () => {
             !card ||
             !customerDetails ||
             items.length <= 0 ||
-            !order ||
+            !orderId ||
             !paymentMethod ||
             !shippingAddress ||
             !stripe
@@ -112,10 +111,10 @@ export const Payment: React.FC = () => {
         dispatch(setCheckoutLoading(true));
 
         // Piece together the attributes for the payment source request.
-        const attributes = buildPaymentAttributes(paymentMethod, order.id);
+        const attributes = buildPaymentAttributes(paymentMethod, orderId);
 
         // Create the payment source in CommerceLayer.
-        const { paymentId, clientSecret } = await createPaymentSource(accessToken, order.id, paymentMethod, attributes);
+        const { paymentId, clientSecret } = await createPaymentSource(accessToken, orderId, paymentMethod, attributes);
 
         if (!clientSecret || !paymentId) {
             handleError('Failed to validate the credit / debit card, please contact support.');
@@ -150,7 +149,7 @@ export const Payment: React.FC = () => {
         }
 
         // Place the order with commerce layer.
-        const hasBeenPlaced = await confirmOrder(accessToken, order.id, '_place');
+        const hasBeenPlaced = await confirmOrder(accessToken, orderId, '_place');
 
         if (!hasBeenPlaced) {
             handleError('Failed to confirm your order, please contact support.');
@@ -158,8 +157,8 @@ export const Payment: React.FC = () => {
         }
 
         const hasBeenRefreshed = await refreshPayment(accessToken, paymentId, paymentMethod);
-        const hasBeenAuthorized = await confirmOrder(accessToken, order.id, '_authorize');
-        const hasBeenApproved = await confirmOrder(accessToken, order.id, '_approve_and_capture');
+        const hasBeenAuthorized = await confirmOrder(accessToken, orderId, '_authorize');
+        const hasBeenApproved = await confirmOrder(accessToken, orderId, '_approve_and_capture');
 
         // Ensure our order has been pushed through.
         if (hasBeenRefreshed && hasBeenAuthorized && hasBeenApproved) {
@@ -209,10 +208,10 @@ export const Payment: React.FC = () => {
         dispatch(setCheckoutLoading(true));
 
         // Piece together the attributes for the payment source request.
-        const attributes = buildPaymentAttributes(paymentMethod, order.id);
+        const attributes = buildPaymentAttributes(paymentMethod, orderId);
 
         // Create the payment source in CommerceLayer.
-        const { approvalUrl } = await createPaymentSource(accessToken, order.id, paymentMethod, attributes);
+        const { approvalUrl } = await createPaymentSource(accessToken, orderId, paymentMethod, attributes);
 
         // If the payment source was created then capture the approval url from paypal.
         if (approvalUrl) {

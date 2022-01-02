@@ -27,7 +27,7 @@ interface FormData {
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
-    const { accessToken, currentStep, order, checkoutLoading, hasBothAddresses } = useSelector(selector);
+    const { accessToken, currentStep, orderId, checkoutLoading, hasBothAddresses } = useSelector(selector);
     const [shipments, setShipments] = useState<string[] | null>(null);
     const [methods, setMethods] = useState<MergedShipmentMethods[] | null>(null);
     const {
@@ -55,10 +55,10 @@ export const Delivery: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        if (accessToken && order) {
-            fetchAllShipments(accessToken, order.id);
+        if (accessToken && orderId) {
+            fetchAllShipments(accessToken, orderId);
         }
-    }, [accessToken, order, fetchAllShipments]);
+    }, [accessToken, orderId, fetchAllShipments]);
 
     const handleSelectShippingMethod = async (data: FormData) => {
         if (hasErrors || checkoutLoading || !accessToken || !shipments) {

@@ -19,7 +19,7 @@ interface ProductProps {
 
 export const Product: React.FC<ProductProps> = ({ slug }) => {
     const dispatch = useDispatch();
-    const { accessToken, items, order } = useSelector(selector);
+    const { accessToken, items, orderId } = useSelector(selector);
     const [loading, setLoading] = useState(false);
     const [currentImage, setCurrentImage] = useState<ImageItem | null>(null);
     const [currentProduct, setCurrentProduct] = useState<SingleProduct | null>(null);
@@ -116,7 +116,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
             const qty = safelyParse(data, 'qty', parseAsNumber, 0);
             setLoading(true);
 
-            if (isNaN(qty) || hasErrors || !accessToken || !currentProduct || !order) {
+            if (isNaN(qty) || hasErrors || !accessToken || !currentProduct || !orderId) {
                 setLoading(false);
                 return;
             }
@@ -147,7 +147,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
             const relationships = {
                 order: {
                     data: {
-                        id: order.id,
+                        id: orderId,
                         type: 'orders',
                     },
                 },
@@ -156,7 +156,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
             const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
 
             if (hasLineItemUpdated) {
-                dispatch(fetchItemCount({ accessToken, orderId: order.id }));
+                dispatch(fetchItemCount({ accessToken, orderId }));
                 setLoading(false);
                 dispatch(fetchOrder(true));
             }
@@ -165,7 +165,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
             hasErrors,
             accessToken,
             currentProduct,
-            order,
+            orderId,
             maxQuantity,
             hasExceededStock,
             currentImage,

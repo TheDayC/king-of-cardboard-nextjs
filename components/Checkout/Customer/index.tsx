@@ -95,7 +95,7 @@ const Customer: React.FC = () => {
     const { data: session } = useSession();
     const {
         currentStep,
-        order,
+        orderId,
         accessToken,
         checkoutLoading,
         isShippingSameAsBilling,
@@ -119,43 +119,43 @@ const Customer: React.FC = () => {
 
     const handleNewBillingAddress = useCallback(
         async (data: unknown, customerDetails: CustomerDetails) => {
-            if (!accessToken || !order) return;
+            if (!accessToken || !orderId) return;
 
             // Parse the billing address into a customer address partial.
             // CommerceLayer only expects the basic user input on their side hence the partial data parse.
             const billingAddressParsed = parseBillingAddress(data);
 
             // Update billing address details in commerceLayer.
-            await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, false);
+            await updateAddress(accessToken, orderId, customerDetails, billingAddressParsed, false);
 
             // Set the billing address in full in our local store.
             dispatch(setBillingAddress(parseAddress(billingAddressParsed)));
 
             // If we're cloning a new address to shipping then update the shipping details with CommerceLayer.
             if (isShippingSameAsBilling) {
-                await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, true);
+                await updateAddress(accessToken, orderId, customerDetails, billingAddressParsed, true);
             }
         },
-        [accessToken, order, dispatch, isShippingSameAsBilling]
+        [accessToken, orderId, dispatch, isShippingSameAsBilling]
     );
 
     const handleExistingBillingAddress = useCallback(
         async (customerDetails: CustomerDetails) => {
-            if (!accessToken || !order) return;
+            if (!accessToken || !orderId) return;
 
             // Parse the billing address into a customer address partial.
             // CommerceLayer only expects the basic user input on their side hence the partial data parse.
             const billingAddressParsed = parseExistingAddress(billingAddress);
 
             // Update billing address details in commerceLayer.
-            await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, false);
+            await updateAddress(accessToken, orderId, customerDetails, billingAddressParsed, false);
 
             // Set the billing address in full in our local store.
             dispatch(setBillingAddress(parseAddress(billingAddressParsed)));
 
             // If we're cloning a new address to shipping then update the shipping details with CommerceLayer.
             if (isShippingSameAsBilling) {
-                await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, true);
+                await updateAddress(accessToken, orderId, customerDetails, billingAddressParsed, true);
 
                 // Set the shipping address in full in our local store so our shipping matches billing locally.
                 dispatch(setShippingAddress(parseAddress(billingAddressParsed)));
@@ -163,58 +163,58 @@ const Customer: React.FC = () => {
 
             // Ensure we have a clone id and update clone address field.
             if (cloneBillingAddressId) {
-                await updateAddressClone(accessToken, order.id, cloneBillingAddressId, false);
+                await updateAddressClone(accessToken, orderId, cloneBillingAddressId, false);
             } else {
                 setShouldSubmit(false);
                 dispatch(addWarning('Please select a billing address'));
             }
         },
-        [accessToken, order, dispatch, cloneBillingAddressId, billingAddress, isShippingSameAsBilling]
+        [accessToken, orderId, dispatch, cloneBillingAddressId, billingAddress, isShippingSameAsBilling]
     );
 
     const handleNewShippingAddress = useCallback(
         async (data: unknown, customerDetails: CustomerDetails) => {
-            if (!accessToken || !order) return;
+            if (!accessToken || !orderId) return;
 
             // Parse the shipping address into a customer address partial.
             // CommerceLayer only expects the basic user input on their side hence the partial data parse.
             const shippingAddressParsed = parseShippingAddress(data);
 
             // Update shipping address details in commerceLayer.
-            await updateAddress(accessToken, order.id, customerDetails, shippingAddressParsed, true);
+            await updateAddress(accessToken, orderId, customerDetails, shippingAddressParsed, true);
 
             // Set the billing address in full in our local store.
             dispatch(setShippingAddress(parseAddress(shippingAddressParsed)));
         },
-        [accessToken, order, dispatch]
+        [accessToken, orderId, dispatch]
     );
 
     const handleExistingShippingAddress = useCallback(
         async (customerDetails: CustomerDetails) => {
-            if (!accessToken || !order) return;
+            if (!accessToken || !orderId) return;
 
             // Parse the shipping address into a customer address partial.
             const shippingAddressParsed = parseExistingAddress(shippingAddress);
 
             // Update shipping address details in commerceLayer. No check for same as billing here.
-            await updateAddress(accessToken, order.id, customerDetails, shippingAddressParsed, true);
+            await updateAddress(accessToken, orderId, customerDetails, shippingAddressParsed, true);
 
             // Set the billing address in full in our local store.
             dispatch(setShippingAddress(parseAddress(shippingAddressParsed)));
 
             // Ensure we have a clone id and update clone address field.
             if (cloneShippingAddressId) {
-                await updateAddressClone(accessToken, order.id, cloneShippingAddressId, true);
+                await updateAddressClone(accessToken, orderId, cloneShippingAddressId, true);
             } else {
                 dispatch(addWarning('Please select a shipping address'));
                 setShouldSubmit(false);
             }
         },
-        [accessToken, order, dispatch, cloneShippingAddressId, shippingAddress]
+        [accessToken, orderId, dispatch, cloneShippingAddressId, shippingAddress]
     );
 
     const onSubmit = async (data: unknown) => {
-        if (hasErrors || checkoutLoading || !order || !accessToken) {
+        if (hasErrors || checkoutLoading || !orderId || !accessToken) {
             return;
         }
         // Reset form state on submission
@@ -237,7 +237,7 @@ const Customer: React.FC = () => {
 
         // If our shipping is the same as the billing address then update _shipping_address_same_as_billing field in CommerceLayer.
         if (isShippingSameAsBilling) {
-            await updateSameAsBilling(accessToken, order.id, isShippingSameAsBilling);
+            await updateSameAsBilling(accessToken, orderId, isShippingSameAsBilling);
         } else {
             // NOTE: At this point we know if the user is adding a shipping address manually.
 
