@@ -270,7 +270,7 @@ export async function updateAddress(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'Address could not be updated.');
+        errorHandler(error, 'Address could not be updated.');
     }
 }
 
@@ -304,7 +304,7 @@ export async function updateAddressClone(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'Address could not be updated.');
+        errorHandler(error, 'Address could not be updated.');
     }
 }
 
@@ -327,7 +327,7 @@ export async function updateSameAsBilling(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'Failed to set shipping address to the same as billing.');
+        errorHandler(error, 'Failed to set shipping address to the same as billing.');
     }
 }
 
@@ -382,7 +382,7 @@ export async function getShipments(accessToken: string, orderId: string): Promis
                 }),
         };
     } catch (error: unknown) {
-        return errorHandler(error, 'Failed to fetch shipments.');
+        errorHandler(error, 'Failed to fetch shipments.');
     }
 }
 
@@ -404,7 +404,7 @@ export async function getDeliveryLeadTimes(accessToken: string): Promise<Deliver
 
         return null;
     } catch (error: unknown) {
-        return errorHandler(error, 'Failed to fetch delivery lead times.');
+        errorHandler(error, 'Failed to fetch delivery lead times.');
     }
 }
 
@@ -458,7 +458,7 @@ export async function updateShipmentMethod(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'Failed to update shipment method.');
+        errorHandler(error, 'Failed to update shipment method.');
     }
 }
 
@@ -488,7 +488,7 @@ export async function getShipment(
             lineItems: items,
         };
     } catch (error: unknown) {
-        return errorHandler(error, 'Failed to fetch shipment.');
+        errorHandler(error, 'Failed to fetch shipment.');
     }
 }
 
@@ -517,7 +517,7 @@ export async function updatePaymentMethod(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not get a shipment.');
+        errorHandler(error, 'We could not get a shipment.');
     }
 }
 
@@ -548,7 +548,7 @@ export async function getPayPalPaymentIdByOrder(
 
         return safelyParse(resArray[0], 'id', parseAsString, null);
     } catch (error: unknown) {
-        return errorHandler(error, 'Failed to confirm your paypal order, please try again.');
+        errorHandler(error, 'Failed to confirm your paypal order, please try again.');
     }
 }
 
@@ -572,7 +572,7 @@ export async function completePayPalOrder(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'Failed to confirm your paypal order, please try again.');
+        errorHandler(error, 'Failed to confirm your paypal order, please try again.');
     }
 }
 

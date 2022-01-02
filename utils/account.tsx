@@ -42,7 +42,7 @@ export async function getHistoricalOrders(
             meta: safelyParse(res, 'data.meta', parseAsCommerceMeta, null),
         };
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not get historical orders.');
+        errorHandler(error, 'We could not get historical orders.');
     }
 }
 
@@ -71,7 +71,7 @@ export async function getHistoricalOrder(
             meta: safelyParse(res, 'data.meta', parseAsCommerceMeta, null),
         };
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not get historical order.');
+        errorHandler(error, 'We could not get historical order.');
     }
 }
 
@@ -145,7 +145,7 @@ export async function getAddresses(
             meta: safelyParse(res, 'data.meta', parseAsCommerceMeta, null),
         };
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not fetch your saved addresses.');
+        errorHandler(error, 'We could not fetch your saved addresses.');
     }
 }
 
@@ -179,7 +179,7 @@ export async function addAddress(
 
         return safelyParse(response, 'data.customerAddressId', parseAsString, null);
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not fetch your saved addresses.');
+        errorHandler(error, 'We could not fetch your saved addresses.');
     }
 }
 
@@ -192,7 +192,7 @@ export async function deleteAddress(accessToken: string, id: string): Promise<bo
 
         return status && status === 204 ? true : false;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not delete the selected address.');
+        errorHandler(error, 'We could not delete the selected address.');
     }
 }
 
@@ -206,7 +206,7 @@ export async function getAddress(
 
         return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not delete the selected address.');
+        errorHandler(error, 'We could not delete the selected address.');
     }
 }
 
@@ -220,7 +220,7 @@ export async function getCustomerAddress(
 
         return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not delete the selected address.');
+        errorHandler(error, 'We could not delete the selected address.');
     }
 }
 
@@ -260,7 +260,7 @@ export async function editAddress(
 
         return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not get historical order.');
+        errorHandler(error, 'We could not get historical order.');
     }
 }
 
@@ -273,7 +273,7 @@ export async function requestPasswordReset(accessToken: string, email: string): 
 
         return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not reset your password.');
+        errorHandler(error, 'We could not reset your password.');
     }
 }
 
@@ -313,7 +313,7 @@ export async function updatePassword(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not update your password.');
+        errorHandler(error, 'We could not update your password.');
     }
 }
 
@@ -339,7 +339,7 @@ export async function resetPassword(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not reset your password.');
+        errorHandler(error, 'We could not reset your password.');
     }
 }
 
@@ -354,7 +354,7 @@ export async function updateUsername(emailAddress: string, username: string): Pr
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'Failed to update username.');
+        errorHandler(error, 'Failed to update username.');
     }
 }
 
@@ -380,6 +380,6 @@ export async function updateSocialMedia(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'Failed to update social media.');
+        errorHandler(error, 'Failed to update social media.');
     }
 }

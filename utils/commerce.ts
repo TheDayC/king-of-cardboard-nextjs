@@ -38,7 +38,7 @@ export async function createOrder(accessToken: string): Promise<Order | ErrorRes
 
         return null;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not create your order.');
+        errorHandler(error, 'We could not create your order.');
     }
 }
 
@@ -78,7 +78,7 @@ export async function getSkus(accessToken: string, sku_codes: string[]): Promise
             };
         });
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not get a shipment.');
+        errorHandler(error, 'We could not get a shipment.');
     }
 }
 
@@ -125,7 +125,7 @@ export async function getSkuDetails(accessToken: string, id: string): Promise<Sk
             })),
         };
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not get a shipment.');
+        errorHandler(error, 'We could not get a shipment.');
     }
 }
 
@@ -155,7 +155,7 @@ export async function getOrder(
 
         return parseOrderData(order, included);
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not fetch an order.');
+        errorHandler(error, 'We could not fetch an order.');
     }
 }
 
@@ -177,7 +177,7 @@ export async function setLineItem(
 
         return status === 201;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not fetch an order.');
+        errorHandler(error, 'We could not fetch an order.');
     }
 }
 
@@ -189,7 +189,7 @@ export async function removeLineItem(accessToken: string, id: string): Promise<b
 
         return status === 204;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not fetch an order.');
+        errorHandler(error, 'We could not fetch an order.');
     }
 }
 
@@ -213,7 +213,7 @@ export async function updateLineItem(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not fetch an order.');
+        errorHandler(error, 'We could not fetch an order.');
     }
 }
 
@@ -246,6 +246,6 @@ export async function createPaymentSource(
             approvalUrl: safelyParse(res, 'data.data.attributes.approval_url', parseAsString, null),
         };
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not create a payment source.');
+        errorHandler(error, 'We could not create a payment source.');
     }
 }

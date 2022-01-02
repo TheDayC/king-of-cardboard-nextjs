@@ -14,7 +14,7 @@ export async function getGiftCardBalance(accessToken: string, emailAddress: stri
 
         return safelyParse(response, 'data.balance', parseAsNumber, 0);
     } catch (error: unknown) {
-        return errorHandler(error, 'Failed to fetch gift card balance.');
+        errorHandler(error, 'Failed to fetch gift card balance.');
     }
 }
 

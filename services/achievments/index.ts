@@ -81,7 +81,7 @@ class Achievements {
                 this._objectives = null;
             }
         } catch (error: unknown) {
-            return errorHandler(error, 'Failed to fetch objectives.');
+            errorHandler(error, 'Failed to fetch objectives.');
         }
 
         return false;

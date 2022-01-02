@@ -28,7 +28,7 @@ export async function confirmOrder(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not confirm your order.');
+        errorHandler(error, 'We could not confirm your order.');
     }
 }
 
@@ -52,7 +52,7 @@ export async function refreshPayment(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not refresh the payment source.');
+        errorHandler(error, 'We could not refresh the payment source.');
     }
 }
 
@@ -74,6 +74,6 @@ export async function sendOrderConfirmation(
 
         return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not send your order confirmation.');
+        errorHandler(error, 'We could not send your order confirmation.');
     }
 }
