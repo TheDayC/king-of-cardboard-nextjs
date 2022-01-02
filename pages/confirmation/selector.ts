@@ -4,7 +4,7 @@ import { selectConfirmationData, selectGlobalData } from '../../store/state/sele
 
 const selector = createSelector([selectConfirmationData, selectGlobalData], (confirmation, global) => ({
     accessToken: global.accessToken,
-    confirmationOrder: confirmation.order,
+    confirmationOrderNumber: confirmation.orderNumber,
 }));
 
 export default selector;
