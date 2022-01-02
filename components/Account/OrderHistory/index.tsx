@@ -4,15 +4,13 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import selector from './selector';
 import { parseAsArrayOfLineItemRelationships, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
-import { isArrayOfErrors } from '../../../utils/typeguards';
 import { getHistoricalOrders } from '../../../utils/account';
 import { CommerceLayerResponse } from '../../../types/api';
 import ShortOrder from './ShortOrder';
 import Loading from '../../Loading';
 import Pagination from '../../Pagination';
 import { OrderHistoryLineItem } from '../../../types/account';
-import { addAlert } from '../../../store/slices/alerts';
-import { AlertLevel } from '../../../enums/system';
+import { addError } from '../../../store/slices/alerts';
 
 const ORDERS_PER_PAGE = 5;
 
@@ -30,11 +28,7 @@ export const OrderHistory: React.FC = () => {
         async (token: string, email: string, page: number = 0, perPage: number = ORDERS_PER_PAGE) => {
             const res = await getHistoricalOrders(token, email, perPage, page + 1);
 
-            if (isArrayOfErrors(res)) {
-                res.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
+            if (res) {
                 const { orders: responseOrders, included: responseIncluded, meta } = res;
 
                 setOrders(responseOrders);
@@ -45,6 +39,8 @@ export const OrderHistory: React.FC = () => {
                 }
 
                 setCurrentPage(page);
+            } else {
+                dispatch(addError('Failed to fetch order history.'));
             }
         },
         [dispatch]

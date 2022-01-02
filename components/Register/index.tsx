@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import { AiOutlineUser } from 'react-icons/ai';
 import { MdOutlineMailOutline } from 'react-icons/md';
@@ -10,8 +9,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Tabs } from '../../enums/auth';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import selector from './selector';
-import { AlertLevel } from '../../enums/system';
-import { addAlert } from '../../store/slices/alerts';
+import { addError } from '../../store/slices/alerts';
+import { registerUser } from '../../utils/auth';
 
 interface Submit {
     username?: string;
@@ -40,7 +39,7 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
     const [responseError, setResponseError] = useState<string | null>(null);
     const hasErrors = Object.keys(errors).length > 0;
     const router = useRouter();
-    const { accessToken: token } = useSelector(selector);
+    const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
 
     const usernameErr = safelyParse(errors, 'username.message', parseAsString, null);
@@ -54,25 +53,19 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
         setLoading(true);
         const { username, emailAddress, password } = data;
 
-        try {
-            const response = await axios.post('/api/register', {
-                username,
-                emailAddress,
-                password,
-                token,
-            });
+        if (!accessToken || !username || !emailAddress || !password) return;
 
-            if (response) {
-                setCurrentTab(Tabs.Login);
-                setLoading(false);
-                setRegSuccess(true);
-                setResponseError(null);
-            }
-        } catch (error) {
-            setLoading(false);
+        const res = await registerUser(accessToken, username, emailAddress, password);
+
+        if (res) {
+            setCurrentTab(Tabs.Login);
+            setRegSuccess(true);
+        } else {
+            setResponseError('Details are invalid or user already exists.');
             setRegSuccess(false);
-            setResponseError('User already exists!');
         }
+
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -81,7 +74,7 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
 
     useEffect(() => {
         if (responseError) {
-            dispatch(addAlert({ message: responseError, level: AlertLevel.Error }));
+            dispatch(addError(responseError));
         }
     }, [responseError, dispatch]);
 

@@ -2,16 +2,11 @@ import axios from 'axios';
 
 import { errorHandler } from '../middleware/errors';
 import { CartItem, CustomerAddress, CustomerDetails } from '../store/types/state';
-import { ErrorResponse } from '../types/api';
 import { Order } from '../types/cart';
 import { authClient } from './auth';
 import { parseAsBoolean, parseAsNumber, safelyParse } from './parsers';
 
-export async function confirmOrder(
-    accessToken: string,
-    orderId: string,
-    attribute: string
-): Promise<boolean | ErrorResponse[]> {
+export async function confirmOrder(accessToken: string, orderId: string, attribute: string): Promise<boolean> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/orders/${orderId}`, {
@@ -28,15 +23,13 @@ export async function confirmOrder(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not confirm your order.');
+        errorHandler(error, 'We could not confirm your order.');
     }
+
+    return false;
 }
 
-export async function refreshPayment(
-    accessToken: string,
-    id: string,
-    paymentSourceType: string
-): Promise<boolean | ErrorResponse[]> {
+export async function refreshPayment(accessToken: string, id: string, paymentSourceType: string): Promise<boolean> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/${paymentSourceType}/${id}`, {
@@ -52,8 +45,10 @@ export async function refreshPayment(
 
         return status === 200;
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not refresh the payment source.');
+        errorHandler(error, 'We could not refresh the payment source.');
     }
+
+    return false;
 }
 
 export async function sendOrderConfirmation(
@@ -62,7 +57,7 @@ export async function sendOrderConfirmation(
     customerDetails: CustomerDetails,
     billingAddress: CustomerAddress,
     shippingAddress: CustomerAddress
-): Promise<boolean | ErrorResponse[]> {
+): Promise<boolean> {
     try {
         const response = await axios.post('/api/sendOrderConfirmation', {
             order,
@@ -74,6 +69,8 @@ export async function sendOrderConfirmation(
 
         return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not send your order confirmation.');
+        errorHandler(error, 'We could not send your order confirmation.');
     }
+
+    return false;
 }

@@ -4,9 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import { getAddresses } from '../../../../utils/account';
-import { AlertLevel } from '../../../../enums/system';
-import { isArrayOfErrors } from '../../../../utils/typeguards';
-import { addAlert } from '../../../../store/slices/alerts';
 import { CommerceLayerResponse } from '../../../../types/api';
 import { setCheckoutLoading } from '../../../../store/slices/global';
 import Address from './Address';
@@ -31,11 +28,7 @@ const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping }) => {
         async (token: string, email: string, page: number) => {
             const res = await getAddresses(token, email, PER_PAGE, page);
 
-            if (isArrayOfErrors(res)) {
-                res.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
+            if (res) {
                 setAddresses(res.addresses);
             }
 

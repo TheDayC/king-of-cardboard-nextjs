@@ -10,9 +10,7 @@ import Add from './Add';
 import { CommerceLayerResponse } from '../../../types/api';
 import Address from './Address';
 import Pagination from '../../Pagination';
-import { isArrayOfErrors } from '../../../utils/typeguards';
-import { addAlert } from '../../../store/slices/alerts';
-import { AlertLevel } from '../../../enums/system';
+import { addError } from '../../../store/slices/alerts';
 
 const PER_PAGE = 7;
 
@@ -31,14 +29,12 @@ export const AddressBook: React.FC = () => {
         async (token: string, email: string, page: number) => {
             const res = await getAddresses(token, email, PER_PAGE, page);
 
-            if (isArrayOfErrors(res)) {
-                res.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
+            if (res) {
                 const { addresses, meta } = res;
                 setAddresses(addresses);
                 setPageCount(meta ? meta.page_count : null);
+            } else {
+                dispatch(addError('Failed to fetch your address book.'));
             }
 
             setIsLoading(false);

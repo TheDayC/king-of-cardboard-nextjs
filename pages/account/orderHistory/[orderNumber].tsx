@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import Error from 'next/error';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import Header from '../../../components/Header';
 import AccountMenu from '../../../components/Account/Menu';
@@ -20,9 +20,6 @@ import { OrderHistoryLineItemWithSkuData } from '../../../types/account';
 import LongOrder from '../../../components/Account/OrderHistory/LongOrder';
 import { getSkus } from '../../../utils/commerce';
 import Loading from '../../../components/Loading';
-import { isArrayOfErrors } from '../../../utils/typeguards';
-import { addAlert } from '../../../store/slices/alerts';
-import { AlertLevel } from '../../../enums/system';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -75,7 +72,6 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
     const [order, setOrder] = useState<CommerceLayerResponse | null>(null);
     const [included, setIncluded] = useState<CommerceLayerResponse[] | null>(null);
     const [lineItems, setLineItems] = useState<OrderHistoryLineItemWithSkuData[] | null>(null);
-    const dispatch = useDispatch();
 
     const status = safelyParse(order, 'attributes.status', parseAsString, 'draft');
     const paymentStatus = safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid');
@@ -105,60 +101,44 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
         : null;
     const billingAddress = safelyParse(billingAddressInclude, 'attributes', parseAsHistoricalAddress, blankAddress);
 
-    const fetchOrder = useCallback(
-        async (token: string, email: string, order: string) => {
-            const res = await getHistoricalOrder(token, email, order);
+    const fetchOrder = useCallback(async (token: string, email: string, order: string) => {
+        const res = await getHistoricalOrder(token, email, order);
 
-            if (isArrayOfErrors(res)) {
-                res.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
-                const { orders: responseOrders, included: responseIncluded } = res;
+        if (res) {
+            const { orders: responseOrders, included: responseIncluded } = res;
 
-                if (responseOrders) {
-                    setOrder(responseOrders[0]);
-                }
-
-                if (responseIncluded) {
-                    setIncluded(responseIncluded);
-                }
+            if (responseOrders) {
+                setOrder(responseOrders[0]);
             }
-        },
-        [dispatch]
-    );
 
-    const fetchSkuItems = useCallback(
-        async (token: string, skus: string[], includedItems: CommerceLayerResponse[]) => {
-            const skuItems = await getSkus(token, skus);
-
-            if (isArrayOfErrors(skuItems)) {
-                skuItems.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
-                if (skuItems) {
-                    const lineItems: OrderHistoryLineItemWithSkuData[] = includedItems.map((lineItem) => {
-                        const skuCode = safelyParse(lineItem, 'attributes.sku_code', parseAsString, null);
-                        const skuItem = skuItems ? skuItems.find((item) => item.sku_code === skuCode) : null;
-
-                        return {
-                            lineItemId: safelyParse(lineItem, 'id', parseAsString, ''),
-                            skuId: safelyParse(skuItem, 'id', parseAsString, ''),
-                            name: safelyParse(skuItem, 'name', parseAsString, null),
-                            skuCode: skuCode,
-                            imageUrl: safelyParse(skuItem, 'image_url', parseAsString, null),
-                            quantity: safelyParse(lineItem, 'attributes.quantity', parseAsNumber, 0),
-                            amount: safelyParse(skuItem, 'amount', parseAsString, null),
-                            compareAmount: safelyParse(skuItem, 'amount', parseAsString, null),
-                        };
-                    });
-                    setLineItems(lineItems);
-                }
+            if (responseIncluded) {
+                setIncluded(responseIncluded);
             }
-        },
-        [dispatch]
-    );
+        }
+    }, []);
+
+    const fetchSkuItems = useCallback(async (token: string, skus: string[], includedItems: CommerceLayerResponse[]) => {
+        const skuItems = await getSkus(token, skus);
+
+        if (skuItems) {
+            const lineItems: OrderHistoryLineItemWithSkuData[] = includedItems.map((lineItem) => {
+                const skuCode = safelyParse(lineItem, 'attributes.sku_code', parseAsString, null);
+                const skuItem = skuItems ? skuItems.find((item) => item.sku_code === skuCode) : null;
+
+                return {
+                    lineItemId: safelyParse(lineItem, 'id', parseAsString, ''),
+                    skuId: safelyParse(skuItem, 'id', parseAsString, ''),
+                    name: safelyParse(skuItem, 'name', parseAsString, null),
+                    skuCode: skuCode,
+                    imageUrl: safelyParse(skuItem, 'image_url', parseAsString, null),
+                    quantity: safelyParse(lineItem, 'attributes.quantity', parseAsNumber, 0),
+                    amount: safelyParse(skuItem, 'amount', parseAsString, null),
+                    compareAmount: safelyParse(skuItem, 'amount', parseAsString, null),
+                };
+            });
+            setLineItems(lineItems);
+        }
+    }, []);
 
     useEffect(() => {
         if (accessToken && emailAddress && orderNumber) {

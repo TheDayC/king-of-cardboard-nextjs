@@ -5,9 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import selector from './selector';
 import { deleteAddress } from '../../../../utils/account';
-import { isArrayOfErrors } from '../../../../utils/typeguards';
-import { addAlert } from '../../../../store/slices/alerts';
-import { AlertLevel } from '../../../../enums/system';
+import { addError, addSuccess } from '../../../../store/slices/alerts';
 
 interface AddressProps {
     id: string;
@@ -23,17 +21,11 @@ export const Address: React.FC<AddressProps> = ({ id, name, fetchAddresses }) =>
         if (accessToken && id) {
             const res = await deleteAddress(accessToken, id);
 
-            if (isArrayOfErrors(res)) {
-                res.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
+            if (res) {
+                dispatch(addSuccess('Address deleted!'));
+                fetchAddresses(true);
             } else {
-                if (res) {
-                    dispatch(addAlert({ message: 'Address deleted!', level: AlertLevel.Success }));
-                    fetchAddresses(true);
-                } else {
-                    dispatch(addAlert({ message: 'Unable to delete address.', level: AlertLevel.Error }));
-                }
+                dispatch(addError('Failed to delete address.'));
             }
         }
     };

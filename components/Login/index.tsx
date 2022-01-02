@@ -8,8 +8,7 @@ import Credentials from './credentials';
 import Google from './google';
 import Twitch from './twitch';
 import { parseAsString, safelyParse } from '../../utils/parsers';
-import { AlertLevel } from '../../enums/system';
-import { addAlert } from '../../store/slices/alerts';
+import { addSuccess, addWarning } from '../../store/slices/alerts';
 
 interface LoginProps {
     providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider>;
@@ -24,13 +23,13 @@ export const Login: React.FC<LoginProps> = ({ providers, showRegistrationSuccess
 
     useEffect(() => {
         if (error) {
-            dispatch(addAlert({ message: 'Invalid Credentials.', level: AlertLevel.Error }));
+            dispatch(addWarning('Invalid Credentials.'));
         }
     }, [error, dispatch]);
 
     useEffect(() => {
         if (showRegistrationSuccess) {
-            dispatch(addAlert({ message: 'Registration Successful!', level: AlertLevel.Success }));
+            dispatch(addSuccess('Registration Successful!'));
         }
     }, [showRegistrationSuccess, dispatch]);
 

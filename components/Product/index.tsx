@@ -11,9 +11,6 @@ import selector from './selector';
 import { fetchOrder } from '../../store/slices/cart';
 import Images from './Images';
 import Details from './Details';
-import { AlertLevel } from '../../enums/system';
-import { addAlert } from '../../store/slices/alerts';
-import { isArrayOfErrors } from '../../utils/typeguards';
 import { parseAsArrayOfImageItems, parseAsNumber, parseAsString, safelyParse } from '../../utils/parsers';
 
 interface ProductProps {
@@ -43,56 +40,35 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
     // Collect errors.
     const qtyErr = safelyParse(errors, 'qty.message', parseAsString, null);
 
-    const fetchProductData = useCallback(
-        async (token: string, productSlug: string) => {
-            const productData = await fetchProductBySlug(productSlug);
+    const fetchProductData = useCallback(async (token: string, productSlug: string) => {
+        const productData = await fetchProductBySlug(productSlug);
 
-            // If we find our product then move on to fetching by SKU in commerce layer.
-            if (productData) {
-                const skuItems = await getSkus(token, [productData.productLink]);
+        // If we find our product then move on to fetching by SKU in commerce layer.
+        if (productData) {
+            const skuItems = await getSkus(token, [productData.productLink]);
 
-                if (isArrayOfErrors(skuItems)) {
-                    skuItems.forEach((value) => {
-                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                    });
-                } else {
-                    // If we hit some skuItems then put them in the store.
-                    if (skuItems && skuItems.length > 0) {
-                        const skuItem = await getSkuDetails(token, skuItems[0].id);
+            // If we hit some skuItems then put them in the store.
+            if (skuItems && skuItems.length > 0) {
+                const skuItem = await getSkuDetails(token, skuItems[0].id);
 
-                        if (isArrayOfErrors(skuItem)) {
-                            skuItem.forEach((value) => {
-                                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                            });
-                        } else {
-                            if (isArrayOfErrors(skuItem)) {
-                                skuItem.forEach((value) => {
-                                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                                });
-                            } else {
-                                if (skuItem) {
-                                    const mergedProduct = mergeSkuProductData(productData, skuItems[0], skuItem);
+                if (skuItem) {
+                    const mergedProduct = mergeSkuProductData(productData, skuItems[0], skuItem);
 
-                                    if (mergedProduct) {
-                                        const quantity =
-                                            mergedProduct.inventory && mergedProduct.inventory.quantity
-                                                ? mergedProduct.inventory.quantity
-                                                : 0;
+                    if (mergedProduct) {
+                        const quantity =
+                            mergedProduct.inventory && mergedProduct.inventory.quantity
+                                ? mergedProduct.inventory.quantity
+                                : 0;
 
-                                        setMaxQuantity(quantity);
-                                        setCurrentProduct(mergedProduct);
-                                    }
-                                }
-                            }
-                        }
+                        setMaxQuantity(quantity);
+                        setCurrentProduct(mergedProduct);
                     }
                 }
             }
+        }
 
-            setLoading(false);
-        },
-        [dispatch]
-    );
+        setLoading(false);
+    }, []);
 
     useEffect(() => {
         if (accessToken) {
@@ -179,15 +155,9 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
 
             const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
 
-            if (isArrayOfErrors(hasLineItemUpdated)) {
-                hasLineItemUpdated.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
-                if (hasLineItemUpdated) {
-                    setLoading(false);
-                    dispatch(fetchOrder(true));
-                }
+            if (hasLineItemUpdated) {
+                setLoading(false);
+                dispatch(fetchOrder(true));
             }
         },
         [
@@ -202,12 +172,6 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
             handleQtyError,
         ]
     );
-
-    useEffect(() => {
-        if (qtyErr) {
-            dispatch(addAlert({ message: qtyErr, level: AlertLevel.Error }));
-        }
-    }, [qtyErr, dispatch]);
 
     if (currentProduct) {
         const description = currentProduct.description ? split(currentProduct.description, '\n\n') : [];

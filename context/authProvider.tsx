@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
-import { get } from 'lodash';
 
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import selector from './authSelector';
@@ -18,9 +17,6 @@ import { createToken } from '../utils/auth';
 import { getShipment, getShipments } from '../utils/checkout';
 import { addShipmentWithMethod } from '../store/slices/checkout';
 import { parseAsString, safelyParse } from '../utils/parsers';
-import { isArrayOfErrors, isError } from '../utils/typeguards';
-import { addAlert } from '../store/slices/alerts';
-import { AlertLevel } from '../enums/system';
 
 const AuthProvider: React.FC = ({ children }) => {
     const { accessToken, expires, order, shouldFetchOrder } = useSelector(selector);
@@ -34,17 +30,13 @@ const AuthProvider: React.FC = ({ children }) => {
     const fetchToken = useCallback(async () => {
         const res = await createToken();
 
-        if (isArrayOfErrors(res)) {
-            res.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
-        } else {
+        if (res) {
             const { token, expires } = res;
 
             dispatch(setAccessToken(token));
             dispatch(setExpires(expires));
         }
-    }, []);
+    }, [dispatch]);
 
     // Fetch order with line items.
     const fetchOrder = useCallback(
@@ -56,73 +48,55 @@ const AuthProvider: React.FC = ({ children }) => {
                 'billing_address',
                 'shipping_address',
             ]);
-            if (isArrayOfErrors(orderRes)) {
-                orderRes.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
-                if (orderRes) {
-                    const { included } = orderRes;
-                    const items = included.filter((data) => data.type === 'line_items');
-                    const paymentMethods = included.filter((data) => data.type === 'payment_methods');
+            if (orderRes) {
+                const { included } = orderRes;
+                const items = included.filter((data) => data.type === 'line_items');
+                const paymentMethods = included.filter((data) => data.type === 'payment_methods');
 
-                    if (items) {
-                        // Put fetched line items into cart.items store.
-                        // Ensure sku_code exists to avoid adding shipping or payment methods.
-                        const cartItems = items
-                            .filter((item) => safelyParse(item, 'attributes.sku_code', parseAsString, null))
-                            .map((item) => ({
-                                ...item.attributes,
-                                id: item.id,
-                            }));
-
-                        dispatch(setLineItems(cartItems));
-                    }
-
-                    if (paymentMethods) {
-                        const cartPaymentMethods = paymentMethods.map((method) => ({
-                            ...method.attributes,
-                            id: method.id,
+                if (items) {
+                    // Put fetched line items into cart.items store.
+                    // Ensure sku_code exists to avoid adding shipping or payment methods.
+                    const cartItems = items
+                        .filter((item) => safelyParse(item, 'attributes.sku_code', parseAsString, null))
+                        .map((item) => ({
+                            ...item.attributes,
+                            id: item.id,
                         }));
 
-                        dispatch(setPaymentMethods(cartPaymentMethods));
-                    }
-
-                    const shipmentRes = await getShipments(accessToken, orderId);
-
-                    if (isArrayOfErrors(shipmentRes)) {
-                        shipmentRes.forEach((value) => {
-                            dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                        });
-                    } else {
-                        if (shipmentRes) {
-                            const { shipments } = shipmentRes;
-
-                            shipments.forEach(async (shipment) => {
-                                const shipmentWithMethods = await getShipment(accessToken, shipment);
-
-                                if (isArrayOfErrors(shipmentWithMethods)) {
-                                    shipmentWithMethods.forEach((value) => {
-                                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                                    });
-                                } else {
-                                    if (shipmentWithMethods) {
-                                        dispatch(addShipmentWithMethod(shipmentWithMethods));
-                                    }
-                                }
-                            });
-                        }
-                    }
-
-                    // Set the entire order in the store.
-                    dispatch(setOrder(orderRes));
-
-                    // Ensure the cart isn't updating after the order has been fetched.
-                    dispatch(setUpdatingCart(false));
-
-                    // Ensure Checkout loading has also reset on a fetched order.
-                    dispatch(setCheckoutLoading(false));
+                    dispatch(setLineItems(cartItems));
                 }
+
+                if (paymentMethods) {
+                    const cartPaymentMethods = paymentMethods.map((method) => ({
+                        ...method.attributes,
+                        id: method.id,
+                    }));
+
+                    dispatch(setPaymentMethods(cartPaymentMethods));
+                }
+
+                const shipmentRes = await getShipments(accessToken, orderId);
+
+                if (shipmentRes) {
+                    const { shipments } = shipmentRes;
+
+                    shipments.forEach(async (shipment) => {
+                        const shipmentWithMethods = await getShipment(accessToken, shipment);
+
+                        if (shipmentWithMethods) {
+                            dispatch(addShipmentWithMethod(shipmentWithMethods));
+                        }
+                    });
+                }
+
+                // Set the entire order in the store.
+                dispatch(setOrder(orderRes));
+
+                // Ensure the cart isn't updating after the order has been fetched.
+                dispatch(setUpdatingCart(false));
+
+                // Ensure Checkout loading has also reset on a fetched order.
+                dispatch(setCheckoutLoading(false));
             }
         },
         [dispatch]
@@ -133,14 +107,8 @@ const AuthProvider: React.FC = ({ children }) => {
         async (accessToken: string) => {
             const order = await createOrder(accessToken);
 
-            if (isArrayOfErrors(order)) {
-                order.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
-                if (order) {
-                    dispatch(setOrder(order));
-                }
+            if (order) {
+                dispatch(setOrder(order));
             }
         },
         [dispatch]

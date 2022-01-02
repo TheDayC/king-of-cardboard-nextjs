@@ -2,10 +2,9 @@ import axios from 'axios';
 import { round } from 'lodash';
 
 import { errorHandler } from '../middleware/errors';
-import { ErrorResponse } from '../types/api';
 import { parseAsNumber, safelyParse } from './parsers';
 
-export async function getGiftCardBalance(accessToken: string, emailAddress: string): Promise<number | ErrorResponse[]> {
+export async function getGiftCardBalance(accessToken: string, emailAddress: string): Promise<number> {
     try {
         const response = await axios.post('/api/achievements/getGiftCardBalance', {
             token: accessToken,
@@ -14,8 +13,10 @@ export async function getGiftCardBalance(accessToken: string, emailAddress: stri
 
         return safelyParse(response, 'data.balance', parseAsNumber, 0);
     } catch (error: unknown) {
-        return errorHandler(error, 'Failed to fetch gift card balance.');
+        errorHandler(error, 'Failed to fetch gift card balance.');
     }
+
+    return 0;
 }
 
 export function progressColour(max: number, current: number): string {

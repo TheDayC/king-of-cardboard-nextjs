@@ -6,10 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import selector from './selector';
-import { AlertLevel } from '../../../../enums/system';
-import { addAlert } from '../../../../store/slices/alerts';
+import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updatePassword } from '../../../../utils/account';
-import { isArrayOfErrors } from '../../../../utils/typeguards';
 
 const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -45,16 +43,10 @@ export const UpdatePassword: React.FC = () => {
 
         const res = await updatePassword(token, emailAddress, password);
 
-        if (isArrayOfErrors(res)) {
-            res.forEach((err) => {
-                dispatch(addAlert({ message: err.description, level: AlertLevel.Error }));
-            });
+        if (res) {
+            dispatch(addSuccess('Password updated!'));
         } else {
-            if (res) {
-                dispatch(addAlert({ message: 'Password updated!', level: AlertLevel.Success }));
-            } else {
-                dispatch(addAlert({ message: 'Password could not be updated!', level: AlertLevel.Error }));
-            }
+            dispatch(addError('Failed to update password.'));
         }
 
         setLoading(false);

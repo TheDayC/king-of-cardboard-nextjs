@@ -1,9 +1,8 @@
 import axios from 'axios';
 import { Session } from 'next-auth';
-import { errorHandler } from '../../middleware/errors';
 
+import { errorHandler } from '../../middleware/errors';
 import { Achievement, ObjectId, Objective } from '../../types/achievements';
-import { ErrorResponse } from '../../types/api';
 import { authClient } from '../../utils/auth';
 import {
     parseAsArrayOfAchievements,
@@ -12,7 +11,6 @@ import {
     parseAsString,
     safelyParse,
 } from '../../utils/parsers';
-import { isArrayOfErrors } from '../../utils/typeguards';
 
 class Achievements {
     private _email: string | null = null;
@@ -42,7 +40,7 @@ class Achievements {
         return current % milestone === 0;
     }
 
-    private async fetchAchievments(): Promise<void | ErrorResponse[]> {
+    private async fetchAchievments(): Promise<void> {
         try {
             const response = await axios.post('/api/achievements/getAchievements', { emailAddress: this._email });
 
@@ -54,11 +52,7 @@ class Achievements {
                 this._giftCardId = null;
             }
         } catch (error: unknown) {
-            const errors = errorHandler(error, 'Failed to fetch achievements.');
-
-            errors.forEach((value) => {
-                console.error(`Error: ${value.description}`);
-            });
+            errorHandler(error, 'Failed to fetch achievements.');
         }
 
         return;
@@ -68,7 +62,7 @@ class Achievements {
         categories: string[] | null = null,
         types: string[] | null = null,
         page: number = 1
-    ): Promise<boolean | ErrorResponse[]> {
+    ): Promise<boolean> {
         try {
             const response = await axios.post('/api/achievements/getObjectives', { categories, types, page });
 
@@ -81,7 +75,7 @@ class Achievements {
                 this._objectives = null;
             }
         } catch (error: unknown) {
-            return errorHandler(error, 'Failed to fetch objectives.');
+            errorHandler(error, 'Failed to fetch objectives.');
         }
 
         return false;

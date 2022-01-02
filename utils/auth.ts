@@ -2,7 +2,6 @@ import axios, { AxiosInstance } from 'axios';
 import { DateTime } from 'luxon';
 
 import { errorHandler } from '../middleware/errors';
-import { ErrorResponse } from '../types/api';
 import { CreateToken } from '../types/commerce';
 import { parseAsNumber, parseAsString, safelyParse } from './parsers';
 
@@ -39,7 +38,7 @@ export function userClient(): AxiosInstance {
 }
 
 // Create commerce layer access token
-export async function createToken(): Promise<CreateToken | ErrorResponse[]> {
+export async function createToken(): Promise<CreateToken> {
     try {
         const res = await axios.get('/api/getAccessToken');
         const now = DateTime.now().setZone('Europe/London');
@@ -52,6 +51,35 @@ export async function createToken(): Promise<CreateToken | ErrorResponse[]> {
             expires: expiresIso,
         };
     } catch (error: unknown) {
-        return errorHandler(error, 'We could not create an auth token, please refresh.');
+        errorHandler(error, 'We could not create an auth token, please refresh.');
     }
+
+    return {
+        token: null,
+        expires: DateTime.now().setZone('Europe/London').toISO(),
+    };
+}
+
+export async function registerUser(
+    accessToken: string,
+    username: string,
+    emailAddress: string,
+    password: string
+): Promise<boolean> {
+    try {
+        const response = await axios.post('/api/register', {
+            username,
+            emailAddress,
+            password,
+            token: accessToken,
+        });
+
+        const status = safelyParse(response, 'status', parseAsNumber, false);
+
+        return status === 200;
+    } catch (error: unknown) {
+        errorHandler(error, 'Failed to register user at this time.');
+    }
+
+    return false;
 }
