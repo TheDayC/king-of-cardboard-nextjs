@@ -19,7 +19,8 @@ import { parseAsString, safelyParse } from '../../../utils/parsers';
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
-    const { accessToken, currentStep, shipmentsWithMethods, order, checkoutLoading } = useSelector(selector);
+    const { accessToken, currentStep, shipmentsWithMethods, order, checkoutLoading, hasBothAddresses } =
+        useSelector(selector);
     const [shipments, setShipments] = useState<FinalShipments | null>(null);
     const {
         register,
@@ -86,20 +87,21 @@ export const Delivery: React.FC = () => {
         }
     };
 
+    // Handle edit for opening / closing the collapse element
     const handleEdit = () => {
-        if (!isCurrentStep) {
+        if (!isCurrentStep && hasBothAddresses) {
             dispatch(setCurrentStep(1));
         }
     };
 
     return (
         <div
-            className={`collapse collapse-plus card bordered mb-6 rounded-md collapse-${
-                isCurrentStep ? 'open' : 'closed'
-            }`}
+            className={`collapse${
+                hasBothAddresses ? ' collapse-plus' : ' bg-gray-200 cursor-not-allowed'
+            } card bordered mb-6 rounded-md collapse-${isCurrentStep ? 'open' : 'closed'}`}
         >
-            <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
-                {!hasErrors && !isCurrentStep ? 'Delivery - Edit' : 'Delivery'}
+            <h3 className={`text-xl font-medium${hasBothAddresses ? ' collapse-title' : ' p-4'}`} onClick={handleEdit}>
+                {hasBothAddresses ? 'Delivery - Edit' : 'Delivery'}
             </h3>
             <div className="collapse-content p-0">
                 <form onSubmit={handleSubmit(handleSelectShippingMethod)}>

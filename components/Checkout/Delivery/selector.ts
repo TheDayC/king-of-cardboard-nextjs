@@ -9,6 +9,7 @@ const selector = createSelector([selectCheckoutData, selectGlobalData, selectCar
     shipmentsWithMethods: checkout.shipmentsWithMethods,
     order: cart.order,
     checkoutLoading: global.checkoutLoading,
+    hasBothAddresses: Boolean(checkout.billingAddress.line_1) && Boolean(checkout.shippingAddress.line_1),
 }));
 
 export default selector;
