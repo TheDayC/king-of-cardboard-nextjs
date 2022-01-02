@@ -262,10 +262,10 @@ const Customer: React.FC = () => {
             <div className="collapse-content bg-base-100 p-0">
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex">
-                        <div className="flex flex-col w-full">
+                        <div className="flex flex-col w-full p-4">
                             <PersonalDetails register={register} errors={errors} setValue={setValue} />
                             <div className="divider lightDivider"></div>
-                            <h3 className="text-2xl px-5 font-semibold">Billing Details</h3>
+                            <h3 className="text-2xl font-semibold mb-4">Billing Details</h3>
                             {session && (
                                 <SelectionWrapper
                                     id="existingBillingAddress"
@@ -292,7 +292,7 @@ const Customer: React.FC = () => {
                             <div className="divider lightDivider"></div>
                             {!isShippingSameAsBilling && (
                                 <React.Fragment>
-                                    <h3 className="text-2xl px-5 font-semibold">Shipping Details</h3>
+                                    <h3 className="text-2xl mb-4 font-semibold">Shipping Details</h3>
                                     {session && (
                                         <SelectionWrapper
                                             id="existingShippingAddress"

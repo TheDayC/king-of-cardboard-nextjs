@@ -13,8 +13,9 @@ const ShipToBilling: React.FC = () => {
     };
 
     return (
-        <div className="p-4 card">
-            <div className="form-control">
+        <div className="flex flex-col w-full mt-4">
+            <div className="divider lightDivider"></div>
+            <div className="form-control w-full">
                 <label className="cursor-pointer label">
                     <span className="label-text text-lg">Ship to your billing address?</span>
                     <input
