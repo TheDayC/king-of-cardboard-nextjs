@@ -1,6 +1,7 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { fetchCartTotals } from '../../../store/slices/cart';
 import selector from './selector';
 
 interface CartTotalsProps {
@@ -8,13 +9,14 @@ interface CartTotalsProps {
 }
 
 export const CartTotals: React.FC<CartTotalsProps> = ({ isConfirmation }) => {
-    const { cartOrder, confirmationOrder } = useSelector(selector);
-    const order = isConfirmation ? confirmationOrder : cartOrder;
+    const { accessToken, orderId, subTotal, shipping, total } = useSelector(selector);
+    const dispatch = useDispatch();
 
-    const subTotal = order && order.formatted_subtotal_amount ? order.formatted_subtotal_amount : null;
-    // const discount = order && order.formatted_discount_amount ? order.formatted_discount_amount : null;
-    const shipping = order && order.formatted_shipping_amount ? order.formatted_shipping_amount : null;
-    const total = order && order.formatted_total_amount_with_taxes ? order.formatted_total_amount_with_taxes : null;
+    useEffect(() => {
+        if (accessToken && orderId) {
+            dispatch(fetchCartTotals({ accessToken, orderId }));
+        }
+    }, [dispatch, accessToken, orderId]);
 
     return (
         <div className="flex flex-col">

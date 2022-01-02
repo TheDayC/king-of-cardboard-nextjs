@@ -31,3 +31,9 @@ export interface IncludedData {
     type: string;
     attributes: CommerceLayerObject | null;
 }
+
+export interface CartTotals {
+    subTotal: string | null;
+    shipping: string | null;
+    total: string | null;
+}

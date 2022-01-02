@@ -33,6 +33,9 @@ export interface CartState {
     paymentMethods: CartPaymentMethod[];
     shouldFetchOrder: boolean;
     isUpdatingCart: boolean;
+    subTotal: string | null;
+    shipping: string | null;
+    total: string | null;
 }
 
 export interface CartItem {

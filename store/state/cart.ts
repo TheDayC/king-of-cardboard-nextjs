@@ -8,6 +8,9 @@ const cartInitialState: CartState = {
     paymentMethods: [],
     shouldFetchOrder: true,
     isUpdatingCart: false,
+    subTotal: null,
+    shipping: null,
+    total: null,
 };
 
 export default cartInitialState;
