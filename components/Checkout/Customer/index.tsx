@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { useSession } from 'next-auth/react';
@@ -29,6 +29,7 @@ import ShipToBilling from './ShipToBilling';
 import PersonalDetails from './PersonalDetails';
 import SelectionWrapper from '../../SelectionWrapper';
 import ExistingAddress from './ExistingAddress';
+import { CustomerDetails } from '../../../store/types/state';
 
 const Customer: React.FC = () => {
     const { data: session } = useSession();
@@ -55,12 +56,101 @@ const Customer: React.FC = () => {
     const isCurrentStep = currentStep === 0;
     const hasErrors = Object.keys(errors).length > 0;
 
+    const handleNewBillingAddress = useCallback(
+        async (data: unknown, customerDetails: CustomerDetails) => {
+            if (!accessToken || !order) return null;
+
+            // Parse the billing address into a customer address partial.
+            // CommerceLayer only expects the basic user input on their side hence the partial data parse.
+            const billingAddressParsed = parseBillingAddress(data);
+
+            // Update billing address details in commerceLayer.
+            await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, false);
+
+            // Set the billing address in full in our local store.
+            dispatch(setBillingAddress(parseAddress(billingAddressParsed)));
+
+            // If we're cloning a new address to shipping then update the shipping details with CommerceLayer.
+            if (isShippingSameAsBilling) {
+                await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, true);
+            }
+        },
+        [accessToken, order, dispatch, isShippingSameAsBilling]
+    );
+
+    const handleExistingBillingAddress = useCallback(
+        async (customerDetails: CustomerDetails) => {
+            if (!accessToken || !order) return null;
+
+            // Parse the billing address into a customer address partial.
+            // CommerceLayer only expects the basic user input on their side hence the partial data parse.
+            const billingAddressParsed = parseExistingAddress(billingAddress);
+
+            // Update billing address details in commerceLayer.
+            await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, false);
+
+            // Set the billing address in full in our local store.
+            dispatch(setBillingAddress(parseAddress(billingAddressParsed)));
+
+            // Ensure we have a clone id and update clone address field.
+            if (cloneBillingAddressId) {
+                await updateAddressClone(accessToken, order.id, cloneBillingAddressId, false);
+
+                // If we're cloning a new address to shipping then update the shipping details with CommerceLayer.
+                if (isShippingSameAsBilling) {
+                    await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, true);
+                }
+            } else {
+                dispatch(addWarning('Please select a billing address'));
+            }
+        },
+        [accessToken, order, dispatch, cloneBillingAddressId, billingAddress, isShippingSameAsBilling]
+    );
+
+    const handleNewShippingAddress = useCallback(
+        async (data: unknown, customerDetails: CustomerDetails) => {
+            if (!accessToken || !order) return null;
+
+            // Parse the shipping address into a customer address partial.
+            // CommerceLayer only expects the basic user input on their side hence the partial data parse.
+            const shippingAddressParsed = parseShippingAddress(data);
+
+            // Update shipping address details in commerceLayer.
+            await updateAddress(accessToken, order.id, customerDetails, shippingAddressParsed, true);
+
+            // Set the billing address in full in our local store.
+            dispatch(setShippingAddress(parseAddress(shippingAddressParsed)));
+        },
+        [accessToken, order, dispatch]
+    );
+
+    const handleExistingShippingAddress = useCallback(
+        async (customerDetails: CustomerDetails) => {
+            if (!accessToken || !order) return null;
+
+            // Parse the shipping address into a customer address partial.
+            const shippingAddressParsed = parseExistingAddress(shippingAddress);
+
+            // Update shipping address details in commerceLayer. No check for same as billing here.
+            await updateAddress(accessToken, order.id, customerDetails, shippingAddressParsed, true);
+
+            // Set the billing address in full in our local store.
+            dispatch(setShippingAddress(parseAddress(shippingAddressParsed)));
+
+            // Ensure we have a clone id and update clone address field.
+            if (cloneShippingAddressId) {
+                await updateAddressClone(accessToken, order.id, cloneShippingAddressId, true);
+            } else {
+                dispatch(addWarning('Please select a shipping address'));
+            }
+        },
+        [accessToken, order, dispatch, cloneShippingAddressId, shippingAddress]
+    );
+
     const onSubmit = async (data: unknown) => {
         if (hasErrors || checkoutLoading || !order || !accessToken) {
             return;
         }
-
-        let shouldSubmit = true;
 
         // Set loading in current form.
         dispatch(setCheckoutLoading(true));
@@ -69,86 +159,28 @@ const Customer: React.FC = () => {
         const customerDetails = parseCustomerDetails(data);
         dispatch(setCustomerDetails(customerDetails));
 
-        // Handle billing address first
+        // Handle a new billing address.
         if (billingAddressEntryChoice === 'newBillingAddress') {
-            // Parse the billing address into a customer address partial.
-            const billingAddressParsed = parseBillingAddress(data);
-
-            // Update billing address details in commerceLayer
-            await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, false);
-
-            dispatch(setBillingAddress(parseAddress(billingAddressParsed)));
-
-            // If we're cloning a new address to shipping, simply update the details with isShipping as true.
-            if (isShippingSameAsBilling) {
-                // Update shipping address details in commerceLayer
-                await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, true);
-            }
-        } else if (billingAddressEntryChoice === 'existingBillingAddress') {
-            // Parse the billing address into a customer address partial.
-            const billingAddressParsed = parseExistingAddress(billingAddress);
-
-            // Update billing address details in commerceLayer
-            await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, false);
-
-            // If we're choosing an existing address then check for a clone id and add as shipping.
-            if (cloneBillingAddressId) {
-                await updateAddressClone(accessToken, order.id, cloneBillingAddressId, false);
-            } else {
-                dispatch(addWarning('Please select a billing address'));
-                shouldSubmit = false;
-            }
+            handleNewBillingAddress(data, customerDetails);
         }
 
-        // If our shipping is the same as the billing address then we need to add the billing clone id to shipping.
-        if (isShippingSameAsBilling) {
-            // Update the shipping same as billing field regardless of value.
-            await updateSameAsBilling(accessToken, order.id, isShippingSameAsBilling);
+        // Handle existing billing address.
+        if (billingAddressEntryChoice === 'existingBillingAddress') {
+            handleExistingBillingAddress(customerDetails);
+        }
 
-            if (cloneBillingAddressId) {
-                await updateAddressClone(accessToken, order.id, cloneBillingAddressId, true);
-            } else {
-                dispatch(addWarning('Please select a billing address'));
-                shouldSubmit = false;
-            }
+        // If our shipping is the same as the billing address then update _shipping_address_same_as_billing field in CommerceLayer.
+        if (isShippingSameAsBilling) {
+            await updateSameAsBilling(accessToken, order.id, isShippingSameAsBilling);
         } else {
+            // NOTE: At this point we know if the user is adding a shipping address manually.
+
             // Handle shipping address, no need to check for existing or as we handle that onClick.
             if (shippingAddressEntryChoice === 'newShippingAddress') {
-                // Parse the shipping address into a customer address partial.
-                const shippingAddressParsed = parseShippingAddress(data);
-
-                // Update shipping address details in commerceLayer. No check for same as billing here.
-                const shippingAddressUpdatedRes = await updateAddress(
-                    accessToken,
-                    order.id,
-                    customerDetails,
-                    shippingAddressParsed,
-                    true
-                );
-
-                if (shippingAddressUpdatedRes) {
-                    dispatch(setShippingAddress(parseAddress(shippingAddressParsed)));
-                }
+                handleNewShippingAddress(data, customerDetails);
             } else if (shippingAddressEntryChoice === 'existingShippingAddress') {
-                // Parse the shipping address into a customer address partial.
-                const shippingAddressParsed = parseExistingAddress(shippingAddress);
-
-                // Update shipping address details in commerceLayer. No check for same as billing here.
-                await updateAddress(accessToken, order.id, customerDetails, shippingAddressParsed, true);
-
-                if (!cloneShippingAddressId) {
-                    dispatch(addWarning('Please select a shipping address'));
-                    shouldSubmit = false;
-                }
+                handleExistingShippingAddress(customerDetails);
             }
-        }
-
-        // Remove load blockers.
-        dispatch(setCheckoutLoading(false));
-
-        // If any errors were found then block the form.
-        if (!shouldSubmit) {
-            return;
         }
 
         submissionCleanup();
@@ -157,6 +189,9 @@ const Customer: React.FC = () => {
     const submissionCleanup = () => {
         // Fetch the order with new details.
         dispatch(fetchOrder(true));
+
+        // Remove load blockers.
+        dispatch(setCheckoutLoading(false));
 
         // Redirect to next stage.
         dispatch(setCurrentStep(1));
