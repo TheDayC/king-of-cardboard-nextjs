@@ -68,6 +68,7 @@ export interface Global {
 
 export interface Checkout {
     currentStep: number;
+    shipmentsWithMethods: ShipmentsWithMethods[] | null;
     customerDetails: CustomerDetails;
     billingAddress: CustomerAddress;
     shippingAddress: CustomerAddress;

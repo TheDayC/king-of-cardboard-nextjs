@@ -105,14 +105,6 @@ export const Shipment: React.FC<ShipmentProps> = ({
                                     required: { value: true, message: 'Required' },
                                 })}
                             />
-                            <input
-                                type="hidden"
-                                value={id}
-                                defaultChecked={defaultChecked === method.id}
-                                {...register(`method.${id}.shipmentId`, {
-                                    required: { value: true, message: 'Required' },
-                                })}
-                            />
                         </label>
                     </div>
                 ))}

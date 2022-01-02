@@ -2,22 +2,18 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { StripeCardElement, Stripe } from '@stripe/stripe-js';
 import { useRouter } from 'next/router';
-import { Session } from 'next-auth';
 import { useSession } from 'next-auth/react';
 import { BsPaypal, BsFillCreditCard2BackFill } from 'react-icons/bs';
 
 import { setCurrentStep } from '../../../store/slices/checkout';
 import { createPaymentSource } from '../../../utils/commerce';
 import { confirmOrder, refreshPayment, sendOrderConfirmation } from '../../../utils/payment';
-import { CartItem, CustomerAddress, CustomerDetails } from '../../../store/types/state';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import { setConfirmationData } from '../../../store/slices/confirmation';
-import { Order } from '../../../types/cart';
 import Achievements from '../../../services/achievments';
 import { setShouldFetchRewards } from '../../../store/slices/account';
-import { addError, addWarning } from '../../../store/slices/alerts';
+import { addError } from '../../../store/slices/alerts';
 import selector from './selector';
 import SelectionWrapper from '../../SelectionWrapper';
 import Source from './Source';
@@ -40,6 +36,8 @@ export const Payment: React.FC = () => {
         confirmationDetails,
         billingAddress,
         shippingAddress,
+        hasBothAddresses,
+        hasShipmentMethods,
     } = useSelector(selector);
     const { handleSubmit } = useForm();
     const { data: session } = useSession();
@@ -48,6 +46,7 @@ export const Payment: React.FC = () => {
     const btnText = paymentBtnText(paymentMethod);
     const paypalClass = 'inline-block mr-3 text-md -mt-0.5 text-blue-800';
     const stripeClass = 'inline-block mr-3 text-md -mt-0.5 text-gray-500';
+    const shouldEnable = hasBothAddresses && hasShipmentMethods;
 
     // Get the card element with Stripe hooks.
     const card = elements ? elements.getElement(CardElement) : null;
@@ -264,12 +263,12 @@ export const Payment: React.FC = () => {
 
     return (
         <div
-            className={`collapse collapse-plus card bordered rounded-md mb-6 lg:mb-0 collapse-${
-                isCurrentStep ? 'open' : 'closed'
-            }`}
+            className={`collapse${
+                shouldEnable ? ' collapse-plus' : ' bg-gray-200 cursor-not-allowed'
+            } card bordered mb-6 rounded-md collapse-${isCurrentStep ? 'open' : 'closed'}`}
         >
-            <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
-                {!isCurrentStep ? 'Payment - Edit' : 'Payment'}
+            <h3 className={`text-xl font-medium${shouldEnable ? ' collapse-title' : ' p-4'}`} onClick={handleEdit}>
+                {shouldEnable ? 'Payment - Edit' : 'Payment'}
             </h3>
             <div className="collapse-content">
                 <form onSubmit={handleSubmit(onSubmit)}>

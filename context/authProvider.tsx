@@ -16,6 +16,7 @@ import {
 import { createToken } from '../utils/auth';
 import { getShipment, getShipments } from '../utils/checkout';
 import { parseAsString, safelyParse } from '../utils/parsers';
+import { addShipmentWithMethod } from '../store/slices/checkout';
 
 const AuthProvider: React.FC = ({ children }) => {
     const { accessToken, expires, order, shouldFetchOrder } = useSelector(selector);
@@ -73,6 +74,21 @@ const AuthProvider: React.FC = ({ children }) => {
 
                     dispatch(setPaymentMethods(cartPaymentMethods));
                 }
+
+                /* const shipmentRes = await getShipments(accessToken, orderId);
+                console.log("🚀 ~ file: authProvider.tsx ~ line 79 ~ shipmentRes", shipmentRes)
+
+                if (shipmentRes) {
+                    const { shipments } = shipmentRes;
+
+                    shipments.forEach(async (shipment) => {
+                        const shipmentWithMethods = await getShipment(accessToken, shipment);
+
+                        if (shipmentWithMethods) {
+                            dispatch(addShipmentWithMethod(shipmentWithMethods));
+                        }
+                    });
+                } */
 
                 // Set the entire order in the store.
                 dispatch(setOrder(orderRes));

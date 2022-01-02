@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 
 import selector from './selector';
-import { setCurrentStep } from '../../../store/slices/checkout';
+import { setCurrentStep, setShipmentsWithMethods } from '../../../store/slices/checkout';
 import { MergedShipmentMethods } from '../../../types/checkout';
 import {
     getDeliveryLeadTimes,
@@ -15,14 +15,10 @@ import Shipment from './Shipment';
 import { fetchOrder } from '../../../store/slices/cart';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Loading from '../../Loading';
-
-interface FormMethod {
-    methodId: string;
-    shipmentId: string;
-}
+import { ShipmentsWithMethods } from '../../../store/types/state';
 
 interface FormMethods {
-    [x: string]: FormMethod;
+    [x: string]: ShipmentsWithMethods;
 }
 
 interface FormData {
@@ -72,7 +68,12 @@ export const Delivery: React.FC = () => {
         // Start checkout loader.
         dispatch(setCheckoutLoading(true));
 
-        const mappedData = shipments.map((shipment) => data.method[shipment]);
+        const mappedData = shipments.map((shipment) => ({
+            shipmentId: shipment,
+            methodId: data.method[shipment].methodId,
+        }));
+
+        dispatch(setShipmentsWithMethods(mappedData));
 
         mappedData.forEach(async (mD) => await updateShipmentMethod(accessToken, mD.shipmentId, mD.methodId));
 
@@ -102,7 +103,7 @@ export const Delivery: React.FC = () => {
             <h3 className={`text-xl font-medium${hasBothAddresses ? ' collapse-title' : ' p-4'}`} onClick={handleEdit}>
                 {hasBothAddresses ? 'Delivery - Edit' : 'Delivery'}
             </h3>
-            <div className="collapse-content p-0">
+            <div className="collapse-content p-0 relative">
                 <Loading show={!hasShipmentsAndMethods} />
                 <form onSubmit={handleSubmit(handleSelectShippingMethod)}>
                     {hasShipmentsAndMethods &&
@@ -111,7 +112,7 @@ export const Delivery: React.FC = () => {
                                 <Shipment
                                     id={shipment}
                                     shippingMethods={methods}
-                                    shipmentCount={index + 1}
+                                    shipmentCount={index}
                                     shipmentsTotal={shipments.length}
                                     register={register}
                                     defaultChecked={methods[0].id}
