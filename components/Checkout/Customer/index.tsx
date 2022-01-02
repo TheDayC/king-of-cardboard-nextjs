@@ -208,6 +208,8 @@ const Customer: React.FC = () => {
         dispatch(setCurrentStep(1));
     };
 
+    // Handle the edit collapsed item functionality.
+    // Simple check for address step.
     const handleEdit = () => {
         if (!isCurrentStep) {
             dispatch(setCurrentStep(0));
@@ -219,6 +221,7 @@ const Customer: React.FC = () => {
 
         if (id === 'newBillingAddress') {
             dispatch(setCloneBillingAddressId(null));
+            dispatch(setBillingAddress(null));
         }
     };
 
@@ -227,6 +230,7 @@ const Customer: React.FC = () => {
 
         if (id === 'newShippingAddress') {
             dispatch(setCloneShippingAddressId(null));
+            dispatch(setShippingAddress(null));
         }
     };
 
