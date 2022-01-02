@@ -156,6 +156,9 @@ const Customer: React.FC = () => {
             // If we're cloning a new address to shipping then update the shipping details with CommerceLayer.
             if (isShippingSameAsBilling) {
                 await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, true);
+
+                // Set the shipping address in full in our local store so our shipping matches billing locally.
+                dispatch(setShippingAddress(parseAddress(billingAddressParsed)));
             }
 
             // Ensure we have a clone id and update clone address field.
@@ -311,8 +314,9 @@ const Customer: React.FC = () => {
     useEffect(() => {
         if (isShippingSameAsBilling) {
             setShippingAddressEntryChoice('existingShippingAddress');
+            dispatch(setShippingAddress(defaultShippingAddress));
         }
-    }, [isShippingSameAsBilling]);
+    }, [isShippingSameAsBilling, dispatch]);
 
     return (
         <div
