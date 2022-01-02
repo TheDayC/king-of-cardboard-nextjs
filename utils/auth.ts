@@ -59,3 +59,27 @@ export async function createToken(): Promise<CreateToken> {
         expires: DateTime.now().setZone('Europe/London').toISO(),
     };
 }
+
+export async function registerUser(
+    accessToken: string,
+    username: string,
+    emailAddress: string,
+    password: string
+): Promise<boolean> {
+    try {
+        const response = await axios.post('/api/register', {
+            username,
+            emailAddress,
+            password,
+            token: accessToken,
+        });
+
+        const status = safelyParse(response, 'status', parseAsNumber, false);
+
+        return status === 200;
+    } catch (error: unknown) {
+        errorHandler(error, 'Failed to register user at this time.');
+    }
+
+    return false;
+}

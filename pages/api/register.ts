@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '../../middleware/database';
 import { parseAsNumber, parseAsString, safelyParse } from '../../utils/parsers';
 import { authClient } from '../../utils/auth';
+import { apiErrorHandler } from '../../middleware/errors';
 
 async function register(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
@@ -41,8 +42,10 @@ async function register(req: NextApiRequest, res: NextApiResponse): Promise<void
 
                 res.status(200).json({ success: true, data: createdUser });
             }
-        } catch (err) {
-            if (err) throw err;
+        } catch (error) {
+            const status = safelyParse(error, 'response.status', parseAsNumber, 500);
+
+            res.status(status).json(apiErrorHandler(error, 'Failed to send order confirmation email.'));
         }
     }
 }

@@ -15,6 +15,7 @@ import {
     parseAsString,
     safelyParse,
 } from '../../utils/parsers';
+import { apiErrorHandler } from '../../middleware/errors';
 
 const ses = new aws.SES({
     apiVersion: '2010-12-01',
@@ -192,10 +193,15 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
                     res.status(status).json({ status, statusText, message: message ? message[0].detail : 'Error' });
                 }
             } else {
-                res.status(403).json({ success: false, message: 'Passwords do not match' });
+                res.status(403).json({
+                    success: false,
+                    message: 'Did not have the required data to send confirmation email.',
+                });
             }
-        } catch (err) {
-            if (err) throw err;
+        } catch (error) {
+            const status = safelyParse(error, 'response.status', parseAsNumber, 500);
+
+            res.status(status).json(apiErrorHandler(error, 'Failed to send order confirmation email.'));
         }
     }
 }
