@@ -15,7 +15,6 @@ import {
 } from '../store/slices/cart';
 import { createToken } from '../utils/auth';
 import { getShipment, getShipments } from '../utils/checkout';
-import { addShipmentWithMethod } from '../store/slices/checkout';
 import { parseAsString, safelyParse } from '../utils/parsers';
 
 const AuthProvider: React.FC = ({ children }) => {
@@ -73,20 +72,6 @@ const AuthProvider: React.FC = ({ children }) => {
                     }));
 
                     dispatch(setPaymentMethods(cartPaymentMethods));
-                }
-
-                const shipmentRes = await getShipments(accessToken, orderId);
-
-                if (shipmentRes) {
-                    const { shipments } = shipmentRes;
-
-                    shipments.forEach(async (shipment) => {
-                        const shipmentWithMethods = await getShipment(accessToken, shipment);
-
-                        if (shipmentWithMethods) {
-                            dispatch(addShipmentWithMethod(shipmentWithMethods));
-                        }
-                    });
                 }
 
                 // Set the entire order in the store.

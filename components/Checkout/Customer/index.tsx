@@ -312,11 +312,10 @@ const Customer: React.FC = () => {
 
     // If we click the sameAs checkbox I want to reset the shipping address.
     useEffect(() => {
-        if (isShippingSameAsBilling) {
-            setShippingAddressEntryChoice('existingShippingAddress');
+        if (!isShippingSameAsBilling) {
             dispatch(setShippingAddress(defaultShippingAddress));
         }
-    }, [isShippingSameAsBilling, dispatch]);
+    }, [isShippingSameAsBilling, dispatch, billingAddressEntryChoice]);
 
     return (
         <div

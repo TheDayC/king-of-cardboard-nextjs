@@ -19,23 +19,6 @@ const checkoutSlice = createSlice({
         setShippingAddress(state, action) {
             state.shippingAddress = action.payload;
         },
-        setShipmentsWithMethods(state, action) {
-            state.shipmentsWithMethods = action.payload;
-        },
-        addShipmentWithMethod(state, action) {
-            const { shipmentId, methodId } = action.payload;
-            const currentState = state.shipmentsWithMethods;
-
-            if (currentState) {
-                const existingIndex = currentState.findIndex((cS) => cS.shipmentId === shipmentId);
-
-                state.shipmentsWithMethods = currentState.slice(existingIndex, existingIndex);
-
-                state.shipmentsWithMethods.push({ shipmentId, methodId });
-            } else {
-                state.shipmentsWithMethods = [{ shipmentId, methodId }];
-            }
-        },
         setCloneBillingAddressId(state, action) {
             state.cloneBillingAddressId = action.payload;
         },
@@ -62,8 +45,6 @@ export const {
     setCustomerDetails,
     setBillingAddress,
     setShippingAddress,
-    setShipmentsWithMethods,
-    addShipmentWithMethod,
     resetCheckoutDetails,
     setCloneBillingAddressId,
     setCloneShippingAddressId,
