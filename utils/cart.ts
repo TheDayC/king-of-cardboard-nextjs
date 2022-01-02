@@ -21,7 +21,6 @@ export async function getCartTotals(accessToken: string, orderId: string): Promi
         const cl = authClient(accessToken);
         const fields = 'formatted_subtotal_amount,formatted_shipping_amount,formatted_total_amount_with_taxes';
         const res = await cl.get(`/api/orders/${orderId}?fields[orders]=${fields}`);
-        console.log('🚀 ~ file: cart.ts ~ line 24 ~ getCartTotals ~ res', res);
     } catch (error: unknown) {
         errorHandler(error, 'Failed to fetch cart item count.');
     }

@@ -20,7 +20,7 @@ import {
 export async function createOrder(accessToken: string, isGuest: boolean): Promise<CreateOrder> {
     try {
         const cl = authClient(accessToken);
-        const res = await cl.post('/api/orders?fields[orders]=id&include=number', {
+        const res = await cl.post('/api/orders?fields[orders]=id,number', {
             data: {
                 type: 'orders',
                 attributes: {

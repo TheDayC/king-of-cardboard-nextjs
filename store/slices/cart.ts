@@ -55,9 +55,6 @@ const cartSlice = createSlice({
     name: 'cart',
     initialState: cartInitialState,
     reducers: {
-        setOrder(state, action) {
-            state.order = action.payload;
-        },
         setLineItems(state, action) {
             state.items = action.payload;
         },
@@ -99,5 +96,5 @@ const cartSlice = createSlice({
     },
 });
 
-export const { setOrder, setLineItems, setPaymentMethods, fetchOrder, resetCart, setUpdatingCart } = cartSlice.actions;
+export const { setLineItems, setPaymentMethods, fetchOrder, resetCart, setUpdatingCart } = cartSlice.actions;
 export default cartSlice.reducer;
