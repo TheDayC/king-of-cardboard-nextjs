@@ -1,10 +1,11 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { sumBy } from 'lodash';
 
-import { selectCartData } from '../../../store/state/selectors';
+import { selectCartData, selectGlobalData } from '../../../store/state/selectors';
 
-const selector = createSelector([selectCartData], (cart) => ({
-    cartItemCount: sumBy(cart.items, (cartItem) => cartItem.quantity),
+const selector = createSelector([selectCartData, selectGlobalData], (cart, global) => ({
+    accessToken: global.accessToken,
+    itemCount: cart.itemCount,
+    orderId: cart.order ? cart.order.id : null,
 }));
 
 export default selector;

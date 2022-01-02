@@ -27,6 +27,7 @@ export interface IAppState {
 
 export interface CartState {
     order: Order | null;
+    itemCount: number;
     items: CartItem[];
     paymentMethods: CartPaymentMethod[];
     shouldFetchOrder: boolean;

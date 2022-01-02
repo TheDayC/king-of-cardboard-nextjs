@@ -8,7 +8,7 @@ import { getSkus, getSkuDetails, setLineItem } from '../../utils/commerce';
 import { fetchProductBySlug, mergeSkuProductData } from '../../utils/products';
 import Loading from '../Loading';
 import selector from './selector';
-import { fetchOrder } from '../../store/slices/cart';
+import { fetchItemCount, fetchOrder } from '../../store/slices/cart';
 import Images from './Images';
 import Details from './Details';
 import { parseAsArrayOfImageItems, parseAsNumber, parseAsString, safelyParse } from '../../utils/parsers';
@@ -156,6 +156,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
             const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
 
             if (hasLineItemUpdated) {
+                dispatch(fetchItemCount({ accessToken, orderId: order.id }));
                 setLoading(false);
                 dispatch(fetchOrder(true));
             }
