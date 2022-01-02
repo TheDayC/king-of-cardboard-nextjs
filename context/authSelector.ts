@@ -5,7 +5,7 @@ import { selectGlobalData, selectCartData } from '../store/state/selectors';
 const selector = createSelector([selectGlobalData, selectCartData], (global, cart) => ({
     accessToken: global.accessToken,
     expires: global.expires,
-    order: cart.order,
+    order: cart.orderId,
     shouldFetchOrder: cart.shouldFetchOrder,
 }));
 

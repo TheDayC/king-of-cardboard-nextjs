@@ -28,7 +28,6 @@ export async function createOrder(accessToken: string, isGuest: boolean): Promis
                 },
             },
         });
-        console.log('🚀 ~ file: commerce.ts ~ line 31 ~ createOrder ~ res', res);
 
         return safelyParse(res, 'data.data.id', parseAsString, null);
     } catch (error: unknown) {

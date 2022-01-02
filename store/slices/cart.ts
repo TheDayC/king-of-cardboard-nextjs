@@ -16,7 +16,7 @@ interface CreateOrderInput {
     isGuest: boolean;
 }
 
-export const hydrate = createAction<AppState>(HYDRATE);
+const hydrate = createAction<AppState>(HYDRATE);
 
 export const fetchItemCount = createAsyncThunk(
     'cart/fetchItemCount',

@@ -16,7 +16,6 @@ const PER_PAGE = 9;
 export const Grid: React.FC = () => {
     const dispatch = useDispatch();
     const [breaks, setBreaks] = useState<ContentfulBreak[] | null>(null);
-    console.log('🚀 ~ file: index.tsx ~ line 19 ~ breaks', breaks);
     const [totalBreaks, setTotalBreaks] = useState(0);
     const [currentPage, setCurrentPage] = useState(0);
     const router = useRouter();

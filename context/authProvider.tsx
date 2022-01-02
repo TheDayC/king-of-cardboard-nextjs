@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import selector from './authSelector';
 import { createOrder, getOrder } from '../utils/commerce';
-import { setAccessToken, setCheckoutLoading, setExpires } from '../store/slices/global';
+import { fetchToken, setAccessToken, setCheckoutLoading, setExpires } from '../store/slices/global';
 import {
     fetchOrder as fetchOrderAction,
     setOrder,
@@ -19,7 +19,7 @@ import { createToken } from '../utils/auth';
 import { parseAsString, safelyParse } from '../utils/parsers';
 
 const AuthProvider: React.FC = ({ children }) => {
-    const { accessToken, expires, order, shouldFetchOrder } = useSelector(selector);
+    const { accessToken, expires, orderId, shouldFetchOrder } = useSelector(selector);
     const dispatch = useDispatch();
     const [shouldCreateOrder, setShouldCreateOrder] = useState(true);
     const currentDate = DateTime.now().setZone('Europe/London');
@@ -28,20 +28,8 @@ const AuthProvider: React.FC = ({ children }) => {
     const { data: session } = useSession();
     const isGuest = !Boolean(session);
 
-    // Fetch an auth token for the user to interact with commerceLayer.
-    const fetchToken = useCallback(async () => {
-        const res = await createToken();
-
-        if (res) {
-            const { token, expires } = res;
-
-            dispatch(setAccessToken(token));
-            dispatch(setExpires(expires));
-        }
-    }, [dispatch]);
-
     // Fetch order with line items.
-    const fetchOrder = useCallback(
+    /* const fetchOrder = useCallback(
         async (accessToken: string, orderId: string) => {
             const orderRes = await getOrder(accessToken, orderId, [
                 'line_items',
@@ -88,7 +76,7 @@ const AuthProvider: React.FC = ({ children }) => {
             }
         },
         [dispatch]
-    );
+    ); */
 
     // Create a brand new order and set the id in the store.
     const generateOrder = useCallback(
@@ -99,27 +87,27 @@ const AuthProvider: React.FC = ({ children }) => {
     );
 
     // If order does exist then hydrate with line items.
-    useIsomorphicLayoutEffect(() => {
+    /* useIsomorphicLayoutEffect(() => {
         if (accessToken && order && shouldFetchOrder) {
             fetchOrder(accessToken, order.id);
             dispatch(fetchOrderAction(false));
         }
-    }, [order, shouldFetchOrder, accessToken]);
+    }, [order, shouldFetchOrder, accessToken]); */
 
-    // If accessToken doesn't exist create a new one.
+    // If accessToken doesn't exist create one.
     useIsomorphicLayoutEffect(() => {
         if (!accessToken || hasExpired) {
-            fetchToken();
+            dispatch(fetchToken());
         }
     }, [accessToken, hasExpired]);
 
     // If the order doesn't exist then create one.
     useIsomorphicLayoutEffect(() => {
-        if (!order && accessToken && shouldCreateOrder) {
+        if (!orderId && accessToken && shouldCreateOrder) {
             generateOrder(accessToken);
             setShouldCreateOrder(false);
         }
-    }, [order, accessToken, shouldCreateOrder]);
+    }, [orderId, accessToken, shouldCreateOrder]);
 
     return <React.Fragment>{children}</React.Fragment>;
 };
