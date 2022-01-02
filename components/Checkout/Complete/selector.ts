@@ -9,6 +9,7 @@ const selector = createSelector([selectGlobalData, selectCartData, selectCheckou
     subTotal: cart.subTotal,
     shipping: cart.shipping,
     total: cart.total,
+    orderNumber: cart.orderNumber,
     customerDetails: checkout.customerDetails,
     billingAddress: checkout.billingAddress,
     shippingAddress: checkout.shippingAddress,

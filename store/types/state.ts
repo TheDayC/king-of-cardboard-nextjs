@@ -28,6 +28,7 @@ export interface IAppState {
 export interface CartState {
     order: Order | null;
     orderId: string | null;
+    orderNumber: number | null;
     itemCount: number;
     items: CartItem[];
     paymentMethods: CartPaymentMethod[];
@@ -163,6 +164,7 @@ export interface Confirmation {
     subTotal: string | null;
     shipping: string | null;
     total: string | null;
+    orderNumber: number | null;
     customerDetails: CustomerDetails;
     billingAddress: CustomerAddress;
     shippingAddress: CustomerAddress;

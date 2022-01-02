@@ -6,6 +6,7 @@ const confirmationInitialState: Confirmation = {
     subTotal: null,
     shipping: null,
     total: null,
+    orderNumber: null,
     customerDetails: {
         email: null,
         first_name: null,

@@ -2,7 +2,7 @@ import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { CartTotals } from '../../types/cart';
+import { CartTotals, CreateOrder } from '../../types/cart';
 import { getCartTotals, getItemCount } from '../../utils/cart';
 import { createOrder } from '../../utils/commerce';
 import cartInitialState from '../state/cart';
@@ -35,7 +35,7 @@ export const fetchItemCount = createAsyncThunk(
 
 export const createCLOrder = createAsyncThunk(
     'cart/createCLOrder',
-    async (data: CreateOrderInput): Promise<string | null> => {
+    async (data: CreateOrderInput): Promise<CreateOrder> => {
         const { accessToken, isGuest } = data;
 
         return await createOrder(accessToken, isGuest);
@@ -80,7 +80,10 @@ const cartSlice = createSlice({
             state.itemCount = action.payload;
         }),
             builder.addCase(createCLOrder.fulfilled, (state, action) => {
-                state.orderId = action.payload;
+                const { orderId, orderNumber } = action.payload;
+
+                state.orderId = orderId;
+                state.orderNumber = orderNumber;
             }),
             builder.addCase(fetchCartTotals.fulfilled, (state, action) => {
                 const { subTotal, shipping, total } = action.payload;

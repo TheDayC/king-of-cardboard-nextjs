@@ -15,10 +15,10 @@ interface SummaryProps {
 }
 
 export const Summary: React.FC<SummaryProps> = ({ isConfirmation = false }) => {
-    const { cartOrder, confirmationOrder, checkoutLoading, cartItems, confirmedItems } = useSelector(selector);
+    const { orderNumber, confirmationOrderNumber, checkoutLoading, cartItems, confirmedItems } = useSelector(selector);
     const [products, setProducts] = useState<ContentfulProductShort[] | null>(null);
     const lineItems = isConfirmation ? confirmedItems : cartItems;
-    const order = isConfirmation ? confirmationOrder : cartOrder;
+    const finalOrderNumber = isConfirmation ? confirmationOrderNumber : orderNumber;
 
     const fetchCurrentProduct = async (skuCodes: string[]) => {
         const cmsProducts = await fetchProductByProductLink(skuCodes);
@@ -34,15 +34,11 @@ export const Summary: React.FC<SummaryProps> = ({ isConfirmation = false }) => {
         }
     }, [lineItems]);
 
-    if (!order) {
-        return null;
-    }
-
     return (
         <div className="flex flex-col relative">
             <Loading show={checkoutLoading} />
             <div className="flex flex-row w-100 justify-between items-center">
-                <h2 className="text-2xl">Order #{order.number}</h2>
+                <h2 className="text-2xl">Order #{finalOrderNumber}</h2>
                 <p className="text-xl">{`(${lineItems.length} item${lineItems.length > 1 ? 's' : ''})`}</p>
             </div>
             <div className="divider"></div>

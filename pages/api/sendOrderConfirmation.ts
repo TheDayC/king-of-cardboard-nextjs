@@ -11,7 +11,6 @@ import {
     parseAsCustomerAddress,
     parseAsCustomerDetails,
     parseAsNumber,
-    parseAsOrder,
     parseAsString,
     safelyParse,
 } from '../../utils/parsers';
@@ -33,6 +32,7 @@ const filePath = path.resolve(process.cwd(), 'html', 'order.html');
 async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         try {
+            const orderNumber = safelyParse(req, 'body.orderNumber', parseAsNumber, 0);
             const subTotal = safelyParse(req, 'body.subTotal', parseAsString, '');
             const shipping = safelyParse(req, 'body.shipping', parseAsString, '');
             const total = safelyParse(req, 'body.total', parseAsString, '');
@@ -93,6 +93,7 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
                     }));
                     const htmlData = fs.readFileSync(filePath, 'utf8');
                     const html = htmlData
+                        .replace('{{orderNumber}}', `${orderNumber}`)
                         .replace('{{name}}', firstName || '')
                         .replace('{{email}}', email || '')
                         .replace('{{firstName}}', firstName || '')

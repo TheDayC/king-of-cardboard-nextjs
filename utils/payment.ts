@@ -52,6 +52,7 @@ export async function refreshPayment(accessToken: string, id: string, paymentSou
 }
 
 export async function sendOrderConfirmation(
+    orderNumber: number | null,
     subTotal: string | null,
     shipping: string | null,
     total: string | null,
@@ -62,6 +63,7 @@ export async function sendOrderConfirmation(
 ): Promise<boolean> {
     try {
         const res = await axios.post('/api/sendOrderConfirmation', {
+            orderNumber,
             subTotal,
             shipping,
             total,

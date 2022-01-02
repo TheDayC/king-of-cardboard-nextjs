@@ -23,6 +23,7 @@ const Complete: React.FC<CompleteProps> = ({ paymentId, payerId, orderId }) => {
         subTotal,
         shipping,
         total,
+        orderNumber,
         items,
         customerDetails,
         billingAddress,
@@ -52,6 +53,7 @@ const Complete: React.FC<CompleteProps> = ({ paymentId, payerId, orderId }) => {
                                 subTotal,
                                 shipping,
                                 total,
+                                orderNumber,
                                 items,
                                 customerDetails,
                                 billingAddress,
@@ -61,6 +63,7 @@ const Complete: React.FC<CompleteProps> = ({ paymentId, payerId, orderId }) => {
 
                         // Distribute the confirmation email so the customer has a receipt.
                         await sendOrderConfirmation(
+                            orderNumber,
                             subTotal,
                             shipping,
                             total,

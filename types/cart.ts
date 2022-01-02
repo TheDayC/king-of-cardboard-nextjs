@@ -37,3 +37,8 @@ export interface CartTotals {
     shipping: string | null;
     total: string | null;
 }
+
+export interface CreateOrder {
+    orderId: string | null;
+    orderNumber: number | null;
+}

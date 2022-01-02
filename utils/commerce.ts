@@ -3,7 +3,7 @@ import { get, join } from 'lodash';
 
 import { errorHandler } from '../middleware/errors';
 import { PaymentSourceResponse } from '../types/api';
-import { Order } from '../types/cart';
+import { CreateOrder, Order } from '../types/cart';
 import { PaymentAttributes } from '../types/checkout';
 import { LineItemAttributes, LineItemRelationships, SkuItem, SkuProduct } from '../types/commerce';
 import { authClient } from './auth';
@@ -17,10 +17,10 @@ import {
     parseAsNumber,
 } from './parsers';
 
-export async function createOrder(accessToken: string, isGuest: boolean): Promise<string | null> {
+export async function createOrder(accessToken: string, isGuest: boolean): Promise<CreateOrder> {
     try {
         const cl = authClient(accessToken);
-        const res = await cl.post('/api/orders?fields[orders]=id', {
+        const res = await cl.post('/api/orders?fields[orders]=id&include=number', {
             data: {
                 type: 'orders',
                 attributes: {
@@ -29,12 +29,18 @@ export async function createOrder(accessToken: string, isGuest: boolean): Promis
             },
         });
 
-        return safelyParse(res, 'data.data.id', parseAsString, null);
+        return {
+            orderId: safelyParse(res, 'data.data.id', parseAsString, null),
+            orderNumber: safelyParse(res, 'data.data.attributes.number', parseAsNumber, null),
+        };
     } catch (error: unknown) {
         errorHandler(error, 'Failed to create an order.');
     }
 
-    return null;
+    return {
+        orderId: null,
+        orderNumber: null,
+    };
 }
 
 export async function getSkus(accessToken: string, sku_codes: string[]): Promise<SkuItem[] | null> {
