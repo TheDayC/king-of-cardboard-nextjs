@@ -29,7 +29,67 @@ import ShipToBilling from './ShipToBilling';
 import PersonalDetails from './PersonalDetails';
 import SelectionWrapper from '../../SelectionWrapper';
 import ExistingAddress from './ExistingAddress';
-import { CustomerDetails } from '../../../store/types/state';
+import { CustomerAddress, CustomerDetails } from '../../../store/types/state';
+
+const defaultBillingAddress: CustomerAddress = {
+    id: null,
+    billing_info: null,
+    business: false,
+    city: null,
+    company: null,
+    country_code: null,
+    email: null,
+    first_name: null,
+    full_address: null,
+    full_name: null,
+    is_geocoded: false,
+    is_localized: false,
+    last_name: null,
+    lat: null,
+    line_1: null,
+    line_2: null,
+    lng: null,
+    map_url: null,
+    name: null,
+    notes: null,
+    phone: null,
+    provider_name: null,
+    reference: null,
+    reference_origin: null,
+    state_code: null,
+    static_map_url: null,
+    zip_code: null,
+};
+
+const defaultShippingAddress: CustomerAddress = {
+    id: null,
+    billing_info: null,
+    business: false,
+    city: null,
+    company: null,
+    country_code: null,
+    email: null,
+    first_name: null,
+    full_address: null,
+    full_name: null,
+    is_geocoded: false,
+    is_localized: false,
+    last_name: null,
+    lat: null,
+    line_1: null,
+    line_2: null,
+    lng: null,
+    map_url: null,
+    name: null,
+    notes: null,
+    phone: null,
+    provider_name: null,
+    reference: null,
+    reference_origin: null,
+    state_code: null,
+    static_map_url: null,
+    zip_code: null,
+};
 
 const Customer: React.FC = () => {
     const { data: session } = useSession();
@@ -221,7 +281,7 @@ const Customer: React.FC = () => {
 
         if (id === 'newBillingAddress') {
             dispatch(setCloneBillingAddressId(null));
-            dispatch(setBillingAddress(null));
+            dispatch(setBillingAddress(defaultBillingAddress));
         }
     };
 
@@ -230,7 +290,7 @@ const Customer: React.FC = () => {
 
         if (id === 'newShippingAddress') {
             dispatch(setCloneShippingAddressId(null));
-            dispatch(setShippingAddress(null));
+            dispatch(setShippingAddress(defaultShippingAddress));
         }
     };
 
