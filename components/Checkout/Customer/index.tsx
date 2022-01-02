@@ -47,6 +47,7 @@ const Customer: React.FC = () => {
     const dispatch = useDispatch();
     const [billingAddressEntryChoice, setBillingAddressEntryChoice] = useState('existingBillingAddress');
     const [shippingAddressEntryChoice, setShippingAddressEntryChoice] = useState('existingShippingAddress');
+    const [shouldSubmit, setShouldSubmit] = useState(true);
     const {
         register,
         handleSubmit,
@@ -58,7 +59,7 @@ const Customer: React.FC = () => {
 
     const handleNewBillingAddress = useCallback(
         async (data: unknown, customerDetails: CustomerDetails) => {
-            if (!accessToken || !order) return null;
+            if (!accessToken || !order) return;
 
             // Parse the billing address into a customer address partial.
             // CommerceLayer only expects the basic user input on their side hence the partial data parse.
@@ -80,7 +81,7 @@ const Customer: React.FC = () => {
 
     const handleExistingBillingAddress = useCallback(
         async (customerDetails: CustomerDetails) => {
-            if (!accessToken || !order) return null;
+            if (!accessToken || !order) return;
 
             // Parse the billing address into a customer address partial.
             // CommerceLayer only expects the basic user input on their side hence the partial data parse.
@@ -101,6 +102,7 @@ const Customer: React.FC = () => {
             if (cloneBillingAddressId) {
                 await updateAddressClone(accessToken, order.id, cloneBillingAddressId, false);
             } else {
+                setShouldSubmit(false);
                 dispatch(addWarning('Please select a billing address'));
             }
         },
@@ -109,7 +111,7 @@ const Customer: React.FC = () => {
 
     const handleNewShippingAddress = useCallback(
         async (data: unknown, customerDetails: CustomerDetails) => {
-            if (!accessToken || !order) return null;
+            if (!accessToken || !order) return;
 
             // Parse the shipping address into a customer address partial.
             // CommerceLayer only expects the basic user input on their side hence the partial data parse.
@@ -126,7 +128,7 @@ const Customer: React.FC = () => {
 
     const handleExistingShippingAddress = useCallback(
         async (customerDetails: CustomerDetails) => {
-            if (!accessToken || !order) return null;
+            if (!accessToken || !order) return;
 
             // Parse the shipping address into a customer address partial.
             const shippingAddressParsed = parseExistingAddress(shippingAddress);
@@ -142,6 +144,7 @@ const Customer: React.FC = () => {
                 await updateAddressClone(accessToken, order.id, cloneShippingAddressId, true);
             } else {
                 dispatch(addWarning('Please select a shipping address'));
+                setShouldSubmit(false);
             }
         },
         [accessToken, order, dispatch, cloneShippingAddressId, shippingAddress]
@@ -151,6 +154,8 @@ const Customer: React.FC = () => {
         if (hasErrors || checkoutLoading || !order || !accessToken) {
             return;
         }
+        // Reset form state on submission
+        setShouldSubmit(true);
 
         // Set loading in current form.
         dispatch(setCheckoutLoading(true));
@@ -161,10 +166,10 @@ const Customer: React.FC = () => {
 
         // Handle a new billing address.
         if (billingAddressEntryChoice === 'newBillingAddress') {
-            handleNewBillingAddress(data, customerDetails);
+            await handleNewBillingAddress(data, customerDetails);
         } else if (billingAddressEntryChoice === 'existingBillingAddress') {
             // Handle existing billing address.
-            handleExistingBillingAddress(customerDetails);
+            await handleExistingBillingAddress(customerDetails);
         }
 
         // If our shipping is the same as the billing address then update _shipping_address_same_as_billing field in CommerceLayer.
@@ -175,11 +180,18 @@ const Customer: React.FC = () => {
 
             // Handle shipping address, no need to check for existing or as we handle that onClick.
             if (shippingAddressEntryChoice === 'newShippingAddress') {
-                handleNewShippingAddress(data, customerDetails);
+                await handleNewShippingAddress(data, customerDetails);
             } else if (shippingAddressEntryChoice === 'existingShippingAddress') {
                 // Handle existing shipping address.
-                handleExistingShippingAddress(customerDetails);
+                await handleExistingShippingAddress(customerDetails);
             }
+        }
+
+        if (!shouldSubmit) {
+            // Remove load blockers.
+            dispatch(setCheckoutLoading(false));
+
+            return;
         }
 
         submissionCleanup();
