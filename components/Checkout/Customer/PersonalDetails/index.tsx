@@ -47,8 +47,8 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
     }, [phone, setValue]);
 
     return (
-        <div className="card p-2 md:p-4">
-            <h3 className="card-title text-2xl">Personal Details</h3>
+        <div className="flex flex-col">
+            <h3 className="text-2xl font-semibold mb-4">Personal Details</h3>
             <div className="grid grid-cols-1 gap-2">
                 <div className="form-control">
                     <label className="label">
