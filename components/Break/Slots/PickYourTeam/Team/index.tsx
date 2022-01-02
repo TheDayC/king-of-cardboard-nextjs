@@ -7,9 +7,6 @@ import { setLineItem } from '../../../../../utils/commerce';
 import selector from './selector';
 import { BreakSlotWithSku } from '../../../../../types/breaks';
 import { fetchOrder } from '../../../../../store/slices/cart';
-import { isArrayOfErrors } from '../../../../../utils/typeguards';
-import { AlertLevel } from '../../../../../enums/system';
-import { addAlert } from '../../../../../store/slices/alerts';
 
 interface TeamProps {
     skuItem: BreakSlotWithSku;
@@ -43,14 +40,8 @@ export const Team: React.FC<TeamProps> = ({ skuItem, setLoading }) => {
 
             const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
 
-            if (isArrayOfErrors(hasLineItemUpdated)) {
-                hasLineItemUpdated.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
-                if (hasLineItemUpdated) {
-                    dispatch(fetchOrder(true));
-                }
+            if (hasLineItemUpdated) {
+                dispatch(fetchOrder(true));
             }
         }
     };

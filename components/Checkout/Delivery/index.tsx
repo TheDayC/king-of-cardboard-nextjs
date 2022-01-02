@@ -15,9 +15,6 @@ import Shipment from './Shipment';
 import { fetchOrder } from '../../../store/slices/cart';
 import { ShipmentsWithMethods } from '../../../store/types/state';
 import { setCheckoutLoading } from '../../../store/slices/global';
-import { isArrayOfErrors } from '../../../utils/typeguards';
-import { addAlert } from '../../../store/slices/alerts';
-import { AlertLevel } from '../../../enums/system';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 
 export const Delivery: React.FC = () => {
@@ -32,42 +29,22 @@ export const Delivery: React.FC = () => {
     const isCurrentStep = currentStep === 1;
     const hasErrors = Object.keys(errors).length > 0;
 
-    const fetchAllShipments = useCallback(
-        async (accessToken: string, orderId: string) => {
-            if (accessToken && orderId) {
-                const shipmentData = await getShipments(accessToken, orderId);
-                const deliveryLeadTimes = await getDeliveryLeadTimes(accessToken);
-                const hasResErrors =
-                    !shipmentData ||
-                    !deliveryLeadTimes ||
-                    isArrayOfErrors(shipmentData) ||
-                    isArrayOfErrors(deliveryLeadTimes);
+    const fetchAllShipments = useCallback(async (accessToken: string, orderId: string) => {
+        if (accessToken && orderId) {
+            const shipmentData = await getShipments(accessToken, orderId);
+            const deliveryLeadTimes = await getDeliveryLeadTimes(accessToken);
 
-                if (!hasResErrors) {
-                    const { shipments, shippingMethods } = shipmentData;
-                    const mergedMethods = mergeMethodsAndLeadTimes(shippingMethods, deliveryLeadTimes);
+            if (shipmentData && deliveryLeadTimes) {
+                const { shipments, shippingMethods } = shipmentData;
+                const mergedMethods = mergeMethodsAndLeadTimes(shippingMethods, deliveryLeadTimes);
 
-                    setShipments({
-                        shipments,
-                        shippingMethods: mergedMethods,
-                    });
-                } else {
-                    if (isArrayOfErrors(shipmentData)) {
-                        shipmentData.forEach((shipmentErr) => {
-                            dispatch(addAlert({ message: shipmentErr.description, level: AlertLevel.Error }));
-                        });
-                    }
-
-                    if (isArrayOfErrors(deliveryLeadTimes)) {
-                        deliveryLeadTimes.forEach((leadErr) => {
-                            dispatch(addAlert({ message: leadErr.description, level: AlertLevel.Error }));
-                        });
-                    }
-                }
+                setShipments({
+                    shipments,
+                    shippingMethods: mergedMethods,
+                });
             }
-        },
-        [dispatch]
-    );
+        }
+    }, []);
 
     useEffect(() => {
         if (accessToken && order) {
@@ -96,18 +73,12 @@ export const Delivery: React.FC = () => {
 
                 if (chosenMethod) {
                     updateShipmentMethod(accessToken, shipment, chosenMethod).then((res) => {
-                        if (isArrayOfErrors(res)) {
-                            res.forEach((value) => {
-                                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                            });
-                        } else {
-                            if (res) {
-                                // Fetch the order with new details.
-                                dispatch(fetchOrder(true));
+                        if (res) {
+                            // Fetch the order with new details.
+                            dispatch(fetchOrder(true));
 
-                                // Redirect to next stage.
-                                dispatch(setCurrentStep(2));
-                            }
+                            // Redirect to next stage.
+                            dispatch(setCurrentStep(2));
                         }
                     });
                 }

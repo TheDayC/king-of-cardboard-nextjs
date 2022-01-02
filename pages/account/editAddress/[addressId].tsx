@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import Error from 'next/error';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import Header from '../../../components/Header';
 import AccountMenu from '../../../components/Account/Menu';
@@ -12,9 +12,6 @@ import selector from './selector';
 import { CommerceLayerResponse } from '../../../types/api';
 import Loading from '../../../components/Loading';
 import Fields from '../../../components/Account/AddressBook/Fields';
-import { isArrayOfErrors } from '../../../utils/typeguards';
-import { addAlert } from '../../../store/slices/alerts';
-import { AlertLevel } from '../../../enums/system';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -53,41 +50,29 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId, em
     const { accessToken } = useSelector(selector);
     const [currentAddress, setCurrentAddress] = useState<CommerceLayerResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const dispatch = useDispatch();
 
-    const fetchAddress = useCallback(
-        async (token: string, id: string) => {
-            const customerAddressRes = await getCustomerAddress(token, id);
-            if (isArrayOfErrors(customerAddressRes)) {
-                customerAddressRes.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
-                // CL separates customer and original addresses.
-                const originalAddressId = safelyParse(
-                    customerAddressRes,
-                    'relationships.address.data.id',
-                    parseAsString,
-                    null
-                );
+    const fetchAddress = useCallback(async (token: string, id: string) => {
+        const customerAddressRes = await getCustomerAddress(token, id);
+        if (customerAddressRes) {
+            // CL separates customer and original addresses.
+            const originalAddressId = safelyParse(
+                customerAddressRes,
+                'relationships.address.data.id',
+                parseAsString,
+                null
+            );
 
-                if (originalAddressId) {
-                    const res = await getAddress(token, originalAddressId);
+            if (originalAddressId) {
+                const res = await getAddress(token, originalAddressId);
 
-                    if (isArrayOfErrors(res)) {
-                        res.forEach((value) => {
-                            dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                        });
-                    } else {
-                        setCurrentAddress(res);
-                    }
+                if (res) {
+                    setCurrentAddress(res);
                 }
             }
+        }
 
-            setIsLoading(false);
-        },
-        [dispatch]
-    );
+        setIsLoading(false);
+    }, []);
 
     useEffect(() => {
         if (accessToken && emailAddress && addressId) {

@@ -11,9 +11,6 @@ import { Categories, ProductType } from '../../../enums/shop';
 import { setIsLoadingProducts } from '../../../store/slices/shop';
 import ProductCard from './ProductCard';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
-import { isArrayOfErrors } from '../../../utils/typeguards';
-import { addAlert } from '../../../store/slices/alerts';
-import { AlertLevel } from '../../../enums/system';
 
 const PRODUCTS_PER_PAGE = 9;
 
@@ -42,16 +39,10 @@ export const Grid: React.FC = () => {
                 const sku_codes = productCollection.map((p) => p.productLink);
                 const skuItems = await getSkus(accessToken, sku_codes);
 
-                if (isArrayOfErrors(skuItems)) {
-                    skuItems.forEach((value) => {
-                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                    });
-                } else {
-                    // If we hit some skuItems then put them in the store.
-                    if (skuItems) {
-                        const mergedProducts = mergeProductData(productCollection, skuItems);
-                        setProducts(mergedProducts);
-                    }
+                // If we hit some skuItems then put them in the store.
+                if (skuItems) {
+                    const mergedProducts = mergeProductData(productCollection, skuItems);
+                    setProducts(mergedProducts);
                 }
             } else {
                 setProducts(null);

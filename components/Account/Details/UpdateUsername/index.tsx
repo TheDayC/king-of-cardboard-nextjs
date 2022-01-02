@@ -5,10 +5,8 @@ import { useSession } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
-import { AlertLevel } from '../../../../enums/system';
-import { addAlert } from '../../../../store/slices/alerts';
+import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updateUsername } from '../../../../utils/account';
-import { isArrayOfErrors } from '../../../../utils/typeguards';
 
 const USER_PATTERN = /^[a-zA-Z]{4,}$/;
 
@@ -37,14 +35,12 @@ export const UpdateUsername: React.FC = () => {
 
         setLoading(true);
 
-        const hasUpdatedUsername = updateUsername(emailAddress, username);
+        const hasUpdatedUsername = await updateUsername(emailAddress, username);
 
-        if (isArrayOfErrors(hasUpdatedUsername)) {
-            hasUpdatedUsername.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
+        if (hasUpdatedUsername) {
+            dispatch(addSuccess('Username updated!'));
         } else {
-            dispatch(addAlert({ message: 'Username Updated!', level: AlertLevel.Success }));
+            dispatch(addError('Failed to update username.'));
         }
 
         setLoading(false);

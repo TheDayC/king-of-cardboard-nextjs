@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { AiFillStar, AiTwotoneCalendar } from 'react-icons/ai';
 import { BsTwitch, BsFillCheckCircleFill } from 'react-icons/bs';
@@ -10,9 +10,6 @@ import { ImageItem } from '../../../../types/products';
 import selector from './selector';
 import { getSkus } from '../../../../utils/commerce';
 import Countdown from './Countdown';
-import { isArrayOfErrors } from '../../../../utils/typeguards';
-import { addAlert } from '../../../../store/slices/alerts';
-import { AlertLevel } from '../../../../enums/system';
 
 interface BreakProps {
     cardImage: ImageItem;
@@ -46,26 +43,16 @@ export const BreakCard: React.FC<BreakProps> = ({
     const hasSlots = slotsAvailable && slotsAvailable > 0;
     const breakDateLuxon = DateTime.fromISO(breakDate, { zone: 'Europe/London' });
     const isActive = !isLive && !isComplete;
-    const dispatch = useDispatch();
 
-    const fetchSlotSkuData = useCallback(
-        async (token: string, skus: string[]) => {
-            const skuData = await getSkus(token, skus);
+    const fetchSlotSkuData = useCallback(async (token: string, skus: string[]) => {
+        const skuData = await getSkus(token, skus);
 
-            if (isArrayOfErrors(skuData)) {
-                skuData.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
-                if (skuData) {
-                    setSlotsAvailable(skuData.length);
-                } else {
-                    setSlotsAvailable(0);
-                }
-            }
-        },
-        [dispatch]
-    );
+        if (skuData) {
+            setSlotsAvailable(skuData.length);
+        } else {
+            setSlotsAvailable(0);
+        }
+    }, []);
 
     useEffect(() => {
         if (accessToken) {

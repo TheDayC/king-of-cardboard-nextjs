@@ -7,10 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { parseAsSocialMedia, parseAsString, safelyParse } from '../../../../utils/parsers';
 import { setSocialMedia } from '../../../../store/slices/account';
 import selector from './selector';
-import { AlertLevel } from '../../../../enums/system';
-import { addAlert } from '../../../../store/slices/alerts';
+import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updateSocialMedia } from '../../../../utils/account';
-import { isArrayOfErrors } from '../../../../utils/typeguards';
 
 interface SubmitData {
     instagram: string;
@@ -49,12 +47,10 @@ export const SocialMediaLinks: React.FC = () => {
 
         const hasUpdatedSocialMedia = await updateSocialMedia(emailAddress, instagram, twitter, twitch, youtube, ebay);
 
-        if (isArrayOfErrors(hasUpdatedSocialMedia)) {
-            hasUpdatedSocialMedia.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
+        if (hasUpdatedSocialMedia) {
+            dispatch(addSuccess('Social media updated!'));
         } else {
-            dispatch(addAlert({ message: 'Social Media Updated!', level: AlertLevel.Success }));
+            dispatch(addError('Failed to update social media.'));
         }
 
         setLoading(false);

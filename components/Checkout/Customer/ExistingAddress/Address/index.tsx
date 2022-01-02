@@ -3,8 +3,6 @@ import { IoLocationSharp } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
 import { BsCheck2Circle } from 'react-icons/bs';
 
-import { AlertLevel } from '../../../../../enums/system';
-import { addAlert } from '../../../../../store/slices/alerts';
 import {
     setShippingAddress,
     setBillingAddress,
@@ -13,9 +11,8 @@ import {
 } from '../../../../../store/slices/checkout';
 import { CommerceLayerResponse } from '../../../../../types/api';
 import { getAddress } from '../../../../../utils/account';
-import { updateAddress, updateAddressClone } from '../../../../../utils/checkout';
-import { parseAsString, safelyParse, parseAddress, parseBillingAddress } from '../../../../../utils/parsers';
-import { isArrayOfErrors } from '../../../../../utils/typeguards';
+import { updateAddressClone } from '../../../../../utils/checkout';
+import { parseAsString, safelyParse, parseAddress } from '../../../../../utils/parsers';
 import selector from './selector';
 import { setCheckoutLoading } from '../../../../../store/slices/global';
 
@@ -42,41 +39,29 @@ export const Address: React.FC<AddressProps> = ({ id, name, isShipping }) => {
             dispatch(setCheckoutLoading(true));
             const res = await updateAddressClone(accessToken, orderId, id, isShipping);
 
-            if (isArrayOfErrors(res)) {
-                res.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
-                if (res) {
-                    const addressPayload = parseAddress(address);
+            if (res) {
+                const addressPayload = parseAddress(address);
 
-                    if (isShipping) {
-                        dispatch(setCloneShippingAddressId(id));
-                        dispatch(setShippingAddress(addressPayload));
-                    } else {
-                        dispatch(setCloneBillingAddressId(id));
-                        dispatch(setBillingAddress(addressPayload));
-                    }
+                if (isShipping) {
+                    dispatch(setCloneShippingAddressId(id));
+                    dispatch(setShippingAddress(addressPayload));
+                } else {
+                    dispatch(setCloneBillingAddressId(id));
+                    dispatch(setBillingAddress(addressPayload));
                 }
             }
+
             dispatch(setCheckoutLoading(false));
         }
     };
 
-    const fetchAddress = useCallback(
-        async (token: string, addressId: string) => {
-            const res = await getAddress(token, addressId);
+    const fetchAddress = useCallback(async (token: string, addressId: string) => {
+        const res = await getAddress(token, addressId);
 
-            if (isArrayOfErrors(res)) {
-                res.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
-                setAddress(res);
-            }
-        },
-        [dispatch]
-    );
+        if (res) {
+            setAddress(res);
+        }
+    }, []);
 
     useEffect(() => {
         if (accessToken && id && shouldFetchAddress) {

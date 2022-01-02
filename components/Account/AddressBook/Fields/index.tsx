@@ -8,9 +8,7 @@ import selector from './selector';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import { fieldPatternMsgs } from '../../../../utils/checkout';
 import { addAddress, editAddress } from '../../../../utils/account';
-import { AlertLevel } from '../../../../enums/system';
-import { addAlert } from '../../../../store/slices/alerts';
-import { isArrayOfErrors } from '../../../../utils/typeguards';
+import { addError, addSuccess } from '../../../../store/slices/alerts';
 
 interface FormData {
     addressLineOne: string;
@@ -87,18 +85,11 @@ export const Fields: React.FC<FieldProps> = ({
                 postcode
             );
 
-            if (isArrayOfErrors(res)) {
-                res.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
+            if (res) {
+                dispatch(addSuccess('Address updated!'));
+                router.push('/account/addressBook');
             } else {
-                if (res) {
-                    dispatch(addAlert({ message: 'Address edited!', level: AlertLevel.Success }));
-
-                    router.push('/account/addressBook');
-                } else {
-                    dispatch(addAlert({ message: 'Unable to edit address.', level: AlertLevel.Error }));
-                }
+                dispatch(addError('Failed to update address.'));
             }
         } else {
             const res = await addAddress(
@@ -115,18 +106,12 @@ export const Fields: React.FC<FieldProps> = ({
                 postcode
             );
 
-            if (isArrayOfErrors(res)) {
-                res.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
+            if (res) {
+                dispatch(addSuccess('Address successfullly added!'));
+                reset();
+                router.push('/account/addressBook');
             } else {
-                if (res) {
-                    dispatch(addAlert({ message: 'Address successfullly added!', level: AlertLevel.Success }));
-                    reset();
-                    router.push('/account/addressBook');
-                } else {
-                    dispatch(addAlert({ message: 'Unable to add address.', level: AlertLevel.Error }));
-                }
+                dispatch(addError('Unable to add address.'));
             }
         }
 

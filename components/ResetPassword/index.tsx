@@ -6,9 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import selector from './selector';
 import { requestPasswordReset } from '../../utils/account';
-import { AlertLevel } from '../../enums/system';
-import { addAlert } from '../../store/slices/alerts';
-import { isArrayOfErrors } from '../../utils/typeguards';
+import { addError, addSuccess } from '../../store/slices/alerts';
 
 interface Submit {
     emailAddress?: string;
@@ -37,21 +35,10 @@ export const ResetPassword: React.FC = () => {
 
         const res = await requestPasswordReset(accessToken, email);
 
-        if (isArrayOfErrors(res)) {
-            res.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
+        if (res) {
+            dispatch(addSuccess('A reset password link has been sent to your email!'));
         } else {
-            if (res) {
-                dispatch(
-                    addAlert({
-                        message: 'A reset password link has been sent to your email!',
-                        level: AlertLevel.Success,
-                    })
-                );
-            } else {
-                dispatch(addAlert({ message: 'We were unable to reset your password.', level: AlertLevel.Error }));
-            }
+            dispatch(addError('Failed to reset your password.'));
         }
 
         setLoading(false);

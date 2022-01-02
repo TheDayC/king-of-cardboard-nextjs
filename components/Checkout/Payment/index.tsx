@@ -17,9 +17,7 @@ import { setConfirmationData } from '../../../store/slices/confirmation';
 import { Order } from '../../../types/cart';
 import Achievements from '../../../services/achievments';
 import { setShouldFetchRewards } from '../../../store/slices/account';
-import { addAlert } from '../../../store/slices/alerts';
-import { isArrayOfErrors } from '../../../utils/typeguards';
-import { AlertLevel } from '../../../enums/system';
+import { addError } from '../../../store/slices/alerts';
 import selector from './selector';
 import SelectionWrapper from '../../SelectionWrapper';
 import Source from './Source';
@@ -82,11 +80,7 @@ export const Payment: React.FC = () => {
             // Fetch the client secret from Commerce Layer to use with Stripe.
             const paymentSource = await createPaymentSource(accessToken, orderId, paymentSourceType, attributes);
 
-            if (isArrayOfErrors(paymentSource)) {
-                paymentSource.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
+            if (paymentSource) {
                 const { paymentId, clientSecret } = paymentSource;
 
                 // Handle Stripe payment specific actions.
@@ -113,7 +107,7 @@ export const Payment: React.FC = () => {
 
                     // Stripe error
                     if (result.error) {
-                        dispatch(addAlert({ message: result.error.message, level: AlertLevel.Error }));
+                        dispatch(addError(result.error.message));
                         return;
                     }
                 }
@@ -121,126 +115,68 @@ export const Payment: React.FC = () => {
                 // Place the order with commerce layer.
                 const hasBeenPlaced = await confirmOrder(accessToken, orderId, '_place');
 
-                if (isArrayOfErrors(hasBeenPlaced)) {
-                    hasBeenPlaced.forEach((value) => {
-                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                    });
-                } else {
-                    if (hasBeenPlaced && paymentId) {
-                        const hasBeenRefreshed = await refreshPayment(accessToken, paymentId, paymentSourceType);
-                        const hasBeenAuthorized = await confirmOrder(accessToken, orderId, '_authorize');
+                if (hasBeenPlaced && paymentId) {
+                    const hasBeenRefreshed = await refreshPayment(accessToken, paymentId, paymentSourceType);
+                    const hasBeenAuthorized = await confirmOrder(accessToken, orderId, '_authorize');
+                    const hasBeenApproved = await confirmOrder(accessToken, orderId, '_approve_and_capture');
 
-                        const hasBeenApproved = await confirmOrder(accessToken, orderId, '_approve_and_capture');
-                        const hasErrors =
-                            isArrayOfErrors(hasBeenRefreshed) ||
-                            isArrayOfErrors(hasBeenAuthorized) ||
-                            isArrayOfErrors(hasBeenApproved);
+                    // Set the confirmation data in the store.
+                    if (hasBeenRefreshed && hasBeenAuthorized && hasBeenApproved) {
+                        // Set the confirmation data in the store.
+                        dispatch(
+                            setConfirmationData({
+                                order,
+                                items,
+                                customerDetails,
+                                billingAddress,
+                                shippingAddress,
+                            })
+                        );
 
-                        if (isArrayOfErrors(hasBeenRefreshed)) {
-                            hasBeenRefreshed.forEach((value) => {
-                                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                            });
-                        }
+                        // Distribute the confirmation email so the customer has a receipt.
+                        const orderConfirmationRes = await sendOrderConfirmation(
+                            order,
+                            items,
+                            customerDetails,
+                            billingAddress,
+                            shippingAddress
+                        );
 
-                        if (isArrayOfErrors(hasBeenAuthorized)) {
-                            hasBeenAuthorized.forEach((value) => {
-                                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                            });
-                        }
+                        // Figure out achievement progress now that the order has been confirmed.
+                        if (currentSession) {
+                            const achievements = new Achievements(currentSession, accessToken);
+                            items.forEach(async (item) => {
+                                const { categories, types } = item.metadata;
+                                const hasFetchedObjectives = await achievements.fetchObjectives(categories, types);
 
-                        if (isArrayOfErrors(hasBeenApproved)) {
-                            hasBeenApproved.forEach((value) => {
-                                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                            });
-                        }
+                                if (hasFetchedObjectives && achievements.objectives) {
+                                    achievements.objectives.forEach((objective) => {
+                                        const {
+                                            _id,
+                                            min,
+                                            max,
+                                            milestone,
+                                            reward,
+                                            milestoneMultiplier: multiplier,
+                                        } = objective;
 
-                        if (!hasErrors) {
-                            // Set the confirmation data in the store.
-                            if (hasBeenRefreshed && hasBeenAuthorized && hasBeenApproved) {
-                                // Set the confirmation data in the store.
-                                dispatch(
-                                    setConfirmationData({
-                                        order,
-                                        items,
-                                        customerDetails,
-                                        billingAddress,
-                                        shippingAddress,
-                                    })
-                                );
-
-                                // Distribute the confirmation email so the customer has a receipt.
-                                const orderConfirmationRes = await sendOrderConfirmation(
-                                    order,
-                                    items,
-                                    customerDetails,
-                                    billingAddress,
-                                    shippingAddress
-                                );
-
-                                if (isArrayOfErrors(orderConfirmationRes)) {
-                                    orderConfirmationRes.forEach((value) => {
-                                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
+                                        // Increment the achievement based on the objective found.
+                                        achievements.incrementAchievement(_id, min, max, reward, milestone, multiplier);
                                     });
+
+                                    // Update achievements and points once all increments have been achieved.
+                                    achievements.updateAchievements();
+
+                                    // Dispatch coin update
+                                    dispatch(setShouldFetchRewards(true));
                                 }
-
-                                // Figure out achievement progress now that the order has been confirmed.
-                                if (currentSession) {
-                                    const achievements = new Achievements(currentSession, accessToken);
-                                    items.forEach(async (item) => {
-                                        const { categories, types } = item.metadata;
-                                        const hasFetchedObjectives = await achievements.fetchObjectives(
-                                            categories,
-                                            types
-                                        );
-
-                                        if (isArrayOfErrors(hasFetchedObjectives)) {
-                                            hasFetchedObjectives.forEach((value) => {
-                                                dispatch(
-                                                    addAlert({
-                                                        message: value.description,
-                                                        level: AlertLevel.Error,
-                                                    })
-                                                );
-                                            });
-                                        } else {
-                                            if (hasFetchedObjectives && achievements.objectives) {
-                                                achievements.objectives.forEach((objective) => {
-                                                    const {
-                                                        _id,
-                                                        min,
-                                                        max,
-                                                        milestone,
-                                                        reward,
-                                                        milestoneMultiplier: multiplier,
-                                                    } = objective;
-
-                                                    // Increment the achievement based on the objective found.
-                                                    achievements.incrementAchievement(
-                                                        _id,
-                                                        min,
-                                                        max,
-                                                        reward,
-                                                        milestone,
-                                                        multiplier
-                                                    );
-                                                });
-
-                                                // Update achievements and points once all increments have been achieved.
-                                                achievements.updateAchievements();
-
-                                                // Dispatch coin update
-                                                dispatch(setShouldFetchRewards(true));
-                                            }
-                                        }
-                                    });
-                                }
-                            } else {
-                                dispatch(addAlert({ message: 'Could not place your order.', type: AlertLevel.Error }));
-                            }
+                            });
                         }
                     } else {
-                        dispatch(addAlert({ message: 'Could not place your order.', type: AlertLevel.Error }));
+                        dispatch(addError('Failed to place your order, please contact support.'));
                     }
+                } else {
+                    dispatch(addError('Failed to place your order, please contact support.'));
                 }
             }
 
@@ -260,11 +196,7 @@ export const Payment: React.FC = () => {
             // Fetch the client secret from Commerce Layer to use with Stripe.
             const paymentSource = await createPaymentSource(accessToken, orderId, paymentMethod, attributes);
 
-            if (isArrayOfErrors(paymentSource)) {
-                paymentSource.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
+            if (paymentSource) {
                 const { approvalUrl } = paymentSource;
 
                 if (approvalUrl) {
@@ -319,12 +251,6 @@ export const Payment: React.FC = () => {
         setPaymentMethod(sourceType);
 
         const hasPatchedMethod = await updatePaymentMethod(accessToken, orderId, paymentMethodData.id);
-
-        if (isArrayOfErrors(hasPatchedMethod)) {
-            hasPatchedMethod.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
-        }
     };
 
     useEffect(() => {

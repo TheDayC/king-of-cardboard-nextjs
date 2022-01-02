@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -10,9 +10,6 @@ import Complete from '../../../components/Checkout/Complete';
 import selector from './selector';
 import { getPayPalPaymentIdByOrder } from '../../../utils/checkout';
 import { setCheckoutLoading } from '../../../store/slices/global';
-import { addAlert } from '../../../store/slices/alerts';
-import { AlertLevel } from '../../../enums/system';
-import { isArrayOfErrors } from '../../../utils/typeguards';
 
 interface CompleteOrderPageProps {
     orderId: string;
@@ -42,29 +39,28 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 export const CompleteOrderPage: React.FC<CompleteOrderPageProps> = ({ orderId, payerId }) => {
-    const { accessToken, checkoutLoading } = useSelector(selector);
+    const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
     const [paymentId, setPaymentId] = useState<string | null>(null);
 
-    const fetchPaymentData = async (token: string) => {
-        const res = await getPayPalPaymentIdByOrder(token, orderId);
-        if (isArrayOfErrors(res)) {
-            res.forEach((value) => {
-                dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-            });
-        } else {
-            setPaymentId(res);
-        }
+    const fetchPaymentData = useCallback(
+        async (token: string, orderId: string) => {
+            const res = await getPayPalPaymentIdByOrder(token, orderId);
+            if (res) {
+                setPaymentId(res);
+            }
 
-        dispatch(setCheckoutLoading(false));
-    };
+            dispatch(setCheckoutLoading(false));
+        },
+        [dispatch]
+    );
 
     useEffect(() => {
         if (accessToken) {
             dispatch(setCheckoutLoading(true));
-            fetchPaymentData(accessToken);
+            fetchPaymentData(accessToken, orderId);
         }
-    }, [accessToken]);
+    }, [dispatch, accessToken, fetchPaymentData, orderId]);
 
     return (
         <React.Fragment>

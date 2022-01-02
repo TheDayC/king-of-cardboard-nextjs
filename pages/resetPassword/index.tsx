@@ -9,11 +9,9 @@ import { useRouter } from 'next/router';
 
 import Header from '../../components/Header';
 import { parseAsString, safelyParse } from '../../utils/parsers';
-import { addAlert } from '../../store/slices/alerts';
-import { AlertLevel } from '../../enums/system';
+import { addError, addSuccess } from '../../store/slices/alerts';
 import selector from './selector';
 import { resetPassword } from '../../utils/account';
-import { isArrayOfErrors } from '../../utils/typeguards';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -79,19 +77,13 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
 
         const res = await resetPassword(accessToken, password, id, resetToken);
 
-        if (isArrayOfErrors(res)) {
-            res.forEach((err) => {
-                dispatch(addAlert({ message: err.description, level: AlertLevel.Error }));
-            });
-        } else {
-            if (res) {
-                dispatch(addAlert({ message: 'Password reset!', level: AlertLevel.Success }));
+        if (res) {
+            dispatch(addSuccess('Password reset!'));
 
-                setLoading(false);
-                router.push('/login');
-            } else {
-                dispatch(addAlert({ message: 'Password could not be reset...', level: AlertLevel.Error }));
-            }
+            setLoading(false);
+            router.push('/login');
+        } else {
+            dispatch(addError('Failed to reset password, please contact support.'));
         }
 
         setLoading(false);

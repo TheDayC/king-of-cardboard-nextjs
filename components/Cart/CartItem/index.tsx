@@ -8,9 +8,6 @@ import { fetchOrder, setUpdatingCart } from '../../../store/slices/cart';
 import { getSkuDetails, removeLineItem, updateLineItem } from '../../../utils/commerce';
 import { fetchProductByProductLink } from '../../../utils/products';
 import { ContentfulProductShort } from '../../../types/products';
-import { isArrayOfErrors } from '../../../utils/typeguards';
-import { addAlert } from '../../../store/slices/alerts';
-import { AlertLevel } from '../../../enums/system';
 import selector from './selector';
 import styles from './cartitem.module.css';
 
@@ -42,41 +39,26 @@ export const CartItem: React.FC<BasketItemProps> = ({
     const [product, setProduct] = useState<ContentfulProductShort | null>(null);
     const productName = product ? product.name : name;
 
-    const fetchCurrentLineItem = useCallback(
-        async (token: string, skuItemId: string, skuCode: string) => {
-            const skuItem = await getSkuDetails(token, skuItemId);
-            const cmsProduct = await fetchProductByProductLink(skuCode);
+    const fetchCurrentLineItem = useCallback(async (token: string, skuItemId: string, skuCode: string) => {
+        const skuItem = await getSkuDetails(token, skuItemId);
+        const cmsProduct = await fetchProductByProductLink(skuCode);
 
-            if (cmsProduct && !isArray(cmsProduct)) {
-                setProduct(cmsProduct);
-            }
+        if (cmsProduct && !isArray(cmsProduct)) {
+            setProduct(cmsProduct);
+        }
 
-            if (isArrayOfErrors(skuItem)) {
-                skuItem.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
-                if (skuItem && skuItem.inventory) {
-                    setStock(skuItem.inventory.quantity);
-                }
-            }
-        },
-        [dispatch]
-    );
+        if (skuItem && skuItem.inventory) {
+            setStock(skuItem.inventory.quantity);
+        }
+    }, []);
 
     const handleRemoveItem = useCallback(async () => {
         if (accessToken && id) {
             dispatch(setUpdatingCart(true));
             const hasDeleted = await removeLineItem(accessToken, id);
 
-            if (isArrayOfErrors(hasDeleted)) {
-                hasDeleted.forEach((value) => {
-                    dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                });
-            } else {
-                if (hasDeleted) {
-                    dispatch(fetchOrder(true));
-                }
+            if (hasDeleted) {
+                dispatch(fetchOrder(true));
             }
         }
     }, [dispatch, accessToken, id]);
@@ -93,14 +75,8 @@ export const CartItem: React.FC<BasketItemProps> = ({
                 dispatch(setUpdatingCart(true));
                 const hasLineItemUpdated = await updateLineItem(accessToken, id, newQuantity);
 
-                if (isArrayOfErrors(hasLineItemUpdated)) {
-                    hasLineItemUpdated.forEach((value) => {
-                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                    });
-                } else {
-                    if (hasLineItemUpdated) {
-                        dispatch(fetchOrder(true));
-                    }
+                if (hasLineItemUpdated) {
+                    dispatch(fetchOrder(true));
                 }
             } else {
                 // If the new quantity is zero or less remove the item from the cart.
@@ -127,14 +103,8 @@ export const CartItem: React.FC<BasketItemProps> = ({
 
                 const hasLineItemUpdated = await updateLineItem(accessToken, id, newQuantity);
 
-                if (isArrayOfErrors(hasLineItemUpdated)) {
-                    hasLineItemUpdated.forEach((value) => {
-                        dispatch(addAlert({ message: value.description, level: AlertLevel.Error }));
-                    });
-                } else {
-                    if (hasLineItemUpdated) {
-                        dispatch(fetchOrder(true));
-                    }
+                if (hasLineItemUpdated) {
+                    dispatch(fetchOrder(true));
                 }
             }
 
