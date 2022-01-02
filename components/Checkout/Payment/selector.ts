@@ -5,20 +5,22 @@ import {
     selectCheckoutData,
     selectGlobalData,
     selectCheckoutCustomerData,
-    selectConfirmationData,
 } from '../../../store/state/selectors';
 
 const selector = createSelector(
-    [selectCheckoutData, selectCartData, selectGlobalData, selectCheckoutCustomerData, selectConfirmationData],
-    (checkout, cart, global, customerDetails, confirmation) => ({
+    [selectCheckoutData, selectCartData, selectGlobalData, selectCheckoutCustomerData],
+    (checkout, cart, global, customerDetails) => ({
         currentStep: checkout.currentStep,
         paymentMethods: cart.paymentMethods,
         accessToken: global.accessToken,
         customerDetails,
         checkoutLoading: global.checkoutLoading,
         orderId: cart.orderId,
+        subTotal: cart.subTotal,
+        shipping: cart.shipping,
+        total: cart.total,
         items: cart.items,
-        confirmationDetails: confirmation,
+        orderNumber: cart.orderNumber,
         billingAddress: checkout.billingAddress,
         shippingAddress: checkout.shippingAddress,
         hasBothAddresses: Boolean(checkout.billingAddress.line_1) && Boolean(checkout.shippingAddress.line_1),

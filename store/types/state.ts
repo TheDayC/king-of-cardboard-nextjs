@@ -1,10 +1,7 @@
 import { DateTime } from 'luxon';
 
-import { Counties } from '../../enums/checkout';
 import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
-import { Order } from '../../types/cart';
-import { BillingAddress, ShippingAddress } from '../../types/checkout';
 import { SkuItem } from '../../types/commerce';
 import { ContentfulPage } from '../../types/pages';
 import { SocialMedia } from '../../types/profile';
@@ -26,7 +23,6 @@ export interface IAppState {
 }
 
 export interface CartState {
-    order: Order | null;
     orderId: string | null;
     orderNumber: number | null;
     itemCount: number;
@@ -159,7 +155,6 @@ export interface ShipmentsWithLineItems extends ShipmentsWithMethods {
 }
 
 export interface Confirmation {
-    order: Order | null;
     items: CartItem[];
     subTotal: string | null;
     shipping: string | null;
