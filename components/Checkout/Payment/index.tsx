@@ -134,13 +134,7 @@ export const Payment: React.FC = () => {
                         );
 
                         // Distribute the confirmation email so the customer has a receipt.
-                        const orderConfirmationRes = await sendOrderConfirmation(
-                            order,
-                            items,
-                            customerDetails,
-                            billingAddress,
-                            shippingAddress
-                        );
+                        await sendOrderConfirmation(order, items, customerDetails, billingAddress, shippingAddress);
 
                         // Figure out achievement progress now that the order has been confirmed.
                         if (currentSession) {
@@ -250,7 +244,7 @@ export const Payment: React.FC = () => {
         // Set the payment method chosen in the local state.
         setPaymentMethod(sourceType);
 
-        const hasPatchedMethod = await updatePaymentMethod(accessToken, orderId, paymentMethodData.id);
+        await updatePaymentMethod(accessToken, orderId, paymentMethodData.id);
     };
 
     useEffect(() => {

@@ -1,8 +1,5 @@
 import React from 'react';
 import { CardElement } from '@stripe/react-stripe-js';
-import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
-
-import Loading from '../../../Loading';
 
 interface SourceProps {
     sourceType: string;

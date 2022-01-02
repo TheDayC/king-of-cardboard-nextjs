@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import Error from 'next/error';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import Header from '../../../components/Header';
 import AccountMenu from '../../../components/Account/Menu';
@@ -72,7 +72,6 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
     const [order, setOrder] = useState<CommerceLayerResponse | null>(null);
     const [included, setIncluded] = useState<CommerceLayerResponse[] | null>(null);
     const [lineItems, setLineItems] = useState<OrderHistoryLineItemWithSkuData[] | null>(null);
-    const dispatch = useDispatch();
 
     const status = safelyParse(order, 'attributes.status', parseAsString, 'draft');
     const paymentStatus = safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid');
@@ -118,31 +117,28 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
         }
     }, []);
 
-    const fetchSkuItems = useCallback(
-        async (token: string, skus: string[], includedItems: CommerceLayerResponse[]) => {
-            const skuItems = await getSkus(token, skus);
+    const fetchSkuItems = useCallback(async (token: string, skus: string[], includedItems: CommerceLayerResponse[]) => {
+        const skuItems = await getSkus(token, skus);
 
-            if (skuItems) {
-                const lineItems: OrderHistoryLineItemWithSkuData[] = includedItems.map((lineItem) => {
-                    const skuCode = safelyParse(lineItem, 'attributes.sku_code', parseAsString, null);
-                    const skuItem = skuItems ? skuItems.find((item) => item.sku_code === skuCode) : null;
+        if (skuItems) {
+            const lineItems: OrderHistoryLineItemWithSkuData[] = includedItems.map((lineItem) => {
+                const skuCode = safelyParse(lineItem, 'attributes.sku_code', parseAsString, null);
+                const skuItem = skuItems ? skuItems.find((item) => item.sku_code === skuCode) : null;
 
-                    return {
-                        lineItemId: safelyParse(lineItem, 'id', parseAsString, ''),
-                        skuId: safelyParse(skuItem, 'id', parseAsString, ''),
-                        name: safelyParse(skuItem, 'name', parseAsString, null),
-                        skuCode: skuCode,
-                        imageUrl: safelyParse(skuItem, 'image_url', parseAsString, null),
-                        quantity: safelyParse(lineItem, 'attributes.quantity', parseAsNumber, 0),
-                        amount: safelyParse(skuItem, 'amount', parseAsString, null),
-                        compareAmount: safelyParse(skuItem, 'amount', parseAsString, null),
-                    };
-                });
-                setLineItems(lineItems);
-            }
-        },
-        [dispatch]
-    );
+                return {
+                    lineItemId: safelyParse(lineItem, 'id', parseAsString, ''),
+                    skuId: safelyParse(skuItem, 'id', parseAsString, ''),
+                    name: safelyParse(skuItem, 'name', parseAsString, null),
+                    skuCode: skuCode,
+                    imageUrl: safelyParse(skuItem, 'image_url', parseAsString, null),
+                    quantity: safelyParse(lineItem, 'attributes.quantity', parseAsNumber, 0),
+                    amount: safelyParse(skuItem, 'amount', parseAsString, null),
+                    compareAmount: safelyParse(skuItem, 'amount', parseAsString, null),
+                };
+            });
+            setLineItems(lineItems);
+        }
+    }, []);
 
     useEffect(() => {
         if (accessToken && emailAddress && orderNumber) {

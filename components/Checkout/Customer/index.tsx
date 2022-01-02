@@ -75,37 +75,25 @@ const Customer: React.FC = () => {
             const billingAddressParsed = parseBillingAddress(data);
 
             // Update billing address details in commerceLayer
-            const billingAddressUpdatedRes = await updateAddress(
-                accessToken,
-                order.id,
-                customerDetails,
-                billingAddressParsed,
-                false
-            );
+            await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, false);
 
             dispatch(setBillingAddress(parseAddress(billingAddressParsed)));
 
             // If we're cloning a new address to shipping, simply update the details with isShipping as true.
             if (isShippingSameAsBilling) {
                 // Update shipping address details in commerceLayer
-                const res = await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, true);
+                await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, true);
             }
         } else if (billingAddressEntryChoice === 'existingBillingAddress') {
             // Parse the billing address into a customer address partial.
             const billingAddressParsed = parseExistingAddress(billingAddress);
 
             // Update billing address details in commerceLayer
-            const billingAddressUpdatedRes = await updateAddress(
-                accessToken,
-                order.id,
-                customerDetails,
-                billingAddressParsed,
-                false
-            );
+            await updateAddress(accessToken, order.id, customerDetails, billingAddressParsed, false);
 
             // If we're choosing an existing address then check for a clone id and add as shipping.
             if (cloneBillingAddressId) {
-                const res = await updateAddressClone(accessToken, order.id, cloneBillingAddressId, false);
+                await updateAddressClone(accessToken, order.id, cloneBillingAddressId, false);
             } else {
                 dispatch(addWarning('Please select a billing address'));
                 shouldSubmit = false;
@@ -118,7 +106,7 @@ const Customer: React.FC = () => {
             await updateSameAsBilling(accessToken, order.id, isShippingSameAsBilling);
 
             if (cloneBillingAddressId) {
-                const res = await updateAddressClone(accessToken, order.id, cloneBillingAddressId, true);
+                await updateAddressClone(accessToken, order.id, cloneBillingAddressId, true);
             } else {
                 dispatch(addWarning('Please select a billing address'));
                 shouldSubmit = false;
@@ -146,13 +134,7 @@ const Customer: React.FC = () => {
                 const shippingAddressParsed = parseExistingAddress(shippingAddress);
 
                 // Update shipping address details in commerceLayer. No check for same as billing here.
-                const shippingAddressUpdatedRes = await updateAddress(
-                    accessToken,
-                    order.id,
-                    customerDetails,
-                    shippingAddressParsed,
-                    true
-                );
+                await updateAddress(accessToken, order.id, customerDetails, shippingAddressParsed, true);
 
                 if (!cloneShippingAddressId) {
                     dispatch(addWarning('Please select a shipping address'));
