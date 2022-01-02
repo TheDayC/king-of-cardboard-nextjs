@@ -19,6 +19,15 @@ const checkoutSlice = createSlice({
         setShippingAddress(state, action) {
             state.shippingAddress = action.payload;
         },
+        setCloneBillingAddressId(state, action) {
+            state.cloneBillingAddressId = action.payload;
+        },
+        setCloneShippingAddressId(state, action) {
+            state.cloneShippingAddressId = action.payload;
+        },
+        setSameAsBilling(state, action) {
+            state.isShippingSameAsBilling = action.payload;
+        },
         setShipmentsWithMethods(state, action) {
             state.shipmentsWithMethods = action.payload;
         },
@@ -35,15 +44,6 @@ const checkoutSlice = createSlice({
             } else {
                 state.shipmentsWithMethods = [{ shipmentId, methodId }];
             }
-        },
-        setCloneBillingAddressId(state, action) {
-            state.cloneBillingAddressId = action.payload;
-        },
-        setCloneShippingAddressId(state, action) {
-            state.cloneShippingAddressId = action.payload;
-        },
-        setSameAsBilling(state, action) {
-            state.isShippingSameAsBilling = action.payload;
         },
         resetCheckoutDetails() {
             return checkoutInitialState;
@@ -62,12 +62,12 @@ export const {
     setCustomerDetails,
     setBillingAddress,
     setShippingAddress,
-    setShipmentsWithMethods,
-    addShipmentWithMethod,
-    resetCheckoutDetails,
     setCloneBillingAddressId,
     setCloneShippingAddressId,
     setSameAsBilling,
+    setShipmentsWithMethods,
+    addShipmentWithMethod,
+    resetCheckoutDetails,
 } = checkoutSlice.actions;
 
 export default checkoutSlice.reducer;

@@ -22,6 +22,8 @@ const selector = createSelector(
         confirmationDetails: confirmation,
         billingAddress: checkout.billingAddress,
         shippingAddress: checkout.shippingAddress,
+        hasBothAddresses: Boolean(checkout.billingAddress.line_1) && Boolean(checkout.shippingAddress.line_1),
+        hasShipmentMethods: Boolean(checkout.shipmentsWithMethods),
     })
 );
 
