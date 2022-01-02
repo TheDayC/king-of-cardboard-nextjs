@@ -8,17 +8,10 @@ import {
     ShippingMethods,
 } from '../types/checkout';
 import { authClient } from './auth';
-import { CommerceLayerResponse, ErrorResponse } from '../types/api';
+import { CommerceLayerResponse } from '../types/api';
 import { errorHandler } from '../middleware/errors';
 import { isArray } from './typeguards';
-import {
-    parseAsArrayOfCommerceResponse,
-    parseAsCommerceResponse,
-    parseAsNumber,
-    parseAsString,
-    parseAsUnknown,
-    safelyParse,
-} from './parsers';
+import { parseAsArrayOfCommerceResponse, parseAsNumber, parseAsString, parseAsUnknown, safelyParse } from './parsers';
 
 function regexEmail(email: string): boolean {
     // eslint-disable-next-line no-useless-escape
@@ -229,7 +222,7 @@ export async function updateAddress(
     details: CustomerDetails,
     address: Partial<CustomerAddress>,
     isShipping: boolean
-): Promise<boolean | ErrorResponse[]> {
+): Promise<boolean> {
     try {
         const data = {
             type: 'addresses',
@@ -272,6 +265,8 @@ export async function updateAddress(
     } catch (error: unknown) {
         errorHandler(error, 'Address could not be updated.');
     }
+
+    return false;
 }
 
 export async function updateAddressClone(
@@ -279,7 +274,7 @@ export async function updateAddressClone(
     orderId: string,
     cloneId: string,
     isShipping: boolean
-): Promise<boolean | ErrorResponse[]> {
+): Promise<boolean> {
     try {
         const baseData = {
             type: 'orders',
@@ -306,13 +301,15 @@ export async function updateAddressClone(
     } catch (error: unknown) {
         errorHandler(error, 'Address could not be updated.');
     }
+
+    return false;
 }
 
 export async function updateSameAsBilling(
     accessToken: string,
     orderId: string,
     sameAsBilling: boolean
-): Promise<boolean | ErrorResponse[]> {
+): Promise<boolean> {
     try {
         const data = {
             type: 'orders',
@@ -329,9 +326,11 @@ export async function updateSameAsBilling(
     } catch (error: unknown) {
         errorHandler(error, 'Failed to set shipping address to the same as billing.');
     }
+
+    return false;
 }
 
-export async function getShipments(accessToken: string, orderId: string): Promise<Shipments | ErrorResponse[] | null> {
+export async function getShipments(accessToken: string, orderId: string): Promise<Shipments | null> {
     try {
         const cl = authClient(accessToken);
         const include = 'available_shipping_methods';
@@ -384,9 +383,11 @@ export async function getShipments(accessToken: string, orderId: string): Promis
     } catch (error: unknown) {
         errorHandler(error, 'Failed to fetch shipments.');
     }
+
+    return null;
 }
 
-export async function getDeliveryLeadTimes(accessToken: string): Promise<DeliveryLeadTimes[] | ErrorResponse[] | null> {
+export async function getDeliveryLeadTimes(accessToken: string): Promise<DeliveryLeadTimes[] | null> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.get('/api/delivery_lead_times?include=shipping_method');
@@ -401,11 +402,11 @@ export async function getDeliveryLeadTimes(accessToken: string): Promise<Deliver
                 maxDays: safelyParse(leadTime, 'attributes.max_days', parseAsNumber, 0),
             }));
         }
-
-        return null;
     } catch (error: unknown) {
         errorHandler(error, 'Failed to fetch delivery lead times.');
     }
+
+    return null;
 }
 
 export function mergeMethodsAndLeadTimes(
@@ -437,7 +438,7 @@ export async function updateShipmentMethod(
     accessToken: string,
     shipmentId: string,
     methodId: string
-): Promise<boolean | ErrorResponse[]> {
+): Promise<boolean> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/shipments/${shipmentId}`, {
@@ -460,12 +461,11 @@ export async function updateShipmentMethod(
     } catch (error: unknown) {
         errorHandler(error, 'Failed to update shipment method.');
     }
+
+    return false;
 }
 
-export async function getShipment(
-    accessToken: string,
-    shipmentId: string
-): Promise<ShipmentsWithLineItems | ErrorResponse[] | null> {
+export async function getShipment(accessToken: string, shipmentId: string): Promise<ShipmentsWithLineItems | null> {
     try {
         const cl = authClient(accessToken);
         const include = 'shipping_method,delivery_lead_time,shipment_line_items';
@@ -490,13 +490,11 @@ export async function getShipment(
     } catch (error: unknown) {
         errorHandler(error, 'Failed to fetch shipment.');
     }
+
+    return null;
 }
 
-export async function updatePaymentMethod(
-    accessToken: string,
-    id: string,
-    paymentMethodId: string
-): Promise<boolean | ErrorResponse[]> {
+export async function updatePaymentMethod(accessToken: string, id: string, paymentMethodId: string): Promise<boolean> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/orders/${id}`, {
@@ -519,6 +517,8 @@ export async function updatePaymentMethod(
     } catch (error: unknown) {
         errorHandler(error, 'We could not get a shipment.');
     }
+
+    return false;
 }
 
 export function buildPaymentAttributes(method: string, orderId: string): PaymentAttributes {
@@ -537,10 +537,7 @@ export function buildPaymentAttributes(method: string, orderId: string): Payment
     }
 }
 
-export async function getPayPalPaymentIdByOrder(
-    accessToken: string,
-    orderId: string
-): Promise<string | null | ErrorResponse[]> {
+export async function getPayPalPaymentIdByOrder(accessToken: string, orderId: string): Promise<string | null> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.get(`/api/paypal_payments?include=order&filter[q][order_id_eq]=${orderId}`);
@@ -550,13 +547,11 @@ export async function getPayPalPaymentIdByOrder(
     } catch (error: unknown) {
         errorHandler(error, 'Failed to confirm your paypal order, please try again.');
     }
+
+    return null;
 }
 
-export async function completePayPalOrder(
-    accessToken: string,
-    paymentId: string,
-    payerId: string
-): Promise<boolean | ErrorResponse[]> {
+export async function completePayPalOrder(accessToken: string, paymentId: string, payerId: string): Promise<boolean> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/paypal_payments/${paymentId}`, {
@@ -574,6 +569,8 @@ export async function completePayPalOrder(
     } catch (error: unknown) {
         errorHandler(error, 'Failed to confirm your paypal order, please try again.');
     }
+
+    return false;
 }
 
 export function paymentBtnText(method: string): string {

@@ -2,7 +2,7 @@
 import { get, join } from 'lodash';
 
 import { errorHandler } from '../middleware/errors';
-import { ErrorResponse, PaymentSourceResponse } from '../types/api';
+import { PaymentSourceResponse } from '../types/api';
 import { Order } from '../types/cart';
 import { PaymentAttributes } from '../types/checkout';
 import { LineItemAttributes, LineItemRelationships, SkuItem, SkuProduct } from '../types/commerce';
@@ -17,7 +17,7 @@ import {
     parseAsNumber,
 } from './parsers';
 
-export async function createOrder(accessToken: string): Promise<Order | ErrorResponse[] | null> {
+export async function createOrder(accessToken: string): Promise<Order | null> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.post('/api/orders', {
@@ -40,9 +40,11 @@ export async function createOrder(accessToken: string): Promise<Order | ErrorRes
     } catch (error: unknown) {
         errorHandler(error, 'We could not create your order.');
     }
+
+    return null;
 }
 
-export async function getSkus(accessToken: string, sku_codes: string[]): Promise<SkuItem[] | ErrorResponse[] | null> {
+export async function getSkus(accessToken: string, sku_codes: string[]): Promise<SkuItem[] | null> {
     try {
         const cl = authClient(accessToken);
         const skuFilter = join(sku_codes, ',');
@@ -80,9 +82,11 @@ export async function getSkus(accessToken: string, sku_codes: string[]): Promise
     } catch (error: unknown) {
         errorHandler(error, 'We could not get a shipment.');
     }
+
+    return null;
 }
 
-export async function getSkuDetails(accessToken: string, id: string): Promise<SkuProduct | ErrorResponse[] | null> {
+export async function getSkuDetails(accessToken: string, id: string): Promise<SkuProduct | null> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.get(`/api/skus/${id}?include=prices,sku_options`);
@@ -127,13 +131,11 @@ export async function getSkuDetails(accessToken: string, id: string): Promise<Sk
     } catch (error: unknown) {
         errorHandler(error, 'We could not get a shipment.');
     }
+
+    return null;
 }
 
-export async function getOrder(
-    accessToken: string,
-    orderId: string,
-    include: string[]
-): Promise<Order | ErrorResponse[] | null> {
+export async function getOrder(accessToken: string, orderId: string, include: string[]): Promise<Order | null> {
     try {
         const includeJoin = join(include, ',');
         const orderFields =
@@ -157,13 +159,15 @@ export async function getOrder(
     } catch (error: unknown) {
         errorHandler(error, 'We could not fetch an order.');
     }
+
+    return null;
 }
 
 export async function setLineItem(
     accessToken: string,
     attributes: LineItemAttributes,
     relationships: LineItemRelationships
-): Promise<boolean | ErrorResponse[]> {
+): Promise<boolean> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.post('/api/line_items', {
@@ -179,9 +183,11 @@ export async function setLineItem(
     } catch (error: unknown) {
         errorHandler(error, 'We could not fetch an order.');
     }
+
+    return false;
 }
 
-export async function removeLineItem(accessToken: string, id: string): Promise<boolean | ErrorResponse[]> {
+export async function removeLineItem(accessToken: string, id: string): Promise<boolean> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.delete(`/api/line_items/${id}`);
@@ -191,13 +197,11 @@ export async function removeLineItem(accessToken: string, id: string): Promise<b
     } catch (error: unknown) {
         errorHandler(error, 'We could not fetch an order.');
     }
+
+    return false;
 }
 
-export async function updateLineItem(
-    accessToken: string,
-    id: string,
-    quantity: number
-): Promise<boolean | ErrorResponse[]> {
+export async function updateLineItem(accessToken: string, id: string, quantity: number): Promise<boolean> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.patch(`/api/line_items/${id}`, {
@@ -215,6 +219,8 @@ export async function updateLineItem(
     } catch (error: unknown) {
         errorHandler(error, 'We could not fetch an order.');
     }
+
+    return false;
 }
 
 export async function createPaymentSource(
@@ -222,7 +228,7 @@ export async function createPaymentSource(
     id: string,
     paymentSourceType: string,
     attributes: PaymentAttributes
-): Promise<PaymentSourceResponse | ErrorResponse[]> {
+): Promise<PaymentSourceResponse> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.post(`/api/${paymentSourceType}`, {
@@ -248,4 +254,10 @@ export async function createPaymentSource(
     } catch (error: unknown) {
         errorHandler(error, 'We could not create a payment source.');
     }
+
+    return {
+        paymentId: null,
+        clientSecret: null,
+        approvalUrl: null,
+    };
 }
