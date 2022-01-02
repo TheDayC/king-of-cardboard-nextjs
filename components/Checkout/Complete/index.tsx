@@ -17,13 +17,22 @@ interface CompleteProps {
 }
 
 const Complete: React.FC<CompleteProps> = ({ paymentId, payerId, orderId }) => {
-    const { accessToken, checkoutLoading, order, items, customerDetails, billingAddress, shippingAddress } =
-        useSelector(selector);
+    const {
+        accessToken,
+        checkoutLoading,
+        subTotal,
+        shipping,
+        total,
+        items,
+        customerDetails,
+        billingAddress,
+        shippingAddress,
+    } = useSelector(selector);
     const dispatch = useDispatch();
     const router = useRouter();
 
     const handleComplete = async () => {
-        if (accessToken && paymentId && order) {
+        if (accessToken && paymentId) {
             dispatch(setCheckoutLoading(true));
             const res = await completePayPalOrder(accessToken, paymentId, payerId);
 
@@ -40,7 +49,9 @@ const Complete: React.FC<CompleteProps> = ({ paymentId, payerId, orderId }) => {
                         // Set the confirmation data in the store.
                         dispatch(
                             setConfirmationData({
-                                order,
+                                subTotal,
+                                shipping,
+                                total,
                                 items,
                                 customerDetails,
                                 billingAddress,
@@ -49,7 +60,15 @@ const Complete: React.FC<CompleteProps> = ({ paymentId, payerId, orderId }) => {
                         );
 
                         // Distribute the confirmation email so the customer has a receipt.
-                        await sendOrderConfirmation(order, items, customerDetails, billingAddress, shippingAddress);
+                        await sendOrderConfirmation(
+                            subTotal,
+                            shipping,
+                            total,
+                            items,
+                            customerDetails,
+                            billingAddress,
+                            shippingAddress
+                        );
                     } else {
                         dispatch(addError('Failed to confirm your order, please contact support.'));
                     }

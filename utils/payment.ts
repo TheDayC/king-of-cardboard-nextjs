@@ -52,22 +52,27 @@ export async function refreshPayment(accessToken: string, id: string, paymentSou
 }
 
 export async function sendOrderConfirmation(
-    order: Order,
+    subTotal: string | null,
+    shipping: string | null,
+    total: string | null,
     items: CartItem[],
     customerDetails: CustomerDetails,
     billingAddress: CustomerAddress,
     shippingAddress: CustomerAddress
 ): Promise<boolean> {
     try {
-        const response = await axios.post('/api/sendOrderConfirmation', {
-            order,
+        const res = await axios.post('/api/sendOrderConfirmation', {
+            subTotal,
+            shipping,
+            total,
             items,
             customerDetails,
             billingAddress,
             shippingAddress,
         });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
+        return status === 200;
     } catch (error: unknown) {
         errorHandler(error, 'We could not send your order confirmation.');
     }

@@ -160,6 +160,9 @@ export interface ShipmentsWithLineItems extends ShipmentsWithMethods {
 export interface Confirmation {
     order: Order | null;
     items: CartItem[];
+    subTotal: string | null;
+    shipping: string | null;
+    total: string | null;
     customerDetails: CustomerDetails;
     billingAddress: CustomerAddress;
     shippingAddress: CustomerAddress;

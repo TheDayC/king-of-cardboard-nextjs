@@ -5,8 +5,10 @@ import { selectGlobalData, selectCartData, selectCheckoutData } from '../../../s
 const selector = createSelector([selectGlobalData, selectCartData, selectCheckoutData], (global, cart, checkout) => ({
     accessToken: global.accessToken,
     checkoutLoading: global.checkoutLoading,
-    order: cart.order,
     items: cart.items,
+    subTotal: cart.subTotal,
+    shipping: cart.shipping,
+    total: cart.total,
     customerDetails: checkout.customerDetails,
     billingAddress: checkout.billingAddress,
     shippingAddress: checkout.shippingAddress,

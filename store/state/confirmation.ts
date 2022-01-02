@@ -3,6 +3,9 @@ import { Confirmation } from '../types/state';
 const confirmationInitialState: Confirmation = {
     order: null,
     items: [],
+    subTotal: null,
+    shipping: null,
+    total: null,
     customerDetails: {
         email: null,
         first_name: null,
