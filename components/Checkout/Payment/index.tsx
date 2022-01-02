@@ -262,42 +262,44 @@ export const Payment: React.FC = () => {
             <h3 className="collapse-title text-xl font-medium" onClick={handleEdit}>
                 {!isCurrentStep ? 'Payment - Edit' : 'Payment'}
             </h3>
-            <div className="collapse-content p-4">
+            <div className="collapse-content">
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    {paymentMethods &&
-                        paymentMethods.map((method) => {
-                            const sourceType = method.payment_source_type;
-                            const isPayPal = sourceType === 'paypal_payments';
-                            const logo = isPayPal ? (
-                                <BsPaypal className={paypalClass} />
-                            ) : (
-                                <BsFillCreditCard2BackFill className={stripeClass} />
-                            );
-                            const title = isPayPal ? 'PayPal' : 'Credit / Debit Card';
+                    <div className="pt-4">
+                        {paymentMethods &&
+                            paymentMethods.map((method) => {
+                                const sourceType = method.payment_source_type;
+                                const isPayPal = sourceType === 'paypal_payments';
+                                const logo = isPayPal ? (
+                                    <BsPaypal className={paypalClass} />
+                                ) : (
+                                    <BsFillCreditCard2BackFill className={stripeClass} />
+                                );
+                                const title = isPayPal ? 'PayPal' : 'Credit / Debit Card';
 
-                            return (
-                                <SelectionWrapper
-                                    id={sourceType}
-                                    title={title}
-                                    name="paymentMethod"
-                                    isChecked={paymentMethod === sourceType}
-                                    defaultChecked={sourceType === 'stripe_payments'}
-                                    titleLogo={logo}
-                                    onSelect={handlePaymentMethodSelect}
-                                    key={`payment-method-${method.id}`}
-                                >
-                                    {!isPayPal && <Source sourceType={sourceType} />}
-                                </SelectionWrapper>
-                            );
-                        })}
-                    <div className="flex justify-end">
-                        <button
-                            className={`btn btn-primary${checkoutLoading ? ' loading btn-square' : ''}${
-                                !stripe || checkoutLoading ? ' btn-disabled' : ''
-                            }`}
-                        >
-                            {!checkoutLoading ? btnText : ''}
-                        </button>
+                                return (
+                                    <SelectionWrapper
+                                        id={sourceType}
+                                        title={title}
+                                        name="paymentMethod"
+                                        isChecked={paymentMethod === sourceType}
+                                        defaultChecked={sourceType === 'stripe_payments'}
+                                        titleLogo={logo}
+                                        onSelect={handlePaymentMethodSelect}
+                                        key={`payment-method-${method.id}`}
+                                    >
+                                        {!isPayPal && <Source sourceType={sourceType} />}
+                                    </SelectionWrapper>
+                                );
+                            })}
+                        <div className="flex justify-end">
+                            <button
+                                className={`btn btn-primary${checkoutLoading ? ' loading btn-square' : ''}${
+                                    !stripe || checkoutLoading ? ' btn-disabled' : ''
+                                }`}
+                            >
+                                {!checkoutLoading ? btnText : ''}
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
