@@ -179,29 +179,34 @@ export const Payment: React.FC = () => {
         [dispatch, checkoutLoading]
     );
 
-    const handlePaypalPayment = useCallback(
-        async (accessToken: string, orderId: string, paymentMethod: string, checkoutLoading: boolean) => {
-            if (checkoutLoading) return;
+    // If the user has chosen paypal, handle it here.
+    const handlePaypalPayment = useCallback(async () => {
+        // If we're already loading make sure not to execute again.
+        if (checkoutLoading || !accessToken || !order) return;
 
-            dispatch(setCheckoutLoading(true));
+        // Set checkout to loading.
+        dispatch(setCheckoutLoading(true));
 
-            const attributes = buildPaymentAttributes(paymentMethod, orderId);
+        // Piece together the attributes for the payment source request.
+        const attributes = buildPaymentAttributes(paymentMethod, order.id);
 
-            // Fetch the client secret from Commerce Layer to use with Stripe.
-            const paymentSource = await createPaymentSource(accessToken, orderId, paymentMethod, attributes);
+        // Fetch the client secret from Commerce Layer to use with Stripe.
+        const paymentSource = await createPaymentSource(accessToken, order.id, paymentMethod, attributes);
 
-            if (paymentSource) {
-                const { approvalUrl } = paymentSource;
+        // If the payment source was created then capture the approval url from paypal.
+        if (paymentSource) {
+            const { approvalUrl } = paymentSource;
 
-                if (approvalUrl) {
-                    location.assign(approvalUrl);
-                }
+            if (approvalUrl) {
+                location.assign(approvalUrl);
             }
+        } else {
+            // Dispatch an error if we for some reason can't handle this properly.
+            dispatch(addError('Failed to create payment source for PayPal, please contact support.'));
+        }
 
-            dispatch(setCheckoutLoading(false));
-        },
-        [dispatch]
-    );
+        dispatch(setCheckoutLoading(false));
+    }, [dispatch, checkoutLoading, paymentMethod, order, accessToken]);
 
     const onSubmit = () => {
         if (accessToken && order && paymentMethod) {
@@ -229,11 +234,12 @@ export const Payment: React.FC = () => {
 
             // If we're processing a paypal order then ensure to sent the payment method id
             if (paymentMethod === 'paypal_payments') {
-                handlePaypalPayment(accessToken, order.id, paymentMethod, checkoutLoading);
+                handlePaypalPayment();
             }
         }
     };
 
+    // Handle the paypal or stripe choice made by the user.
     const handlePaymentMethodSelect = async (sourceType: string) => {
         // Find the payment method chosen by the user.
         const paymentMethodData = paymentMethods.find((pM) => pM.payment_source_type === sourceType) || null;
@@ -241,12 +247,14 @@ export const Payment: React.FC = () => {
         // Don't act if we're missing vital data.
         if (!accessToken || !orderId || !paymentMethodData) return;
 
-        // Set the payment method chosen in the local state.
+        // Set the payment method chosen in the local state. We'll use this in the form submission.
         setPaymentMethod(sourceType);
 
+        // Update the user's payment method choice on selection.
         await updatePaymentMethod(accessToken, orderId, paymentMethodData.id);
     };
 
+    // When confirmation details exist then move the user to the confirmation stage.
     useEffect(() => {
         if (confirmationDetails.order && confirmationDetails.items.length > 0) {
             router.push('/confirmation');
