@@ -15,7 +15,7 @@ function checkForForbidden(errors: ErrorResponse[]): ErrorResponse[] {
     return errors.filter((err) => err.status !== 401);
 }
 
-export function errorHandler(error: unknown, defaultError: string): ErrorResponse[] {
+export function errorHandler(error: unknown, defaultError: string): void {
     // Intercept commerceLayer errors first as they'll be nested in an axiosError.
     const clErrors = safelyParse(error, 'response.data.errors', parseAsArrayOfCommerceLayerErrors, null);
 
@@ -27,7 +27,7 @@ export function errorHandler(error: unknown, defaultError: string): ErrorRespons
         }));
         const errorsNo401 = checkForForbidden(errors);
 
-        return errorsNo401;
+        errorsNo401.forEach((err) => console.error(`Error: ${err.status} - ${err.message} - ${err.description}`));
     }
 
     // Next catch all axios and remaining errors
@@ -35,5 +35,5 @@ export function errorHandler(error: unknown, defaultError: string): ErrorRespons
     const message = safelyParse(error, 'response.data.message', parseAsString, 'Internal Server Error');
     const description = safelyParse(error, 'response.data.description', parseAsString, defaultError);
 
-    return [{ status, message, description }];
+    console.error(`Error: ${status} - ${message} - ${description}`);
 }
