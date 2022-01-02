@@ -1,17 +1,16 @@
 import { join } from 'lodash';
+
 import { errorHandler } from '../middleware/errors';
 import { CartItem, CartTotals } from '../types/cart';
-import { ImageItem } from '../types/products';
 import { authClient } from './auth';
 import {
     parseAsArrayOfCommerceResponse,
-    parseAsArrayOfItems,
     parseAsArrayOfStrings,
     parseAsNumber,
     parseAsString,
     safelyParse,
 } from './parsers';
-import { fetchProductByProductLink, fetchProductImagesByProductLink } from './products';
+import { fetchProductImagesByProductLink } from './products';
 
 export async function getItemCount(accessToken: string, orderId: string): Promise<number> {
     try {
