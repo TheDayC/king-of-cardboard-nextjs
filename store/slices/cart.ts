@@ -3,11 +3,17 @@ import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
 import { getItemCount } from '../../utils/cart';
+import { createOrder } from '../../utils/commerce';
 import cartInitialState from '../state/cart';
 
 interface FetchItemCountInput {
     accessToken: string;
     orderId: string;
+}
+
+interface CreateOrderInput {
+    accessToken: string;
+    isGuest: boolean;
 }
 
 export const hydrate = createAction<AppState>(HYDRATE);
@@ -18,6 +24,15 @@ export const fetchItemCount = createAsyncThunk(
         const { accessToken, orderId } = data;
 
         return await getItemCount(accessToken, orderId);
+    }
+);
+
+export const createCLOrder = createAsyncThunk(
+    'cart/createCLOrder',
+    async (data: CreateOrderInput): Promise<string | null> => {
+        const { accessToken, isGuest } = data;
+
+        return await createOrder(accessToken, isGuest);
     }
 );
 
@@ -49,6 +64,9 @@ const cartSlice = createSlice({
         builder.addCase(fetchItemCount.fulfilled, (state, action) => {
             state.itemCount = action.payload;
         }),
+            builder.addCase(createCLOrder.fulfilled, (state, action) => {
+                state.orderId = action.payload;
+            }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,
                 ...action.payload[cartSlice.name],

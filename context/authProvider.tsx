@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
+import { useSession } from 'next-auth/react';
 
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import selector from './authSelector';
@@ -12,11 +13,10 @@ import {
     setLineItems,
     setPaymentMethods,
     setUpdatingCart,
+    createCLOrder,
 } from '../store/slices/cart';
 import { createToken } from '../utils/auth';
-import { getShipment, getShipments } from '../utils/checkout';
 import { parseAsString, safelyParse } from '../utils/parsers';
-import { addShipmentWithMethod } from '../store/slices/checkout';
 
 const AuthProvider: React.FC = ({ children }) => {
     const { accessToken, expires, order, shouldFetchOrder } = useSelector(selector);
@@ -25,6 +25,8 @@ const AuthProvider: React.FC = ({ children }) => {
     const currentDate = DateTime.now().setZone('Europe/London');
     const expiryDate = DateTime.fromISO(expires || currentDate.toISO(), { zone: 'Europe/London' });
     const hasExpired = Boolean(expires && expiryDate < currentDate);
+    const { data: session } = useSession();
+    const isGuest = !Boolean(session);
 
     // Fetch an auth token for the user to interact with commerceLayer.
     const fetchToken = useCallback(async () => {
@@ -75,21 +77,6 @@ const AuthProvider: React.FC = ({ children }) => {
                     dispatch(setPaymentMethods(cartPaymentMethods));
                 }
 
-                /* const shipmentRes = await getShipments(accessToken, orderId);
-                console.log("🚀 ~ file: authProvider.tsx ~ line 79 ~ shipmentRes", shipmentRes)
-
-                if (shipmentRes) {
-                    const { shipments } = shipmentRes;
-
-                    shipments.forEach(async (shipment) => {
-                        const shipmentWithMethods = await getShipment(accessToken, shipment);
-
-                        if (shipmentWithMethods) {
-                            dispatch(addShipmentWithMethod(shipmentWithMethods));
-                        }
-                    });
-                } */
-
                 // Set the entire order in the store.
                 dispatch(setOrder(orderRes));
 
@@ -106,13 +93,9 @@ const AuthProvider: React.FC = ({ children }) => {
     // Create a brand new order and set the id in the store.
     const generateOrder = useCallback(
         async (accessToken: string) => {
-            const order = await createOrder(accessToken);
-
-            if (order) {
-                dispatch(setOrder(order));
-            }
+            dispatch(createCLOrder({ accessToken, isGuest }));
         },
-        [dispatch]
+        [dispatch, isGuest]
     );
 
     // If order does exist then hydrate with line items.

@@ -17,28 +17,22 @@ import {
     parseAsNumber,
 } from './parsers';
 
-export async function createOrder(accessToken: string): Promise<Order | null> {
+export async function createOrder(accessToken: string, isGuest: boolean): Promise<string | null> {
     try {
         const cl = authClient(accessToken);
-        const res = await cl.post('/api/orders', {
+        const res = await cl.post('/api/orders?fields[orders]=id', {
             data: {
                 type: 'orders',
                 attributes: {
-                    guest: true,
+                    guest: isGuest,
                 },
             },
         });
+        console.log('🚀 ~ file: commerce.ts ~ line 31 ~ createOrder ~ res', res);
 
-        if (res) {
-            const order: unknown = get(res, 'data.data', null);
-            const included: unknown[] = get(res, 'data.included', []);
-
-            return parseOrderData(order, included);
-        }
-
-        return null;
+        return safelyParse(res, 'data.data.id', parseAsString, null);
     } catch (error: unknown) {
-        errorHandler(error, 'We could not create your order.');
+        errorHandler(error, 'Failed to create an order.');
     }
 
     return null;
