@@ -280,25 +280,6 @@ export function mergeProductData(products: ContentfulProduct[], skuItems: SkuIte
     });
 }
 
-export function mergeSkuProductData(product: ContentfulProduct, skuItem: SkuItem, skuData: SkuProduct): SingleProduct {
-    return {
-        id: safelyParse(skuItem, 'id', parseAsString, ''),
-        name: safelyParse(product, 'name', parseAsString, ''),
-        slug: safelyParse(product, 'slug', parseAsString, ''),
-        sku_code: safelyParse(product, 'productLink', parseAsString, null),
-        description: safelyParse(product, 'description', parseAsString, null),
-        types: safelyParse(product, 'types', parseAsArrayOfStrings, []),
-        categories: safelyParse(product, 'categories', parseAsArrayOfStrings, []),
-        images: safelyParse(product, 'imageCollection', parseAsImageCollection, null),
-        cardImage: safelyParse(product, 'cardImage', parseAsImageItem, null),
-        tags: safelyParse(product, 'tags', parseAsArrayOfStrings, null),
-        amount: safelyParse(skuData, 'formatted_amount', parseAsString, null),
-        compare_amount: safelyParse(skuData, 'formatted_compare_at_amount', parseAsString, null),
-        inventory: safelyParse(skuData, 'inventory', parseAsSkuInventory, null),
-        options: safelyParse(skuData, 'options', parseAsArrayOfSkuOptions, null),
-    };
-}
-
 export async function getSingleProduct(accessToken: string, slug: string): Promise<SingleProduct> {
     // Piece together query.
     const query = `
@@ -344,15 +325,23 @@ export async function getSingleProduct(accessToken: string, slug: string): Promi
     )[0];
 
     const cl = authClient(accessToken);
+
+    // Need to find the product by SKU first.
     const sku_code = safelyParse(product, 'productLink', parseAsString, '');
-    const fields = '&fields[skus]=id&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount';
-    const skuRes = await cl.get(`/api/skus?filter[q][code_eq]=${sku_code}&include=prices,sku_options${fields}`);
-    const skuData = safelyParse(skuRes, 'data.data', parseAsArrayOfCommerceResponse, [])[0];
+    const skuByCodeRes = await cl.get(`/api/skus?filter[q][code_eq]=${sku_code}&fields[skus]=id`);
+
+    const skuByCodeData = safelyParse(skuByCodeRes, 'data.data', parseAsArrayOfCommerceResponse, [])[0];
+
+    // Next pull it by id so we can fetch inventory information.
+    const id = safelyParse(skuByCodeData, 'id', parseAsString, '');
+    const fields = '&fields[skus]=id,inventory&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount';
+    const skuRes = await cl.get(`/api/skus/${id}?include=prices${fields}`);
+    const skuData = safelyParse(skuRes, 'data.data', parseAsCommerceResponse, null);
     const included = safelyParse(skuRes, 'data.included', parseAsArrayOfCommerceResponse, []);
-    const prices = included.find((i) => i.type === 'prices' && i.attributes.sku_code === sku_code);
+    const prices = included.find((i) => i.attributes.sku_code === sku_code && i.type === 'prices');
 
     return {
-        id: safelyParse(skuData, 'id', parseAsString, ''),
+        id,
         name: safelyParse(product, 'name', parseAsString, ''),
         slug: safelyParse(product, 'slug', parseAsString, ''),
         sku_code,
@@ -360,19 +349,18 @@ export async function getSingleProduct(accessToken: string, slug: string): Promi
         types: safelyParse(product, 'types', parseAsArrayOfStrings, []),
         categories: safelyParse(product, 'categories', parseAsArrayOfStrings, []),
         images: safelyParse(product, 'imageCollection', parseAsImageCollection, { items: [] }),
-        cardImage: safelyParse(product, 'cardImage', parseAsImageItem, {
-            title: '',
-            description: '',
-            url: '',
-        }),
+        cardImage: {
+            title: safelyParse(product, 'cardImage.title', parseAsString, ''),
+            description: safelyParse(product, 'cardImage.description', parseAsString, ''),
+            url: safelyParse(product, 'cardImage.url', parseAsString, ''),
+        },
         tags: safelyParse(product, 'tags', parseAsArrayOfStrings, []),
         amount: safelyParse(prices, 'attributes.formatted_amount', parseAsString, '£0.00'),
         compare_amount: safelyParse(prices, 'attributes.formatted_compare_at_amount', parseAsString, '£0.00'),
-        inventory: safelyParse(skuData, 'inventory', parseAsSkuInventory, {
+        inventory: safelyParse(skuData, 'attributes.inventory', parseAsSkuInventory, {
             available: false,
             quantity: 0,
             levels: [],
         }),
-        options: safelyParse(skuData, 'options', parseAsArrayOfSkuOptions, []),
     };
 }

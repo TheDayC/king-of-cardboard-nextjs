@@ -29,7 +29,6 @@ export interface SingleProduct {
     amount: string;
     compare_amount: string;
     inventory: SkuInventory;
-    options: SkuOption[];
 }
 
 export interface ContentfulProductResponse {

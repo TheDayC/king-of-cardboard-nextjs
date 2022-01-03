@@ -10,7 +10,7 @@ import { fetchItemCount } from '../../store/slices/cart';
 import Images from './Images';
 import Details from './Details';
 import { fetchSingleProduct } from '../../store/slices/products';
-import { addError } from '../../store/slices/alerts';
+import { addError, addSuccess } from '../../store/slices/alerts';
 
 interface ProductProps {
     slug: string;
@@ -28,6 +28,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
     const hasErrors = Object.keys(errors).length > 0;
     const stock = currentProduct.inventory.quantity;
     const currentLineItem = items && currentProduct ? items.find((c) => c.sku_code === currentProduct.sku_code) : null;
+    console.log('🚀 ~ file: index.tsx ~ line 31 ~ currentLineItem', currentLineItem);
     const hasExceededStock = currentLineItem ? currentLineItem.quantity >= stock : false;
     const description = split(currentProduct.description, '\n\n');
     const shouldShowCompare = currentProduct.amount !== currentProduct.compare_amount;
@@ -68,6 +69,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
 
         if (hasLineItemUpdated) {
             dispatch(fetchItemCount({ accessToken, orderId }));
+            dispatch(addSuccess(`${currentProduct.name} added to cart.`));
         } else {
             dispatch(addError('Failed to add product to cart.'));
         }
