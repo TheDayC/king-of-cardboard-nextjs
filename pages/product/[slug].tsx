@@ -5,6 +5,7 @@ import Header from '../../components/Header';
 import { CommerceStaticProps } from '../../types/commerce';
 import Product from '../../components/Product';
 import { parseAsString, safelyParse } from '../../utils/parsers';
+import Footer from '../../components/Footer';
 
 export const ProductPage: React.FC<CommerceStaticProps> = () => {
     const router = useRouter();
@@ -14,6 +15,7 @@ export const ProductPage: React.FC<CommerceStaticProps> = () => {
         <React.Fragment>
             <Header />
             {slug && <Product slug={slug} />}
+            <Footer />
         </React.Fragment>
     );
 };

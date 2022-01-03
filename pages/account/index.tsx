@@ -8,6 +8,7 @@ import { ServerSideRedirectProps } from '../../types/pages';
 import selector from './selector';
 import Content from '../../components/Content';
 import { parseAsArrayOfContentJSON, safelyParse } from '../../utils/parsers';
+import Footer from '../../components/Footer';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 export async function getServerSideProps(context: any): Promise<ServerSideRedirectProps | object> {
@@ -32,7 +33,7 @@ export const AccountPage: React.FC = () => {
     return (
         <React.Fragment>
             <Header />
-            <div className="flex p-0 md:p-4 relative">
+            <div className="flex p-0 md:p-4 relative bg-primary-content">
                 <div className="container mx-auto">
                     <div className="flex flex-col md:flex-row w-full justify-start items-start">
                         <div className="w-full md:w-1/4">
@@ -52,6 +53,7 @@ export const AccountPage: React.FC = () => {
                     </div>
                 </div>
             </div>
+            <Footer />
         </React.Fragment>
     );
 };

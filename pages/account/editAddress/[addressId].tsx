@@ -12,6 +12,7 @@ import selector from './selector';
 import { CommerceLayerResponse } from '../../../types/api';
 import Loading from '../../../components/Loading';
 import Fields from '../../../components/Account/AddressBook/Fields';
+import Footer from '../../../components/Footer';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -88,7 +89,7 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId, em
     return (
         <React.Fragment>
             <Header />
-            <div className="flex p-2 md:p-4 relative">
+            <div className="flex p-2 md:p-4 relative bg-primary-content">
                 <div className="container mx-auto">
                     <div className="flex flex-col md:flex-row w-full justify-start items-start">
                         <div className="hidden md:block">
@@ -120,6 +121,7 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId, em
                     </div>
                 </div>
             </div>
+            <Footer />
         </React.Fragment>
     );
 };

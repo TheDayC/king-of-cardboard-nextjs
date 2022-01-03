@@ -8,6 +8,7 @@ import ResetPassword from '../../components/ResetPassword';
 import Login from '../../components/Login';
 import { ServerSideRedirectProps } from '../../types/pages';
 import { Tabs } from '../../enums/auth';
+import Footer from '../../components/Footer';
 
 interface ServerSideProps {
     props: {
@@ -68,7 +69,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
     return (
         <React.Fragment>
             <Header />
-            <div className="flex p-0 relative lg:p-4">
+            <div className="flex p-0 relative lg:p-6 bg-primary-content">
                 <div className="container mx-auto">
                     <div className="flex flex-col w-full justify-center items-center">
                         <div className="flex flex-col w-full md:w-1/2 lg:w-1/3 card text-center rounded-md md:shadow-2xl">
@@ -107,6 +108,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
                     </div>
                 </div>
             </div>
+            <Footer />
         </React.Fragment>
     );
 };

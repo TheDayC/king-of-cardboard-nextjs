@@ -11,7 +11,7 @@ class MyDocument extends Document {
         return (
             <Html data-theme="king">
                 <Head />
-                <body>
+                <body className="bg-neutral">
                     <Main />
                     <NextScript />
                 </body>

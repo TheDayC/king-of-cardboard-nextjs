@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import Header from '../../../components/Header';
 import Break from '../../../components/Break';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
+import Footer from '../../../components/Footer';
 
 export const BreakPage: React.FC = () => {
     const router = useRouter();
@@ -13,6 +14,7 @@ export const BreakPage: React.FC = () => {
         <React.Fragment>
             <Header />
             {slug && <Break slug={slug} />}
+            <Footer />
         </React.Fragment>
     );
 };

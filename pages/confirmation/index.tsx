@@ -10,6 +10,7 @@ import { setCheckoutLoading } from '../../store/slices/global';
 import { resetCart, setShouldCreateOrder } from '../../store/slices/cart';
 import { resetCheckoutDetails } from '../../store/slices/checkout';
 import selector from './selector';
+import Footer from '../../components/Footer';
 
 export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
     const { confirmationOrderNumber, accessToken } = useSelector(selector);
@@ -39,16 +40,19 @@ export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
     return (
         <React.Fragment>
             <Header />
-            <div className="container mx-auto max-w-xxl">
-                <div className="flex flex-col lg:flex-row lg:space-x-4 pt-4">
-                    <div className="flex-1 mb-4">
-                        <ConfirmationDetails />
-                    </div>
-                    <div className="flex-1 p-2 lg:p-0">
-                        <Summary isConfirmation={true} />
+            <div className="flex flex-col w-full bg-primary-content">
+                <div className="container mx-auto max-w-xxl">
+                    <div className="flex flex-col lg:flex-row lg:space-x-4 pt-4">
+                        <div className="flex-1 mb-4">
+                            <ConfirmationDetails />
+                        </div>
+                        <div className="flex-1 p-2 lg:p-0">
+                            <Summary isConfirmation={true} />
+                        </div>
                     </div>
                 </div>
             </div>
+            <Footer />
         </React.Fragment>
     );
 };

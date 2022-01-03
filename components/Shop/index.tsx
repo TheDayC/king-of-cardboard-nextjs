@@ -26,7 +26,7 @@ export const Shop: React.FC<ShopBodyProps> = ({ category }) => {
     }, [dispatch, category]);
 
     return (
-        <div className="flex p-4 flex-col md:flex-row relative">
+        <div className="flex p-4 lg:p-6 flex-col md:flex-row relative bg-primary-content">
             <Loading show={isLoadingProducts} />
             <Filters />
             <Grid />

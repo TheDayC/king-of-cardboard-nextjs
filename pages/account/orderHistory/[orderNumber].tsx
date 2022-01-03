@@ -20,6 +20,7 @@ import { OrderHistoryLineItemWithSkuData } from '../../../types/account';
 import LongOrder from '../../../components/Account/OrderHistory/LongOrder';
 import { getSkus } from '../../../utils/commerce';
 import Loading from '../../../components/Loading';
+import Footer from '../../../components/Footer';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -169,7 +170,7 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
     return (
         <React.Fragment>
             <Header />
-            <div className="flex p-4 relative">
+            <div className="flex p-4 relative bg-primary-content">
                 <div className="container mx-auto">
                     <div className="flex flex-row w-full justify-start items-start">
                         <div className="hidden w-1/4 md:block">
@@ -205,6 +206,7 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
                     </div>
                 </div>
             </div>
+            <Footer />
         </React.Fragment>
     );
 };

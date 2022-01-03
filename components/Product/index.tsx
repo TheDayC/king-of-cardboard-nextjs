@@ -83,7 +83,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
     }, [hasExceededStock, stock, dispatch]);
 
     return (
-        <div className="p-2 lg:p-8 relative">
+        <div className="p-2 lg:p-8 relative bg-primary-content">
             <div className="container mx-auto">
                 <div className="flex flex-col lg:flex-row lg:space-x-16">
                     <Images mainImage={currentProduct.images.items[0]} imageCollection={currentProduct.images.items} />

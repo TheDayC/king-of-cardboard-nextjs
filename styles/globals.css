@@ -50,3 +50,9 @@
     @apply bg-base-200;
     @apply h-px;
 }
+
+.whiteDivider::before,
+.whiteDivider::after {
+    @apply bg-base-100;
+    @apply h-px;
+}
