@@ -8,7 +8,11 @@ interface CartTotalsProps {
 }
 
 export const Totals: React.FC<CartTotalsProps> = ({ isConfirmation }) => {
-    const { subTotal, shipping, total } = useSelector(selector);
+    const { cartSubTotal, cartShipping, cartTotal, confirmationSubTotal, confirmationShipping, confirmationTotal } =
+        useSelector(selector);
+    const subTotal = isConfirmation ? confirmationSubTotal : cartSubTotal;
+    const shipping = isConfirmation ? confirmationShipping : cartShipping;
+    const total = isConfirmation ? confirmationTotal : cartTotal;
 
     return (
         <div className="flex flex-col">
