@@ -4,9 +4,8 @@ import { useForm } from 'react-hook-form';
 import { split } from 'lodash';
 
 import { setLineItem } from '../../utils/commerce';
-import Loading from '../Loading';
 import selector from './selector';
-import { fetchItemCount } from '../../store/slices/cart';
+import { fetchCartItems, fetchItemCount } from '../../store/slices/cart';
 import Images from './Images';
 import Details from './Details';
 import { fetchSingleProduct } from '../../store/slices/products';
@@ -32,13 +31,8 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
 
     // Handle the form submission.
     const onSubmit = useCallback(async () => {
-        if (!accessToken || !orderId || loading) return;
+        if (!accessToken || !orderId || loading || hasExceededStock) return;
         setLoading(true);
-
-        if (hasExceededStock) {
-            dispatch(addError(`Maximum quantity of ${stock} is currently in your cart.`));
-            return;
-        }
 
         const attributes = {
             quantity: 1,
@@ -66,13 +60,14 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
 
         if (hasLineItemUpdated) {
             dispatch(fetchItemCount({ accessToken, orderId }));
+            dispatch(fetchCartItems({ accessToken, orderId }));
             dispatch(addSuccess(`${currentProduct.name} added to cart.`));
         } else {
             dispatch(addError('Failed to add product to cart.'));
         }
 
         setLoading(false);
-    }, [accessToken, currentProduct, orderId, stock, hasExceededStock, dispatch, loading]);
+    }, [accessToken, currentProduct, orderId, dispatch, loading, hasExceededStock]);
 
     useEffect(() => {
         if (accessToken && slug && shouldFetch) {
@@ -80,6 +75,12 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
             dispatch(fetchSingleProduct({ accessToken, slug }));
         }
     }, [accessToken, slug, shouldFetch, dispatch]);
+
+    useEffect(() => {
+        if (hasExceededStock) {
+            dispatch(addError(`Maximum quantity of ${stock} is currently in your cart.`));
+        }
+    }, [hasExceededStock, stock, dispatch]);
 
     return (
         <div className="p-2 lg:p-8 relative">
