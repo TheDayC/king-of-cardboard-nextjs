@@ -11,6 +11,7 @@ import Account from '../../components/Account';
 import selector from './slugSelector';
 import Content from '../../components/Content';
 import { parseAsArrayOfContentJSON, parseAsSlug, parseAsString, safelyParse } from '../../utils/parsers';
+import Footer from '../../components/Footer';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 export async function getServerSideProps(context: any): Promise<ServerSideRedirectProps | object> {
@@ -56,7 +57,7 @@ export const AccountSubPage: React.FC<AccountSubPageProps> = ({ errorCode }) => 
     return (
         <React.Fragment>
             <Header />
-            <div className="flex p-0 md:p-4 relative">
+            <div className="flex p-0 md:p-4 relative bg-primary-content">
                 <div className="container mx-auto">
                     <div className="flex flex-col md:flex-row w-full justify-start items-start">
                         <div className="hidden md:block">
@@ -75,6 +76,7 @@ export const AccountSubPage: React.FC<AccountSubPageProps> = ({ errorCode }) => 
                     </div>
                 </div>
             </div>
+            <Footer />
         </React.Fragment>
     );
 };

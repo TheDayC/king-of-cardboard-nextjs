@@ -4,6 +4,7 @@ import { isString } from 'lodash';
 
 import Header from '../../components/Header';
 import Shop from '../../components/Shop';
+import Footer from '../../components/Footer';
 
 export const Category: React.FC = () => {
     const router = useRouter();
@@ -14,6 +15,7 @@ export const Category: React.FC = () => {
         <React.Fragment>
             <Header />
             <Shop category={category} />
+            <Footer />
         </React.Fragment>
     );
 };

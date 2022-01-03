@@ -12,6 +12,7 @@ import { parseAsString, safelyParse } from '../../utils/parsers';
 import { addError, addSuccess } from '../../store/slices/alerts';
 import selector from './selector';
 import { resetPassword } from '../../utils/account';
+import Footer from '../../components/Footer';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -97,7 +98,7 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
     return (
         <React.Fragment>
             <Header />
-            <div className="flex p-0 md:p-4 relative">
+            <div className="flex p-0 md:p-4 relative bg-primary-content">
                 <div className="container mx-auto">
                     <div className="flex flex-col w-full justify-start items-center">
                         <h1 className="text-xl mb-4">
@@ -189,6 +190,7 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
                     </div>
                 </div>
             </div>
+            <Footer />
         </React.Fragment>
     );
 };
