@@ -1,4 +1,5 @@
 import React from 'react';
+import { FieldValues, UseFormRegister } from 'react-hook-form';
 
 interface SelectionWrapperProps {
     id: string;
@@ -7,6 +8,7 @@ interface SelectionWrapperProps {
     isChecked: boolean;
     defaultChecked: boolean;
     titleLogo?: React.ReactNode;
+    register?: UseFormRegister<FieldValues>;
     onSelect(id: string): void;
 }
 
@@ -18,6 +20,7 @@ export const SelectionWrapper: React.FC<SelectionWrapperProps> = ({
     isChecked,
     defaultChecked,
     titleLogo,
+    register,
     onSelect,
 }) => {
     const shouldShowChildren = isChecked && Boolean(children);
@@ -25,11 +28,19 @@ export const SelectionWrapper: React.FC<SelectionWrapperProps> = ({
         onSelect(id);
     };
 
+    const registerValue = register
+        ? register(name, {
+              required: false,
+          })
+        : {
+              name,
+          };
+
     const radioPropsBase = {
-        type: 'radio',
+        ...registerValue,
         className: 'radio',
+        type: 'radio',
         value: id,
-        name,
     };
 
     return (
