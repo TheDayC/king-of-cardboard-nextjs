@@ -1,7 +1,21 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
+import { AppState } from '..';
+import { getPaymentMethods } from '../../utils/checkout';
 import checkoutInitialState from '../state/checkout';
+import { PaymentMethod, CommonThunkInput } from '../types/state';
+
+const hydrate = createAction<AppState>(HYDRATE);
+
+export const fetchPaymentMethods = createAsyncThunk(
+    'checkout/fetchPaymentMethods',
+    async (data: CommonThunkInput): Promise<PaymentMethod[]> => {
+        const { accessToken, orderId } = data;
+
+        return await getPaymentMethods(accessToken, orderId);
+    }
+);
 
 const checkoutSlice = createSlice({
     name: 'checkout',
@@ -49,11 +63,14 @@ const checkoutSlice = createSlice({
             return checkoutInitialState;
         },
     },
-    extraReducers: {
-        [HYDRATE]: (state, action) => ({
-            ...state,
-            ...action.payload.subject,
+    extraReducers: (builder) => {
+        builder.addCase(fetchPaymentMethods.fulfilled, (state, action) => {
+            state.paymentMethods = action.payload;
         }),
+            builder.addCase(hydrate, (state, action) => ({
+                ...state,
+                ...action.payload[checkoutSlice.name],
+            }));
     },
 });
 

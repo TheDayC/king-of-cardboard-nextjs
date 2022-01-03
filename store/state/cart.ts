@@ -7,7 +7,6 @@ const cartInitialState: CartState = {
     orderNumber: null,
     itemCount: 0,
     items: [],
-    paymentMethods: [],
     shouldFetchOrder: true,
     isUpdatingCart: false,
     subTotal: null,

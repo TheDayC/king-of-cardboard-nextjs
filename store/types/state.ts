@@ -30,7 +30,6 @@ export interface CartState {
     orderNumber: number | null;
     itemCount: number;
     items: CartItem[] | null;
-    paymentMethods: CartPaymentMethod[];
     shouldFetchOrder: boolean;
     isUpdatingCart: boolean;
     subTotal: string | null;
@@ -38,7 +37,7 @@ export interface CartState {
     total: string | null;
 }
 
-export interface CartPaymentMethod {
+export interface PaymentMethod {
     id: string;
     name: string;
     payment_source_type: string;
@@ -66,6 +65,7 @@ export interface Checkout {
     cloneBillingAddressId: string | null;
     cloneShippingAddressId: string | null;
     isShippingSameAsBilling: boolean;
+    paymentMethods: PaymentMethod[];
 }
 
 export interface CustomerDetails {

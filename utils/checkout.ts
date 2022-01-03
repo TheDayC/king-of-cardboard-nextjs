@@ -1,5 +1,5 @@
 import { Counties } from '../enums/checkout';
-import { CustomerAddress, CustomerDetails, ShipmentsWithLineItems } from '../store/types/state';
+import { PaymentMethod, CustomerAddress, CustomerDetails, ShipmentsWithLineItems } from '../store/types/state';
 import {
     DeliveryLeadTimes,
     MergedShipmentMethods,
@@ -580,4 +580,24 @@ export function paymentBtnText(method: string): string {
         default:
             return 'Checkout';
     }
+}
+
+export async function getPaymentMethods(accessToken: string, orderId: string): Promise<PaymentMethod[]> {
+    try {
+        const apiUrl = `/api/orders/${orderId}?include=available_payment_methods&fields[payment_methods]=id,name,payment_source_type&fields[orders]=id`;
+
+        const cl = authClient(accessToken);
+        const res = await cl.get(apiUrl);
+        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
+
+        return included.map((include) => ({
+            id: safelyParse(include, 'id', parseAsString, ''),
+            name: safelyParse(include, 'attributes.name', parseAsString, ''),
+            payment_source_type: safelyParse(include, 'attributes.payment_source_type', parseAsString, ''),
+        }));
+    } catch (error: unknown) {
+        errorHandler(error, 'We could not fetch an order.');
+    }
+
+    return [];
 }

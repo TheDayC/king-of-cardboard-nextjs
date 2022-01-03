@@ -11,7 +11,7 @@ const selector = createSelector(
     [selectCheckoutData, selectCartData, selectGlobalData, selectCheckoutCustomerData],
     (checkout, cart, global, customerDetails) => ({
         currentStep: checkout.currentStep,
-        paymentMethods: cart.paymentMethods,
+        paymentMethods: checkout.paymentMethods,
         accessToken: global.accessToken,
         customerDetails,
         checkoutLoading: global.checkoutLoading,

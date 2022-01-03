@@ -70,6 +70,7 @@ const checkoutInitialState: Checkout = {
     cloneBillingAddressId: null,
     cloneShippingAddressId: null,
     isShippingSameAsBilling: false,
+    paymentMethods: [],
 };
 
 export default checkoutInitialState;

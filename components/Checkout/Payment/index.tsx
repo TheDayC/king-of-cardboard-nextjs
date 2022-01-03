@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 import { BsPaypal, BsFillCreditCard2BackFill } from 'react-icons/bs';
 
-import { setCurrentStep } from '../../../store/slices/checkout';
+import { fetchPaymentMethods, setCurrentStep } from '../../../store/slices/checkout';
 import { createPaymentSource } from '../../../utils/commerce';
 import { confirmOrder, refreshPayment, sendOrderConfirmation } from '../../../utils/payment';
 import { setCheckoutLoading } from '../../../store/slices/global';
@@ -45,6 +45,7 @@ export const Payment: React.FC = () => {
     const { data: session } = useSession();
     const isCurrentStep = currentStep === 2;
     const [paymentMethod, setPaymentMethod] = useState('stripe_payments');
+    const [shouldFetch, setShouldFetch] = useState(true);
     const btnText = paymentBtnText(paymentMethod);
     const paypalClass = 'inline-block mr-3 text-md -mt-0.5 text-blue-800';
     const stripeClass = 'inline-block mr-3 text-md -mt-0.5 text-gray-500';
@@ -69,7 +70,7 @@ export const Payment: React.FC = () => {
 
     const handleAchievements = useCallback(async () => {
         // Figure out achievement progress now that the order has been confirmed.
-        if (!session || items.length <= 0 || !accessToken) return;
+        if (!session || !items || !accessToken) return;
 
         const achievements = new Achievements(session, accessToken);
         items.forEach(async (item) => {
@@ -101,7 +102,7 @@ export const Payment: React.FC = () => {
             !billingAddress ||
             !card ||
             !customerDetails ||
-            items.length <= 0 ||
+            !items ||
             !orderId ||
             !paymentMethod ||
             !shippingAddress ||
@@ -247,16 +248,14 @@ export const Payment: React.FC = () => {
     }, [dispatch, checkoutLoading, paymentMethod, orderId, accessToken]);
 
     const onSubmit = () => {
-        if (paymentMethod) {
-            // Handle a credit / debit card order.
-            if (paymentMethod === 'stripe_payments') {
-                handleStripePayment();
-            }
+        // Handle a credit / debit card order.
+        if (paymentMethod === 'stripe_payments') {
+            handleStripePayment();
+        }
 
-            // Handle a paypal order.
-            if (paymentMethod === 'paypal_payments') {
-                handlePaypalPayment();
-            }
+        // Handle a paypal order.
+        if (paymentMethod === 'paypal_payments') {
+            handlePaypalPayment();
         }
     };
 
@@ -274,6 +273,13 @@ export const Payment: React.FC = () => {
         // Update the user's payment method choice on selection.
         await updatePaymentMethod(accessToken, orderId, paymentMethodData.id);
     };
+
+    useEffect(() => {
+        if (accessToken && orderId && shouldFetch) {
+            setShouldFetch(false);
+            dispatch(fetchPaymentMethods({ accessToken, orderId }));
+        }
+    }, [dispatch, accessToken, orderId, shouldFetch]);
 
     return (
         <div
