@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 
@@ -9,15 +9,9 @@ import {
     setCurrentStep,
     setShipmentsWithMethods,
 } from '../../../store/slices/checkout';
-import { MergedShipmentMethods } from '../../../types/checkout';
-import {
-    getDeliveryLeadTimes,
-    getShipments,
-    mergeMethodsAndLeadTimes,
-    updateShipmentMethod,
-} from '../../../utils/checkout';
+import { updateShipmentMethod } from '../../../utils/checkout';
 import Shipment from './Shipment';
-import { fetchOrder } from '../../../store/slices/cart';
+import { fetchCartItems, fetchCartTotals, fetchItemCount } from '../../../store/slices/cart';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Loading from '../../Loading';
 import { ShipmentsWithMethods } from '../../../store/types/state';
@@ -45,7 +39,7 @@ export const Delivery: React.FC = () => {
     const hasShipmentsAndMethods = shipments && methods;
 
     const handleSelectShippingMethod = async (data: FormData) => {
-        if (hasErrors || checkoutLoading || !accessToken || !shipments) {
+        if (hasErrors || checkoutLoading || !accessToken || !shipments || !orderId) {
             return;
         }
 
@@ -62,7 +56,9 @@ export const Delivery: React.FC = () => {
         mappedData.forEach(async (mD) => await updateShipmentMethod(accessToken, mD.shipmentId, mD.methodId));
 
         // Fetch the order with new details.
-        dispatch(fetchOrder(true));
+        dispatch(fetchCartItems({ accessToken, orderId }));
+        dispatch(fetchCartTotals({ accessToken, orderId }));
+        dispatch(fetchItemCount({ accessToken, orderId }));
 
         // Redirect to next stage.
         dispatch(setCurrentStep(2));
