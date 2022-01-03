@@ -9,11 +9,11 @@ export interface ContentfulBreaksResponse {
 export interface ContentfulBreak {
     title: string;
     slug: string;
-    description: string | null;
+    description: string;
     cardImage: ImageItem;
     imagesCollection: ImageCollection;
     types: string;
-    breakSlotsCollection: BreakSlotsCollection | null;
+    breakSlotsCollection: BreakSlotsCollection;
     breakDate: string;
     tags: string[];
     format: string;
@@ -43,33 +43,38 @@ export interface SingleBreak {
     id: string;
     title: string;
     slug: string;
-    sku_code: string | null;
-    description: string | null;
-    types: string | null;
-    images: ImageCollection | null;
-    cardImage: ImageItem | null;
-    tags: string[] | null;
-    amount: string | null;
-    compare_amount: string | null;
-    inventory: SkuInventory | null;
-    options: SkuOption[] | null;
+    sku_code: string;
+    description: string;
+    types: string;
+    images: ImageItem[];
+    cardImage: ImageItem;
+    amount: string;
+    compare_amount: string;
+    inventory: SkuInventory;
+    breakSlots: BreakSlot[];
+    breakDate: string;
+    tags: string[];
+    format: string;
+    isLive: boolean;
+    isComplete: boolean;
+    vodLink: string;
 }
 
 export interface BreakSlotsCollection {
-    items: BreakSlot[];
+    items: ContentfulBreakSlot[];
 }
 
-export interface BreakSlot {
+export interface ContentfulBreakSlot {
     name: string;
     productLink: string;
     slotIdentifier: string;
-    image: ImageItem | null;
+    image: ImageItem;
 }
 
-export interface BreakSlotWithSku {
+export interface BreakSlot {
     id: string;
     name: string;
-    image: ImageItem | null;
+    image: ImageItem;
     sku_code: string;
     amount: string;
     compare_amount: string;

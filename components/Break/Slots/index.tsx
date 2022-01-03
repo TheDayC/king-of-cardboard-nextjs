@@ -3,12 +3,7 @@ import React from 'react';
 import { BreakSlot } from '../../../types/breaks';
 import { PickYourTeam } from './PickYourTeam';
 
-interface SlotsProps {
-    slots: BreakSlot[];
-    // format: string;
-}
-
-export const Slots: React.FC<SlotsProps> = ({ slots }) => {
+export const Slots: React.FC = () => {
     /* switch (format) {
         case 'Pick Your Team':
         case 'Pick Your Team w/ Random':
@@ -16,7 +11,7 @@ export const Slots: React.FC<SlotsProps> = ({ slots }) => {
         default:
             return null;
     } */
-    return <PickYourTeam slots={slots} />;
+    return <PickYourTeam />;
 };
 
 export default Slots;

@@ -8,16 +8,13 @@ import selector from './selector';
 import { mergeBreakSlotData } from '../../../../utils/breaks';
 import Loading from '../../../Loading';
 
-interface PickYourTeamProps {
-    slots: BreakSlot[];
-}
-
-export const PickYourTeam: React.FC<PickYourTeamProps> = ({ slots }) => {
-    const { accessToken } = useSelector(selector);
+export const PickYourTeam: React.FC = ({ slots }) => {
+    const { accessToken, currentBreak } = useSelector(selector);
     const [skuItemData, setSkuItemData] = useState<BreakSlotWithSku[] | null>(null);
     const [loading, setLoading] = useState(false);
+    const { breakSlots } = currentBreak;
 
-    const sku_codes = useMemo(() => {
+    /*     const sku_codes = useMemo(() => {
         if (slots) {
             return slots.filter((slot) => slot).map((slot) => slot.productLink);
         } else {
@@ -44,22 +41,27 @@ export const PickYourTeam: React.FC<PickYourTeamProps> = ({ slots }) => {
         if (accessToken && sku_codes) {
             fetchSkuItems(accessToken, sku_codes);
         }
-    }, [accessToken, sku_codes, fetchSkuItems]);
+    }, [accessToken, sku_codes, fetchSkuItems]); */
 
-    if (skuItemData) {
-        return (
-            <div className="w-full relative">
-                <Loading show={loading} />
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                    {skuItemData.map((skuItem, index) => {
-                        return <Team skuItem={skuItem} setLoading={setLoading} key={`team-${index}`} />;
-                    })}
-                </div>
+    return (
+        <div className="w-full relative">
+            <Loading show={loading} />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                {breakSlots.length >= 0 &&
+                    breakSlots.map((slot) => (
+                        <Team
+                            image={slot.image}
+                            sku_code={slot.sku_code}
+                            name={slot.name}
+                            amount={slot.amount}
+                            compare_amount={slot.compare_amount}
+                            setLoading={setLoading}
+                            key={`team-${slot.name}`}
+                        />
+                    ))}
             </div>
-        );
-    }
-
-    return null;
+        </div>
+    );
 };
 
 export default PickYourTeam;

@@ -5,19 +5,24 @@ import { AiOutlineShoppingCart } from 'react-icons/ai';
 
 import { setLineItem } from '../../../../../utils/commerce';
 import selector from './selector';
-import { BreakSlotWithSku } from '../../../../../types/breaks';
-import { fetchItemCount } from '../../../../../store/slices/cart';
+import { fetchCartItems, fetchItemCount } from '../../../../../store/slices/cart';
+import { ImageItem } from '../../../../../types/products';
+import { addError, addSuccess } from '../../../../../store/slices/alerts';
 
 interface TeamProps {
-    skuItem: BreakSlotWithSku;
+    image: ImageItem;
+    sku_code: string;
+    name: string;
+    amount: string;
+    compare_amount: string;
     setLoading(isLoading: boolean): void;
 }
 
-export const Team: React.FC<TeamProps> = ({ skuItem, setLoading }) => {
-    const { accessToken, orderId, items, shouldFetchOrder } = useSelector(selector);
+export const Team: React.FC<TeamProps> = ({ image, sku_code, name, amount, compare_amount, setLoading }) => {
+    const { accessToken, orderId, items } = useSelector(selector);
     const dispatch = useDispatch();
-    const shouldShowCompare = skuItem.amount !== skuItem.compare_amount;
-    const isInBasket = Boolean(items.find((item) => item.sku_code === skuItem.sku_code));
+    const shouldShowCompare = amount !== compare_amount && compare_amount !== '£0.00';
+    const isInBasket = Boolean(items.find((item) => item.sku_code === sku_code));
 
     const handleClick = async () => {
         if (!accessToken || !orderId || isInBasket) return;
@@ -25,7 +30,7 @@ export const Team: React.FC<TeamProps> = ({ skuItem, setLoading }) => {
         setLoading(true);
         const attributes = {
             quantity: 1,
-            sku_code: skuItem.sku_code || '',
+            sku_code,
             _external_price: false,
             _update_quantity: true,
         };
@@ -42,15 +47,19 @@ export const Team: React.FC<TeamProps> = ({ skuItem, setLoading }) => {
         const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
 
         if (hasLineItemUpdated) {
+            dispatch(addSuccess(`${name} added to your cart!`));
             dispatch(fetchItemCount({ accessToken, orderId }));
+            dispatch(fetchCartItems({ accessToken, orderId }));
+        } else {
+            dispatch(addError(`${name} couldn't be added to your cart.`));
         }
     };
 
     useEffect(() => {
-        if (!shouldFetchOrder && isInBasket) {
+        if (isInBasket) {
             setLoading(false);
         }
-    }, [shouldFetchOrder, isInBasket, setLoading]);
+    }, [isInBasket, setLoading]);
 
     return (
         <div
@@ -65,25 +74,24 @@ export const Team: React.FC<TeamProps> = ({ skuItem, setLoading }) => {
                     <p className="text-xl">In Cart</p>
                 </div>
             )}
-            {skuItem.image && skuItem.image.url && (
+            {image.url.length > 0 && (
                 <div className="w-full h-10 md:h-20 lg:h-32 relative mb-2">
                     <Image
-                        src={skuItem.image.url}
-                        alt="shipment image"
+                        src={image.url}
+                        alt={image.description}
+                        title={image.title}
                         layout="fill"
                         objectFit="scale-down"
                         className={`z-40${isInBasket ? ' opacity-10' : ''}`}
                     />
                 </div>
             )}
-            <p className={`text-xs text-center mb-2 lg:mb-4 lg:text-md${isInBasket ? ' opacity-10' : ''}`}>
-                {skuItem.name}
-            </p>
+            <p className={`text-xs text-center mb-2 lg:mb-4 lg:text-md${isInBasket ? ' opacity-10' : ''}`}>{name}</p>
             <div className={`flex flex-row justify-center items-center${isInBasket ? ' opacity-10' : ''}`}>
                 {shouldShowCompare && (
-                    <span className="text-xs line-through text-base-200 mr-2 mt-1">{skuItem.compare_amount}</span>
+                    <span className="text-xs line-through text-base-200 mr-2 mt-1">{compare_amount}</span>
                 )}
-                <p className="text-md lg:text-xl font-semibold">{skuItem.amount}</p>
+                <p className="text-md lg:text-xl font-semibold">{amount}</p>
             </div>
         </div>
     );

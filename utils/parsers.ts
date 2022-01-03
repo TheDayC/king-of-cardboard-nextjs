@@ -50,10 +50,10 @@ import {
     isContentJSON,
     isArrayOfContentJSON,
     isCustomerAddress,
+    isBreakSlotsCollection,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
-import { CommerceLayerResponse } from '../types/api';
 
 export function parseOrderData(order: unknown, included: unknown[]): Order | null {
     if (!order) {
@@ -289,6 +289,7 @@ export const parseAsCommerceLayerError = parseAsType(isCommerceLayerError);
 export const parseAsArrayOfCommerceLayerErrors = parseAsType(isArrayofCommerceLayerErrors);
 export const parseAsSlug = parseAsType(isEnumMember(Slugs));
 export const parseAsImageCollection = parseAsType(isImageCollection);
+export const parseAsBreakSlotsCollection = parseAsType(isBreakSlotsCollection);
 export const parseAsImageItem = parseAsType(isImageItem);
 export const parseAsArrayOfImageItems = parseAsType(isArrayOfImageItems);
 export const parseAsSkuInventory = parseAsType(isSkuInventory);
