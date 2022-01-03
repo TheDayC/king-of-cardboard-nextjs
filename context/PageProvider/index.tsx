@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
-import { setLoadingPages, setPages, setShouldLoadPages } from '../store/slices/pages';
-import { fetchPageCollection } from '../utils/pages';
-import { PAGES_QUERY } from '../utils/content';
-import selector from './pageSelector';
+import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect';
+import { setLoadingPages, setPages, setShouldLoadPages } from '../../store/slices/pages';
+import { fetchPageCollection } from '../../utils/pages';
+import { PAGES_QUERY } from '../../utils/content';
+import selector from './selector';
 
 const PageProvider: React.FC = ({ children }) => {
     const { shouldLoadPages } = useSelector(selector);

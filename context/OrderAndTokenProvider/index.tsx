@@ -1,12 +1,12 @@
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { useSession } from 'next-auth/react';
 
-import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
-import selector from './authSelector';
-import { fetchToken } from '../store/slices/global';
-import { createCLOrder } from '../store/slices/cart';
+import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect';
+import selector from './selector';
+import { fetchToken } from '../../store/slices/global';
+import { createCLOrder } from '../../store/slices/cart';
 
 const OrderAndTokenProvider: React.FC = ({ children }) => {
     const { accessToken, expires, shouldCreateOrder } = useSelector(selector);

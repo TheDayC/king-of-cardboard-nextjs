@@ -8,7 +8,7 @@ import { SessionProvider } from 'next-auth/react';
 import { wrapper } from '../store';
 import '../styles/globals.css';
 import OrderAndTokenProvider from '../context/OrderAndTokenProvider';
-import PageProvider from '../context/pageProvider';
+import PageProvider from '../context/PageProvider';
 import Drawer from '../components/Drawer';
 import Alert from '../components/Alert';
 
