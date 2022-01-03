@@ -47,18 +47,14 @@ export async function getCartTotals(accessToken: string, orderId: string): Promi
     };
 }
 
-export async function getCartItems(accessToken: string, orderId: string): Promise<CartItem[] | null> {
+export async function getCartItems(accessToken: string, orderId: string): Promise<CartItem[]> {
     try {
         const cl = authClient(accessToken);
         const orderFields = 'fields[orders]=id';
         const lineItemFields =
             'fields[line_items]=id,sku_code,name,quantity,formatted_unit_amount,formatted_total_amount,image_url,metadata';
         const res = await cl.get(`/api/orders/${orderId}?include=line_items&${lineItemFields}&${orderFields}`);
-        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null);
-
-        if (!included) {
-            return null;
-        }
+        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
 
         // Here we need to query the skus and stock_items to get a stock quantity.
         const skus = included.map((include) => safelyParse(include, 'attributes.sku_code', parseAsString, ''));
@@ -68,11 +64,7 @@ export async function getCartItems(accessToken: string, orderId: string): Promis
         const skuRes = await cl.get(
             `/api/skus/?filter[q][code_in]=${skusString}&filter[q][stock_items_quantity_gt]=0&include=stock_items${skuFields}`
         );
-        const skuIncluded = safelyParse(skuRes, 'data.included', parseAsArrayOfCommerceResponse, null);
-
-        if (!skuIncluded) {
-            return null;
-        }
+        const skuIncluded = safelyParse(skuRes, 'data.included', parseAsArrayOfCommerceResponse, []);
 
         const stockWithSkus = skuIncluded.map((include) => ({
             sku_code: safelyParse(include, 'attributes.sku_code', parseAsString, ''),
@@ -103,13 +95,8 @@ export async function getCartItems(accessToken: string, orderId: string): Promis
                     url: safelyParse(product, 'cardImage.url', parseAsString, ''),
                 },
                 metadata: {
-                    categories: safelyParse(
-                        include,
-                        'attributes.metadata.categories',
-                        parseAsArrayOfStrings,
-                        [] as string[]
-                    ),
-                    types: safelyParse(include, 'attributes.metadata.types', parseAsArrayOfStrings, [] as string[]),
+                    categories: safelyParse(include, 'attributes.metadata.categories', parseAsArrayOfStrings, []),
+                    types: safelyParse(include, 'attributes.metadata.types', parseAsArrayOfStrings, []),
                 },
                 stock,
             };
@@ -118,5 +105,5 @@ export async function getCartItems(accessToken: string, orderId: string): Promis
         errorHandler(error, 'Failed to fetch cart items.');
     }
 
-    return null;
+    return [];
 }

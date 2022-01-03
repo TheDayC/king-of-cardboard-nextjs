@@ -30,7 +30,7 @@ export interface CartState {
     orderId: string | null;
     orderNumber: number | null;
     itemCount: number;
-    items: CartItem[] | null;
+    items: CartItem[];
     shouldFetchOrder: boolean;
     isUpdatingCart: boolean;
     subTotal: string | null;
