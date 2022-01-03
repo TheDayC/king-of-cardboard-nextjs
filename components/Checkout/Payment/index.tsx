@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
@@ -18,6 +18,10 @@ import selector from './selector';
 import SelectionWrapper from '../../SelectionWrapper';
 import Source from './Source';
 import { buildPaymentAttributes, paymentBtnText, updatePaymentMethod } from '../../../utils/checkout';
+import { parseAsString, safelyParse } from '../../../utils/parsers';
+
+const STRIPE_METHOD = 'stripe_payments';
+const PAYPAL_METHOD = 'paypal_payments';
 
 export const Payment: React.FC = () => {
     const dispatch = useDispatch();
@@ -39,17 +43,14 @@ export const Payment: React.FC = () => {
         billingAddress,
         shippingAddress,
     } = useSelector(selector);
-    const { handleSubmit } = useForm();
+    const { handleSubmit, register } = useForm();
     const { data: session } = useSession();
     const isCurrentStep = currentStep === 2;
-    const [paymentMethod, setPaymentMethod] = useState('stripe_payments');
+    const [paymentMethod, setPaymentMethod] = useState(STRIPE_METHOD);
     const btnText = paymentBtnText(paymentMethod);
     const paypalClass = 'inline-block mr-3 text-md -mt-0.5 text-blue-800';
     const stripeClass = 'inline-block mr-3 text-md -mt-0.5 text-gray-500';
     const shouldEnable = paymentMethods.length > 0;
-
-    // Get the card element with Stripe hooks.
-    const card = elements ? elements.getElement(CardElement) : null;
 
     const handleEdit = () => {
         if (!isCurrentStep) {
@@ -91,34 +92,36 @@ export const Payment: React.FC = () => {
         });
     }, [dispatch, session, accessToken, items]);
 
-    const handleStripePayment = useCallback(async () => {
+    const handleStripePayment = async () => {
         // Ensure we return to avoid multiple executions if criteria is met.
         if (
             checkoutLoading ||
             !accessToken ||
             !billingAddress ||
-            !card ||
+            !elements ||
             !customerDetails ||
             !items ||
             !orderId ||
-            !paymentMethod ||
             !shippingAddress ||
             !stripe
         ) {
             return;
         }
 
-        // Show load blockers
+        // Show load blockers.
         dispatch(setCheckoutLoading(true));
 
         // Piece together the attributes for the payment source request.
-        const attributes = buildPaymentAttributes(paymentMethod, orderId);
+        const attributes = buildPaymentAttributes(STRIPE_METHOD, orderId);
 
         // Create the payment source in CommerceLayer.
-        const { paymentId, clientSecret } = await createPaymentSource(accessToken, orderId, paymentMethod, attributes);
+        const { paymentId, clientSecret } = await createPaymentSource(accessToken, orderId, STRIPE_METHOD, attributes);
 
-        if (!clientSecret || !paymentId) {
-            handleError('Failed to validate the credit / debit card, please contact support.');
+        // Get the card element with Stripe hooks.
+        const card = elements.getElement(CardElement);
+
+        if (!clientSecret || !paymentId || !card) {
+            handleError('Failed to validate the credit / debit card, please check your details.');
             return;
         }
 
@@ -157,7 +160,7 @@ export const Payment: React.FC = () => {
             return;
         }
 
-        const hasBeenRefreshed = await refreshPayment(accessToken, paymentId, paymentMethod);
+        const hasBeenRefreshed = await refreshPayment(accessToken, paymentId, STRIPE_METHOD);
         const hasBeenAuthorized = await confirmOrder(accessToken, orderId, '_authorize');
         const hasBeenApproved = await confirmOrder(accessToken, orderId, '_approve_and_capture');
 
@@ -198,43 +201,22 @@ export const Payment: React.FC = () => {
         }
 
         dispatch(setCheckoutLoading(false));
-    }, [
-        dispatch,
-        checkoutLoading,
-        accessToken,
-        billingAddress,
-        card,
-        customerDetails,
-        items,
-        orderId,
-        orderNumber,
-        subTotal,
-        shipping,
-        total,
-        paymentMethod,
-        shippingAddress,
-        stripe,
-        handleError,
-        handleAchievements,
-        router,
-    ]);
+    };
 
     // If the user has chosen paypal, handle it here.
     const handlePaypalPayment = useCallback(async () => {
         // If we're already loading make sure not to execute again.
         if (checkoutLoading || !accessToken || !orderId) return;
 
-        // Show load blockers.
-        dispatch(setCheckoutLoading(true));
-
         // Piece together the attributes for the payment source request.
-        const attributes = buildPaymentAttributes(paymentMethod, orderId);
+        const attributes = buildPaymentAttributes(PAYPAL_METHOD, orderId);
 
         // Create the payment source in CommerceLayer.
-        const { approvalUrl } = await createPaymentSource(accessToken, orderId, paymentMethod, attributes);
+        const { approvalUrl } = await createPaymentSource(accessToken, orderId, PAYPAL_METHOD, attributes);
 
         // If the payment source was created then capture the approval url from paypal.
         if (approvalUrl) {
+            dispatch(setCheckoutLoading(false));
             location.assign(approvalUrl);
         } else {
             // Dispatch an error if we for some reason can't handle this properly.
@@ -242,33 +224,35 @@ export const Payment: React.FC = () => {
         }
 
         dispatch(setCheckoutLoading(false));
-    }, [dispatch, checkoutLoading, paymentMethod, orderId, accessToken]);
+    }, [dispatch, checkoutLoading, orderId, accessToken]);
 
-    const onSubmit = () => {
+    const onSubmit = async (data: unknown) => {
+        const formPaymentMethod = safelyParse(data, 'paymentMethod', parseAsString, null);
+
+        // Find the payment method chosen by the user.
+        const paymentMethodData = paymentMethods.find((pM) => pM.payment_source_type === formPaymentMethod) || null;
+
+        if (!accessToken || !orderId || !paymentMethodData || !formPaymentMethod) return;
+
+        setPaymentMethod(formPaymentMethod);
+
+        // Update the user's payment method choice on selection.
+        await updatePaymentMethod(accessToken, orderId, paymentMethodData.id);
+
         // Handle a credit / debit card order.
-        if (paymentMethod === 'stripe_payments') {
+        if (formPaymentMethod === STRIPE_METHOD) {
             handleStripePayment();
         }
 
         // Handle a paypal order.
-        if (paymentMethod === 'paypal_payments') {
+        if (formPaymentMethod === PAYPAL_METHOD) {
             handlePaypalPayment();
         }
     };
 
     // Handle the paypal or stripe choice made by the user.
-    const handlePaymentMethodSelect = async (sourceType: string) => {
-        // Find the payment method chosen by the user.
-        const paymentMethodData = paymentMethods.find((pM) => pM.payment_source_type === sourceType) || null;
-
-        // Don't act if we're missing vital data.
-        if (!accessToken || !orderId || !paymentMethodData) return;
-
-        // Set the payment method chosen in the local state. We'll use this in the form submission.
-        setPaymentMethod(sourceType);
-
-        // Update the user's payment method choice on selection.
-        await updatePaymentMethod(accessToken, orderId, paymentMethodData.id);
+    const handlePaymentMethodSelect = async (method: string) => {
+        setPaymentMethod(method);
     };
 
     return (
@@ -299,13 +283,14 @@ export const Payment: React.FC = () => {
                                         id={sourceType}
                                         title={title}
                                         name="paymentMethod"
-                                        isChecked={paymentMethod === sourceType}
+                                        isChecked={sourceType === STRIPE_METHOD}
                                         defaultChecked={sourceType === 'stripe_payments'}
                                         titleLogo={logo}
                                         onSelect={handlePaymentMethodSelect}
+                                        register={register}
                                         key={`payment-method-${method.id}`}
                                     >
-                                        {!isPayPal && <Source sourceType={sourceType} />}
+                                        <Source sourceType={sourceType} />
                                     </SelectionWrapper>
                                 );
                             })}
