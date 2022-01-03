@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { GiCrownCoin } from 'react-icons/gi';
 import Link from 'next/link';
 
 import selector from './selector';
-import { getGiftCardBalance } from '../../../utils/achievements';
-import { setShouldFetchRewards, setBalance } from '../../../store/slices/account';
+import { setShouldFetchRewards, fetchGiftCard } from '../../../store/slices/account';
 
 interface RewardsProps {
     emailAddress: string | null;
@@ -16,23 +15,12 @@ export const Rewards: React.FC<RewardsProps> = ({ emailAddress, fullWidth }) => 
     const { accessToken, shouldFetchRewards, balance } = useSelector(selector);
     const dispatch = useDispatch();
 
-    const fetchBalance = useCallback(
-        async (token: string, email: string) => {
-            const res = await getGiftCardBalance(token, email);
-
-            if (res) {
-                dispatch(setBalance(res));
-            }
-        },
-        [dispatch]
-    );
-
     useEffect(() => {
         if (shouldFetchRewards && accessToken && emailAddress) {
-            fetchBalance(accessToken, emailAddress);
+            dispatch(fetchGiftCard({ accessToken, emailAddress }));
             dispatch(setShouldFetchRewards(false));
         }
-    }, [accessToken, emailAddress, shouldFetchRewards, fetchBalance, dispatch]);
+    }, [accessToken, emailAddress, shouldFetchRewards, dispatch]);
 
     return (
         <Link href="/account/achievements" passHref>

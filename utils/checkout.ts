@@ -614,3 +614,25 @@ export async function getPaymentMethods(accessToken: string, orderId: string): P
 
     return [];
 }
+
+export async function updateGiftCardCode(accessToken: string, orderId: string, code: string): Promise<boolean> {
+    try {
+        const cl = authClient(accessToken);
+        const res = await cl.patch(`/api/orders/${orderId}`, {
+            data: {
+                type: 'orders',
+                id: orderId,
+                attributes: {
+                    gift_card_code: code,
+                },
+            },
+        });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        errorHandler(error, 'We could not add subtract your coin balance.');
+    }
+
+    return false;
+}

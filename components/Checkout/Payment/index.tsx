@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
@@ -19,6 +19,7 @@ import SelectionWrapper from '../../SelectionWrapper';
 import Source from './Source';
 import { buildPaymentAttributes, paymentBtnText, updatePaymentMethod } from '../../../utils/checkout';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
+import UseCoins from '../../UseCoins';
 
 const STRIPE_METHOD = 'stripe_payments';
 const PAYPAL_METHOD = 'paypal_payments';
@@ -294,6 +295,7 @@ export const Payment: React.FC = () => {
                                     </SelectionWrapper>
                                 );
                             })}
+                        <UseCoins />
                         <div className="flex justify-end">
                             <button
                                 className={`btn btn-primary${checkoutLoading ? ' loading btn-square' : ''}${

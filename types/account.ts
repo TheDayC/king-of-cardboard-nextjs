@@ -53,3 +53,12 @@ export interface OrderHistoryPaymentMethod {
     generated_from: string | null;
     last4: string | null;
 }
+
+export interface GiftCard {
+    id: string;
+    status: string;
+    balance: number;
+    reference: string;
+    recipient_email: string;
+    code: string;
+}
