@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 
 import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
+import { GiftCard } from '../../types/account';
 import { CartItem } from '../../types/cart';
 import { MergedShipmentMethods } from '../../types/checkout';
 import { ContentfulPage } from '../../types/pages';
@@ -32,9 +33,11 @@ export interface CartState {
     itemCount: number;
     items: CartItem[];
     isUpdatingCart: boolean;
-    subTotal: string | null;
-    shipping: string | null;
-    total: string | null;
+    subTotal: string;
+    shipping: string;
+    discount: string;
+    total: string;
+    orderHasGiftCard: boolean;
 }
 
 export interface PaymentMethod {
@@ -147,9 +150,10 @@ export interface ShipmentsWithLineItems extends ShipmentsWithMethods {
 
 export interface Confirmation {
     items: CartItem[];
-    subTotal: string | null;
-    shipping: string | null;
-    total: string | null;
+    subTotal: string;
+    shipping: string;
+    discount: string;
+    total: string;
     orderNumber: number | null;
     customerDetails: CustomerDetails;
     billingAddress: CustomerAddress;
@@ -176,6 +180,7 @@ export interface AccountState {
     socialMedia: SocialMedia;
     balance: number;
     shouldFetchRewards: boolean;
+    giftCard: GiftCard;
 }
 
 export interface AlertsState {

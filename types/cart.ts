@@ -35,6 +35,7 @@ export interface IncludedData {
 export interface CartTotals {
     subTotal: string;
     shipping: string;
+    discount: string;
     total: string;
 }
 

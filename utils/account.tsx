@@ -3,7 +3,7 @@ import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 import { DateTime } from 'luxon';
 
-import { GetOrders } from '../types/account';
+import { GetOrders, GiftCard } from '../types/account';
 import {
     parseAsArrayOfCommerceResponse,
     safelyParse,
@@ -398,4 +398,35 @@ export async function updateSocialMedia(
     }
 
     return false;
+}
+
+export async function getGiftCard(accessToken: string, emailAddress: string): Promise<GiftCard> {
+    try {
+        const cl = authClient(accessToken);
+        const filters = `filter[q][reference_eq]=${emailAddress}-reward-card&filter[q][status_eq]=active`;
+        const res = await cl.get(
+            `/api/gift_cards/?${filters}&fields[gift_cards]=id,status,balance_cents,reference,recipient_email,code`
+        );
+        const giftCard = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, [])[0];
+
+        return {
+            id: safelyParse(giftCard, 'id', parseAsString, ''),
+            status: safelyParse(giftCard, 'attributes.status', parseAsString, ''),
+            balance: safelyParse(giftCard, 'attributes.balance_cents', parseAsNumber, 0),
+            reference: safelyParse(giftCard, 'attributes.reference', parseAsString, ''),
+            recipient_email: safelyParse(giftCard, 'attributes.recipient_email', parseAsString, ''),
+            code: safelyParse(giftCard, 'attributes.code', parseAsString, ''),
+        };
+    } catch (error: unknown) {
+        errorHandler(error, 'We could not fetch your gift card details.');
+    }
+
+    return {
+        id: '',
+        status: '',
+        balance: 0,
+        reference: '',
+        recipient_email: '',
+        code: '',
+    };
 }

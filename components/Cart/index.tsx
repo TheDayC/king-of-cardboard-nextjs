@@ -14,6 +14,7 @@ import {
     setShouldUpdateCart,
     setUpdatingCart,
 } from '../../store/slices/cart';
+import UseCoins from '../UseCoins';
 
 export const Cart: React.FC = () => {
     const { itemCount, items, isUpdatingCart, accessToken, orderId, shouldUpdateCart } = useSelector(selector);
@@ -78,7 +79,8 @@ export const Cart: React.FC = () => {
                                     />
                                 ))}
                         </div>
-                        <CartTotals isConfirmation={false} />
+                        <CartTotals />
+                        <UseCoins />
                         <div className="flex flex-col items-end mt-4 lg:mt-6">
                             <Link href="/checkout" passHref>
                                 <button

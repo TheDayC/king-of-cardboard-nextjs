@@ -5,7 +5,7 @@ import { selectGlobalData, selectAccountData } from '../../../store/state/select
 const selector = createSelector([selectGlobalData, selectAccountData], (globalData, accountData) => ({
     accessToken: globalData.accessToken,
     shouldFetchRewards: accountData.shouldFetchRewards,
-    balance: accountData.balance,
+    balance: accountData.giftCard.balance,
 }));
 
 export default selector;

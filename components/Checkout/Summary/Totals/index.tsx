@@ -8,10 +8,19 @@ interface CartTotalsProps {
 }
 
 export const Totals: React.FC<CartTotalsProps> = ({ isConfirmation }) => {
-    const { cartSubTotal, cartShipping, cartTotal, confirmationSubTotal, confirmationShipping, confirmationTotal } =
-        useSelector(selector);
+    const {
+        cartSubTotal,
+        cartShipping,
+        cartDiscount,
+        cartTotal,
+        confirmationSubTotal,
+        confirmationShipping,
+        confirmationTotal,
+        confirmationDiscount,
+    } = useSelector(selector);
     const subTotal = isConfirmation ? confirmationSubTotal : cartSubTotal;
     const shipping = isConfirmation ? confirmationShipping : cartShipping;
+    const discount = isConfirmation ? confirmationDiscount : cartDiscount;
     const total = isConfirmation ? confirmationTotal : cartTotal;
 
     return (
@@ -23,6 +32,10 @@ export const Totals: React.FC<CartTotalsProps> = ({ isConfirmation }) => {
             <div className="flex flex-row w-full justify-end align-center space-x-2 border-b p-4">
                 <p className="text-sm lg:text-xl">Shipping</p>
                 <p className="text-sm lg:text-xl">{shipping}</p>
+            </div>
+            <div className="flex flex-row w-full justify-end align-center space-x-2 border-b p-4">
+                <p className="text-sm lg:text-xl">Discount</p>
+                <p className="text-sm lg:text-xl">{discount}</p>
             </div>
             <div className="flex flex-row w-full justify-end align-center space-x-2 border-b p-4">
                 <p className="text-xl lg:text-3xl font-semibold">Total</p>
