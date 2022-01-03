@@ -4,13 +4,13 @@ import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
 import { CartItem } from '../../types/cart';
 import { MergedShipmentMethods } from '../../types/checkout';
-import { SkuItem } from '../../types/commerce';
 import { ContentfulPage } from '../../types/pages';
+import { SingleProduct } from '../../types/products';
 import { SocialMedia } from '../../types/profile';
 
 export interface IAppState {
     global: Global;
-    products: SkuItem[];
+    products: ProductsState;
     cart: CartState;
     alerts: AlertsState;
     productType: ProductType[];
@@ -192,4 +192,8 @@ export interface CustomAlert {
 export interface CommonThunkInput {
     accessToken: string;
     orderId: string;
+}
+
+export interface ProductsState {
+    currentProduct: SingleProduct;
 }

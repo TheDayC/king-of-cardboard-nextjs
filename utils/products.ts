@@ -9,11 +9,14 @@ import {
     Product,
     SingleProduct,
 } from '../types/products';
+import { authClient } from './auth';
 import { fetchContent } from './content';
 import {
+    parseAsArrayOfCommerceResponse,
     parseAsArrayOfContentfulProducts,
     parseAsArrayOfSkuOptions,
     parseAsArrayOfStrings,
+    parseAsCommerceResponse,
     parseAsImageCollection,
     parseAsImageItem,
     parseAsNumber,
@@ -293,5 +296,83 @@ export function mergeSkuProductData(product: ContentfulProduct, skuItem: SkuItem
         compare_amount: safelyParse(skuData, 'formatted_compare_at_amount', parseAsString, null),
         inventory: safelyParse(skuData, 'inventory', parseAsSkuInventory, null),
         options: safelyParse(skuData, 'options', parseAsArrayOfSkuOptions, null),
+    };
+}
+
+export async function getSingleProduct(accessToken: string, slug: string): Promise<SingleProduct> {
+    // Piece together query.
+    const query = `
+        query {
+            productCollection (where: {slug: ${JSON.stringify(slug)}}) {
+                total
+                items {
+                    name
+                    slug
+                    description
+                    productLink
+                    types
+                    categories
+                    imageCollection {
+                        items {
+                            title
+                            description
+                            url
+                        }
+                    }
+                    cardImage {
+                        title
+                        description
+                        url
+                        width
+                        height
+                    }
+                    tags
+                }
+            }
+        }
+    `;
+
+    // Make the contentful request.
+    const productResponse = await fetchContent(query);
+
+    // On success get the item data for products.
+    const product = safelyParse(
+        productResponse,
+        'data.content.productCollection.items',
+        parseAsArrayOfContentfulProducts,
+        []
+    )[0];
+
+    const cl = authClient(accessToken);
+    const sku_code = safelyParse(product, 'productLink', parseAsString, '');
+    const fields = '&fields[skus]=id&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount';
+    const skuRes = await cl.get(`/api/skus?filter[q][code_eq]=${sku_code}&include=prices,sku_options${fields}`);
+    const skuData = safelyParse(skuRes, 'data.data', parseAsArrayOfCommerceResponse, [])[0];
+    const included = safelyParse(skuRes, 'data.included', parseAsArrayOfCommerceResponse, []);
+    const prices = included.find((i) => i.type === 'prices' && i.attributes.sku_code === sku_code);
+
+    return {
+        id: safelyParse(skuData, 'id', parseAsString, ''),
+        name: safelyParse(product, 'name', parseAsString, ''),
+        slug: safelyParse(product, 'slug', parseAsString, ''),
+        sku_code,
+        description: safelyParse(product, 'description', parseAsString, ''),
+        types: safelyParse(product, 'types', parseAsArrayOfStrings, []),
+        categories: safelyParse(product, 'categories', parseAsArrayOfStrings, []),
+        images: safelyParse(product, 'imageCollection', parseAsImageCollection, { items: [] }),
+        cardImage: safelyParse(product, 'cardImage', parseAsImageItem, {
+            title: '',
+            description: '',
+            url: '',
+        }),
+        tags: safelyParse(product, 'tags', parseAsArrayOfStrings, []),
+        amount: safelyParse(prices, 'attributes.formatted_amount', parseAsString, '£0.00'),
+        compare_amount: safelyParse(prices, 'attributes.formatted_compare_at_amount', parseAsString, '£0.00'),
+        inventory: safelyParse(skuData, 'inventory', parseAsSkuInventory, {
+            available: false,
+            quantity: 0,
+            levels: [],
+        }),
+        options: safelyParse(skuData, 'options', parseAsArrayOfSkuOptions, []),
     };
 }

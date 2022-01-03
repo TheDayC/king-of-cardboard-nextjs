@@ -19,17 +19,17 @@ export interface SingleProduct {
     id: string;
     name: string;
     slug: string;
-    sku_code: string | null;
-    description: string | null;
+    sku_code: string;
+    description: string;
     types: string[];
     categories: string[];
-    images: ImageCollection | null;
-    cardImage: ImageItem | null;
-    tags: string[] | null;
-    amount: string | null;
-    compare_amount: string | null;
-    inventory: SkuInventory | null;
-    options: SkuOption[] | null;
+    images: ImageCollection;
+    cardImage: ImageItem;
+    tags: string[];
+    amount: string;
+    compare_amount: string;
+    inventory: SkuInventory;
+    options: SkuOption[];
 }
 
 export interface ContentfulProductResponse {
