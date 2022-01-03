@@ -100,7 +100,7 @@ export const CartItem: React.FC<BasketItemProps> = ({
             </div>
             <div className="text-center">
                 <div className="flex flex-col lg:flex-row justify-center items-center lg:space-x-4">
-                    {image && (
+                    {image.url.length > 0 && (
                         <div className={`mb-2 lg:mb-0 ${styles.imageContainer}`}>
                             <Image
                                 src={image.url}
