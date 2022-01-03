@@ -8,6 +8,7 @@ import Images from './Images';
 import Details from './Details';
 import Slots from './Slots';
 import { fetchSingleBreak } from '../../store/slices/breaks';
+import Legend from './Legend';
 
 interface BreakProps {
     slug: string;
@@ -35,8 +36,10 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
             <Loading show={loading} />
             <div className="container mx-auto">
                 <div className="flex flex-col lg:flex-row">
-                    <Images mainImage={cardImage} images={images} />
-
+                    <div className="flex flex-col w-1/3">
+                        <Images mainImage={cardImage} images={images} />
+                        <Legend />
+                    </div>
                     <div id="productDetails" className="flex flex-col items-center w-full lg:w-3/4">
                         <div className="card rounded-md shadow-lg bordered p-4 w-full lg:p-6">
                             <Details name={title} tags={tags} description={splitDesc} />

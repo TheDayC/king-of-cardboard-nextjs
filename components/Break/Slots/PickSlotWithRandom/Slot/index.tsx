@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
+import { GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi';
 
 import { setLineItem } from '../../../../../utils/commerce';
 import selector from './selector';
@@ -9,7 +10,7 @@ import { fetchCartItems, fetchItemCount } from '../../../../../store/slices/cart
 import { ImageItem } from '../../../../../types/products';
 import { addError, addSuccess } from '../../../../../store/slices/alerts';
 
-interface TeamProps {
+interface SlotProps {
     image: ImageItem;
     sku_code: string;
     name: string;
@@ -18,7 +19,7 @@ interface TeamProps {
     setLoading(isLoading: boolean): void;
 }
 
-export const Team: React.FC<TeamProps> = ({ image, sku_code, name, amount, compare_amount, setLoading }) => {
+export const Slot: React.FC<SlotProps> = ({ image, sku_code, name, amount, compare_amount, setLoading }) => {
     const { accessToken, orderId, items } = useSelector(selector);
     const dispatch = useDispatch();
     const shouldShowCompare = amount !== compare_amount && compare_amount !== '£0.00';
@@ -71,11 +72,13 @@ export const Team: React.FC<TeamProps> = ({ image, sku_code, name, amount, compa
             {isInBasket && (
                 <div className="absolute inset-0 z-50 bg-base-200 bg-opacity-25 flex flex-col justify-center items-center rounded-md">
                     <AiOutlineShoppingCart className="w-10 h-10" />
+
                     <p className="text-xl">In Cart</p>
                 </div>
             )}
             {image.url.length > 0 && (
                 <div className="w-full h-10 md:h-20 lg:h-32 relative mb-2">
+                    <GiPerspectiveDiceSixFacesRandom className="text-3xl absolute top-0 right-0 text-accent" />
                     <Image
                         src={image.url}
                         alt={image.description}
@@ -97,4 +100,4 @@ export const Team: React.FC<TeamProps> = ({ image, sku_code, name, amount, compa
     );
 };
 
-export default Team;
+export default Slot;
