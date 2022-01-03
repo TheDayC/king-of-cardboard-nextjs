@@ -159,6 +159,7 @@ export interface Confirmation {
 
 export interface PagesState {
     isLoadingPages: boolean;
+    shouldLoadPages: boolean;
     pages: ContentfulPage[];
 }
 
