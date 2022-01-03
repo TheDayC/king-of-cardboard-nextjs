@@ -8,8 +8,12 @@ const confirmationSlice = createSlice({
     initialState: confirmationInitialState,
     reducers: {
         setConfirmationData(state, action) {
-            const { order, items, customerDetails, billingAddress, shippingAddress } = action.payload;
-            state.order = order;
+            const { subTotal, shipping, total, orderNumber, items, customerDetails, billingAddress, shippingAddress } =
+                action.payload;
+            state.subTotal = subTotal;
+            state.shipping = shipping;
+            state.total = total;
+            state.orderNumber = orderNumber;
             state.items = items;
             state.customerDetails = customerDetails;
             state.billingAddress = billingAddress;

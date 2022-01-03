@@ -1,18 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 
 import selector from './selector';
-import { setCurrentStep, setShipmentsWithMethods } from '../../../store/slices/checkout';
-import { MergedShipmentMethods } from '../../../types/checkout';
-import {
-    getDeliveryLeadTimes,
-    getShipments,
-    mergeMethodsAndLeadTimes,
-    updateShipmentMethod,
-} from '../../../utils/checkout';
+import { fetchPaymentMethods, setCurrentStep, setShipmentsWithMethods } from '../../../store/slices/checkout';
+import { updateShipmentMethod } from '../../../utils/checkout';
 import Shipment from './Shipment';
-import { fetchOrder } from '../../../store/slices/cart';
+import { fetchCartItems, fetchCartTotals, fetchItemCount } from '../../../store/slices/cart';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Loading from '../../Loading';
 import { ShipmentsWithMethods } from '../../../store/types/state';
@@ -27,9 +21,8 @@ interface FormData {
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
-    const { accessToken, currentStep, order, checkoutLoading, hasBothAddresses } = useSelector(selector);
-    const [shipments, setShipments] = useState<string[] | null>(null);
-    const [methods, setMethods] = useState<MergedShipmentMethods[] | null>(null);
+    const { accessToken, currentStep, orderId, checkoutLoading, hasBothAddresses, shipments, methods } =
+        useSelector(selector);
     const {
         register,
         handleSubmit,
@@ -37,31 +30,10 @@ export const Delivery: React.FC = () => {
     } = useForm();
     const isCurrentStep = currentStep === 1;
     const hasErrors = Object.keys(errors).length > 0;
-    const hasShipmentsAndMethods = shipments && methods;
-
-    const fetchAllShipments = useCallback(async (accessToken: string, orderId: string) => {
-        if (accessToken && orderId) {
-            const shipmentData = await getShipments(accessToken, orderId);
-            const deliveryLeadTimes = await getDeliveryLeadTimes(accessToken);
-
-            if (shipmentData && deliveryLeadTimes) {
-                const { shipments, shippingMethods } = shipmentData;
-                const mergedMethods = mergeMethodsAndLeadTimes(shippingMethods, deliveryLeadTimes);
-
-                setMethods(mergedMethods);
-                setShipments(shipments);
-            }
-        }
-    }, []);
-
-    useEffect(() => {
-        if (accessToken && order) {
-            fetchAllShipments(accessToken, order.id);
-        }
-    }, [accessToken, order, fetchAllShipments]);
+    const hasShipmentsAndMethods = shipments.length > 0 && methods.length > 0;
 
     const handleSelectShippingMethod = async (data: FormData) => {
-        if (hasErrors || checkoutLoading || !accessToken || !shipments) {
+        if (hasErrors || checkoutLoading || !accessToken || !shipments || !orderId) {
             return;
         }
 
@@ -75,10 +47,14 @@ export const Delivery: React.FC = () => {
 
         dispatch(setShipmentsWithMethods(mappedData));
 
-        mappedData.forEach(async (mD) => await updateShipmentMethod(accessToken, mD.shipmentId, mD.methodId));
+        // for...of used here over forEach to avoid race conditions with await.
+        for (const mD of mappedData) {
+            await updateShipmentMethod(accessToken, mD.shipmentId, mD.methodId);
+        }
 
-        // Fetch the order with new details.
-        dispatch(fetchOrder(true));
+        // Fetch items, totals and item count along with payment methods
+        dispatch(fetchCartTotals({ accessToken, orderId }));
+        dispatch(fetchPaymentMethods({ accessToken, orderId }));
 
         // Redirect to next stage.
         dispatch(setCurrentStep(2));
@@ -112,7 +88,7 @@ export const Delivery: React.FC = () => {
                                 <Shipment
                                     id={shipment}
                                     shippingMethods={methods}
-                                    shipmentCount={index}
+                                    shipmentCount={index + 1}
                                     shipmentsTotal={shipments.length}
                                     register={register}
                                     defaultChecked={methods[0].id}

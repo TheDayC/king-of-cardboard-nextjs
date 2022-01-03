@@ -13,6 +13,9 @@ const pagesSlice = createSlice({
         setLoadingPages(state, action) {
             state.isLoadingPages = action.payload;
         },
+        setShouldLoadPages(state, action) {
+            state.shouldLoadPages = action.payload;
+        },
         resetPages() {
             return pagesInitialState;
         },
@@ -25,5 +28,5 @@ const pagesSlice = createSlice({
     },
 });
 
-export const { setPages, setLoadingPages, resetPages } = pagesSlice.actions;
+export const { setPages, setLoadingPages, resetPages, setShouldLoadPages } = pagesSlice.actions;
 export default pagesSlice.reducer;

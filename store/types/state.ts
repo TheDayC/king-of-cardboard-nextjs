@@ -1,10 +1,9 @@
 import { DateTime } from 'luxon';
 
-import { Counties } from '../../enums/checkout';
 import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
-import { Order } from '../../types/cart';
-import { BillingAddress, ShippingAddress } from '../../types/checkout';
+import { CartItem } from '../../types/cart';
+import { MergedShipmentMethods } from '../../types/checkout';
 import { SkuItem } from '../../types/commerce';
 import { ContentfulPage } from '../../types/pages';
 import { SocialMedia } from '../../types/profile';
@@ -26,28 +25,19 @@ export interface IAppState {
 }
 
 export interface CartState {
-    order: Order | null;
+    shouldCreateOrder: boolean;
+    shouldUpdateCart: boolean;
+    orderId: string | null;
+    orderNumber: number | null;
+    itemCount: number;
     items: CartItem[];
-    paymentMethods: CartPaymentMethod[];
-    shouldFetchOrder: boolean;
     isUpdatingCart: boolean;
+    subTotal: string | null;
+    shipping: string | null;
+    total: string | null;
 }
 
-export interface CartItem {
-    id: string;
-    sku_code: string;
-    name: string;
-    quantity: number;
-    formatted_unit_amount: string;
-    formatted_total_amount: string;
-    image_url: string;
-    metadata: {
-        categories: string[];
-        types: string[];
-    };
-}
-
-export interface CartPaymentMethod {
+export interface PaymentMethod {
     id: string;
     name: string;
     payment_source_type: string;
@@ -75,6 +65,9 @@ export interface Checkout {
     cloneBillingAddressId: string | null;
     cloneShippingAddressId: string | null;
     isShippingSameAsBilling: boolean;
+    paymentMethods: PaymentMethod[];
+    shipments: string[];
+    shippingMethods: MergedShipmentMethods[];
 }
 
 export interface CustomerDetails {
@@ -153,8 +146,11 @@ export interface ShipmentsWithLineItems extends ShipmentsWithMethods {
 }
 
 export interface Confirmation {
-    order: Order | null;
     items: CartItem[];
+    subTotal: string | null;
+    shipping: string | null;
+    total: string | null;
+    orderNumber: number | null;
     customerDetails: CustomerDetails;
     billingAddress: CustomerAddress;
     shippingAddress: CustomerAddress;
@@ -162,6 +158,7 @@ export interface Confirmation {
 
 export interface PagesState {
     isLoadingPages: boolean;
+    shouldLoadPages: boolean;
     pages: ContentfulPage[];
 }
 
@@ -190,4 +187,9 @@ export interface CustomAlert {
     level: AlertLevel;
     message: string;
     timestamp: DateTime;
+}
+
+export interface CommonThunkInput {
+    accessToken: string;
+    orderId: string;
 }

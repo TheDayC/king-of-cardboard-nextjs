@@ -7,7 +7,7 @@ interface CartTotalsProps {
     isConfirmation: boolean;
 }
 
-export const CartTotals: React.FC<CartTotalsProps> = ({ isConfirmation }) => {
+export const Totals: React.FC<CartTotalsProps> = ({ isConfirmation }) => {
     const { subTotal, shipping, total } = useSelector(selector);
 
     return (
@@ -28,4 +28,4 @@ export const CartTotals: React.FC<CartTotalsProps> = ({ isConfirmation }) => {
     );
 };
 
-export default CartTotals;
+export default Totals;

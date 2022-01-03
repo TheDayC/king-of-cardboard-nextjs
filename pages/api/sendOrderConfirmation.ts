@@ -11,7 +11,6 @@ import {
     parseAsCustomerAddress,
     parseAsCustomerDetails,
     parseAsNumber,
-    parseAsOrder,
     parseAsString,
     safelyParse,
 } from '../../utils/parsers';
@@ -33,13 +32,16 @@ const filePath = path.resolve(process.cwd(), 'html', 'order.html');
 async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         try {
-            const order = safelyParse(req, 'body.order', parseAsOrder, null);
+            const orderNumber = safelyParse(req, 'body.orderNumber', parseAsNumber, 0);
+            const subTotal = safelyParse(req, 'body.subTotal', parseAsString, '');
+            const shipping = safelyParse(req, 'body.shipping', parseAsString, '');
+            const total = safelyParse(req, 'body.total', parseAsString, '');
             const items = safelyParse(req, 'body.items', parseAsArrayOfItems, null);
             const customerDetails = safelyParse(req, 'body.customerDetails', parseAsCustomerDetails, null);
             const billingAddress = safelyParse(req, 'body.billingAddress', parseAsCustomerAddress, null);
             const shippingAddress = safelyParse(req, 'body.shippingAddress', parseAsCustomerAddress, null);
 
-            if (order && items && customerDetails && billingAddress && shippingAddress) {
+            if (items && customerDetails && billingAddress && shippingAddress) {
                 try {
                     const { first_name: firstName, last_name: lastName, phone, email } = customerDetails;
                     const {
@@ -56,11 +58,6 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
                         zip_code: shippingPostcode,
                         state_code: shippingCounty,
                     } = shippingAddress;
-                    const {
-                        formatted_shipping_amount: shipping,
-                        formatted_subtotal_amount: subTotal,
-                        formatted_total_amount_with_taxes: total,
-                    } = order;
                     const itemsHtml = items.map(
                         (item) =>
                             `<tr>
@@ -96,6 +93,7 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
                     }));
                     const htmlData = fs.readFileSync(filePath, 'utf8');
                     const html = htmlData
+                        .replace('{{orderNumber}}', `${orderNumber}`)
                         .replace('{{name}}', firstName || '')
                         .replace('{{email}}', email || '')
                         .replace('{{firstName}}', firstName || '')

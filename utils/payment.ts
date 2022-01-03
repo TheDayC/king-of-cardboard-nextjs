@@ -2,9 +2,8 @@ import axios from 'axios';
 
 import { errorHandler } from '../middleware/errors';
 import { CartItem, CustomerAddress, CustomerDetails } from '../store/types/state';
-import { Order } from '../types/cart';
 import { authClient } from './auth';
-import { parseAsBoolean, parseAsNumber, safelyParse } from './parsers';
+import { parseAsNumber, safelyParse } from './parsers';
 
 export async function confirmOrder(accessToken: string, orderId: string, attribute: string): Promise<boolean> {
     try {
@@ -52,22 +51,29 @@ export async function refreshPayment(accessToken: string, id: string, paymentSou
 }
 
 export async function sendOrderConfirmation(
-    order: Order,
+    orderNumber: number | null,
+    subTotal: string | null,
+    shipping: string | null,
+    total: string | null,
     items: CartItem[],
     customerDetails: CustomerDetails,
     billingAddress: CustomerAddress,
     shippingAddress: CustomerAddress
 ): Promise<boolean> {
     try {
-        const response = await axios.post('/api/sendOrderConfirmation', {
-            order,
+        const res = await axios.post('/api/sendOrderConfirmation', {
+            orderNumber,
+            subTotal,
+            shipping,
+            total,
             items,
             customerDetails,
             billingAddress,
             shippingAddress,
         });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
+        return status === 200;
     } catch (error: unknown) {
         errorHandler(error, 'We could not send your order confirmation.');
     }

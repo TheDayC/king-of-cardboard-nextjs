@@ -68,9 +68,7 @@ export const Grid: React.FC = () => {
 
     // Filter the collection.
     useEffect(() => {
-        if (cat) {
-            createBreakCollection(0, cat);
-        }
+        createBreakCollection(0, cat);
     }, [cat, createBreakCollection]);
 
     return (

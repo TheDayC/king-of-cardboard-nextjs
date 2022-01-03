@@ -160,7 +160,7 @@ export function isOrder(candidate: unknown): candidate is Order {
 }
 
 export function isItem(candidate: unknown): candidate is CartItem {
-    return isNotNullOrUndefined<object>(candidate) && 'quantity' in candidate;
+    return isNotNullOrUndefined<object>(candidate) && 'attributes.type' in candidate;
 }
 
 export function isArrayofItems(candidate: unknown): candidate is CartItem[] {

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
@@ -31,13 +31,13 @@ export const Payment: React.FC = () => {
         orderId,
         customerDetails,
         checkoutLoading,
-        order,
+        subTotal,
+        shipping,
+        total,
+        orderNumber,
         items,
-        confirmationDetails,
         billingAddress,
         shippingAddress,
-        hasBothAddresses,
-        hasShipmentMethods,
     } = useSelector(selector);
     const { handleSubmit } = useForm();
     const { data: session } = useSession();
@@ -46,7 +46,7 @@ export const Payment: React.FC = () => {
     const btnText = paymentBtnText(paymentMethod);
     const paypalClass = 'inline-block mr-3 text-md -mt-0.5 text-blue-800';
     const stripeClass = 'inline-block mr-3 text-md -mt-0.5 text-gray-500';
-    const shouldEnable = hasBothAddresses && hasShipmentMethods;
+    const shouldEnable = paymentMethods.length > 0;
 
     // Get the card element with Stripe hooks.
     const card = elements ? elements.getElement(CardElement) : null;
@@ -67,7 +67,7 @@ export const Payment: React.FC = () => {
 
     const handleAchievements = useCallback(async () => {
         // Figure out achievement progress now that the order has been confirmed.
-        if (!session || items.length <= 0 || !accessToken) return;
+        if (!session || !items || !accessToken) return;
 
         const achievements = new Achievements(session, accessToken);
         items.forEach(async (item) => {
@@ -99,8 +99,8 @@ export const Payment: React.FC = () => {
             !billingAddress ||
             !card ||
             !customerDetails ||
-            items.length <= 0 ||
-            !order ||
+            !items ||
+            !orderId ||
             !paymentMethod ||
             !shippingAddress ||
             !stripe
@@ -112,10 +112,10 @@ export const Payment: React.FC = () => {
         dispatch(setCheckoutLoading(true));
 
         // Piece together the attributes for the payment source request.
-        const attributes = buildPaymentAttributes(paymentMethod, order.id);
+        const attributes = buildPaymentAttributes(paymentMethod, orderId);
 
         // Create the payment source in CommerceLayer.
-        const { paymentId, clientSecret } = await createPaymentSource(accessToken, order.id, paymentMethod, attributes);
+        const { paymentId, clientSecret } = await createPaymentSource(accessToken, orderId, paymentMethod, attributes);
 
         if (!clientSecret || !paymentId) {
             handleError('Failed to validate the credit / debit card, please contact support.');
@@ -150,7 +150,7 @@ export const Payment: React.FC = () => {
         }
 
         // Place the order with commerce layer.
-        const hasBeenPlaced = await confirmOrder(accessToken, order.id, '_place');
+        const hasBeenPlaced = await confirmOrder(accessToken, orderId, '_place');
 
         if (!hasBeenPlaced) {
             handleError('Failed to confirm your order, please contact support.');
@@ -158,15 +158,18 @@ export const Payment: React.FC = () => {
         }
 
         const hasBeenRefreshed = await refreshPayment(accessToken, paymentId, paymentMethod);
-        const hasBeenAuthorized = await confirmOrder(accessToken, order.id, '_authorize');
-        const hasBeenApproved = await confirmOrder(accessToken, order.id, '_approve_and_capture');
+        const hasBeenAuthorized = await confirmOrder(accessToken, orderId, '_authorize');
+        const hasBeenApproved = await confirmOrder(accessToken, orderId, '_approve_and_capture');
 
         // Ensure our order has been pushed through.
         if (hasBeenRefreshed && hasBeenAuthorized && hasBeenApproved) {
             // Set the confirmation data in the store.
             dispatch(
                 setConfirmationData({
-                    order,
+                    subTotal,
+                    shipping,
+                    total,
+                    orderNumber,
                     items,
                     customerDetails,
                     billingAddress,
@@ -175,10 +178,21 @@ export const Payment: React.FC = () => {
             );
 
             // Distribute the confirmation email so the customer has a receipt.
-            await sendOrderConfirmation(order, items, customerDetails, billingAddress, shippingAddress);
+            await sendOrderConfirmation(
+                orderNumber,
+                subTotal,
+                shipping,
+                total,
+                items,
+                customerDetails,
+                billingAddress,
+                shippingAddress
+            );
 
             // If the user is logged in we need to submit their achievements to the database.
             handleAchievements();
+
+            router.push('/confirmation');
         } else {
             dispatch(addError('Failed to place your order, please contact support.'));
         }
@@ -192,27 +206,32 @@ export const Payment: React.FC = () => {
         card,
         customerDetails,
         items,
-        order,
+        orderId,
+        orderNumber,
+        subTotal,
+        shipping,
+        total,
         paymentMethod,
         shippingAddress,
         stripe,
         handleError,
         handleAchievements,
+        router,
     ]);
 
     // If the user has chosen paypal, handle it here.
     const handlePaypalPayment = useCallback(async () => {
         // If we're already loading make sure not to execute again.
-        if (checkoutLoading || !accessToken || !order) return;
+        if (checkoutLoading || !accessToken || !orderId) return;
 
         // Show load blockers.
         dispatch(setCheckoutLoading(true));
 
         // Piece together the attributes for the payment source request.
-        const attributes = buildPaymentAttributes(paymentMethod, order.id);
+        const attributes = buildPaymentAttributes(paymentMethod, orderId);
 
         // Create the payment source in CommerceLayer.
-        const { approvalUrl } = await createPaymentSource(accessToken, order.id, paymentMethod, attributes);
+        const { approvalUrl } = await createPaymentSource(accessToken, orderId, paymentMethod, attributes);
 
         // If the payment source was created then capture the approval url from paypal.
         if (approvalUrl) {
@@ -223,19 +242,17 @@ export const Payment: React.FC = () => {
         }
 
         dispatch(setCheckoutLoading(false));
-    }, [dispatch, checkoutLoading, paymentMethod, order, accessToken]);
+    }, [dispatch, checkoutLoading, paymentMethod, orderId, accessToken]);
 
     const onSubmit = () => {
-        if (accessToken && order && paymentMethod) {
-            // Handle a credit / debit card order.
-            if (paymentMethod === 'stripe_payments') {
-                handleStripePayment();
-            }
+        // Handle a credit / debit card order.
+        if (paymentMethod === 'stripe_payments') {
+            handleStripePayment();
+        }
 
-            // Handle a paypal order.
-            if (paymentMethod === 'paypal_payments') {
-                handlePaypalPayment();
-            }
+        // Handle a paypal order.
+        if (paymentMethod === 'paypal_payments') {
+            handlePaypalPayment();
         }
     };
 
@@ -253,13 +270,6 @@ export const Payment: React.FC = () => {
         // Update the user's payment method choice on selection.
         await updatePaymentMethod(accessToken, orderId, paymentMethodData.id);
     };
-
-    // When confirmation details exist then move the user to the confirmation stage.
-    useEffect(() => {
-        if (confirmationDetails.order && confirmationDetails.items.length > 0) {
-            router.push('/confirmation');
-        }
-    }, [confirmationDetails, router]);
 
     return (
         <div

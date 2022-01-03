@@ -1,50 +1,38 @@
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSession } from 'next-auth/react';
 
 import Header from '../../components/Header';
 import { CommerceAuthProps } from '../../types/commerce';
 import Summary from '../../components/Checkout/Summary';
 import ConfirmationDetails from '../../components/ConfirmationDetails';
 import { setCheckoutLoading } from '../../store/slices/global';
-import { resetCart, setOrder } from '../../store/slices/cart';
+import { resetCart, setShouldCreateOrder } from '../../store/slices/cart';
 import { resetCheckoutDetails } from '../../store/slices/checkout';
 import selector from './selector';
-import { createOrder } from '../../utils/commerce';
 
 export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
-    const { confirmationOrder, accessToken } = useSelector(selector);
+    const { confirmationOrderNumber, accessToken } = useSelector(selector);
     const dispatch = useDispatch();
-
-    // Create a brand new order and set the id in the store.
-    const generateOrder = useCallback(
-        async (accessToken: string) => {
-            const order = await createOrder(accessToken);
-
-            if (order) {
-                dispatch(setOrder(order));
-            }
-        },
-        [dispatch]
-    );
 
     useEffect(() => {
         // Check to see if we've just arrived here from a successful order.
-        if (confirmationOrder && accessToken) {
-            // Tell the system to generate a new order
-            generateOrder(accessToken);
-
+        if (confirmationOrderNumber) {
             // Reset the cart state.
             dispatch(resetCart());
 
             // Reset the checkout data
             dispatch(resetCheckoutDetails());
 
+            // Tell the system to generate a new order
+            dispatch(setShouldCreateOrder(true));
+
             // Checkout has finished loading by moving to the confirmation.
             dispatch(setCheckoutLoading(false));
         }
-    }, [confirmationOrder, accessToken, dispatch, generateOrder]);
+    }, [confirmationOrderNumber, accessToken, dispatch]);
 
-    if (!confirmationOrder) {
+    if (!confirmationOrderNumber) {
         return null;
     }
 
