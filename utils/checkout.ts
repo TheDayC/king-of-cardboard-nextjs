@@ -330,61 +330,74 @@ export async function updateSameAsBilling(
     return false;
 }
 
-export async function getShipments(accessToken: string, orderId: string): Promise<Shipments | null> {
+export async function getShipments(accessToken: string, orderId: string): Promise<string[]> {
     try {
         const cl = authClient(accessToken);
-        const include = 'available_shipping_methods';
-        const res = await cl.get(`/api/orders/${orderId}/shipments?include=${include}`);
-        const shipments = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null);
-        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null);
+        const res = await cl.get(`/api/orders/${orderId}/shipments?include=available_shipping_methods`);
+        const shipments = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, []);
 
-        if (!shipments || !included) {
-            return null;
-        }
-
-        return {
-            shipments: shipments.map((shipment) => shipment.id),
-            shippingMethods: included
-                .filter((i) => i.type === 'shipping_methods')
-                .map((method) => {
-                    return {
-                        id: safelyParse(method, 'id', parseAsString, ''),
-                        name: safelyParse(method, 'attributes.name', parseAsString, ''),
-                        price_amount_cents: safelyParse(method, 'attributes.price_amount_cents', parseAsNumber, 0),
-                        price_amount_float: safelyParse(method, 'attributes.price_amount_float', parseAsNumber, 0),
-                        price_amount_for_shipment_cents: safelyParse(
-                            method,
-                            'attributes.price_amount_for_shipment_cents',
-                            parseAsNumber,
-                            0
-                        ),
-                        price_amount_for_shipment_float: safelyParse(
-                            method,
-                            'attributes.price_amount_for_shipment_float',
-                            parseAsNumber,
-                            0
-                        ),
-                        currency_code: safelyParse(method, 'attributes.currency_code', parseAsString, ''),
-                        formatted_price_amount: safelyParse(
-                            method,
-                            'attributes.formatted_price_amount',
-                            parseAsString,
-                            ''
-                        ),
-                        formatted_price_amount_for_shipment: safelyParse(
-                            method,
-                            'attributes.formatted_price_amount_for_shipment',
-                            parseAsString,
-                            ''
-                        ),
-                    };
-                }),
-        };
+        return shipments.map((shipment) => shipment.id);
     } catch (error: unknown) {
         errorHandler(error, 'Failed to fetch shipments.');
     }
 
-    return null;
+    return [];
+}
+
+export async function getShippingMethods(accessToken: string, orderId: string): Promise<MergedShipmentMethods[]> {
+    try {
+        const cl = authClient(accessToken);
+        const shipmentsRes = await cl.get(`/api/orders/${orderId}/shipments?include=available_shipping_methods`);
+        const shipmentsIncluded = safelyParse(shipmentsRes, 'data.included', parseAsArrayOfCommerceResponse, []);
+
+        const deliveryLeadTimesRes = await cl.get('/api/delivery_lead_times?include=shipping_method');
+        const deliveryLeadTimes = safelyParse(deliveryLeadTimesRes, 'data.data', parseAsArrayOfCommerceResponse, []);
+
+        const leadTimes = deliveryLeadTimes.map((leadTime: unknown) => ({
+            id: safelyParse(leadTime, 'id', parseAsString, ''),
+            minHours: safelyParse(leadTime, 'attributes.min_hours', parseAsNumber, 0),
+            maxHours: safelyParse(leadTime, 'attributes.max_hours', parseAsNumber, 0),
+            minDays: safelyParse(leadTime, 'attributes.min_days', parseAsNumber, 0),
+            maxDays: safelyParse(leadTime, 'attributes.max_days', parseAsNumber, 0),
+        }));
+
+        return shipmentsIncluded.map((shipment) => {
+            const name = safelyParse(shipment, 'attributes.name', parseAsString, '');
+            const matchingLeadTime = findLeadTimeIdFromMethodName(name, leadTimes);
+
+            return {
+                id: safelyParse(shipment, 'id', parseAsString, ''),
+                name,
+                price_amount_cents: safelyParse(shipment, 'attributes.price_amount_cents', parseAsNumber, 0),
+                price_amount_float: safelyParse(shipment, 'attributes.price_amount_float', parseAsNumber, 0),
+                price_amount_for_shipment_cents: safelyParse(
+                    shipment,
+                    'attributes.price_amount_for_shipment_cents',
+                    parseAsNumber,
+                    0
+                ),
+                price_amount_for_shipment_float: safelyParse(
+                    shipment,
+                    'attributes.price_amount_for_shipment_float',
+                    parseAsNumber,
+                    0
+                ),
+                currency_code: safelyParse(shipment, 'attributes.currency_code', parseAsString, ''),
+                formatted_price_amount: safelyParse(shipment, 'attributes.formatted_price_amount', parseAsString, ''),
+                formatted_price_amount_for_shipment: safelyParse(
+                    shipment,
+                    'attributes.formatted_price_amount_for_shipment',
+                    parseAsString,
+                    ''
+                ),
+                leadTimes: matchingLeadTime,
+            };
+        });
+    } catch (error: unknown) {
+        errorHandler(error, 'Failed to fetch shipments.');
+    }
+
+    return [];
 }
 
 export async function getDeliveryLeadTimes(accessToken: string): Promise<DeliveryLeadTimes[] | null> {

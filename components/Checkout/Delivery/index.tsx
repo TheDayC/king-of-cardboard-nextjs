@@ -3,7 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 
 import selector from './selector';
-import { setCurrentStep, setShipmentsWithMethods } from '../../../store/slices/checkout';
+import {
+    fetchShipments,
+    fetchShippingMethods,
+    setCurrentStep,
+    setShipmentsWithMethods,
+} from '../../../store/slices/checkout';
 import { MergedShipmentMethods } from '../../../types/checkout';
 import {
     getDeliveryLeadTimes,
@@ -27,9 +32,9 @@ interface FormData {
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
-    const { accessToken, currentStep, orderId, checkoutLoading, hasBothAddresses } = useSelector(selector);
-    const [shipments, setShipments] = useState<string[] | null>(null);
-    const [methods, setMethods] = useState<MergedShipmentMethods[] | null>(null);
+    const { accessToken, currentStep, orderId, checkoutLoading, hasBothAddresses, shipments, methods } =
+        useSelector(selector);
+    const [shouldFetch, setShouldFetch] = useState(true);
     const {
         register,
         handleSubmit,
@@ -38,27 +43,6 @@ export const Delivery: React.FC = () => {
     const isCurrentStep = currentStep === 1;
     const hasErrors = Object.keys(errors).length > 0;
     const hasShipmentsAndMethods = shipments && methods;
-
-    const fetchAllShipments = useCallback(async (accessToken: string, orderId: string) => {
-        if (accessToken && orderId) {
-            const shipmentData = await getShipments(accessToken, orderId);
-            const deliveryLeadTimes = await getDeliveryLeadTimes(accessToken);
-
-            if (shipmentData && deliveryLeadTimes) {
-                const { shipments, shippingMethods } = shipmentData;
-                const mergedMethods = mergeMethodsAndLeadTimes(shippingMethods, deliveryLeadTimes);
-
-                setMethods(mergedMethods);
-                setShipments(shipments);
-            }
-        }
-    }, []);
-
-    useEffect(() => {
-        if (accessToken && orderId) {
-            fetchAllShipments(accessToken, orderId);
-        }
-    }, [accessToken, orderId, fetchAllShipments]);
 
     const handleSelectShippingMethod = async (data: FormData) => {
         if (hasErrors || checkoutLoading || !accessToken || !shipments) {
@@ -94,6 +78,14 @@ export const Delivery: React.FC = () => {
         }
     };
 
+    useEffect(() => {
+        if (accessToken && orderId && shouldFetch) {
+            setShouldFetch(false);
+            dispatch(fetchShipments({ accessToken, orderId }));
+            dispatch(fetchShippingMethods({ accessToken, orderId }));
+        }
+    }, [accessToken, orderId, dispatch, shouldFetch]);
+
     return (
         <div
             className={`collapse${
@@ -112,7 +104,7 @@ export const Delivery: React.FC = () => {
                                 <Shipment
                                     id={shipment}
                                     shippingMethods={methods}
-                                    shipmentCount={index}
+                                    shipmentCount={index + 1}
                                     shipmentsTotal={shipments.length}
                                     register={register}
                                     defaultChecked={methods[0].id}

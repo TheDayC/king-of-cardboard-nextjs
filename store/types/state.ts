@@ -3,6 +3,7 @@ import { DateTime } from 'luxon';
 import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
 import { CartItem } from '../../types/cart';
+import { MergedShipmentMethods } from '../../types/checkout';
 import { SkuItem } from '../../types/commerce';
 import { ContentfulPage } from '../../types/pages';
 import { SocialMedia } from '../../types/profile';
@@ -66,6 +67,8 @@ export interface Checkout {
     cloneShippingAddressId: string | null;
     isShippingSameAsBilling: boolean;
     paymentMethods: PaymentMethod[];
+    shipments: string[];
+    shippingMethods: MergedShipmentMethods[];
 }
 
 export interface CustomerDetails {
