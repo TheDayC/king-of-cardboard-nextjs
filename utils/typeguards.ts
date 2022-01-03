@@ -11,7 +11,7 @@ import {
     CommerceLayerResponse,
     ErrorResponse,
 } from '../types/api';
-import { BreakSlot, BreakTypeItem, ContentfulBreak } from '../types/breaks';
+import { BreakSlot, BreakSlotsCollection, BreakTypeItem, ContentfulBreak } from '../types/breaks';
 import { Order } from '../types/cart';
 import { SkuInventory, SkuOption } from '../types/commerce';
 import { Content, ContentfulPage, ContentJSON } from '../types/pages';
@@ -132,6 +132,10 @@ export function isArrayofCommerceLayerErrors(candidate: unknown): candidate is C
 }
 
 export function isImageCollection(candidate: unknown): candidate is ImageCollection {
+    return isNotNullOrUndefined<object>(candidate) && 'items' in candidate;
+}
+
+export function isBreakSlotsCollection(candidate: unknown): candidate is BreakSlotsCollection {
     return isNotNullOrUndefined<object>(candidate) && 'items' in candidate;
 }
 

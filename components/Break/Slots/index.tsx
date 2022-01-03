@@ -1,22 +1,29 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 
-import { BreakSlot } from '../../../types/breaks';
-import { PickYourTeam } from './PickYourTeam';
+import { PickSlot } from './PickSlot';
+import PickSlotWithRandom from './PickSlotWithRandom';
+import RandomSlot from './RandomSlot';
+import selector from './selector';
 
-interface SlotsProps {
-    slots: BreakSlot[];
-    // format: string;
-}
+export const Slots: React.FC = () => {
+    const { format } = useSelector(selector);
 
-export const Slots: React.FC<SlotsProps> = ({ slots }) => {
-    /* switch (format) {
+    switch (format) {
         case 'Pick Your Team':
+        case 'Pick Your Colour':
+        case 'Pick Your Type':
+            return <PickSlot />;
         case 'Pick Your Team w/ Random':
-            return <PickYourTeam slots={slots} />;
+            return <PickSlotWithRandom />;
+        case 'Random Teams':
+        case 'Random Packs':
+        case 'Random Colours':
+        case 'Random Types':
+            return <RandomSlot />;
         default:
             return null;
-    } */
-    return <PickYourTeam slots={slots} />;
+    }
 };
 
 export default Slots;
