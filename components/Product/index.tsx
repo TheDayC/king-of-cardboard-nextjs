@@ -21,21 +21,18 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
     const { accessToken, items, orderId, currentProduct } = useSelector(selector);
     const [loading, setLoading] = useState(false);
     const [shouldFetch, setShouldFetch] = useState(true);
-    const {
-        handleSubmit,
-        formState: { errors },
-    } = useForm();
-    const hasErrors = Object.keys(errors).length > 0;
+    const { handleSubmit } = useForm();
     const stock = currentProduct.inventory.quantity;
     const currentLineItem = items && currentProduct ? items.find((c) => c.sku_code === currentProduct.sku_code) : null;
-    console.log('🚀 ~ file: index.tsx ~ line 31 ~ currentLineItem', currentLineItem);
     const hasExceededStock = currentLineItem ? currentLineItem.quantity >= stock : false;
     const description = split(currentProduct.description, '\n\n');
     const shouldShowCompare = currentProduct.amount !== currentProduct.compare_amount;
+    const btnDisabled = hasExceededStock ? ' btn-disabled' : ' btn-primary';
+    const btnLoading = loading ? ' loading btn-square' : '';
 
     // Handle the form submission.
     const onSubmit = useCallback(async () => {
-        if (hasErrors || !accessToken || !currentProduct || !orderId) return;
+        if (!accessToken || !orderId || loading) return;
         setLoading(true);
 
         if (hasExceededStock) {
@@ -75,7 +72,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         }
 
         setLoading(false);
-    }, [hasErrors, accessToken, currentProduct, orderId, stock, hasExceededStock, dispatch]);
+    }, [accessToken, currentProduct, orderId, stock, hasExceededStock, dispatch, loading]);
 
     useEffect(() => {
         if (accessToken && slug && shouldFetch) {
@@ -86,7 +83,6 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
 
     return (
         <div className="p-2 lg:p-8 relative">
-            <Loading show={loading} />
             <div className="container mx-auto">
                 <div className="flex flex-col lg:flex-row lg:space-x-16">
                     <Images mainImage={currentProduct.images.items[0]} imageCollection={currentProduct.images.items} />
@@ -108,12 +104,10 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                                     <div className="flex flex-col lg:flex-row justify-start align-center lg:space-x-2">
                                         <button
                                             aria-label="add to cart"
-                                            className={`btn btn-lg rounded-md${
-                                                hasExceededStock ? ' btn-disabled' : ' btn-primary'
-                                            }`}
+                                            className={`btn btn-lg rounded-md${btnDisabled}${btnLoading}`}
                                             disabled={hasExceededStock}
                                         >
-                                            Add to cart
+                                            {loading ? '' : 'Add to cart'}
                                         </button>
                                     </div>
                                 </form>
