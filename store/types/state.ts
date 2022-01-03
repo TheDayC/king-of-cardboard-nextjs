@@ -33,9 +33,11 @@ export interface CartState {
     itemCount: number;
     items: CartItem[];
     isUpdatingCart: boolean;
-    subTotal: string | null;
-    shipping: string | null;
-    total: string | null;
+    subTotal: string;
+    shipping: string;
+    discount: string;
+    total: string;
+    orderHasGiftCard: boolean;
 }
 
 export interface PaymentMethod {
@@ -148,9 +150,10 @@ export interface ShipmentsWithLineItems extends ShipmentsWithMethods {
 
 export interface Confirmation {
     items: CartItem[];
-    subTotal: string | null;
-    shipping: string | null;
-    total: string | null;
+    subTotal: string;
+    shipping: string;
+    discount: string;
+    total: string;
     orderNumber: number | null;
     customerDetails: CustomerDetails;
     billingAddress: CustomerAddress;

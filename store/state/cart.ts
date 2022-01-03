@@ -8,9 +8,11 @@ const cartInitialState: CartState = {
     itemCount: 0,
     items: [],
     isUpdatingCart: false,
-    subTotal: null,
-    shipping: null,
-    total: null,
+    subTotal: '£0.00',
+    shipping: '£0.00',
+    discount: '£0.00',
+    total: '£0.00',
+    orderHasGiftCard: false,
 };
 
 export default cartInitialState;

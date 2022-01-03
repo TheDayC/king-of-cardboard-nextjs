@@ -67,6 +67,9 @@ const cartSlice = createSlice({
         setShouldUpdateCart(state, action) {
             state.shouldUpdateCart = action.payload;
         },
+        setOrderHasGiftCard(state, action) {
+            state.orderHasGiftCard = action.payload;
+        },
         resetCart() {
             return cartInitialState;
         },
@@ -84,10 +87,11 @@ const cartSlice = createSlice({
                 state.shouldCreateOrder = false;
             }),
             builder.addCase(fetchCartTotals.fulfilled, (state, action) => {
-                const { subTotal, shipping, total } = action.payload;
+                const { subTotal, shipping, discount, total } = action.payload;
 
                 state.subTotal = subTotal;
                 state.shipping = shipping;
+                state.discount = discount;
                 state.total = total;
             }),
             builder.addCase(fetchCartItems.fulfilled, (state, action) => {
@@ -100,6 +104,12 @@ const cartSlice = createSlice({
     },
 });
 
-export const { setLineItems, resetCart, setUpdatingCart, setShouldCreateOrder, setShouldUpdateCart } =
-    cartSlice.actions;
+export const {
+    setLineItems,
+    resetCart,
+    setUpdatingCart,
+    setShouldCreateOrder,
+    setShouldUpdateCart,
+    setOrderHasGiftCard,
+} = cartSlice.actions;
 export default cartSlice.reducer;

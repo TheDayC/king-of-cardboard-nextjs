@@ -6,6 +6,7 @@ const selector = createSelector([selectGlobalData, selectAccountData, selectCart
     accessToken: global.accessToken,
     orderId: cart.orderId,
     code: account.giftCard.code,
+    orderHasGiftCard: cart.orderHasGiftCard,
 }));
 
 export default selector;

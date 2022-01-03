@@ -28,12 +28,14 @@ export async function getItemCount(accessToken: string, orderId: string): Promis
 export async function getCartTotals(accessToken: string, orderId: string): Promise<CartTotals> {
     try {
         const cl = authClient(accessToken);
-        const fields = 'formatted_subtotal_amount,formatted_shipping_amount,formatted_total_amount_with_taxes';
+        const fields =
+            'formatted_subtotal_amount,formatted_shipping_amount,formatted_total_amount_with_taxes,formatted_gift_card_amount';
         const res = await cl.get(`/api/orders/${orderId}?fields[orders]=${fields}`);
 
         return {
             subTotal: safelyParse(res, 'data.data.attributes.formatted_subtotal_amount', parseAsString, '£0.00'),
             shipping: safelyParse(res, 'data.data.attributes.formatted_shipping_amount', parseAsString, '£0.00'),
+            discount: safelyParse(res, 'data.data.attributes.formatted_gift_card_amount', parseAsString, '£0.00'),
             total: safelyParse(res, 'data.data.attributes.formatted_total_amount_with_taxes', parseAsString, '£0.00'),
         };
     } catch (error: unknown) {
@@ -43,6 +45,7 @@ export async function getCartTotals(accessToken: string, orderId: string): Promi
     return {
         subTotal: '£0.00',
         shipping: '£0.00',
+        discount: '£0.00',
         total: '£0.00',
     };
 }
