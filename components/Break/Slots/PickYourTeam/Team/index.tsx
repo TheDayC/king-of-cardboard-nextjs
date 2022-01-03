@@ -6,7 +6,7 @@ import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { setLineItem } from '../../../../../utils/commerce';
 import selector from './selector';
 import { BreakSlotWithSku } from '../../../../../types/breaks';
-import { fetchItemCount, fetchOrder } from '../../../../../store/slices/cart';
+import { fetchItemCount } from '../../../../../store/slices/cart';
 
 interface TeamProps {
     skuItem: BreakSlotWithSku;
@@ -43,7 +43,6 @@ export const Team: React.FC<TeamProps> = ({ skuItem, setLoading }) => {
 
         if (hasLineItemUpdated) {
             dispatch(fetchItemCount({ accessToken, orderId }));
-            dispatch(fetchOrder(true));
         }
     };
 

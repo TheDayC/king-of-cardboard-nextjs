@@ -31,7 +31,6 @@ export interface CartState {
     orderNumber: number | null;
     itemCount: number;
     items: CartItem[];
-    shouldFetchOrder: boolean;
     isUpdatingCart: boolean;
     subTotal: string | null;
     shipping: string | null;

@@ -22,7 +22,6 @@ import {
     parseExistingAddress,
     parseShippingAddress,
 } from '../../../utils/parsers';
-import { fetchOrder } from '../../../store/slices/cart';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import { addWarning } from '../../../store/slices/alerts';
 import BillingAddress from './BillingAddress';

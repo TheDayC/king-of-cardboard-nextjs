@@ -58,9 +58,6 @@ const cartSlice = createSlice({
         setLineItems(state, action) {
             state.items = action.payload;
         },
-        fetchOrder(state, action) {
-            state.shouldFetchOrder = action.payload;
-        },
         setShouldCreateOrder(state, action) {
             state.shouldCreateOrder = action.payload;
         },
@@ -103,6 +100,6 @@ const cartSlice = createSlice({
     },
 });
 
-export const { setLineItems, fetchOrder, resetCart, setUpdatingCart, setShouldCreateOrder, setShouldUpdateCart } =
+export const { setLineItems, resetCart, setUpdatingCart, setShouldCreateOrder, setShouldUpdateCart } =
     cartSlice.actions;
 export default cartSlice.reducer;
