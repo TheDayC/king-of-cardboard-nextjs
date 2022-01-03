@@ -1,14 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 
 import selector from './selector';
-import {
-    fetchShipments,
-    fetchShippingMethods,
-    setCurrentStep,
-    setShipmentsWithMethods,
-} from '../../../store/slices/checkout';
+import { fetchPaymentMethods, setCurrentStep, setShipmentsWithMethods } from '../../../store/slices/checkout';
 import { updateShipmentMethod } from '../../../utils/checkout';
 import Shipment from './Shipment';
 import { fetchCartItems, fetchCartTotals, fetchItemCount } from '../../../store/slices/cart';
@@ -28,7 +23,6 @@ export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
     const { accessToken, currentStep, orderId, checkoutLoading, hasBothAddresses, shipments, methods } =
         useSelector(selector);
-    const [shouldFetch, setShouldFetch] = useState(true);
     const {
         register,
         handleSubmit,
@@ -36,7 +30,7 @@ export const Delivery: React.FC = () => {
     } = useForm();
     const isCurrentStep = currentStep === 1;
     const hasErrors = Object.keys(errors).length > 0;
-    const hasShipmentsAndMethods = shipments && methods;
+    const hasShipmentsAndMethods = shipments.length > 0 && methods.length > 0;
 
     const handleSelectShippingMethod = async (data: FormData) => {
         if (hasErrors || checkoutLoading || !accessToken || !shipments || !orderId) {
@@ -53,12 +47,14 @@ export const Delivery: React.FC = () => {
 
         dispatch(setShipmentsWithMethods(mappedData));
 
-        mappedData.forEach(async (mD) => await updateShipmentMethod(accessToken, mD.shipmentId, mD.methodId));
+        // for...of used here over forEach to avoid race conditions with await.
+        for (const mD of mappedData) {
+            await updateShipmentMethod(accessToken, mD.shipmentId, mD.methodId);
+        }
 
-        // Fetch the order with new details.
-        dispatch(fetchCartItems({ accessToken, orderId }));
+        // Fetch items, totals and item count along with payment methods
         dispatch(fetchCartTotals({ accessToken, orderId }));
-        dispatch(fetchItemCount({ accessToken, orderId }));
+        dispatch(fetchPaymentMethods({ accessToken, orderId }));
 
         // Redirect to next stage.
         dispatch(setCurrentStep(2));
@@ -73,14 +69,6 @@ export const Delivery: React.FC = () => {
             dispatch(setCurrentStep(1));
         }
     };
-
-    useEffect(() => {
-        if (accessToken && orderId && shouldFetch) {
-            setShouldFetch(false);
-            dispatch(fetchShipments({ accessToken, orderId }));
-            dispatch(fetchShippingMethods({ accessToken, orderId }));
-        }
-    }, [accessToken, orderId, dispatch, shouldFetch]);
 
     return (
         <div

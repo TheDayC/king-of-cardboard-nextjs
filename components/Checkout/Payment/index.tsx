@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 import { BsPaypal, BsFillCreditCard2BackFill } from 'react-icons/bs';
 
-import { fetchPaymentMethods, setCurrentStep } from '../../../store/slices/checkout';
+import { setCurrentStep } from '../../../store/slices/checkout';
 import { createPaymentSource } from '../../../utils/commerce';
 import { confirmOrder, refreshPayment, sendOrderConfirmation } from '../../../utils/payment';
 import { setCheckoutLoading } from '../../../store/slices/global';
@@ -38,18 +38,15 @@ export const Payment: React.FC = () => {
         items,
         billingAddress,
         shippingAddress,
-        hasBothAddresses,
-        hasShipmentMethods,
     } = useSelector(selector);
     const { handleSubmit } = useForm();
     const { data: session } = useSession();
     const isCurrentStep = currentStep === 2;
     const [paymentMethod, setPaymentMethod] = useState('stripe_payments');
-    const [shouldFetch, setShouldFetch] = useState(true);
     const btnText = paymentBtnText(paymentMethod);
     const paypalClass = 'inline-block mr-3 text-md -mt-0.5 text-blue-800';
     const stripeClass = 'inline-block mr-3 text-md -mt-0.5 text-gray-500';
-    const shouldEnable = hasBothAddresses && hasShipmentMethods;
+    const shouldEnable = paymentMethods.length > 0;
 
     // Get the card element with Stripe hooks.
     const card = elements ? elements.getElement(CardElement) : null;
@@ -273,13 +270,6 @@ export const Payment: React.FC = () => {
         // Update the user's payment method choice on selection.
         await updatePaymentMethod(accessToken, orderId, paymentMethodData.id);
     };
-
-    useEffect(() => {
-        if (accessToken && orderId && shouldFetch) {
-            setShouldFetch(false);
-            dispatch(fetchPaymentMethods({ accessToken, orderId }));
-        }
-    }, [dispatch, accessToken, orderId, shouldFetch]);
 
     return (
         <div

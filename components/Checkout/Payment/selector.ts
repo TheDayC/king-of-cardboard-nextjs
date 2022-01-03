@@ -23,8 +23,6 @@ const selector = createSelector(
         orderNumber: cart.orderNumber,
         billingAddress: checkout.billingAddress,
         shippingAddress: checkout.shippingAddress,
-        hasBothAddresses: Boolean(checkout.billingAddress.line_1) && Boolean(checkout.shippingAddress.line_1),
-        hasShipmentMethods: Boolean(checkout.shipmentsWithMethods),
     })
 );
 

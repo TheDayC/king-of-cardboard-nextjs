@@ -6,6 +6,8 @@ import { useSession } from 'next-auth/react';
 import selector from './selector';
 import { updateAddress, updateAddressClone, updateSameAsBilling } from '../../../utils/checkout';
 import {
+    fetchShipments,
+    fetchShippingMethods,
     setBillingAddress,
     setCloneBillingAddressId,
     setCloneShippingAddressId,
@@ -261,8 +263,10 @@ const Customer: React.FC = () => {
     };
 
     const submissionCleanup = () => {
-        // Fetch the order with new details.
-        dispatch(fetchOrder(true));
+        if (accessToken && orderId) {
+            dispatch(fetchShipments({ accessToken, orderId }));
+            dispatch(fetchShippingMethods({ accessToken, orderId }));
+        }
 
         // Remove load blockers.
         dispatch(setCheckoutLoading(false));

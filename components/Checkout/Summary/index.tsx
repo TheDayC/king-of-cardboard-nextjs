@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
-import { isArray } from 'lodash';
 import Image from 'next/image';
 
 import selector from './selector';
 import styles from './summary.module.css';
-import CartTotals from '../../Cart/CartTotals';
 import Loading from '../../Loading';
+import Totals from './Totals';
 
 interface SummaryProps {
     isConfirmation: boolean;
@@ -54,7 +53,7 @@ export const Summary: React.FC<SummaryProps> = ({ isConfirmation = false }) => {
                     ))}
             </div>
             <div className="overflow-x-auto">
-                <CartTotals isConfirmation={isConfirmation} />
+                <Totals isConfirmation={isConfirmation} />
             </div>
         </div>
     );

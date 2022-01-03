@@ -32,18 +32,18 @@ export async function getCartTotals(accessToken: string, orderId: string): Promi
         const res = await cl.get(`/api/orders/${orderId}?fields[orders]=${fields}`);
 
         return {
-            subTotal: safelyParse(res, 'data.data.attributes.formatted_subtotal_amount', parseAsString, null),
-            shipping: safelyParse(res, 'data.data.attributes.formatted_shipping_amount', parseAsString, null),
-            total: safelyParse(res, 'data.data.attributes.formatted_total_amount_with_taxes', parseAsString, null),
+            subTotal: safelyParse(res, 'data.data.attributes.formatted_subtotal_amount', parseAsString, '£0.00'),
+            shipping: safelyParse(res, 'data.data.attributes.formatted_shipping_amount', parseAsString, '£0.00'),
+            total: safelyParse(res, 'data.data.attributes.formatted_total_amount_with_taxes', parseAsString, '£0.00'),
         };
     } catch (error: unknown) {
         errorHandler(error, 'Failed to fetch cart item count.');
     }
 
     return {
-        subTotal: null,
-        shipping: null,
-        total: null,
+        subTotal: '£0.00',
+        shipping: '£0.00',
+        total: '£0.00',
     };
 }
 
@@ -74,7 +74,14 @@ export async function getCartItems(accessToken: string, orderId: string): Promis
         // Fetch the related cms products by their product link (sku) for their images.
         const cmsProducts = await fetchProductImagesByProductLink(skus);
 
-        return included.map((include) => {
+        // The filter for sku_code_present doesn't seem to work so manually exclude anything with a null sku here.
+        const filteredIncluded = included.filter((include) => {
+            const sku_code = safelyParse(include, 'attributes.sku_code', parseAsString, null);
+
+            return sku_code !== null;
+        });
+
+        return filteredIncluded.map((include) => {
             const sku_code = safelyParse(include, 'attributes.sku_code', parseAsString, '');
             const stockBySku = stockWithSkus.find((s) => s.sku_code === sku_code);
             const stock = safelyParse(stockBySku, 'stock', parseAsNumber, 0);

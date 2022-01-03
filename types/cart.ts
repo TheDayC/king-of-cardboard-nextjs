@@ -33,9 +33,9 @@ export interface IncludedData {
 }
 
 export interface CartTotals {
-    subTotal: string | null;
-    shipping: string | null;
-    total: string | null;
+    subTotal: string;
+    shipping: string;
+    total: string;
 }
 
 export interface CreateOrder {
