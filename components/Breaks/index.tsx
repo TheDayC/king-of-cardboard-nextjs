@@ -10,7 +10,7 @@ export const Breaks: React.FC = () => {
     const { isLoadingBreaks } = useSelector(selector);
 
     return (
-        <div className="flex flex-col md:flex-row relative bg-primary-content">
+        <div className="block relative w-full">
             <Loading show={isLoadingBreaks} />
             {/* <Menu /> */}
             <Grid />

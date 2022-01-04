@@ -2,9 +2,8 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { isString } from 'lodash';
 
-import Header from '../../components/Header';
 import Shop from '../../components/Shop';
-import Footer from '../../components/Footer';
+import PageWrapper from '../../components/PageWrapper';
 
 export const Category: React.FC = () => {
     const router = useRouter();
@@ -12,11 +11,9 @@ export const Category: React.FC = () => {
     const category = isString(cat) ? cat : null;
 
     return (
-        <React.Fragment>
-            <Header />
+        <PageWrapper>
             <Shop category={category} />
-            <Footer />
-        </React.Fragment>
+        </PageWrapper>
     );
 };
 

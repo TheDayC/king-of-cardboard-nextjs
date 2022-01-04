@@ -4,7 +4,7 @@ import { getSession } from 'next-auth/react';
 import Error from 'next/error';
 import { useSelector } from 'react-redux';
 
-import Header from '../../../components/Header';
+import PageWrapper from '../../../components/PageWrapper';
 import AccountMenu from '../../../components/Account/Menu';
 import { getHistoricalOrder } from '../../../utils/account';
 import {
@@ -20,7 +20,6 @@ import { OrderHistoryLineItemWithSkuData } from '../../../types/account';
 import LongOrder from '../../../components/Account/OrderHistory/LongOrder';
 import { getSkus } from '../../../utils/commerce';
 import Loading from '../../../components/Loading';
-import Footer from '../../../components/Footer';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -168,46 +167,40 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
     }
 
     return (
-        <React.Fragment>
-            <Header />
-            <div className="flex p-4 relative bg-primary-content">
-                <div className="container mx-auto">
-                    <div className="flex flex-row w-full justify-start items-start">
-                        <div className="hidden w-1/4 md:block">
-                            <AccountMenu isDropdown={false} />
-                        </div>
-                        <div className="dropdown w-full p-2 md:hidden">
-                            <div tabIndex={0} className="btn btn-block">
-                                Account Menu
-                            </div>
-                            <AccountMenu isDropdown />
-                        </div>
-                        <div className="flex flex-col py-4 px-8 w-3/4 relative">
-                            <Loading show={Boolean(!order || !lineItems)} />
-                            <LongOrder
-                                orderNumber={orderNumber}
-                                status={status}
-                                paymentStatus={paymentStatus}
-                                fulfillmentStatus={fulfillmentStatus}
-                                itemCount={itemCount}
-                                shipmentsCount={shipmentsCount}
-                                subTotal={subTotal}
-                                shippingTotal={shippingTotal}
-                                discountTotal={discountTotal}
-                                total={total}
-                                placedAt={placedAt}
-                                updatedAt={updatedAt}
-                                lineItems={lineItems}
-                                shippingAddress={shippingAddress}
-                                billingAddress={billingAddress}
-                                paymentMethodDetails={paymentMethodDetails}
-                            />
-                        </div>
+        <PageWrapper>
+            <div className="flex flex-row w-full justify-start items-start">
+                <div className="hidden w-1/4 md:block">
+                    <AccountMenu isDropdown={false} />
+                </div>
+                <div className="dropdown w-full p-2 md:hidden">
+                    <div tabIndex={0} className="btn btn-block">
+                        Account Menu
                     </div>
+                    <AccountMenu isDropdown />
+                </div>
+                <div className="flex flex-col relative w-full px-2 py-0 md:w-3/4 md:px-4 md:px-8">
+                    <Loading show={Boolean(!order || !lineItems)} />
+                    <LongOrder
+                        orderNumber={orderNumber}
+                        status={status}
+                        paymentStatus={paymentStatus}
+                        fulfillmentStatus={fulfillmentStatus}
+                        itemCount={itemCount}
+                        shipmentsCount={shipmentsCount}
+                        subTotal={subTotal}
+                        shippingTotal={shippingTotal}
+                        discountTotal={discountTotal}
+                        total={total}
+                        placedAt={placedAt}
+                        updatedAt={updatedAt}
+                        lineItems={lineItems}
+                        shippingAddress={shippingAddress}
+                        billingAddress={billingAddress}
+                        paymentMethodDetails={paymentMethodDetails}
+                    />
                 </div>
             </div>
-            <Footer />
-        </React.Fragment>
+        </PageWrapper>
     );
 };
 

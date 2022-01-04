@@ -1,16 +1,13 @@
 import React from 'react';
 
-import Header from '../../components/Header';
 import Breaks from '../../components/Breaks';
-import Footer from '../../components/Footer';
+import PageWrapper from '../../components/PageWrapper';
 
 export const BreakPage: React.FC = () => {
     return (
-        <React.Fragment>
-            <Header />
+        <PageWrapper>
             <Breaks />
-            <Footer />
-        </React.Fragment>
+        </PageWrapper>
     );
 };
 

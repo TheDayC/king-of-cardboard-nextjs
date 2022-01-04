@@ -11,6 +11,7 @@ import selector from './selector';
 import { getPayPalPaymentIdByOrder } from '../../../utils/checkout';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Footer from '../../../components/Footer';
+import PageWrapper from '../../../components/PageWrapper';
 
 interface CompleteOrderPageProps {
     orderId: string;
@@ -64,27 +65,21 @@ export const CompleteOrderPage: React.FC<CompleteOrderPageProps> = ({ orderId, p
     }, [dispatch, accessToken, fetchPaymentData, orderId]);
 
     return (
-        <React.Fragment>
-            <Header />
-            <div className="flex flex-col w-full bg-primary-content">
-                <div className="container mx-auto p-2 md:p-4 lg:p-8">
-                    <div className="flex flex-col">
-                        <Steps currentStep={3} />
-                        <div className="container mx-auto max-w-xxl">
-                            <div className="flex flex-col-reverse lg:flex-row lg:space-x-8">
-                                <div className="flex flex-col w-full lg:w-3/5">
-                                    <Complete paymentId={paymentId} payerId={payerId} orderId={orderId} />
-                                </div>
-                                <div className="flex-1 p-2 lg:p-0">
-                                    <Summary isConfirmation={false} />
-                                </div>
-                            </div>
+        <PageWrapper>
+            <div className="flex flex-col w-full">
+                <Steps currentStep={3} />
+                <div className="container mx-auto max-w-xxl">
+                    <div className="flex flex-col-reverse lg:flex-row lg:space-x-8">
+                        <div className="flex flex-col w-full lg:w-3/5">
+                            <Complete paymentId={paymentId} payerId={payerId} orderId={orderId} />
+                        </div>
+                        <div className="flex-1 p-2 lg:p-0">
+                            <Summary isConfirmation={false} />
                         </div>
                     </div>
                 </div>
             </div>
-            <Footer />
-        </React.Fragment>
+        </PageWrapper>
     );
 };
 

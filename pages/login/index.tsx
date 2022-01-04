@@ -9,6 +9,7 @@ import Login from '../../components/Login';
 import { ServerSideRedirectProps } from '../../types/pages';
 import { Tabs } from '../../enums/auth';
 import Footer from '../../components/Footer';
+import PageWrapper from '../../components/PageWrapper';
 
 interface ServerSideProps {
     props: {
@@ -67,49 +68,43 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
     if (!providers || !csrfToken) return null;
 
     return (
-        <React.Fragment>
-            <Header />
-            <div className="flex p-0 relative lg:p-6 bg-primary-content">
-                <div className="container mx-auto">
-                    <div className="flex flex-col w-full justify-center items-center">
-                        <div className="flex flex-col w-full md:w-1/2 lg:w-1/3 card text-center rounded-md md:shadow-2xl">
-                            <div className="card-body p-2 lg:p-6">
-                                <div className="tabs">
-                                    <a
-                                        className={`tab tab-bordered w-1/3${isLogin ? ' tab-active' : ''}`}
-                                        onClick={handleLoginTab}
-                                    >
-                                        Log In
-                                    </a>
-                                    <a
-                                        className={`tab tab-bordered w-1/3${isRegister ? ' tab-active' : ''}`}
-                                        onClick={handleRegisterTab}
-                                    >
-                                        Register
-                                    </a>
-                                    <a
-                                        className={`tab tab-bordered w-1/3${isReset ? ' tab-active' : ''}`}
-                                        onClick={handleResetTab}
-                                    >
-                                        Reset
-                                    </a>
-                                </div>
-                                <div className="px-2 py-4 lg:p-4">
-                                    {currentTab === Tabs.Login && (
-                                        <Login providers={providers} showRegistrationSuccess={regSuccess} />
-                                    )}
-                                    {currentTab === Tabs.Register && (
-                                        <Register setCurrentTab={setCurrentTab} setRegSuccess={setRegSuccess} />
-                                    )}
-                                    {currentTab === Tabs.Reset && <ResetPassword />}
-                                </div>
-                            </div>
+        <PageWrapper>
+            <div className="flex flex-col w-full justify-center items-center">
+                <div className="flex flex-col w-full md:w-1/2 lg:w-1/3 card text-center rounded-md md:shadow-2xl">
+                    <div className="card-body p-2 lg:p-6">
+                        <div className="tabs">
+                            <a
+                                className={`tab tab-bordered w-1/3${isLogin ? ' tab-active' : ''}`}
+                                onClick={handleLoginTab}
+                            >
+                                Log In
+                            </a>
+                            <a
+                                className={`tab tab-bordered w-1/3${isRegister ? ' tab-active' : ''}`}
+                                onClick={handleRegisterTab}
+                            >
+                                Register
+                            </a>
+                            <a
+                                className={`tab tab-bordered w-1/3${isReset ? ' tab-active' : ''}`}
+                                onClick={handleResetTab}
+                            >
+                                Reset
+                            </a>
+                        </div>
+                        <div className="px-2 py-4 lg:p-4">
+                            {currentTab === Tabs.Login && (
+                                <Login providers={providers} showRegistrationSuccess={regSuccess} />
+                            )}
+                            {currentTab === Tabs.Register && (
+                                <Register setCurrentTab={setCurrentTab} setRegSuccess={setRegSuccess} />
+                            )}
+                            {currentTab === Tabs.Reset && <ResetPassword />}
                         </div>
                     </div>
                 </div>
             </div>
-            <Footer />
-        </React.Fragment>
+        </PageWrapper>
     );
 };
 

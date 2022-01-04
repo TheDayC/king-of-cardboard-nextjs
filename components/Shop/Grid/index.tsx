@@ -83,8 +83,8 @@ export const Grid: React.FC = () => {
     }, [accessToken, filters.categories, filters.productTypes, createProductCollection]);
 
     return (
-        <div className="flex-1">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl2:grid-cols-4 gap-4">
+        <div className="flex flex-col w-full">
+            <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl2:grid-cols-4">
                 {products &&
                     products.map((product) => {
                         const shouldShowCompare = product.amount !== product.compare_amount;

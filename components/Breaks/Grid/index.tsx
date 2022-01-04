@@ -72,48 +72,39 @@ export const Grid: React.FC = () => {
     }, [cat, createBreakCollection]);
 
     return (
-        <div className="flex w-full p-4">
-            <div className="container mx-auto">
-                <div className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl2:grid-cols-4 gap-4">
-                    {breaks &&
-                        breaks.map((b) => {
-                            const breakSlots = safelyParse(
-                                b,
-                                'breakSlotsCollection.items',
-                                parseAsArrayOfBreakSlots,
-                                null
-                            );
-                            const sku_codes = breakSlots
-                                ? breakSlots.filter((bS) => bS).map((bS) => bS.productLink)
-                                : [];
+        <div className="flex flex-col w-full">
+            <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl2:grid-cols-4">
+                {breaks &&
+                    breaks.map((b) => {
+                        const breakSlots = safelyParse(b, 'breakSlotsCollection.items', parseAsArrayOfBreakSlots, null);
+                        const sku_codes = breakSlots ? breakSlots.filter((bS) => bS).map((bS) => bS.sku_code) : [];
 
-                            return (
-                                <BreakCard
-                                    cardImage={b.cardImage}
-                                    title={b.title}
-                                    tags={b.tags}
-                                    breakType={b.types}
-                                    breakSlug={b.slug}
-                                    slotSkus={sku_codes}
-                                    format={b.format}
-                                    breakDate={b.breakDate}
-                                    isLive={b.isLive}
-                                    isComplete={b.isComplete}
-                                    vodLink={b.vodLink}
-                                    key={b.title}
-                                />
-                            );
-                        })}
-                </div>
-                <div className="flex justify-center">
-                    {productPageCount > 1 && (
-                        <Pagination
-                            currentPage={currentPage}
-                            pageCount={productPageCount}
-                            handlePageNumber={handlePageNumber}
-                        />
-                    )}
-                </div>
+                        return (
+                            <BreakCard
+                                cardImage={b.cardImage}
+                                title={b.title}
+                                tags={b.tags}
+                                breakType={b.types}
+                                breakSlug={b.slug}
+                                slotSkus={sku_codes}
+                                format={b.format}
+                                breakDate={b.breakDate}
+                                isLive={b.isLive}
+                                isComplete={b.isComplete}
+                                vodLink={b.vodLink}
+                                key={b.title}
+                            />
+                        );
+                    })}
+            </div>
+            <div className="flex justify-center">
+                {productPageCount > 1 && (
+                    <Pagination
+                        currentPage={currentPage}
+                        pageCount={productPageCount}
+                        handlePageNumber={handlePageNumber}
+                    />
+                )}
             </div>
         </div>
     );

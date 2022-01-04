@@ -32,20 +32,16 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
     }, [accessToken, slug, dispatch, shouldFetch]);
 
     return (
-        <div className="p-4 lg:p-6 relative">
+        <div className="flex flex-col lg:flex-row relative">
             <Loading show={loading} />
-            <div className="container mx-auto">
-                <div className="flex flex-col lg:flex-row">
-                    <div className="flex flex-col w-1/3">
-                        <Images mainImage={cardImage} images={images} />
-                        <Legend />
-                    </div>
-                    <div id="productDetails" className="flex flex-col items-center w-full lg:w-3/4">
-                        <div className="card rounded-md shadow-lg bordered p-4 w-full lg:p-6">
-                            <Details name={title} tags={tags} description={splitDesc} />
-                            <Slots />
-                        </div>
-                    </div>
+            <div className="flex flex-col w-1/3">
+                <Images mainImage={cardImage} images={images} />
+                <Legend />
+            </div>
+            <div id="productDetails" className="flex flex-col items-center w-full lg:w-3/4">
+                <div className="card rounded-md shadow-lg bordered p-4 w-full lg:p-6">
+                    <Details name={title} tags={tags} description={splitDesc} />
+                    <Slots />
                 </div>
             </div>
         </div>

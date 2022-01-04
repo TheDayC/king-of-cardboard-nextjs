@@ -7,12 +7,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 
-import Header from '../../components/Header';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { addError, addSuccess } from '../../store/slices/alerts';
 import selector from './selector';
 import { resetPassword } from '../../utils/account';
-import Footer from '../../components/Footer';
+import PageWrapper from '../../components/PageWrapper';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -96,102 +95,94 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
     }
 
     return (
-        <React.Fragment>
-            <Header />
-            <div className="flex p-0 md:p-4 relative bg-primary-content">
-                <div className="container mx-auto">
-                    <div className="flex flex-col w-full justify-start items-center">
-                        <h1 className="text-xl mb-4">
-                            Reset password for <b>{emailAddress}</b>
-                        </h1>
-                        <div className="text-md text-error">
-                            <p>Passwords must:</p>
-                            <ul className="list-disc list-inside pl-6 mb-2">
-                                <li>Contain at least 8 characters</li>
-                                <li>Contain at least 1 number</li>
-                                <li>Contain at least 1 special character</li>
-                            </ul>
-                        </div>
+        <PageWrapper>
+            <div className="flex flex-col w-full justify-start items-center">
+                <h1 className="text-xl mb-4">
+                    Reset password for <b>{emailAddress}</b>
+                </h1>
+                <div className="text-md text-error">
+                    <p>Passwords must:</p>
+                    <ul className="list-disc list-inside pl-6 mb-2">
+                        <li>Contain at least 8 characters</li>
+                        <li>Contain at least 1 number</li>
+                        <li>Contain at least 1 special character</li>
+                    </ul>
+                </div>
 
-                        <div className="flex flex-col w-full lg:w-1/3 justify-start items-center p-2">
-                            <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-                                <div className="form-control mt-2">
-                                    <label className="input-group input-group-md">
-                                        <span className="bg-base-200">
-                                            <RiLockPasswordLine className="w-5 h-5" />
-                                        </span>
-                                        <input
-                                            type="password"
-                                            placeholder="Password"
-                                            {...register('password', {
-                                                required: { value: true, message: 'Password required' },
-                                                pattern: {
-                                                    value: PASS_PATTERN,
-                                                    message: 'Password confirmation must follow rules.',
-                                                },
-                                                validate: {
-                                                    notEmpty: (value: string) => value.length > 0,
-                                                },
-                                            })}
-                                            className={`input input-md input-bordered w-full${
-                                                passwordErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                    </label>
-                                    {passwordErr && (
-                                        <label className="label">
-                                            {passwordErr && <span className="label-text-alt">{passwordErr}</span>}
-                                        </label>
-                                    )}
-                                </div>
-                                <div className="form-control mt-2">
-                                    <label className="input-group input-group-md">
-                                        <span className="bg-base-200">
-                                            <RiLockPasswordFill className="w-5 h-5" />
-                                        </span>
-                                        <input
-                                            type="password"
-                                            placeholder="Confirm Password"
-                                            {...register('confirmPassword', {
-                                                required: { value: true, message: 'Confirm Password required' },
-                                                pattern: {
-                                                    value: PASS_PATTERN,
-                                                    message: 'Password confirmation must follow rules.',
-                                                },
-                                                validate: {
-                                                    sameAsPassword: (value: string) => value === password,
-                                                },
-                                            })}
-                                            className={`input input-md input-bordered w-full${
-                                                confirmPasswordErr ? ' input-error' : ''
-                                            }`}
-                                        />
-                                    </label>
-                                    {confirmPasswordErr && (
-                                        <label className="label">
-                                            {confirmPasswordErr && (
-                                                <span className="label-text-alt">{confirmPasswordErr}</span>
-                                            )}
-                                        </label>
-                                    )}
-                                </div>
-                                <div className="form-control mt-6">
-                                    <button
-                                        type="submit"
-                                        className={`btn btn-block w-full${
-                                            hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'
-                                        }${loading ? ' loading btn-square' : ''}`}
-                                    >
-                                        {loading ? '' : 'Update Password'}
-                                    </button>
-                                </div>
-                            </form>
+                <div className="flex flex-col w-full lg:w-1/3 justify-start items-center p-2">
+                    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+                        <div className="form-control mt-2">
+                            <label className="input-group input-group-md">
+                                <span className="bg-base-200">
+                                    <RiLockPasswordLine className="w-5 h-5" />
+                                </span>
+                                <input
+                                    type="password"
+                                    placeholder="Password"
+                                    {...register('password', {
+                                        required: { value: true, message: 'Password required' },
+                                        pattern: {
+                                            value: PASS_PATTERN,
+                                            message: 'Password confirmation must follow rules.',
+                                        },
+                                        validate: {
+                                            notEmpty: (value: string) => value.length > 0,
+                                        },
+                                    })}
+                                    className={`input input-md input-bordered w-full${
+                                        passwordErr ? ' input-error' : ''
+                                    }`}
+                                />
+                            </label>
+                            {passwordErr && (
+                                <label className="label">
+                                    {passwordErr && <span className="label-text-alt">{passwordErr}</span>}
+                                </label>
+                            )}
                         </div>
-                    </div>
+                        <div className="form-control mt-2">
+                            <label className="input-group input-group-md">
+                                <span className="bg-base-200">
+                                    <RiLockPasswordFill className="w-5 h-5" />
+                                </span>
+                                <input
+                                    type="password"
+                                    placeholder="Confirm Password"
+                                    {...register('confirmPassword', {
+                                        required: { value: true, message: 'Confirm Password required' },
+                                        pattern: {
+                                            value: PASS_PATTERN,
+                                            message: 'Password confirmation must follow rules.',
+                                        },
+                                        validate: {
+                                            sameAsPassword: (value: string) => value === password,
+                                        },
+                                    })}
+                                    className={`input input-md input-bordered w-full${
+                                        confirmPasswordErr ? ' input-error' : ''
+                                    }`}
+                                />
+                            </label>
+                            {confirmPasswordErr && (
+                                <label className="label">
+                                    {confirmPasswordErr && <span className="label-text-alt">{confirmPasswordErr}</span>}
+                                </label>
+                            )}
+                        </div>
+                        <div className="form-control mt-6">
+                            <button
+                                type="submit"
+                                className={`btn btn-block w-full${
+                                    hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'
+                                }${loading ? ' loading btn-square' : ''}`}
+                            >
+                                {loading ? '' : 'Update Password'}
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <Footer />
-        </React.Fragment>
+        </PageWrapper>
     );
 };
 

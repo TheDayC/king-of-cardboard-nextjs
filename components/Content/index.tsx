@@ -13,7 +13,7 @@ export const Content: React.FC<ContentProps> = ({ content }) => (
                 switch (node.nodeType) {
                     case 'heading-1':
                         return node.content.map((item, i) => (
-                            <h1 key={`item-${i}`} className="text-4xl mb-2">
+                            <h1 key={`item-${i}`} className="text-4xl mb-4">
                                 {item.value}
                             </h1>
                         ));
