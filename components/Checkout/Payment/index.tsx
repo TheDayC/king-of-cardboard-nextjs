@@ -297,7 +297,7 @@ export const Payment: React.FC = () => {
                             })}
 
                         <div className="divider lightDivider"></div>
-                        <UseCoins />
+                        {session && <UseCoins />}
                         <div className="divider lightDivider"></div>
                         <div className="flex justify-end">
                             <button
