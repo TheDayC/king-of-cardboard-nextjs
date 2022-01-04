@@ -4,7 +4,6 @@ import { getSession } from 'next-auth/react';
 import Error from 'next/error';
 import { useSelector } from 'react-redux';
 
-import Header from '../../../components/Header';
 import AccountMenu from '../../../components/Account/Menu';
 import { getCustomerAddress, getAddress } from '../../../utils/account';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -12,7 +11,7 @@ import selector from './selector';
 import { CommerceLayerResponse } from '../../../types/api';
 import Loading from '../../../components/Loading';
 import Fields from '../../../components/Account/AddressBook/Fields';
-import Footer from '../../../components/Footer';
+import PageWrapper from '../../../components/PageWrapper';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -87,42 +86,36 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId, em
     }
 
     return (
-        <React.Fragment>
-            <Header />
-            <div className="flex p-2 md:p-4 relative bg-primary-content">
-                <div className="container mx-auto">
-                    <div className="flex flex-col md:flex-row w-full justify-start items-start">
-                        <div className="hidden md:block">
-                            <AccountMenu isDropdown={false} />
-                        </div>
-                        <div className="dropdown w-full p-2 md:hidden">
-                            <div tabIndex={0} className="btn btn-block">
-                                Account Menu
-                            </div>
-                            <AccountMenu isDropdown />
-                        </div>
-                        <div className="flex flex-col py-2 px-6 md:py-4 md:px-8 w-full md:w-3/4 relative">
-                            <Loading show={isLoading} />
-                            {currentAddress && (
-                                <Fields
-                                    addressId={currentAddress.id}
-                                    addressLineOne={safelyParse(currentAddress, 'attributes.line_1', parseAsString, '')}
-                                    addressLineTwo={safelyParse(currentAddress, 'attributes.line_2', parseAsString, '')}
-                                    city={safelyParse(currentAddress, 'attributes.city', parseAsString, '')}
-                                    company={safelyParse(currentAddress, 'attributes.company', parseAsString, '')}
-                                    county={safelyParse(currentAddress, 'attributes.state_code', parseAsString, '')}
-                                    firstName={safelyParse(currentAddress, 'attributes.first_name', parseAsString, '')}
-                                    lastName={safelyParse(currentAddress, 'attributes.last_name', parseAsString, '')}
-                                    phone={safelyParse(currentAddress, 'attributes.phone', parseAsString, '')}
-                                    postcode={safelyParse(currentAddress, 'attributes.zip_code', parseAsString, '')}
-                                />
-                            )}
-                        </div>
+        <PageWrapper>
+            <div className="flex flex-col md:flex-row w-full justify-start items-start">
+                <div className="hidden md:block">
+                    <AccountMenu isDropdown={false} />
+                </div>
+                <div className="dropdown w-full p-2 md:hidden">
+                    <div tabIndex={0} className="btn btn-block">
+                        Account Menu
                     </div>
+                    <AccountMenu isDropdown />
+                </div>
+                <div className="flex flex-col py-2 px-6 md:py-4 md:px-8 w-full md:w-3/4 relative">
+                    <Loading show={isLoading} />
+                    {currentAddress && (
+                        <Fields
+                            addressId={currentAddress.id}
+                            addressLineOne={safelyParse(currentAddress, 'attributes.line_1', parseAsString, '')}
+                            addressLineTwo={safelyParse(currentAddress, 'attributes.line_2', parseAsString, '')}
+                            city={safelyParse(currentAddress, 'attributes.city', parseAsString, '')}
+                            company={safelyParse(currentAddress, 'attributes.company', parseAsString, '')}
+                            county={safelyParse(currentAddress, 'attributes.state_code', parseAsString, '')}
+                            firstName={safelyParse(currentAddress, 'attributes.first_name', parseAsString, '')}
+                            lastName={safelyParse(currentAddress, 'attributes.last_name', parseAsString, '')}
+                            phone={safelyParse(currentAddress, 'attributes.phone', parseAsString, '')}
+                            postcode={safelyParse(currentAddress, 'attributes.zip_code', parseAsString, '')}
+                        />
+                    )}
                 </div>
             </div>
-            <Footer />
-        </React.Fragment>
+        </PageWrapper>
     );
 };
 

@@ -5,13 +5,12 @@ import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 
 import AccountMenu from '../../components/Account/Menu';
-import Header from '../../components/Header';
 import { ServerSideRedirectProps } from '../../types/pages';
 import Account from '../../components/Account';
 import selector from './slugSelector';
 import Content from '../../components/Content';
 import { parseAsArrayOfContentJSON, parseAsSlug, parseAsString, safelyParse } from '../../utils/parsers';
-import Footer from '../../components/Footer';
+import PageWrapper from '../../components/PageWrapper';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 export async function getServerSideProps(context: any): Promise<ServerSideRedirectProps | object> {
@@ -55,29 +54,23 @@ export const AccountSubPage: React.FC<AccountSubPageProps> = ({ errorCode }) => 
     }
 
     return (
-        <React.Fragment>
-            <Header />
-            <div className="flex p-0 md:p-4 relative bg-primary-content">
-                <div className="container mx-auto">
-                    <div className="flex flex-col md:flex-row w-full justify-start items-start">
-                        <div className="hidden md:block">
-                            <AccountMenu isDropdown={false} />
-                        </div>
-                        <div className="dropdown w-full p-2 md:hidden">
-                            <div tabIndex={0} className="btn btn-block">
-                                Account Menu
-                            </div>
-                            <AccountMenu isDropdown />
-                        </div>
-                        <div className="flex flex-col relative w-full py-2 px-6 md:w-3/4 md:py-4 md:px-8">
-                            {content && <Content content={content} />}
-                            <Account slug={slug} />
-                        </div>
+        <PageWrapper>
+            <div className="flex flex-col md:flex-row w-full justify-start items-start">
+                <div className="hidden md:block">
+                    <AccountMenu isDropdown={false} />
+                </div>
+                <div className="dropdown w-full p-2 md:hidden">
+                    <div tabIndex={0} className="btn btn-block">
+                        Account Menu
                     </div>
+                    <AccountMenu isDropdown />
+                </div>
+                <div className="flex flex-col relative w-full px-2 py-0 md:w-3/4 md:px-4 md md:px-8">
+                    {content && <Content content={content} />}
+                    <Account slug={slug} />
                 </div>
             </div>
-            <Footer />
-        </React.Fragment>
+        </PageWrapper>
     );
 };
 
