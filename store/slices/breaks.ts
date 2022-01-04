@@ -19,22 +19,19 @@ interface SingleBreakThunkInput {
     slug: string;
 }
 
-export const fetchBreaks = createAsyncThunk(
-    'products/fetchBreaks',
-    async (data: BreaksThunkInput): Promise<Break[]> => {
-        const { accessToken, limit, skip } = data;
+export const fetchBreaks = createAsyncThunk('breaks/fetchBreaks', async (data: BreaksThunkInput): Promise<Break[]> => {
+    const { accessToken, limit, skip } = data;
 
-        return await getBreaks(accessToken, limit, skip);
-    }
-);
+    return await getBreaks(accessToken, limit, skip);
+});
 
 export const fetchBreaksTotal = createAsyncThunk(
-    'products/fetchBreaksTotal',
+    'breaks/fetchBreaksTotal',
     async (): Promise<number> => await getBreaksTotal()
 );
 
 export const fetchSingleBreak = createAsyncThunk(
-    'products/fetchSingleBreak',
+    'breaks/fetchSingleBreak',
     async (data: SingleBreakThunkInput): Promise<SingleBreak> => {
         const { accessToken, slug } = data;
 

@@ -7,7 +7,7 @@ import { Break, ContentfulBreak, SingleBreak } from '../../types/breaks';
 import { CartItem } from '../../types/cart';
 import { MergedShipmentMethods } from '../../types/checkout';
 import { ContentfulPage } from '../../types/pages';
-import { SingleProduct } from '../../types/products';
+import { Product, SingleProduct } from '../../types/products';
 import { SocialMedia } from '../../types/profile';
 
 export interface IAppState {
@@ -204,5 +204,7 @@ export interface CommonThunkInput {
 }
 
 export interface ProductsState {
+    products: Product[];
+    productsTotal: number;
     currentProduct: SingleProduct;
 }

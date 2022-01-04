@@ -253,8 +253,8 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
         isLive: safelyParse(contentfulBreak, 'isLive', parseAsBoolean, false),
         isComplete: safelyParse(contentfulBreak, 'isComplete', parseAsBoolean, false),
         vodLink: safelyParse(contentfulBreak, 'vodLink', parseAsString, ''),
-        amount: safelyParse(prices, 'attributes.formatted_amount', parseAsString, '£0.00'),
-        compare_amount: safelyParse(prices, 'attributes.formatted_compare_at_amount', parseAsString, '£0.00'),
+        amount: safelyParse(prices, 'attributes.formatted_amount', parseAsString, ''),
+        compare_amount: safelyParse(prices, 'attributes.formatted_compare_at_amount', parseAsString, ''),
         inventory: safelyParse(skuData, 'attributes.inventory', parseAsSkuInventory, {
             available: false,
             quantity: 0,

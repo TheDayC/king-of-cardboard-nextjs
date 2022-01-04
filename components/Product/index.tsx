@@ -10,6 +10,7 @@ import Images from './Images';
 import Details from './Details';
 import { fetchSingleProduct } from '../../store/slices/products';
 import { addError, addSuccess } from '../../store/slices/alerts';
+import Loading from '../Loading';
 
 interface ProductProps {
     slug: string;
@@ -25,7 +26,6 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
     const currentLineItem = items && currentProduct ? items.find((c) => c.sku_code === currentProduct.sku_code) : null;
     const hasExceededStock = currentLineItem ? currentLineItem.quantity >= stock : false;
     const description = split(currentProduct.description, '\n\n');
-    const shouldShowCompare = currentProduct.amount !== currentProduct.compare_amount;
     const btnDisabled = hasExceededStock ? ' btn-disabled' : ' btn-primary';
     const btnLoading = loading ? ' loading btn-square' : '';
 
@@ -82,39 +82,38 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         }
     }, [hasExceededStock, stock, dispatch]);
 
-    return (
-        <div className="p-2 lg:p-8 relative bg-primary-content">
-            <div className="container mx-auto">
-                <div className="flex flex-col lg:flex-row lg:space-x-16">
-                    <Images mainImage={currentProduct.images.items[0]} imageCollection={currentProduct.images.items} />
+    if (currentProduct.id.length <= 0) return null;
 
-                    <div id="productDetails" className="flex-grow">
-                        <div className="card rounded-md shadow-lg p-2 lg:p-6">
-                            <Details
-                                name={currentProduct.name}
-                                amount={currentProduct.amount}
-                                compareAmount={currentProduct.compare_amount}
-                                isAvailable={currentProduct.inventory.available}
-                                shouldShowCompare={shouldShowCompare}
-                                quantity={stock}
-                                tags={currentProduct.tags}
-                                description={description}
-                            />
-                            <div className="quantity mb-4 flex flex-col justify-center">
-                                <form onSubmit={handleSubmit(onSubmit)}>
-                                    <div className="flex flex-col lg:flex-row justify-start align-center lg:space-x-2">
-                                        <button
-                                            aria-label="add to cart"
-                                            className={`btn btn-lg rounded-md${btnDisabled}${btnLoading}`}
-                                            disabled={hasExceededStock}
-                                        >
-                                            {loading ? '' : 'Add to cart'}
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
+    return (
+        <div className="flex flex-col relative lg:flex-row lg:space-x-8">
+            <Images mainImage={currentProduct.cardImage} imageCollection={currentProduct.images.items} />
+
+            <div id="productDetails" className="flex-grow">
+                <div className="card rounded-md shadow-lg p-2 md:p-4 lg:p-8">
+                    <Details
+                        name={currentProduct.name}
+                        amount={currentProduct.amount}
+                        compareAmount={currentProduct.compare_amount}
+                        isAvailable={currentProduct.inventory.available}
+                        quantity={stock}
+                        tags={currentProduct.tags}
+                        description={description}
+                    />
+                    {currentProduct.inventory.available && (
+                        <div className="quantity mb-4 flex flex-col justify-center">
+                            <form onSubmit={handleSubmit(onSubmit)}>
+                                <div className="flex flex-col lg:flex-row justify-start align-center lg:space-x-2">
+                                    <button
+                                        aria-label="add to cart"
+                                        className={`btn btn-lg rounded-md${btnDisabled}${btnLoading}`}
+                                        disabled={hasExceededStock}
+                                    >
+                                        {loading ? '' : 'Add to cart'}
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>

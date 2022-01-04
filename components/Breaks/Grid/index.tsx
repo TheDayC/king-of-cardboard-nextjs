@@ -5,7 +5,6 @@ import { ceil, divide } from 'lodash';
 import Pagination from '../../Pagination';
 import { fetchBreaks, fetchBreaksTotal, setIsLoadingBreaks } from '../../../store/slices/breaks';
 import BreakCard from './BreakCard';
-import { parseAsArrayOfBreakSlots, safelyParse } from '../../../utils/parsers';
 import selector from './selector';
 
 const PER_PAGE = 9;
@@ -23,12 +22,12 @@ export const Grid: React.FC = () => {
         (pageNumber: number) => {
             if (accessToken) {
                 dispatch(setIsLoadingBreaks(true));
-                dispatch(fetchBreaks({ accessToken, limit: currentPage, skip: PER_PAGE }));
                 setCurrentPage(pageNumber);
+                dispatch(fetchBreaks({ accessToken, limit: pageNumber, skip: PER_PAGE }));
                 dispatch(setIsLoadingBreaks(false));
             }
         },
-        [accessToken, dispatch, currentPage]
+        [accessToken, dispatch]
     );
 
     // Fetch all breaks on page load.

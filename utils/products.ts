@@ -1,6 +1,7 @@
-import { isArray } from 'lodash';
+import { isArray, join } from 'lodash';
 
 import { Categories, ProductType } from '../enums/shop';
+import { CommerceLayerResponse } from '../types/api';
 import { SkuItem, SkuProduct } from '../types/commerce';
 import {
     ContentfulProduct,
@@ -51,18 +52,18 @@ export function parseProductCategory(type: string): Categories {
 }
 
 /* FETCHING PRODUCTS - NEW */
-export async function fetchContentfulProducts(
+export async function getProducts(
+    accessToken: string,
     limit: number,
     skip: number,
     categories: Categories[],
     productTypes: ProductType[]
-): Promise<ContentfulProductResponse> {
+): Promise<Product[]> {
     // Chain filters, entire object can't be stringified but arrays can for a quick win.
     const where = `types_contains_all: ${JSON.stringify(productTypes)}, categories_contains_all: ${JSON.stringify(
         categories
     )}`;
 
-    // Piece together query.
     const query = `
         query {
             productCollection (limit: ${limit}, skip: ${skip}, where: {${where}}) {
@@ -96,23 +97,79 @@ export async function fetchContentfulProducts(
 
     // Make the contentful request.
     const productResponse = await fetchContent(query);
-
-    // On a successful request get the total number of items for pagination.
-    const total = safelyParse(productResponse, 'data.content.productCollection.total', parseAsNumber, 0);
+    const cl = authClient(accessToken);
 
     // On success get the item data for products.
     const productCollection = safelyParse(
         productResponse,
         'data.content.productCollection.items',
         parseAsArrayOfContentfulProducts,
-        null
+        []
     );
 
+    const sku_codes = productCollection.map((pC) => safelyParse(pC, 'productLink', parseAsString, ''));
+    const skuFilter = join(sku_codes, ',');
+    const fields = '&fields[skus]=id,code&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount';
+    const res = await cl.get(
+        `/api/skus?filter[q][code_in]=${skuFilter}&filter[q][stock_items_quantity_gt]=0&include=prices${fields}`
+    );
+    const skuItems = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, []);
+    const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
+    const skusWithStock = skuItems.map((sI) => safelyParse(sI, 'attributes.code', parseAsString, ''));
+
     // Return both.
-    return {
-        total,
-        productCollection,
-    };
+    return productCollection
+        .filter((pC) => skusWithStock.includes(pC.productLink))
+        .map((pC) => {
+            const sku_code = safelyParse(pC, 'productLink', parseAsString, '');
+            const skuItem =
+                skuItems.find((i) => safelyParse(i, 'attributes.code', parseAsString, '') === sku_code) ||
+                ({} as CommerceLayerResponse);
+            const prices =
+                included.find(
+                    (i) => i.type === 'prices' && safelyParse(i, 'attributes.sku_code', parseAsString, '') === sku_code
+                ) || ({} as CommerceLayerResponse);
+            const images = safelyParse(pC, 'imageCollection', parseAsImageCollection, { items: [] });
+
+            return {
+                id: safelyParse(skuItem, 'id', parseAsString, ''),
+                name: safelyParse(pC, 'name', parseAsString, ''),
+                slug: safelyParse(pC, 'slug', parseAsString, ''),
+                sku_code,
+                description: safelyParse(pC, 'description', parseAsString, ''),
+                types: safelyParse(pC, 'types', parseAsArrayOfStrings, []),
+                categories: safelyParse(pC, 'categories', parseAsArrayOfStrings, []),
+                images: images.items.map((image) => ({
+                    title: safelyParse(image, 'title', parseAsString, ''),
+                    description: safelyParse(image, 'description', parseAsString, ''),
+                    url: safelyParse(image, 'url', parseAsString, ''),
+                })),
+                cardImage: {
+                    title: safelyParse(pC, 'cardImage.title', parseAsString, ''),
+                    description: safelyParse(pC, 'cardImage.description', parseAsString, ''),
+                    url: safelyParse(pC, 'cardImage.url', parseAsString, ''),
+                },
+                tags: safelyParse(pC, 'tags', parseAsArrayOfStrings, []),
+                amount: safelyParse(prices, 'attributes.formatted_amount', parseAsString, ''),
+                compare_amount: safelyParse(prices, 'attributes.formatted_compare_at_amount', parseAsString, ''),
+            };
+        });
+}
+
+export async function getProductsTotal(): Promise<number> {
+    const query = `
+        query {
+            productCollection (limit: 1, skip: 0) {
+                total
+            }
+        }
+    `;
+
+    // Make the contentful request.
+    const response = await fetchContent(query);
+
+    // On a successful request get the total number of items for pagination.
+    return safelyParse(response, 'data.content.breaksCollection.total', parseAsNumber, 0);
 }
 
 export async function fetchProductBySlug(slug: string): Promise<ContentfulProduct | null> {
