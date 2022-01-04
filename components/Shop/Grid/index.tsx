@@ -84,7 +84,7 @@ export const Grid: React.FC = () => {
 
     return (
         <div className="flex flex-col w-full">
-            <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl2:grid-cols-4">
+            <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl2:grid-cols-6">
                 {products &&
                     products.map((product) => {
                         const shouldShowCompare = product.amount !== product.compare_amount;
