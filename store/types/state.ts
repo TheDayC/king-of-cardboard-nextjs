@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
 import { GiftCard } from '../../types/account';
-import { ContentfulBreak, SingleBreak } from '../../types/breaks';
+import { Break, ContentfulBreak, SingleBreak } from '../../types/breaks';
 import { CartItem } from '../../types/cart';
 import { MergedShipmentMethods } from '../../types/checkout';
 import { ContentfulPage } from '../../types/pages';
@@ -174,7 +174,9 @@ export interface ShopState {
 
 export interface BreaksState {
     currentPage: number;
+    breaksTotal: number;
     isLoadingBreaks: boolean;
+    breaks: Break[];
     currentBreak: SingleBreak;
 }
 

@@ -1,14 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { AiFillStar, AiTwotoneCalendar } from 'react-icons/ai';
 import { BsTwitch, BsFillCheckCircleFill } from 'react-icons/bs';
 
 import { ImageItem } from '../../../../types/products';
-import selector from './selector';
-import { getSkus } from '../../../../utils/commerce';
 import Countdown from './Countdown';
 
 interface BreakProps {
@@ -17,7 +14,7 @@ interface BreakProps {
     tags: string[];
     breakType: string;
     breakSlug: string;
-    slotSkus: string[];
+    slots: number;
     format: string;
     breakDate: string;
     isLive: boolean;
@@ -31,52 +28,35 @@ export const BreakCard: React.FC<BreakProps> = ({
     tags,
     breakType,
     breakSlug,
-    slotSkus,
+    slots,
     format,
     breakDate,
     isLive,
     isComplete,
     vodLink,
 }) => {
-    const { accessToken } = useSelector(selector);
-    const [slotsAvailable, setSlotsAvailable] = useState<number | null>(null);
-    const hasSlots = slotsAvailable && slotsAvailable > 0;
+    const plural = slots > 1 ? 'slots' : 'slot';
+    const slotsText = slots > 0 ? `${slots} ${plural} available` : 'Sold Out!';
     const breakDateLuxon = DateTime.fromISO(breakDate, { zone: 'Europe/London' });
     const isActive = !isLive && !isComplete;
-
-    const fetchSlotSkuData = useCallback(async (token: string, skus: string[]) => {
-        const skuData = await getSkus(token, skus);
-
-        if (skuData) {
-            setSlotsAvailable(skuData.length);
-        } else {
-            setSlotsAvailable(0);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (accessToken) {
-            fetchSlotSkuData(accessToken, slotSkus);
-        }
-    }, [accessToken, slotSkus, fetchSlotSkuData]);
 
     return (
         <div className="card shadow-md rounded-md bordered pt-4">
             {cardImage && (
                 <div className="relative h-20 md:h-30 lg:h-40">
-                    <Image
-                        src={cardImage.url}
-                        alt={cardImage.description}
-                        title={cardImage.title}
-                        layout="fill"
-                        objectFit="scale-down"
-                        className="rounded-sm"
-                    />
+                    {cardImage.url.length > 0 && (
+                        <Image
+                            src={cardImage.url}
+                            alt={cardImage.description}
+                            title={cardImage.title}
+                            layout="fill"
+                            objectFit="scale-down"
+                            className="rounded-sm"
+                        />
+                    )}
                     {isActive && (
                         <div className="badge badge-accent absolute -bottom-2 left-0 ml-4 lg:ml-6 shadow-md">
-                            {hasSlots
-                                ? `${slotsAvailable} ${slotsAvailable > 1 ? 'slots' : 'slot'} available`
-                                : 'Sold Out!'}
+                            {slotsText}
                         </div>
                     )}
                     {isComplete && (

@@ -28,15 +28,17 @@ export interface ContentfulBreakTypes {
 }
 
 export interface Break {
-    id: string;
+    cardImage: ImageItem;
     title: string;
+    tags: string[];
+    types: string;
     slug: string;
-    sku_code: string | null;
-    description: string | null;
-    types: string | null;
-    cardImage: ImageItem | null;
-    imagesCollection: ImageCollection | null;
-    tags: string[] | null;
+    slots: number;
+    format: string;
+    breakDate: string;
+    isLive: boolean;
+    isComplete: boolean;
+    vodLink: string;
 }
 
 export interface SingleBreak {
