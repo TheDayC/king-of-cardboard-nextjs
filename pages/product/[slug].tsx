@@ -8,9 +8,13 @@ import PageWrapper from '../../components/PageWrapper';
 
 export const ProductPage: React.FC<CommerceStaticProps> = () => {
     const router = useRouter();
-    const slug = safelyParse(router, 'query.slug', parseAsString, null);
+    const slug = safelyParse(router, 'query.slug', parseAsString, '');
 
-    return <PageWrapper>{slug && <Product slug={slug} />}</PageWrapper>;
+    return (
+        <PageWrapper>
+            <Product slug={slug} />
+        </PageWrapper>
+    );
 };
 
 export default ProductPage;

@@ -3,11 +3,11 @@ import { DateTime } from 'luxon';
 import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
 import { GiftCard } from '../../types/account';
-import { ContentfulBreak, SingleBreak } from '../../types/breaks';
+import { Break, ContentfulBreak, SingleBreak } from '../../types/breaks';
 import { CartItem } from '../../types/cart';
 import { MergedShipmentMethods } from '../../types/checkout';
 import { ContentfulPage } from '../../types/pages';
-import { SingleProduct } from '../../types/products';
+import { Product, SingleProduct } from '../../types/products';
 import { SocialMedia } from '../../types/profile';
 
 export interface IAppState {
@@ -174,7 +174,9 @@ export interface ShopState {
 
 export interface BreaksState {
     currentPage: number;
+    breaksTotal: number;
     isLoadingBreaks: boolean;
+    breaks: Break[];
     currentBreak: SingleBreak;
 }
 
@@ -202,5 +204,7 @@ export interface CommonThunkInput {
 }
 
 export interface ProductsState {
+    products: Product[];
+    productsTotal: number;
     currentProduct: SingleProduct;
 }

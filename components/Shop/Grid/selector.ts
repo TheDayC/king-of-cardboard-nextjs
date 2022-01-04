@@ -5,8 +5,10 @@ import { selectFiltersData, selectProductData, selectGlobalData, selectShopData 
 const selector = createSelector(
     [selectProductData, selectFiltersData, selectGlobalData, selectShopData],
     (products, filters, global, shop) => ({
-        products,
-        filters,
+        products: products.products,
+        productsTotal: products.productsTotal,
+        categories: filters.categories,
+        productTypes: filters.productTypes,
         accessToken: global.accessToken,
         currentPage: shop.currentPage,
     })

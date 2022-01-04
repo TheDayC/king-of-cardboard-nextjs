@@ -2,16 +2,39 @@ import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { SingleProduct } from '../../types/products';
-import { getSingleProduct } from '../../utils/products';
+import { Categories, ProductType } from '../../enums/shop';
+import { Product, SingleProduct } from '../../types/products';
+import { getProducts, getProductsTotal, getSingleProduct } from '../../utils/products';
 import productsInitialState from '../state/products';
 
 const hydrate = createAction<AppState>(HYDRATE);
+
+interface ProductsThunkInput {
+    accessToken: string;
+    limit: number;
+    skip: number;
+    categories: Categories[];
+    productTypes: ProductType[];
+}
 
 interface SingleProductThunkInput {
     accessToken: string;
     slug: string;
 }
+
+export const fetchProducts = createAsyncThunk(
+    'products/fetchProducts',
+    async (data: ProductsThunkInput): Promise<Product[]> => {
+        const { accessToken, limit, skip, categories, productTypes } = data;
+
+        return await getProducts(accessToken, limit, skip, categories, productTypes);
+    }
+);
+
+export const fetchProductsTotal = createAsyncThunk(
+    'products/fetchProductsTotal',
+    async (): Promise<number> => await getProductsTotal()
+);
 
 export const fetchSingleProduct = createAsyncThunk(
     'products/fetchSingleProduct',
@@ -31,10 +54,15 @@ const productsSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        // Add reducers for additional action types here, and handle loading state as needed
-        builder.addCase(fetchSingleProduct.fulfilled, (state, action) => {
-            state.currentProduct = action.payload;
+        builder.addCase(fetchProducts.fulfilled, (state, action) => {
+            state.products = action.payload;
         }),
+            builder.addCase(fetchProductsTotal.fulfilled, (state, action) => {
+                state.productsTotal = action.payload;
+            }),
+            builder.addCase(fetchSingleProduct.fulfilled, (state, action) => {
+                state.currentProduct = action.payload;
+            }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,
                 ...action.payload[productsSlice.name],

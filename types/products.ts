@@ -1,18 +1,18 @@
-import { SkuInventory, SkuOption } from './commerce';
+import { SkuInventory } from './commerce';
 
 export interface Product {
-    id: string | null;
-    name: string | null;
-    slug: string | null;
-    sku_code: string | null;
-    description: string | null;
-    types: string[] | null;
-    categories: string[] | null;
-    images: ImageCollection | null;
-    cardImage: ImageItem | null;
-    tags: string[] | null;
-    amount: string | null;
-    compare_amount: string | null;
+    id: string;
+    name: string;
+    slug: string;
+    sku_code: string;
+    description: string;
+    types: string[];
+    categories: string[];
+    images: ImageItem[];
+    cardImage: ImageItem;
+    tags: string[];
+    amount: string;
+    compare_amount: string;
 }
 
 export interface SingleProduct {

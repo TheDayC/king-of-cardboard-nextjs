@@ -3,111 +3,68 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ceil, divide } from 'lodash';
 
 import selector from './selector';
-import { fetchContentfulProducts, mergeProductData } from '../../../utils/products';
-import { getSkus } from '../../../utils/commerce';
-import { Product } from '../../../types/products';
 import Pagination from '../../Pagination';
-import { Categories, ProductType } from '../../../enums/shop';
 import { setIsLoadingProducts } from '../../../store/slices/shop';
 import ProductCard from './ProductCard';
-import { parseAsString, safelyParse } from '../../../utils/parsers';
+import { fetchProducts, fetchProductsTotal } from '../../../store/slices/products';
 
-const PRODUCTS_PER_PAGE = 9;
+const PER_PAGE = 9;
 
 export const Grid: React.FC = () => {
-    const { accessToken, filters } = useSelector(selector);
+    const { accessToken, categories, productTypes, products, productsTotal } = useSelector(selector);
     const dispatch = useDispatch();
-    const [products, setProducts] = useState<Product[] | null>(null);
-    const [totalProducts, setTotalProducts] = useState(0);
     const [currentPage, setCurrentPage] = useState(0);
-    const productPageCount = ceil(divide(totalProducts, PRODUCTS_PER_PAGE));
-
-    const createProductCollection = useCallback(
-        async (accessToken: string, currentPage: number, categories: Categories[], productTypes: ProductType[]) => {
-            // First, find our contentful products with links.
-            // Use Limit for max products per request.
-            // Multiply the currentPage (needs to start at 0) by the limit to skip over the same amount of products each time.
-            const { total, productCollection } = await fetchContentfulProducts(
-                PRODUCTS_PER_PAGE,
-                currentPage * PRODUCTS_PER_PAGE,
-                categories,
-                productTypes
-            );
-
-            // If we find products then move on to fetching by SKU in commerce layer.
-            if (productCollection) {
-                const sku_codes = productCollection.map((p) => p.productLink);
-                const skuItems = await getSkus(accessToken, sku_codes);
-
-                // If we hit some skuItems then put them in the store.
-                if (skuItems) {
-                    const mergedProducts = mergeProductData(productCollection, skuItems);
-                    setProducts(mergedProducts);
-                }
-            } else {
-                setProducts(null);
-            }
-
-            // Set the total number of products for pagination.
-            setTotalProducts(total);
-            dispatch(setIsLoadingProducts(false));
-        },
-        [dispatch]
-    );
+    const [shouldFetch, setShouldFetch] = useState(true);
+    const productPageCount = ceil(divide(productsTotal, PER_PAGE));
 
     // Handle the page number and set it in local state.
     const handlePageNumber = useCallback(
         (pageNumber: number) => {
-            dispatch(setIsLoadingProducts(true));
-            setCurrentPage(pageNumber);
-
             if (accessToken) {
-                createProductCollection(accessToken, pageNumber, filters.categories, filters.productTypes);
+                dispatch(setIsLoadingProducts(true));
+                setCurrentPage(pageNumber);
+                dispatch(fetchProducts({ accessToken, limit: pageNumber, skip: PER_PAGE, categories, productTypes }));
+                dispatch(setIsLoadingProducts(false));
             }
         },
-        [accessToken, filters.categories, filters.productTypes, createProductCollection, dispatch]
+        [accessToken, categories, productTypes, dispatch]
     );
 
     // Create the product collection on load.
     useEffect(() => {
-        if (!products && accessToken) {
-            createProductCollection(accessToken, 0, filters.categories, filters.productTypes);
+        if (shouldFetch && accessToken) {
+            setShouldFetch(false);
+            dispatch(fetchProductsTotal());
+            dispatch(fetchProducts({ accessToken, limit: 0, skip: 0, categories, productTypes }));
+            //createProductCollection(accessToken, 0, filters.categories, filters.productTypes);
         }
-    }, [products, accessToken, filters.categories, filters.productTypes, createProductCollection]);
+    }, [dispatch, accessToken, shouldFetch, categories, productTypes]);
 
     // Filter the collection.
     useEffect(() => {
         if (accessToken) {
-            createProductCollection(accessToken, 0, filters.categories, filters.productTypes);
+            dispatch(fetchProductsTotal());
+            dispatch(fetchProducts({ accessToken, limit: 0, skip: 0, categories, productTypes }));
         }
-    }, [accessToken, filters.categories, filters.productTypes, createProductCollection]);
+    }, [dispatch, accessToken, categories, productTypes]);
 
     return (
         <div className="flex flex-col w-full">
             <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl2:grid-cols-6">
-                {products &&
-                    products.map((product) => {
-                        const shouldShowCompare = product.amount !== product.compare_amount;
-                        const { name, tags, amount, compare_amount, slug } = product;
-                        const imgUrl = safelyParse(product, 'cardImage.url', parseAsString, null);
-                        const imgDesc = safelyParse(product, 'cardImage.description', parseAsString, '');
-                        const imgTitle = safelyParse(product, 'cardImage.title', parseAsString, '');
-
-                        return (
-                            <ProductCard
-                                name={name}
-                                image={imgUrl}
-                                imgDesc={imgDesc}
-                                imgTitle={imgTitle}
-                                tags={tags}
-                                shouldShowCompare={shouldShowCompare}
-                                amount={amount}
-                                compareAmount={compare_amount}
-                                slug={slug}
-                                key={`product-card-${name}`}
-                            />
-                        );
-                    })}
+                {products.length > 0 &&
+                    products.map((product) => (
+                        <ProductCard
+                            name={product.name}
+                            image={product.cardImage.url}
+                            imgDesc={product.cardImage.description}
+                            imgTitle={product.cardImage.title}
+                            tags={product.tags}
+                            amount={product.amount}
+                            compareAmount={product.compare_amount}
+                            slug={product.slug}
+                            key={`product-card-${product.name}`}
+                        />
+                    ))}
             </div>
             <div className="flex justify-center">
                 {productPageCount > 1 && (

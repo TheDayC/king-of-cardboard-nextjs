@@ -2,19 +2,36 @@ import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { SingleBreak } from '../../types/breaks';
-import { getSingleBreak } from '../../utils/breaks';
+import { Break, SingleBreak } from '../../types/breaks';
+import { getBreaks, getBreaksTotal, getSingleBreak } from '../../utils/breaks';
 import breaksInitialState from '../state/breaks';
 
 const hydrate = createAction<AppState>(HYDRATE);
+
+interface BreaksThunkInput {
+    accessToken: string;
+    limit: number;
+    skip: number;
+}
 
 interface SingleBreakThunkInput {
     accessToken: string;
     slug: string;
 }
 
+export const fetchBreaks = createAsyncThunk('breaks/fetchBreaks', async (data: BreaksThunkInput): Promise<Break[]> => {
+    const { accessToken, limit, skip } = data;
+
+    return await getBreaks(accessToken, limit, skip);
+});
+
+export const fetchBreaksTotal = createAsyncThunk(
+    'breaks/fetchBreaksTotal',
+    async (): Promise<number> => await getBreaksTotal()
+);
+
 export const fetchSingleBreak = createAsyncThunk(
-    'products/fetchSingleBreak',
+    'breaks/fetchSingleBreak',
     async (data: SingleBreakThunkInput): Promise<SingleBreak> => {
         const { accessToken, slug } = data;
 
@@ -34,10 +51,15 @@ const breakSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        // Add reducers for additional action types here, and handle loading state as needed
-        builder.addCase(fetchSingleBreak.fulfilled, (state, action) => {
-            state.currentBreak = action.payload;
+        builder.addCase(fetchBreaks.fulfilled, (state, action) => {
+            state.breaks = action.payload;
         }),
+            builder.addCase(fetchBreaksTotal.fulfilled, (state, action) => {
+                state.breaksTotal = action.payload;
+            }),
+            builder.addCase(fetchSingleBreak.fulfilled, (state, action) => {
+                state.currentBreak = action.payload;
+            }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,
                 ...action.payload[breakSlice.name],

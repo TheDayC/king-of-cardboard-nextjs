@@ -1,45 +1,28 @@
 import { join } from 'lodash';
-import {
-    BreakSlot,
-    BreakSlotWithSku,
-    ContentfulBreak,
-    ContentfulBreaksResponse,
-    ContentfulBreakTypes,
-    SingleBreak,
-} from '../types/breaks';
-import { SkuItem, SkuProduct } from '../types/commerce';
+
+import { Break, SingleBreak } from '../types/breaks';
 import { authClient } from './auth';
 import { fetchContent } from './content';
 import {
-    parseAsArrayOfBreakTypeItems,
     parseAsArrayOfContentfulBreaks,
     parseAsArrayOfStrings,
-    parseAsImageItem,
     parseAsNumber,
     parseAsString,
     safelyParse,
     parseAsImageCollection,
     parseAsSkuInventory,
-    parseAsArrayOfSkuOptions,
     parseAsBoolean,
     parseAsBreakSlotsCollection,
     parseAsArrayOfCommerceResponse,
     parseAsCommerceResponse,
+    parseAsArrayOfBreakSlots,
 } from './parsers';
 
-export async function fetchContentfulBreaks(
-    limit: number,
-    skip: number,
-    productType: string
-): Promise<ContentfulBreaksResponse> {
-    // Chain filters, entire object can't be stringified but arrays can for a quick win.
-    const where = productType.length > 0 ? `, where: {types: "${productType}"}` : '';
-
+export async function getBreaks(accessToken: string, limit: number, skip: number): Promise<Break[]> {
     // Piece together query.
     const query = `
         query {
-            breaksCollection (limit: ${limit}, skip: ${skip}${where}) {
-                total
+            breaksCollection (limit: ${limit}, skip: ${skip}) {
                 items {
                     title
                     slug
@@ -76,6 +59,59 @@ export async function fetchContentfulBreaks(
                     isComplete
                     vodLink
                 }
+            }
+        }
+    `;
+
+    // Make the contentful request.
+    const response = await fetchContent(query);
+    const cl = authClient(accessToken);
+
+    // On success get the item data for products.
+    const breaksCollection = safelyParse(
+        response,
+        'data.content.breaksCollection.items',
+        parseAsArrayOfContentfulBreaks,
+        []
+    );
+
+    return await Promise.all(
+        breaksCollection.map(async (bC) => {
+            const breakSlots = safelyParse(bC, 'breakSlotsCollection.items', parseAsArrayOfBreakSlots, []);
+            const sku_codes = breakSlots.map((bS) => safelyParse(bS, 'sku_code', parseAsArrayOfStrings, []));
+            const skuFilter = join(sku_codes, ',');
+            const res = await cl.get(
+                `/api/skus?filter[q][code_in]=${skuFilter}&filter[q][stock_items_quantity_gt]=0&fields[skus]=id`
+            );
+            const slots = safelyParse(res, 'data.meta.record_count', parseAsNumber, 0);
+
+            return {
+                cardImage: {
+                    title: safelyParse(bC, 'cardImage.title', parseAsString, ''),
+                    description: safelyParse(bC, 'cardImage.description', parseAsString, ''),
+                    url: safelyParse(bC, 'cardImage.url', parseAsString, ''),
+                },
+                title: safelyParse(bC, 'title', parseAsString, ''),
+                tags: safelyParse(bC, 'tags', parseAsArrayOfStrings, []),
+                types: safelyParse(bC, 'types', parseAsString, ''),
+                slug: safelyParse(bC, 'slug', parseAsString, ''),
+                slots,
+                format: safelyParse(bC, 'format', parseAsString, ''),
+                breakDate: safelyParse(bC, 'breakDate', parseAsString, ''),
+                isLive: safelyParse(bC, 'isLive', parseAsBoolean, false),
+                isComplete: safelyParse(bC, 'isComplete', parseAsBoolean, false),
+                vodLink: safelyParse(bC, 'vodLink', parseAsString, ''),
+            };
+        })
+    );
+}
+
+export async function getBreaksTotal(): Promise<number> {
+    // Piece together query.
+    const query = `
+        query {
+            breaksCollection (limit: 1, skip: 0) {
+                total
             }
         }
     `;
@@ -84,167 +120,7 @@ export async function fetchContentfulBreaks(
     const response = await fetchContent(query);
 
     // On a successful request get the total number of items for pagination.
-    const total = safelyParse(response, 'data.content.breaksCollection.total', parseAsNumber, 0);
-
-    // On success get the item data for products.
-    const breaksCollection = safelyParse(
-        response,
-        'data.content.breaksCollection.items',
-        parseAsArrayOfContentfulBreaks,
-        null
-    );
-
-    return {
-        total,
-        breaksCollection,
-    };
-}
-
-export async function fetchContentfulBreakTypes(): Promise<ContentfulBreakTypes[] | null> {
-    const query = `
-        query {
-            breakTypesCollection {
-                items {
-                    title
-                    link
-                }
-            }
-        }
-    `;
-
-    const response = await fetchContent(query);
-    const breakTypesCollection = safelyParse(
-        response,
-        'data.content.breakTypesCollection.items',
-        parseAsArrayOfBreakTypeItems,
-        null
-    );
-
-    if (!breakTypesCollection) {
-        return null;
-    }
-
-    return breakTypesCollection.map((type) => ({
-        title: type.title,
-        link: type.link,
-    }));
-}
-
-export async function fetchBreakBySlug(slug: string): Promise<ContentfulBreak | null> {
-    // Piece together query.
-    const query = `
-        query {
-            breaksCollection (limit: 1, skip: 0, where: {slug: ${JSON.stringify(slug)}}) {
-                items {
-                    title
-                    slug
-                    description
-                    cardImage {
-                        title
-                        description
-                        url
-                    }
-                    imagesCollection {
-                        items {
-                            title
-                            description
-                            url
-                        }
-                    }
-                    types
-                    breakSlotsCollection {
-                        items {
-                            name
-                            productLink
-                            slotIdentifier
-                                image {
-                                    title
-                                    description
-                                    url
-                                }
-                        }
-                    }
-                    breakDate
-                    tags
-                    format
-                    isLive
-                    isComplete
-                    vodLink
-                }
-            }
-        }
-    `;
-
-    // Make the contentful request.
-    const response = await fetchContent(query);
-
-    // On success get the item data for products.
-    const breaksCollection = safelyParse(
-        response,
-        'data.content.breaksCollection.items',
-        parseAsArrayOfContentfulBreaks,
-        null
-    );
-
-    if (!breaksCollection) {
-        return null;
-    }
-
-    return breaksCollection[0];
-}
-
-export function mergeBreakSlotData(breaks: BreakSlot[], skuItems: SkuItem[]): BreakSlotWithSku[] {
-    return breaks.map((breakSlot) => {
-        const { productLink: sku_code } = breakSlot;
-        const skuItem = skuItems.find((s) => s.sku_code === sku_code) || null;
-
-        const id = safelyParse(skuItem, 'id', parseAsString, '');
-        const name = safelyParse(breakSlot, 'slotIdentifier', parseAsString, '');
-        const image = safelyParse(breakSlot, 'image', parseAsImageItem, null);
-        const amount = safelyParse(skuItem, 'amount', parseAsString, '');
-        const compare_amount = safelyParse(skuItem, 'compare_amount', parseAsString, '');
-
-        return {
-            id,
-            name,
-            sku_code,
-            image,
-            amount,
-            compare_amount,
-        };
-    });
-}
-
-export function mergeSkuBreakData(product: ContentfulBreak, skuItem: SkuItem, skuData: SkuProduct): SingleBreak {
-    const id = safelyParse(skuItem, 'id', parseAsString, '');
-    const title = safelyParse(product, 'title', parseAsString, '');
-    const slug = safelyParse(product, 'slug', parseAsString, '');
-    const sku_code = safelyParse(product, 'productLink', parseAsString, null);
-    const description = safelyParse(product, 'description', parseAsString, null);
-    const types = safelyParse(product, 'types', parseAsString, null);
-    const cardImage = safelyParse(product, 'cardImage', parseAsImageItem, null);
-    const images = safelyParse(product, 'imagesCollection', parseAsImageCollection, null);
-    const tags = safelyParse(product, 'tags', parseAsArrayOfStrings, null);
-    const amount = safelyParse(skuData, 'formatted_amount', parseAsString, null);
-    const compare_amount = safelyParse(skuData, 'formatted_compare_at_amount', parseAsString, null);
-    const inventory = safelyParse(skuData, 'inventory', parseAsSkuInventory, null);
-    const options = safelyParse(skuData, 'options', parseAsArrayOfSkuOptions, null);
-
-    return {
-        id,
-        title,
-        slug,
-        sku_code,
-        description,
-        types,
-        images,
-        cardImage,
-        tags,
-        amount,
-        compare_amount,
-        inventory,
-        options,
-    };
+    return safelyParse(response, 'data.content.breaksCollection.total', parseAsNumber, 0);
 }
 
 export async function getSingleBreak(accessToken: string, slug: string): Promise<SingleBreak> {
@@ -377,8 +253,8 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
         isLive: safelyParse(contentfulBreak, 'isLive', parseAsBoolean, false),
         isComplete: safelyParse(contentfulBreak, 'isComplete', parseAsBoolean, false),
         vodLink: safelyParse(contentfulBreak, 'vodLink', parseAsString, ''),
-        amount: safelyParse(prices, 'attributes.formatted_amount', parseAsString, '£0.00'),
-        compare_amount: safelyParse(prices, 'attributes.formatted_compare_at_amount', parseAsString, '£0.00'),
+        amount: safelyParse(prices, 'attributes.formatted_amount', parseAsString, ''),
+        compare_amount: safelyParse(prices, 'attributes.formatted_compare_at_amount', parseAsString, ''),
         inventory: safelyParse(skuData, 'attributes.inventory', parseAsSkuInventory, {
             available: false,
             quantity: 0,

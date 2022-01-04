@@ -1,6 +1,8 @@
 import { ProductsState } from '../types/state';
 
 const productsInitialState: ProductsState = {
+    products: [],
+    productsTotal: 0,
     currentProduct: {
         id: '',
         name: '',

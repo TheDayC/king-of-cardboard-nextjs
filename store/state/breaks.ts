@@ -2,7 +2,9 @@ import { BreaksState } from '../types/state';
 
 const breaksInitialState: BreaksState = {
     currentPage: 1,
+    breaksTotal: 0,
     isLoadingBreaks: false,
+    breaks: [],
     currentBreak: {
         id: '',
         title: '',
@@ -10,9 +12,7 @@ const breaksInitialState: BreaksState = {
         sku_code: '',
         description: '',
         types: '',
-        images: {
-            items: [],
-        },
+        images: [],
         cardImage: {
             title: '',
             description: '',
