@@ -3,7 +3,7 @@ import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 import { DateTime } from 'luxon';
 
-import { GetOrders, GiftCard, Order, SingleOrder } from '../types/account';
+import { GiftCard, Order, SingleOrder } from '../types/account';
 import {
     parseAsArrayOfCommerceResponse,
     safelyParse,
