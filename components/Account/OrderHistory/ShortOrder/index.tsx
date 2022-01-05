@@ -41,7 +41,12 @@ export const ShortOrder: React.FC<OrderProps> = ({
                     <div className="flex flex-col">
                         <h3 className="card-title text-sm md:text-md mb-2">
                             {orderNumber && (
-                                <Link href={`/account/orderHistory/${orderNumber}`}>{`Order #${orderNumber}`}</Link>
+                                <Link
+                                    href={{
+                                        pathname: '/account/orderHistory/[orderNumber]',
+                                        query: { orderNumber },
+                                    }}
+                                >{`Order #${orderNumber}`}</Link>
                             )}
                         </h3>
                         <div className="flex flex-col mb-4 md:flex-row">

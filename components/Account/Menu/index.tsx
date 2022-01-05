@@ -19,7 +19,13 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ isDropdown }) => {
     return (
         <ul className={`menu p-4 shadow-lg bg-base-100 rounded-md${isDropdown ? ' dropdown-content' : ''}`}>
             <li className={`${slug === Slugs.Details ? 'bordered' : 'hover-bordered'}`}>
-                <Link href={`/account/${Slugs.Details}`} passHref>
+                <Link
+                    href={{
+                        pathname: '/account/[slug]',
+                        query: { slug: Slugs.Details },
+                    }}
+                    passHref
+                >
                     <a>
                         <CgDetailsMore className="inline-block w-5 h-5 mr-2 stroke-current" />
                         Details
@@ -27,7 +33,13 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ isDropdown }) => {
                 </Link>
             </li>
             <li className={`${slug === Slugs.Profile ? 'bordered' : 'hover-bordered'}`}>
-                <Link href={`/account/${Slugs.Profile}`} passHref>
+                <Link
+                    href={{
+                        pathname: '/account/[slug]',
+                        query: { slug: Slugs.Profile },
+                    }}
+                    passHref
+                >
                     <a>
                         <BsFillPersonLinesFill className="inline-block w-5 h-5 mr-2 stroke-current" />
                         Profile
@@ -35,7 +47,13 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ isDropdown }) => {
                 </Link>
             </li>
             <li className={`${slug === Slugs.AddressBook ? 'bordered' : 'hover-bordered'}`}>
-                <Link href={`/account/${Slugs.AddressBook}`} passHref>
+                <Link
+                    href={{
+                        pathname: '/account/[slug]',
+                        query: { slug: Slugs.AddressBook },
+                    }}
+                    passHref
+                >
                     <a>
                         <BsFillHouseDoorFill className="inline-block w-5 h-5 mr-2 stroke-current" />
                         Address Book
@@ -43,7 +61,13 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ isDropdown }) => {
                 </Link>
             </li>
             <li className={`${slug === Slugs.OrderHistory || orderNumber ? 'bordered' : 'hover-bordered'}`}>
-                <Link href={`/account/${Slugs.OrderHistory}`} passHref>
+                <Link
+                    href={{
+                        pathname: '/account/[slug]',
+                        query: { slug: Slugs.OrderHistory },
+                    }}
+                    passHref
+                >
                     <a>
                         <BsFillCartCheckFill className="inline-block w-5 h-5 mr-2 stroke-current" />
                         Order History
@@ -51,7 +75,13 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ isDropdown }) => {
                 </Link>
             </li>
             <li className={`${slug === Slugs.Achievements ? 'bordered' : 'hover-bordered'}`}>
-                <Link href={`/account/${Slugs.Achievements}`} passHref>
+                <Link
+                    href={{
+                        pathname: '/account/[slug]',
+                        query: { slug: Slugs.Achievements },
+                    }}
+                    passHref
+                >
                     <a>
                         <BsFillAwardFill className="inline-block w-5 h-5 mr-2 stroke-current" />
                         Achievements
