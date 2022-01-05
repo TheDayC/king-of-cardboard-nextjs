@@ -34,7 +34,13 @@ export const Address: React.FC<AddressProps> = ({ id, name, fetchAddresses }) =>
         <div className="flex flex-col cursor-pointer p-6 border border-solid border-base-200 justify-center items-start w-full rounded-md shadow-md">
             <p className="text-sm mb-4">{name}</p>
             <div className="flex flex-row w-full justify-between">
-                <Link href={`/account/editAddress/${id}`} passHref>
+                <Link
+                    href={{
+                        pathname: '/account/editAddress/[addressId]',
+                        query: { addressId: id },
+                    }}
+                    passHref
+                >
                     <button type="submit" className="btn btn-md rounded-md">
                         <BiEdit className="inline-block text-xl" />
                     </button>
