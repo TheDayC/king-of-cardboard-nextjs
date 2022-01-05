@@ -73,6 +73,8 @@ const accountInitialState: AccountState = {
         },
         lineItems: [],
     },
+    addresses: [],
+    addressPageCount: 0,
 };
 
 export default accountInitialState;

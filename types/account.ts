@@ -93,3 +93,8 @@ export interface GiftCard {
     recipient_email: string;
     code: string;
 }
+
+export interface Address {
+    id: string;
+    name: string;
+}

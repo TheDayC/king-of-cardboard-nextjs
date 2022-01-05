@@ -3,7 +3,7 @@ import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 import { DateTime } from 'luxon';
 
-import { GiftCard, Order, SingleOrder } from '../types/account';
+import { Address, GiftCard, Order, SingleOrder } from '../types/account';
 import {
     parseAsArrayOfCommerceResponse,
     safelyParse,
@@ -107,10 +107,9 @@ export async function getOrder(accessToken: string, orderNumber: string): Promis
         const addressFields =
             'fields[addresses]=id,name,first_name,last_name,company,line_1,line_2,city,zip_code,state_code,country_code,phone';
         const shipmentFields = 'fields[shipments]=id,number,status,formatted_cost_amount';
-        const pagination = 'page[size]=1&page[number]=1';
         const cl = authClient(accessToken);
         const res = await cl.get(
-            `/api/orders?${filters}&${orderFields}&include=${include}&${lineItemFields}&${addressFields}&${shipmentFields}&${pagination}`
+            `/api/orders?${filters}&${orderFields}&include=${include}&${lineItemFields}&${addressFields}&${shipmentFields}`
         );
         const order = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, [])[0];
         const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
@@ -364,23 +363,39 @@ export async function getAddresses(
     emailAddress: string,
     pageSize: number,
     page: number
-): Promise<AddressResponse | null> {
+): Promise<Address[]> {
     try {
         const include = 'address';
         const filters = `filter[q][email_eq]=${emailAddress}`;
         const pagination = `page[size]=${pageSize}&page[number]=${page}`;
         const cl = authClient(accessToken);
         const res = await cl.get(`/api/customer_addresses?${filters}&${pagination}&include=${include}`);
+        const addresses = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, []);
 
-        return {
-            addresses: safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null),
-            meta: safelyParse(res, 'data.meta', parseAsCommerceMeta, null),
-        };
+        return addresses.map((address) => ({
+            id: safelyParse(address, 'id', parseAsString, ''),
+            name: safelyParse(address, 'attributes.name', parseAsString, ''),
+        }));
     } catch (error: unknown) {
         errorHandler(error, 'We could not fetch your saved addresses.');
     }
 
-    return null;
+    return [];
+}
+
+export async function getAddressPageCount(accessToken: string, emailAddress: string): Promise<number> {
+    try {
+        const include = 'address';
+        const filters = `filter[q][email_eq]=${emailAddress}`;
+        const cl = authClient(accessToken);
+        const res = await cl.get(`/api/customer_addresses?${filters}&include=${include}`);
+
+        return safelyParse(res, 'data.meta.page_count', parseAsNumber, 1);
+    } catch (error: unknown) {
+        errorHandler(error, 'We could not fetch the address page count.');
+    }
+
+    return 0;
 }
 
 export async function addAddress(

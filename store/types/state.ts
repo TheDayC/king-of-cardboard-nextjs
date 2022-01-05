@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 
 import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
-import { GiftCard, Order, SingleOrder } from '../../types/account';
+import { Address, GiftCard, Order, SingleOrder } from '../../types/account';
 import { Break, ContentfulBreak, SingleBreak } from '../../types/breaks';
 import { CartItem } from '../../types/cart';
 import { MergedShipmentMethods } from '../../types/checkout';
@@ -188,6 +188,8 @@ export interface AccountState {
     orders: Order[];
     orderPageCount: number;
     currentOrder: SingleOrder;
+    addresses: Address[];
+    addressPageCount: number;
 }
 
 export interface AlertsState {
