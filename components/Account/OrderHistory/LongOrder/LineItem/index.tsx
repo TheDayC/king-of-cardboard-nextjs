@@ -2,12 +2,11 @@ import React from 'react';
 import Image from 'next/image';
 
 interface OrderProps {
-    name: string | null;
-    skuCode: string | null;
-    imageUrl: string | null;
+    name: string;
+    skuCode: string;
+    imageUrl: string;
     quantity: number;
-    amount: string | null;
-    // compareAmount: string | null;
+    amount: string;
 }
 
 export const LineItem: React.FC<OrderProps> = ({ name, skuCode, imageUrl, quantity, amount }) => {

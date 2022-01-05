@@ -23,10 +23,10 @@ interface OrderProps {
     total: string;
     placedAt: string;
     updatedAt: string;
-    lineItems: OrderHistoryLineItemWithSkuData[] | null;
+    lineItems: OrderHistoryLineItemWithSkuData[];
     shippingAddress: OrderHistoryAddress;
     billingAddress: OrderHistoryAddress;
-    paymentMethodDetails: OrderHistoryPaymentMethod | null;
+    paymentMethodDetails: OrderHistoryPaymentMethod;
 }
 
 export const LongOrder: React.FC<OrderProps> = ({
@@ -149,7 +149,7 @@ export const LongOrder: React.FC<OrderProps> = ({
             <div className="divider lightDivider"></div>
             <div className="flex flex-col justify-start items-start w-full">
                 <h3 className="text-2xl mb-4">Items</h3>
-                {lineItems &&
+                {lineItems.length > 0 &&
                     lineItems.map((lineItem) => (
                         <React.Fragment key={lineItem.lineItemId}>
                             <LineItem
@@ -158,7 +158,6 @@ export const LongOrder: React.FC<OrderProps> = ({
                                 skuCode={lineItem.skuCode}
                                 quantity={lineItem.quantity}
                                 amount={lineItem.amount}
-                                //compareAmount={lineItem.compareAmount}
                             />
 
                             <div className="divider lightDivider w-full"></div>

@@ -1,30 +1,20 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import Error from 'next/error';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import PageWrapper from '../../../components/PageWrapper';
 import AccountMenu from '../../../components/Account/Menu';
-import { getHistoricalOrder } from '../../../utils/account';
-import {
-    parseAsHistoricalAddress,
-    parseAsNumber,
-    parseAsPaymentMethodDetails,
-    parseAsString,
-    safelyParse,
-} from '../../../utils/parsers';
+import { parseAsString, safelyParse } from '../../../utils/parsers';
 import selector from './selector';
-import { CommerceLayerResponse } from '../../../types/api';
-import { OrderHistoryLineItemWithSkuData } from '../../../types/account';
 import LongOrder from '../../../components/Account/OrderHistory/LongOrder';
-import { getSkus } from '../../../utils/commerce';
 import Loading from '../../../components/Loading';
+import { fetchCurrentOrder } from '../../../store/slices/account';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
     const orderNumber = safelyParse(context, 'query.orderNumber', parseAsString, null);
-    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
 
     const errorCode = orderNumber ? false : 404;
 
@@ -43,123 +33,30 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         props: {
             errorCode,
             orderNumber,
-            emailAddress,
         },
     };
-};
-
-const blankAddress = {
-    first_name: null,
-    last_name: null,
-    company: null,
-    line_1: null,
-    line_2: null,
-    city: null,
-    zip_code: null,
-    state_code: null,
-    country_code: null,
-    phone: null,
 };
 
 interface OrderProps {
     errorCode: number | boolean;
     orderNumber: string | null;
-    emailAddress: string | null;
 }
 
-export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumber, emailAddress }) => {
-    const { accessToken } = useSelector(selector);
-    const [order, setOrder] = useState<CommerceLayerResponse | null>(null);
-    const [included, setIncluded] = useState<CommerceLayerResponse[] | null>(null);
-    const [lineItems, setLineItems] = useState<OrderHistoryLineItemWithSkuData[] | null>(null);
-
-    const status = safelyParse(order, 'attributes.status', parseAsString, 'draft');
-    const paymentStatus = safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid');
-    const fulfillmentStatus = safelyParse(order, 'attributes.fulfillment_status', parseAsString, 'unfulfilled');
-    const itemCount = safelyParse(order, 'attributes.skus_count', parseAsNumber, 0);
-    const shipmentsCount = safelyParse(order, 'attributes.shipments_count', parseAsNumber, 0);
-    const subTotal = safelyParse(order, 'attributes.formatted_subtotal_amount', parseAsString, '');
-    const shippingTotal = safelyParse(order, 'attributes.formatted_shipping_amount', parseAsString, '');
-    const discountTotal = safelyParse(order, 'attributes.formatted_discount_amount', parseAsString, '');
-    const total = safelyParse(order, 'attributes.formatted_total_amount', parseAsString, '');
-    const placedAt = safelyParse(order, 'attributes.placed_at', parseAsString, '');
-    const updatedAt = safelyParse(order, 'attributes.updated_at', parseAsString, '');
-    const paymentMethodDetails = safelyParse(
-        order,
-        'attributes.payment_source_details.payment_method_details',
-        parseAsPaymentMethodDetails,
-        null
-    );
-    const shippingAddressId = safelyParse(order, 'relationships.shipping_address.data.id', parseAsString, '');
-    const shippingAddressInclude = included
-        ? included.find((include) => include.type === 'addresses' && include.id === shippingAddressId)
-        : null;
-    const shippingAddress = safelyParse(shippingAddressInclude, 'attributes', parseAsHistoricalAddress, blankAddress);
-    const billingAddressId = safelyParse(order, 'relationships.billing_address.data.id', parseAsString, '');
-    const billingAddressInclude = included
-        ? included.find((include) => include.type === 'addresses' && include.id === billingAddressId)
-        : null;
-    const billingAddress = safelyParse(billingAddressInclude, 'attributes', parseAsHistoricalAddress, blankAddress);
-
-    const fetchOrder = useCallback(async (token: string, email: string, order: string) => {
-        const res = await getHistoricalOrder(token, email, order);
-
-        if (res) {
-            const { orders: responseOrders, included: responseIncluded } = res;
-
-            if (responseOrders) {
-                setOrder(responseOrders[0]);
-            }
-
-            if (responseIncluded) {
-                setIncluded(responseIncluded);
-            }
-        }
-    }, []);
-
-    const fetchSkuItems = useCallback(async (token: string, skus: string[], includedItems: CommerceLayerResponse[]) => {
-        const skuItems = await getSkus(token, skus);
-
-        if (skuItems) {
-            const lineItems: OrderHistoryLineItemWithSkuData[] = includedItems.map((lineItem) => {
-                const skuCode = safelyParse(lineItem, 'attributes.sku_code', parseAsString, null);
-                const skuItem = skuItems ? skuItems.find((item) => item.sku_code === skuCode) : null;
-
-                return {
-                    lineItemId: safelyParse(lineItem, 'id', parseAsString, ''),
-                    skuId: safelyParse(skuItem, 'id', parseAsString, ''),
-                    name: safelyParse(skuItem, 'name', parseAsString, null),
-                    skuCode: skuCode,
-                    imageUrl: safelyParse(skuItem, 'image_url', parseAsString, null),
-                    quantity: safelyParse(lineItem, 'attributes.quantity', parseAsNumber, 0),
-                    amount: safelyParse(skuItem, 'amount', parseAsString, null),
-                    compareAmount: safelyParse(skuItem, 'amount', parseAsString, null),
-                };
-            });
-            setLineItems(lineItems);
-        }
-    }, []);
+export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumber }) => {
+    const { accessToken, order } = useSelector(selector);
+    const [isLoading, setIsLoading] = useState(false);
+    const [shouldFetch, setShouldFetch] = useState(true);
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        if (accessToken && emailAddress && orderNumber) {
-            fetchOrder(accessToken, emailAddress, orderNumber);
+        if (accessToken && orderNumber && shouldFetch) {
+            setShouldFetch(false);
+            setIsLoading(true);
+            dispatch(fetchCurrentOrder({ accessToken, orderNumber }));
+            setIsLoading(false);
+            // fetchOrder(accessToken, emailAddress, orderNumber);
         }
-    }, [accessToken, emailAddress, orderNumber, fetchOrder]);
-
-    useEffect(() => {
-        const includedLineItems = included
-            ? included.filter((include) => safelyParse(include, 'attributes.sku_code', parseAsString, null))
-            : null;
-        const lineItemSkus = includedLineItems
-            ? includedLineItems
-                  .map((include) => safelyParse(include, 'attributes.sku_code', parseAsString, ''))
-                  .filter((include) => include.length <= 0)
-            : [];
-
-        if (accessToken && lineItemSkus && includedLineItems) {
-            fetchSkuItems(accessToken, lineItemSkus, includedLineItems);
-        }
-    }, [accessToken, included, fetchSkuItems]);
+    }, [dispatch, accessToken, orderNumber, shouldFetch]);
 
     // Show error page if a code is provided.
     if (errorCode && typeof errorCode === 'number') {
@@ -179,24 +76,24 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
                     <AccountMenu isDropdown />
                 </div>
                 <div className="flex flex-col relative w-full px-2 py-0 md:w-3/4 md:px-4 md:px-8">
-                    <Loading show={Boolean(!order || !lineItems)} />
+                    <Loading show={isLoading} />
                     <LongOrder
                         orderNumber={orderNumber}
-                        status={status}
-                        paymentStatus={paymentStatus}
-                        fulfillmentStatus={fulfillmentStatus}
-                        itemCount={itemCount}
-                        shipmentsCount={shipmentsCount}
-                        subTotal={subTotal}
-                        shippingTotal={shippingTotal}
-                        discountTotal={discountTotal}
-                        total={total}
-                        placedAt={placedAt}
-                        updatedAt={updatedAt}
-                        lineItems={lineItems}
-                        shippingAddress={shippingAddress}
-                        billingAddress={billingAddress}
-                        paymentMethodDetails={paymentMethodDetails}
+                        status={order.status}
+                        paymentStatus={order.payment_status}
+                        fulfillmentStatus={order.fulfillment_status}
+                        itemCount={order.skus_count}
+                        shipmentsCount={order.shipments_count}
+                        subTotal={order.formatted_subtotal_amount}
+                        shippingTotal={order.formatted_shipping_amount}
+                        discountTotal={order.formatted_discount_amount}
+                        total={order.formatted_total_amount}
+                        placedAt={order.placed_at}
+                        updatedAt={order.updated_at}
+                        lineItems={order.lineItems}
+                        shippingAddress={order.shipping_address}
+                        billingAddress={order.billing_address}
+                        paymentMethodDetails={order.payment_method_details}
                     />
                 </div>
             </div>

@@ -3,7 +3,7 @@ import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 import { DateTime } from 'luxon';
 
-import { GetOrders, GiftCard, Order } from '../types/account';
+import { GetOrders, GiftCard, Order, SingleOrder } from '../types/account';
 import {
     parseAsArrayOfCommerceResponse,
     safelyParse,
@@ -97,13 +97,9 @@ export async function getOrderPageCount(accessToken: string, emailAddress: strin
     return 1;
 }
 
-export async function getHistoricalOrder(
-    accessToken: string,
-    emailAddress: string,
-    orderNumber: string
-): Promise<GetOrders | null> {
+export async function getOrder(accessToken: string, orderNumber: string): Promise<SingleOrder> {
     try {
-        const filters = `filter[q][number_eq]=${orderNumber}&filter[q][email_eq]=${emailAddress}`;
+        const filters = `filter[q][number_eq]=${orderNumber}`;
         const orderFields =
             'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount,formatted_subtotal_amount,formatted_shipping_amount,formatted_discount_amount,shipments_count,placed_at,updated_at,line_items,shipping_address,billing_address,payment_source_details';
         const include = 'line_items,shipping_address,billing_address,shipments';
@@ -111,21 +107,204 @@ export async function getHistoricalOrder(
         const addressFields =
             'fields[addresses]=id,name,first_name,last_name,company,line_1,line_2,city,zip_code,state_code,country_code,phone';
         const shipmentFields = 'fields[shipments]=id,number,status,formatted_cost_amount';
+        const pagination = 'page[size]=1&page[number]=1';
         const cl = authClient(accessToken);
         const res = await cl.get(
-            `/api/orders?${filters}&${orderFields}&include=${include}&${lineItemFields}&${addressFields}&${shipmentFields}`
+            `/api/orders?${filters}&${orderFields}&include=${include}&${lineItemFields}&${addressFields}&${shipmentFields}&${pagination}`
+        );
+        const order = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, [])[0];
+        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
+
+        const shippingAddressId = safelyParse(order, 'relationships.shipping_address.data.id', parseAsString, '');
+        const shippingAddressInclude = included.find(
+            (include) => include.type === 'addresses' && include.id === shippingAddressId
+        );
+        const billingAddressId = safelyParse(order, 'relationships.billing_address.data.id', parseAsString, '');
+        const billingAddressInclude = included.find(
+            (include) => include.type === 'addresses' && include.id === billingAddressId
+        );
+        const includedLineItems = included.filter((include) =>
+            safelyParse(include, 'attributes.sku_code', parseAsString, null)
         );
 
         return {
-            orders: safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null),
-            included: safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null),
-            meta: safelyParse(res, 'data.meta', parseAsCommerceMeta, null),
+            status: safelyParse(order, 'attributes.status', parseAsString, 'draft'),
+            payment_status: safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid'),
+            fulfillment_status: safelyParse(order, 'attributes.fulfillment_status', parseAsString, 'unfulfilled'),
+            skus_count: safelyParse(order, 'attributes.skus_count', parseAsNumber, 0),
+            shipments_count: safelyParse(order, 'attributes.shipments_count', parseAsNumber, 0),
+            formatted_subtotal_amount: safelyParse(order, 'attributes.formatted_subtotal_amount', parseAsString, ''),
+            formatted_shipping_amount: safelyParse(order, 'attributes.formatted_shipping_amount', parseAsString, ''),
+            formatted_discount_amount: safelyParse(order, 'attributes.formatted_discount_amount', parseAsString, ''),
+            formatted_total_amount: safelyParse(order, 'attributes.formatted_total_amount', parseAsString, ''),
+            placed_at: safelyParse(order, 'attributes.placed_at', parseAsString, ''),
+            updated_at: safelyParse(order, 'attributes.updated_at', parseAsString, ''),
+            payment_method_details: {
+                brand: safelyParse(
+                    order,
+                    'attributes.payment_source_details.payment_method_details.brand',
+                    parseAsString,
+                    ''
+                ),
+                checks: {
+                    address_line1_check: safelyParse(
+                        order,
+                        'attributes.payment_source_details.payment_method_details.checks.address_line1_check',
+                        parseAsString,
+                        ''
+                    ),
+                    address_postal_code_check: safelyParse(
+                        order,
+                        'attributes.payment_source_details.payment_method_details.checks.address_postal_code_check',
+                        parseAsString,
+                        ''
+                    ),
+                    cvc_check: safelyParse(
+                        order,
+                        'attributes.payment_source_details.payment_method_details.checks.cvc_check',
+                        parseAsString,
+                        ''
+                    ),
+                },
+                country: safelyParse(
+                    order,
+                    'attributes.payment_source_details.payment_method_details.country',
+                    parseAsString,
+                    ''
+                ),
+                exp_month: safelyParse(
+                    order,
+                    'attributes.payment_source_details.payment_method_details.exp_month',
+                    parseAsNumber,
+                    0
+                ),
+                exp_year: safelyParse(
+                    order,
+                    'attributes.payment_source_details.payment_method_details.exp_year',
+                    parseAsNumber,
+                    0
+                ),
+                fingerprint: safelyParse(
+                    order,
+                    'attributes.payment_source_details.payment_method_details.fingerprint',
+                    parseAsString,
+                    ''
+                ),
+                funding: safelyParse(
+                    order,
+                    'attributes.payment_source_details.payment_method_details.funding',
+                    parseAsString,
+                    ''
+                ),
+                generated_from: safelyParse(
+                    order,
+                    'attributes.payment_source_details.payment_method_details.generated_from',
+                    parseAsString,
+                    ''
+                ),
+                last4: safelyParse(
+                    order,
+                    'attributes.payment_source_details.payment_method_details.last4',
+                    parseAsString,
+                    ''
+                ),
+            },
+            shipping_address: {
+                first_name: safelyParse(shippingAddressInclude, 'attributes.first_name', parseAsString, 'draft'),
+                last_name: safelyParse(shippingAddressInclude, 'attributes.last_name', parseAsString, 'draft'),
+                company: safelyParse(shippingAddressInclude, 'attributes.company', parseAsString, 'draft'),
+                line_1: safelyParse(shippingAddressInclude, 'attributes.line_1', parseAsString, 'draft'),
+                line_2: safelyParse(shippingAddressInclude, 'attributes.line_2', parseAsString, 'draft'),
+                city: safelyParse(shippingAddressInclude, 'attributes.city', parseAsString, 'draft'),
+                zip_code: safelyParse(shippingAddressInclude, 'attributes.zip_code', parseAsString, 'draft'),
+                state_code: safelyParse(shippingAddressInclude, 'attributes.state_code', parseAsString, 'draft'),
+                country_code: safelyParse(shippingAddressInclude, 'attributes.country_code', parseAsString, 'draft'),
+                phone: safelyParse(shippingAddressInclude, 'attributes.phone', parseAsString, 'draft'),
+            },
+            billing_address: {
+                first_name: safelyParse(billingAddressInclude, 'attributes.first_name', parseAsString, 'draft'),
+                last_name: safelyParse(billingAddressInclude, 'attributes.last_name', parseAsString, 'draft'),
+                company: safelyParse(billingAddressInclude, 'attributes.company', parseAsString, 'draft'),
+                line_1: safelyParse(billingAddressInclude, 'attributes.line_1', parseAsString, 'draft'),
+                line_2: safelyParse(billingAddressInclude, 'attributes.line_2', parseAsString, 'draft'),
+                city: safelyParse(billingAddressInclude, 'attributes.city', parseAsString, 'draft'),
+                zip_code: safelyParse(billingAddressInclude, 'attributes.zip_code', parseAsString, 'draft'),
+                state_code: safelyParse(billingAddressInclude, 'attributes.state_code', parseAsString, 'draft'),
+                country_code: safelyParse(billingAddressInclude, 'attributes.country_code', parseAsString, 'draft'),
+                phone: safelyParse(billingAddressInclude, 'attributes.phone', parseAsString, 'draft'),
+            },
+            lineItems: includedLineItems.map((lineItem) => {
+                const skuItem = included.filter((include) => include.id === lineItem.id)[0];
+
+                return {
+                    lineItemId: safelyParse(lineItem, 'id', parseAsString, ''),
+                    skuId: safelyParse(skuItem, 'id', parseAsString, ''),
+                    name: safelyParse(skuItem, 'name', parseAsString, ''),
+                    skuCode: safelyParse(skuItem, 'attributes.sku_code', parseAsString, ''),
+                    imageUrl: safelyParse(skuItem, 'image_url', parseAsString, ''),
+                    quantity: safelyParse(lineItem, 'attributes.quantity', parseAsNumber, 0),
+                    amount: safelyParse(skuItem, 'amount', parseAsString, ''),
+                    compareAmount: safelyParse(skuItem, 'compare_amount', parseAsString, ''),
+                };
+            }),
         };
     } catch (error: unknown) {
-        errorHandler(error, 'We could not get historical order.');
+        errorHandler(error, 'Failed to get historical order.');
     }
 
-    return null;
+    return {
+        status: '',
+        payment_status: '',
+        fulfillment_status: '',
+        skus_count: 0,
+        shipments_count: 0,
+        formatted_subtotal_amount: '',
+        formatted_shipping_amount: '',
+        formatted_discount_amount: '',
+        formatted_total_amount: '',
+        placed_at: '',
+        updated_at: '',
+        payment_method_details: {
+            brand: '',
+            checks: {
+                address_line1_check: '',
+                address_postal_code_check: '',
+                cvc_check: '',
+            },
+            country: '',
+            exp_month: 0,
+            exp_year: 0,
+            fingerprint: '',
+            funding: '',
+            generated_from: '',
+            last4: '',
+        },
+        shipping_address: {
+            first_name: '',
+            last_name: '',
+            company: '',
+            line_1: '',
+            line_2: '',
+            city: '',
+            zip_code: '',
+            state_code: '',
+            country_code: '',
+            phone: '',
+        },
+        billing_address: {
+            first_name: '',
+            last_name: '',
+            company: '',
+            line_1: '',
+            line_2: '',
+            city: '',
+            zip_code: '',
+            state_code: '',
+            country_code: '',
+            phone: '',
+        },
+        lineItems: [],
+    };
 }
 
 export function statusColour(status: string): string {
