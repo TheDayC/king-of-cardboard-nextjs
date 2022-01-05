@@ -1,12 +1,25 @@
 import { CommerceLayerMeta, CommerceLayerResponse } from './api';
 
+export interface Order {
+    number: number;
+    status: string;
+    payment_status: string;
+    fulfillment_status: string;
+    skus_count: number;
+    shipments_count: number;
+    formatted_total_amount_with_taxes: string;
+    placed_at: string;
+    updated_at: string;
+    lineItems: OrderLineItem[];
+}
+
 export interface GetOrders {
     orders: CommerceLayerResponse[] | null;
     included: CommerceLayerResponse[] | null;
     meta: CommerceLayerMeta | null;
 }
 
-export interface OrderHistoryLineItem {
+export interface OrderLineItem {
     id: string;
     type: string;
     sku_code: string | null;

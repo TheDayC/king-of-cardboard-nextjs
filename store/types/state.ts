@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 
 import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
-import { GiftCard } from '../../types/account';
+import { GiftCard, Order } from '../../types/account';
 import { Break, ContentfulBreak, SingleBreak } from '../../types/breaks';
 import { CartItem } from '../../types/cart';
 import { MergedShipmentMethods } from '../../types/checkout';
@@ -185,6 +185,8 @@ export interface AccountState {
     balance: number;
     shouldFetchRewards: boolean;
     giftCard: GiftCard;
+    orders: Order[];
+    orderPageCount: number;
 }
 
 export interface AlertsState {

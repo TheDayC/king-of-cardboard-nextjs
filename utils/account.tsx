@@ -3,7 +3,7 @@ import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 import { DateTime } from 'luxon';
 
-import { GetOrders, GiftCard } from '../types/account';
+import { GetOrders, GiftCard, Order } from '../types/account';
 import {
     parseAsArrayOfCommerceResponse,
     safelyParse,
@@ -12,17 +12,18 @@ import {
     parseAsNumber,
     parseAsCommerceResponse,
     parseAsBoolean,
+    parseAsArrayOfLineItemRelationships,
 } from './parsers';
 import { AddressResponse, CommerceLayerResponse } from '../types/api';
 import { authClient } from './auth';
 import { errorHandler } from '../middleware/errors';
 
-export async function getHistoricalOrders(
+export async function getOrders(
     accessToken: string,
     emailAddress: string,
     pageSize: number,
     page: number
-): Promise<GetOrders | null> {
+): Promise<Order[]> {
     try {
         const filters = `filter[q][email_eq]=${emailAddress}&filter[q][status_not_in]=draft,pending`;
         const pagination = `page[size]=${pageSize}&page[number]=${page}`;
@@ -35,17 +36,65 @@ export async function getHistoricalOrders(
         const res = await cl.get(
             `/api/orders?${filters}&${sort}&${pagination}&${orderFields}&include=${include}&${lineItemFields}`
         );
+        const orders = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, []);
+        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
 
-        return {
-            orders: safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, null),
-            included: safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, null),
-            meta: safelyParse(res, 'data.meta', parseAsCommerceMeta, null),
-        };
+        return orders.map((order) => {
+            const lineItems = safelyParse(
+                order,
+                'relationships.line_items.data',
+                parseAsArrayOfLineItemRelationships,
+                []
+            );
+
+            return {
+                number: safelyParse(order, 'attributes.number', parseAsNumber, 0),
+                status: safelyParse(order, 'attributes.status', parseAsString, 'draft'),
+                payment_status: safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid'),
+                fulfillment_status: safelyParse(order, 'attributes.fulfillment_status', parseAsString, 'unfulfilled'),
+                skus_count: safelyParse(order, 'attributes.skus_count', parseAsNumber, 0),
+                shipments_count: safelyParse(order, 'attributes.shipments_count', parseAsNumber, 0),
+                formatted_total_amount_with_taxes: safelyParse(
+                    order,
+                    'attributes.formatted_total_amount_with_taxes',
+                    parseAsString,
+                    ''
+                ),
+                placed_at: safelyParse(order, 'attributes.placed_at', parseAsString, ''),
+                updated_at: safelyParse(order, 'attributes.updated_at', parseAsString, ''),
+                lineItems: lineItems.map((lineItem) => {
+                    const includedLineItem = included.filter((include) => include.id === lineItem.id);
+
+                    return {
+                        ...lineItem,
+                        sku_code: safelyParse(includedLineItem, 'attributes.sku_code', parseAsString, ''),
+                        quantity: safelyParse(includedLineItem, 'attributes.quantity', parseAsNumber, 0),
+                        image_url: safelyParse(includedLineItem, 'attributes.image_url', parseAsString, ''),
+                    };
+                }),
+            };
+        });
     } catch (error: unknown) {
         errorHandler(error, 'We could not get historical orders.');
     }
 
-    return null;
+    return [];
+}
+
+export async function getOrderPageCount(accessToken: string, emailAddress: string): Promise<number> {
+    try {
+        const filters = `filter[q][email_eq]=${emailAddress}&filter[q][status_not_in]=draft,pending`;
+        const sort = 'sort=-created_at,number';
+        const orderFields = 'fields[orders]=number';
+        const cl = authClient(accessToken);
+        const res = await cl.get(`/api/orders?${filters}&${sort}&${orderFields}`);
+
+        return safelyParse(res, 'data.meta.page_count', parseAsNumber, 1);
+    } catch (error: unknown) {
+        errorHandler(error, 'Failed to get order page count.');
+    }
+
+    return 1;
 }
 
 export async function getHistoricalOrder(

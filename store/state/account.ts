@@ -18,6 +18,8 @@ const accountInitialState: AccountState = {
         recipient_email: '',
         code: '',
     },
+    orders: [],
+    orderPageCount: 0,
 };
 
 export default accountInitialState;
