@@ -16,7 +16,6 @@ export interface IAppState {
     cart: CartState;
     alerts: AlertsState;
     productType: ProductType[];
-    categories: Categories[];
     filters: Filters;
     checkout: Checkout;
     confirmation: Confirmation;

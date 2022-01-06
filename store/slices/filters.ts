@@ -1,7 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAction, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
+import { AppState } from '..';
 import filtersInitialState from '../state/filters';
+
+const hydrate = createAction<AppState>(HYDRATE);
 
 const filtersSlice = createSlice({
     name: 'filters',
@@ -33,15 +36,12 @@ const filtersSlice = createSlice({
         removeAllCategories(state) {
             state.categories = [];
         },
-        resetFilters() {
-            return filtersInitialState;
-        },
     },
-    extraReducers: {
-        [HYDRATE]: (state, action) => ({
+    extraReducers: (builder) => {
+        builder.addCase(hydrate, (state, action) => ({
             ...state,
-            ...action.payload.subject,
-        }),
+            ...action.payload[filtersSlice.name],
+        }));
     },
 });
 
@@ -53,6 +53,5 @@ export const {
     addCategory,
     removeCategory,
     removeAllCategories,
-    resetFilters,
 } = filtersSlice.actions;
 export default filtersSlice.reducer;

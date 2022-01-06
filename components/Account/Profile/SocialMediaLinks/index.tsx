@@ -1,13 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BsInstagram, BsTwitter, BsTwitch, BsYoutube } from 'react-icons/bs';
 import { FaEbay } from 'react-icons/fa';
 
-import { parseAsSocialMedia, parseAsString, safelyParse } from '../../../../utils/parsers';
-import { fetchSocialMedia, setSocialMedia } from '../../../../store/slices/account';
+import { parseAsString, safelyParse } from '../../../../utils/parsers';
+import { fetchSocialMedia } from '../../../../store/slices/account';
 import selector from './selector';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updateSocialMedia } from '../../../../utils/account';

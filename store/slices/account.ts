@@ -11,12 +11,10 @@ import {
     getOrder,
     getAddresses,
     getAddressPageCount,
-    getCustomerAddress,
     getCurrentAddress,
     getSocialMedia,
 } from '../../utils/account';
 import accountInitialState from '../state/account';
-import { CommonThunkInput } from '../types/state';
 
 const hydrate = createAction<AppState>(HYDRATE);
 
@@ -114,12 +112,6 @@ const accountSlice = createSlice({
     name: 'account',
     initialState: accountInitialState,
     reducers: {
-        setSocialMedia(state, action) {
-            state.socialMedia = action.payload;
-        },
-        setBalance(state, action) {
-            state.balance = action.payload;
-        },
         setShouldFetchRewards(state, action) {
             state.shouldFetchRewards = action.payload;
         },
@@ -156,5 +148,5 @@ const accountSlice = createSlice({
     },
 });
 
-export const { setSocialMedia, setBalance, setShouldFetchRewards } = accountSlice.actions;
+export const { setShouldFetchRewards } = accountSlice.actions;
 export default accountSlice.reducer;

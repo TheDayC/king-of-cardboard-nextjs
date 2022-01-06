@@ -55,9 +55,6 @@ const cartSlice = createSlice({
     name: 'cart',
     initialState: cartInitialState,
     reducers: {
-        setLineItems(state, action) {
-            state.items = action.payload;
-        },
         setShouldCreateOrder(state, action) {
             state.shouldCreateOrder = action.payload;
         },
@@ -104,12 +101,6 @@ const cartSlice = createSlice({
     },
 });
 
-export const {
-    setLineItems,
-    resetCart,
-    setUpdatingCart,
-    setShouldCreateOrder,
-    setShouldUpdateCart,
-    setOrderHasGiftCard,
-} = cartSlice.actions;
+export const { resetCart, setUpdatingCart, setShouldCreateOrder, setShouldUpdateCart, setOrderHasGiftCard } =
+    cartSlice.actions;
 export default cartSlice.reducer;

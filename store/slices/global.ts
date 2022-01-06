@@ -25,12 +25,6 @@ const globalSlice = createSlice({
         setCheckoutLoading(state, action) {
             state.checkoutLoading = action.payload;
         },
-        setNewOrder(state, action) {
-            state.shouldSetNewOrder = action.payload;
-        },
-        setShowDrawer(state, action) {
-            state.shouldShowDrawer = action.payload;
-        },
     },
     extraReducers: (builder) => {
         // Add reducers for additional action types here, and handle loading state as needed
@@ -47,5 +41,5 @@ const globalSlice = createSlice({
     },
 });
 
-export const { setAccessToken, setExpires, setCheckoutLoading, setNewOrder, setShowDrawer } = globalSlice.actions;
+export const { setAccessToken, setExpires, setCheckoutLoading } = globalSlice.actions;
 export default globalSlice.reducer;
