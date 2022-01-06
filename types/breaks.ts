@@ -1,10 +1,5 @@
-import { SkuInventory, SkuOption } from './commerce';
+import { SkuInventory } from './commerce';
 import { ImageCollection, ImageItem } from './products';
-
-export interface ContentfulBreaksResponse {
-    total: number;
-    breaksCollection: ContentfulBreak[] | null;
-}
 
 export interface ContentfulBreak {
     title: string;
@@ -20,11 +15,6 @@ export interface ContentfulBreak {
     isLive: boolean;
     isComplete: boolean;
     vodLink: string;
-}
-
-export interface ContentfulBreakTypes {
-    title: string;
-    link: string;
 }
 
 export interface Break {

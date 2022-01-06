@@ -31,11 +31,6 @@ export interface SingleProduct {
     inventory: SkuInventory;
 }
 
-export interface ContentfulProductResponse {
-    total: number;
-    productCollection: ContentfulProduct[] | null;
-}
-
 export interface ContentfulProduct {
     name: string;
     slug: string;

@@ -1,5 +1,3 @@
-import { CommerceLayerMeta, CommerceLayerResponse } from './api';
-
 export interface Order {
     number: number;
     status: string;
@@ -29,12 +27,6 @@ export interface SingleOrder {
     shipping_address: OrderHistoryAddress;
     billing_address: OrderHistoryAddress;
     lineItems: OrderHistoryLineItemWithSkuData[];
-}
-
-export interface GetOrders {
-    orders: CommerceLayerResponse[] | null;
-    included: CommerceLayerResponse[] | null;
-    meta: CommerceLayerMeta | null;
 }
 
 export interface OrderLineItem {

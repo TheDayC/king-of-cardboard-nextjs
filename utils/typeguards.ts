@@ -1,20 +1,10 @@
-import axios, { AxiosError } from 'axios';
-
 import { CustomerAddress, CustomerDetails } from '../store/types/state';
-import { OrderHistoryAddress, OrderHistoryPaymentMethod } from '../types/account';
 import { Achievement, Objective } from '../types/achievements';
-import {
-    CommerceLayerError,
-    CommerceLayerLineItemRelationship,
-    CommerceLayerMeta,
-    CommerceLayerObject,
-    CommerceLayerResponse,
-    ErrorResponse,
-} from '../types/api';
+import { CommerceLayerError, CommerceLayerLineItemRelationship, CommerceLayerResponse } from '../types/api';
 import { BreakSlot, BreakSlotsCollection, BreakTypeItem, ContentfulBreak } from '../types/breaks';
-import { CartItem, Order } from '../types/cart';
+import { CartItem } from '../types/cart';
 import { SkuInventory, SkuOption } from '../types/commerce';
-import { Content, ContentfulPage, ContentJSON } from '../types/pages';
+import { ContentfulPage, ContentJSON } from '../types/pages';
 import { ITypeGuard } from '../types/parsers';
 import { ContentfulProduct, ImageCollection, ImageItem } from '../types/products';
 import { SocialMedia } from '../types/profile';
