@@ -33,12 +33,19 @@ const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping }) => {
         <div className="w-full block relative">
             <Loading show={checkoutLoading} />
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 relative">
-                {addresses &&
+                {addresses.length > 0 &&
                     addresses.map((address) => {
-                        const id = safelyParse(address, 'relationships.address.data.id', parseAsString, '');
-                        const name = safelyParse(address, 'attributes.name', parseAsString, '');
+                        const { name, full_address, addressId } = address;
 
-                        return <Address id={id} name={name} isShipping={isShipping} key={`address-${id}`} />;
+                        return (
+                            <Address
+                                id={addressId}
+                                name={name}
+                                full_address={full_address}
+                                isShipping={isShipping}
+                                key={`address-${addressId}`}
+                            />
+                        );
                     })}
             </div>
         </div>

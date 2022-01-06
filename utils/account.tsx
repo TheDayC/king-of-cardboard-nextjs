@@ -370,6 +370,7 @@ export async function getAddresses(accessToken: string, emailAddress: string): P
 
         return addresses.map((address, i) => ({
             id: safelyParse(address, 'id', parseAsString, ''),
+            addressId: safelyParse(included[i], 'id', parseAsString, ''),
             name: safelyParse(address, 'attributes.reference', parseAsString, '[NO NAME FOUND]'),
             full_address: safelyParse(included[i], 'attributes.full_address', parseAsString, ''),
         }));

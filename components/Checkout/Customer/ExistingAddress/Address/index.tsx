@@ -19,10 +19,11 @@ import { setCheckoutLoading } from '../../../../../store/slices/global';
 interface AddressProps {
     id: string;
     name: string;
+    full_address: string;
     isShipping: boolean;
 }
 
-export const Address: React.FC<AddressProps> = ({ id, name, isShipping }) => {
+export const Address: React.FC<AddressProps> = ({ id, name, full_address, isShipping }) => {
     const { accessToken, orderId, cloneBillingAddressId, cloneShippingAddressId } = useSelector(selector);
     const [address, setAddress] = useState<CommerceLayerResponse | null>(null);
     const dispatch = useDispatch();

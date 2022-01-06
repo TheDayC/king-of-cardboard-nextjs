@@ -96,6 +96,7 @@ export interface GiftCard {
 
 export interface Address {
     id: string;
+    addressId: string;
     name: string;
     full_address: string;
 }
