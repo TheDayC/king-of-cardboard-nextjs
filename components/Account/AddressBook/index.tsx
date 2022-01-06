@@ -7,36 +7,21 @@ import Loading from '../../Loading';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import Add from './Add';
 import Address from './Address';
-import Pagination from '../../Pagination';
 import { fetchAddresses, fetchAddressPageCount } from '../../../store/slices/account';
 
-const PER_PAGE = 7;
-
 export const AddressBook: React.FC = () => {
-    const { accessToken, addresses, pageCount } = useSelector(selector);
+    const { accessToken, addresses } = useSelector(selector);
     const { data: session } = useSession();
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
     const [shouldFetchAddresses, setShouldFetchAddresses] = useState(true);
-    const [isLoading, setIsLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();
-
-    const handlePageNumber = (nextPage: number) => {
-        setIsLoading(true);
-        const page = nextPage + 1;
-
-        if (accessToken && emailAddress) {
-            setCurrentPage(nextPage);
-            dispatch(fetchAddresses({ accessToken, emailAddress, pageSize: PER_PAGE, page }));
-        }
-        setIsLoading(false);
-    };
 
     useEffect(() => {
         if (shouldFetchAddresses && accessToken && emailAddress) {
             setShouldFetchAddresses(false);
             setIsLoading(true);
-            dispatch(fetchAddresses({ accessToken, emailAddress, pageSize: PER_PAGE, page: 1 }));
+            dispatch(fetchAddresses({ accessToken, emailAddress }));
             dispatch(fetchAddressPageCount({ accessToken, emailAddress }));
             setIsLoading(false);
         }
@@ -51,17 +36,13 @@ export const AddressBook: React.FC = () => {
                         <Address
                             id={address.id}
                             name={address.name}
+                            full_address={address.full_address}
                             key={`address-${address.id}`}
                             fetchAddresses={setShouldFetchAddresses}
                         />
                     ))}
                 <Add />
             </div>
-            {pageCount > 1 && (
-                <div className="flex flex-row w-full justify-center items-center">
-                    <Pagination currentPage={currentPage} pageCount={pageCount} handlePageNumber={handlePageNumber} />
-                </div>
-            )}
         </div>
     );
 };

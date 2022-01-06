@@ -97,4 +97,20 @@ export interface GiftCard {
 export interface Address {
     id: string;
     name: string;
+    full_address: string;
+}
+
+export interface SingleAddress {
+    id: string;
+    addressId: string;
+    name: string;
+    addressLineOne: string;
+    addressLineTwo: string;
+    city: string;
+    company: string;
+    county: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    postcode: string;
 }

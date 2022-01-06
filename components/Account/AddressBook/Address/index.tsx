@@ -10,10 +10,11 @@ import { addError, addSuccess } from '../../../../store/slices/alerts';
 interface AddressProps {
     id: string;
     name: string;
+    full_address: string;
     fetchAddresses(shouldFetch: boolean): void;
 }
 
-export const Address: React.FC<AddressProps> = ({ id, name, fetchAddresses }) => {
+export const Address: React.FC<AddressProps> = ({ id, name, full_address, fetchAddresses }) => {
     const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
 
@@ -31,8 +32,9 @@ export const Address: React.FC<AddressProps> = ({ id, name, fetchAddresses }) =>
     };
 
     return (
-        <div className="flex flex-col cursor-pointer p-6 border border-solid border-base-200 justify-center items-start w-full rounded-md shadow-md">
-            <p className="text-sm mb-4">{name}</p>
+        <div className="flex flex-col p-6 border border-solid border-base-200 justify-center items-start w-full rounded-md shadow-md">
+            <h4 className="text-md mb-4 font-semibold">{name}</h4>
+            <p className="text-sm mb-4">{full_address}</p>
             <div className="flex flex-row w-full justify-between">
                 <Link
                     href={{

@@ -2,7 +2,7 @@ import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { Address, GiftCard, Order, SingleOrder } from '../../types/account';
+import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../../types/account';
 import {
     getGiftCard,
     getOrderPageCount,
@@ -10,8 +10,11 @@ import {
     getOrder,
     getAddresses,
     getAddressPageCount,
+    getCustomerAddress,
+    getCurrentAddress,
 } from '../../utils/account';
 import accountInitialState from '../state/account';
+import { CommonThunkInput } from '../types/state';
 
 const hydrate = createAction<AppState>(HYDRATE);
 
@@ -28,6 +31,11 @@ interface PaginatedThunkInput extends EmailThunkInput {
 interface OrderThunkInput {
     accessToken: string;
     orderNumber: string;
+}
+
+interface AddressThunkInput {
+    accessToken: string;
+    id: string;
 }
 
 export const fetchGiftCard = createAsyncThunk(
@@ -68,10 +76,10 @@ export const fetchOrderPageCount = createAsyncThunk(
 
 export const fetchAddresses = createAsyncThunk(
     'account/fetchAddresses',
-    async (data: PaginatedThunkInput): Promise<Address[]> => {
-        const { accessToken, emailAddress, pageSize, page } = data;
+    async (data: EmailThunkInput): Promise<Address[]> => {
+        const { accessToken, emailAddress } = data;
 
-        return await getAddresses(accessToken, emailAddress, pageSize, page);
+        return await getAddresses(accessToken, emailAddress);
     }
 );
 
@@ -81,6 +89,15 @@ export const fetchAddressPageCount = createAsyncThunk(
         const { accessToken, emailAddress } = data;
 
         return await getAddressPageCount(accessToken, emailAddress);
+    }
+);
+
+export const fetchCurrentAddress = createAsyncThunk(
+    'account/fetchCurrentAddress',
+    async (data: AddressThunkInput): Promise<SingleAddress> => {
+        const { accessToken, id } = data;
+
+        return await getCurrentAddress(accessToken, id);
     }
 );
 
@@ -116,6 +133,9 @@ const accountSlice = createSlice({
             }),
             builder.addCase(fetchAddressPageCount.fulfilled, (state, action) => {
                 state.addressPageCount = action.payload;
+            }),
+            builder.addCase(fetchCurrentAddress.fulfilled, (state, action) => {
+                state.currentAddress = action.payload;
             }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,

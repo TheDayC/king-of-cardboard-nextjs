@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
@@ -9,8 +9,10 @@ import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import { fieldPatternMsgs } from '../../../../utils/checkout';
 import { addAddress, editAddress } from '../../../../utils/account';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
+import { fetchAddresses } from '../../../../store/slices/account';
 
 interface FormData {
+    name: string;
     addressLineOne: string;
     addressLineTwo: string;
     city: string;
@@ -23,7 +25,9 @@ interface FormData {
 }
 
 interface FieldProps {
+    id?: string;
     addressId?: string;
+    name?: string;
     addressLineOne?: string;
     addressLineTwo?: string;
     city?: string;
@@ -36,7 +40,9 @@ interface FieldProps {
 }
 
 export const Fields: React.FC<FieldProps> = ({
+    id,
     addressId,
+    name,
     addressLineOne,
     addressLineTwo,
     city,
@@ -58,6 +64,7 @@ export const Fields: React.FC<FieldProps> = ({
         handleSubmit,
         formState: { errors },
         reset,
+        setValue,
     } = useForm();
     const hasErrors = Object.keys(errors).length > 0;
 
@@ -66,14 +73,17 @@ export const Fields: React.FC<FieldProps> = ({
             return;
         }
 
-        const { addressLineOne, addressLineTwo, city, company, county, firstName, lastName, phone, postcode } = data;
+        const { name, addressLineOne, addressLineTwo, city, company, county, firstName, lastName, phone, postcode } =
+            data;
 
         setIsLoading(true);
 
         if (addressId) {
             const res = await editAddress(
                 accessToken,
+                id,
                 addressId,
+                name,
                 addressLineOne,
                 addressLineTwo,
                 city,
@@ -87,6 +97,7 @@ export const Fields: React.FC<FieldProps> = ({
 
             if (res) {
                 dispatch(addSuccess('Address updated!'));
+                dispatch(fetchAddresses({ accessToken, emailAddress }));
                 router.push('/account/addressBook');
             } else {
                 dispatch(addError('Failed to update address.'));
@@ -95,6 +106,7 @@ export const Fields: React.FC<FieldProps> = ({
             const res = await addAddress(
                 accessToken,
                 emailAddress,
+                name,
                 addressLineOne,
                 addressLineTwo,
                 city,
@@ -109,6 +121,7 @@ export const Fields: React.FC<FieldProps> = ({
             if (res) {
                 dispatch(addSuccess('Address successfullly added!'));
                 reset();
+                dispatch(fetchAddresses({ accessToken, emailAddress }));
                 router.push('/account/addressBook');
             } else {
                 dispatch(addError('Unable to add address.'));
@@ -118,6 +131,7 @@ export const Fields: React.FC<FieldProps> = ({
         setIsLoading(false);
     };
 
+    const nameErr = safelyParse(errors, 'name.message', parseAsString, null);
     const firstNameErr = safelyParse(errors, 'firstName.message', parseAsString, null);
     const lastNameErr = safelyParse(errors, 'lastName.message', parseAsString, null);
     const companyErr = safelyParse(errors, 'company.message', parseAsString, null);
@@ -129,12 +143,91 @@ export const Fields: React.FC<FieldProps> = ({
     const countyErr = safelyParse(errors, 'county.message', parseAsString, null);
     const btnText = addressId ? 'Save Address' : 'Add Address';
 
+    useEffect(() => {
+        if (name) {
+            setValue('name', name);
+        }
+    }, [name, setValue]);
+
+    useEffect(() => {
+        if (firstName) {
+            setValue('firstName', firstName);
+        }
+    }, [firstName, setValue]);
+
+    useEffect(() => {
+        if (lastName) {
+            setValue('lastName', lastName);
+        }
+    }, [lastName, setValue]);
+
+    useEffect(() => {
+        if (addressLineOne) {
+            setValue('addressLineOne', addressLineOne);
+        }
+    }, [addressLineOne, setValue]);
+
+    useEffect(() => {
+        if (addressLineTwo) {
+            setValue('addressLineTwo', addressLineTwo);
+        }
+    }, [addressLineTwo, setValue]);
+
+    useEffect(() => {
+        if (city) {
+            setValue('city', city);
+        }
+    }, [city, setValue]);
+
+    useEffect(() => {
+        if (postcode) {
+            setValue('postcode', postcode);
+        }
+    }, [postcode, setValue]);
+
+    useEffect(() => {
+        if (county) {
+            setValue('county', county);
+        }
+    }, [county, setValue]);
+
+    useEffect(() => {
+        if (company) {
+            setValue('company', company);
+        }
+    }, [company, setValue]);
+
+    useEffect(() => {
+        if (phone) {
+            setValue('phone', phone);
+        }
+    }, [phone, setValue]);
+
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full">
             <div className="flex flex-col md:flex-row relative w-full">
                 <div className="card p-0 rounded-md w-full mb-4 md:w-1/2 md:p-4 md:mb-0">
                     <h3 className="card-title">Personal Details</h3>
                     <div className="grid grid-cols-1 gap-2">
+                        <div className="form-control">
+                            <label className="label">
+                                <span className="label-text">Address Name</span>
+                                <span className="label-text-alt">This is what we&apos;ll call your address.</span>
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="Address Name"
+                                {...register('name', {
+                                    required: { value: true, message: 'Required' },
+                                })}
+                                className={`input input-sm input-bordered${nameErr ? ' input-error' : ''}`}
+                            />
+                            {nameErr && (
+                                <label className="label">
+                                    <span className="label-text-alt">{nameErr}</span>
+                                </label>
+                            )}
+                        </div>
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">First Name</span>
@@ -148,7 +241,6 @@ export const Fields: React.FC<FieldProps> = ({
                                         value: /^[a-z ,.'-]+$/i,
                                         message: fieldPatternMsgs('firstName'),
                                     },
-                                    value: firstName || '',
                                 })}
                                 className={`input input-sm input-bordered${firstNameErr ? ' input-error' : ''}`}
                             />
@@ -171,7 +263,6 @@ export const Fields: React.FC<FieldProps> = ({
                                         value: /^[a-z ,.'-]+$/i,
                                         message: fieldPatternMsgs('lastName'),
                                     },
-                                    value: lastName || '',
                                 })}
                                 className={`input input-sm input-bordered${lastNameErr ? ' input-error' : ''}`}
                             />
@@ -190,7 +281,6 @@ export const Fields: React.FC<FieldProps> = ({
                                 placeholder="Company"
                                 {...register('company', {
                                     required: false,
-                                    value: company || '',
                                 })}
                                 className={`input input-sm input-bordered${companyErr ? ' input-error' : ''}`}
                             />
@@ -213,7 +303,6 @@ export const Fields: React.FC<FieldProps> = ({
                                         value: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g,
                                         message: fieldPatternMsgs('mobile'),
                                     },
-                                    value: phone || '',
                                 })}
                                 className={`input input-sm input-bordered${mobileErr ? ' input-error' : ''}`}
                             />
@@ -237,7 +326,6 @@ export const Fields: React.FC<FieldProps> = ({
                                 placeholder="Address Line One"
                                 {...register('addressLineOne', {
                                     required: { value: true, message: 'Required' },
-                                    value: addressLineOne || '',
                                 })}
                                 className={`input input-sm input-bordered${lineOneErr ? ' input-error' : ''}`}
                             />
@@ -254,7 +342,7 @@ export const Fields: React.FC<FieldProps> = ({
                             <input
                                 type="text"
                                 placeholder="Address Line Two"
-                                {...register('addressLineTwo', { value: addressLineTwo || '' })}
+                                {...register('addressLineTwo', { required: false })}
                                 className={`input input-sm input-bordered${lineTwoErr ? ' input-error' : ''}`}
                             />
                             {lineTwoErr && (
@@ -272,7 +360,6 @@ export const Fields: React.FC<FieldProps> = ({
                                 placeholder="City"
                                 {...register('city', {
                                     required: { value: true, message: 'Required' },
-                                    value: city || '',
                                 })}
                                 className={`input input-sm input-bordered${cityErr ? ' input-error' : ''}`}
                             />
@@ -295,7 +382,6 @@ export const Fields: React.FC<FieldProps> = ({
                                         value: /^([A-Z][A-HJ-Y]?\d[A-Z\d]? ?\d[A-Z]{2}|GIR ?0A{2})$/gim,
                                         message: fieldPatternMsgs('postcode'),
                                     },
-                                    value: postcode || '',
                                 })}
                                 className={`input input-sm input-bordered${postcodeErr ? ' input-error' : ''}`}
                             />
@@ -314,7 +400,6 @@ export const Fields: React.FC<FieldProps> = ({
                                 placeholder="County"
                                 {...register('county', {
                                     required: { value: true, message: 'Required' },
-                                    value: county || '',
                                 })}
                                 className={`input input-sm input-bordered${countyErr ? ' input-error' : ''}`}
                             />

@@ -3,7 +3,7 @@ import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 import { DateTime } from 'luxon';
 
-import { Address, GiftCard, Order, SingleOrder } from '../types/account';
+import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../types/account';
 import {
     parseAsArrayOfCommerceResponse,
     safelyParse,
@@ -358,23 +358,20 @@ export function cardLogo(card: string | null): JSX.Element {
     }
 }
 
-export async function getAddresses(
-    accessToken: string,
-    emailAddress: string,
-    pageSize: number,
-    page: number
-): Promise<Address[]> {
+export async function getAddresses(accessToken: string, emailAddress: string): Promise<Address[]> {
     try {
-        const include = 'address';
-        const filters = `filter[q][email_eq]=${emailAddress}`;
-        const pagination = `page[size]=${pageSize}&page[number]=${page}`;
         const cl = authClient(accessToken);
-        const res = await cl.get(`/api/customer_addresses?${filters}&${pagination}&include=${include}`);
+        const include = 'include=address';
+        const filters = `filter[q][email_eq]=${emailAddress}`;
+        const fields = `fields[customer_addresses]=id,reference&fields[addresses]=full_address`;
+        const res = await cl.get(`/api/customer_addresses?${filters}&${include}&${fields}`);
         const addresses = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, []);
+        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
 
-        return addresses.map((address) => ({
+        return addresses.map((address, i) => ({
             id: safelyParse(address, 'id', parseAsString, ''),
-            name: safelyParse(address, 'attributes.name', parseAsString, ''),
+            name: safelyParse(address, 'attributes.reference', parseAsString, '[NO NAME FOUND]'),
+            full_address: safelyParse(included[i], 'attributes.full_address', parseAsString, ''),
         }));
     } catch (error: unknown) {
         errorHandler(error, 'We could not fetch your saved addresses.');
@@ -401,6 +398,7 @@ export async function getAddressPageCount(accessToken: string, emailAddress: str
 export async function addAddress(
     accessToken: string,
     emailAddress: string,
+    name: string,
     addressLineOne: string,
     addressLineTwo: string,
     city: string,
@@ -410,28 +408,65 @@ export async function addAddress(
     lastName: string,
     phone: string,
     postcode: string
-): Promise<string | null> {
+): Promise<boolean> {
     try {
-        const response = await axios.post('/api/account/addAddress', {
-            token: accessToken,
-            emailAddress,
-            addressLineOne,
-            addressLineTwo,
-            city,
-            company,
-            county,
-            firstName,
-            lastName,
-            phone,
-            postcode,
+        const cl = authClient(accessToken);
+        const customer = await cl.get(`/api/customers/?filter[q][email_eq]=${emailAddress}`);
+        const customerRes = safelyParse(customer, 'data.data', parseAsArrayOfCommerceResponse, [])[0];
+
+        const customerId = safelyParse(customerRes, 'id', parseAsString, null);
+
+        if (!customerId) return false;
+
+        const addressRes = await cl.post('/api/addresses', {
+            data: {
+                type: 'addresses',
+                attributes: {
+                    reference: name,
+                    first_name: firstName,
+                    last_name: lastName,
+                    company,
+                    line_1: addressLineOne,
+                    line_2: addressLineTwo,
+                    city,
+                    zip_code: postcode,
+                    state_code: county,
+                    country_code: 'GB',
+                    phone,
+                    email: emailAddress,
+                },
+            },
+        });
+        const addressId = safelyParse(addressRes, 'data.data.id', parseAsString, null);
+
+        const res = await cl.post('/api/customer_addresses', {
+            data: {
+                type: 'customer_addresses',
+                relationships: {
+                    customer: {
+                        data: {
+                            type: 'customers',
+                            id: customerId,
+                        },
+                    },
+                    address: {
+                        data: {
+                            type: 'addresses',
+                            id: addressId,
+                        },
+                    },
+                },
+            },
         });
 
-        return safelyParse(response, 'data.customerAddressId', parseAsString, null);
+        const status = safelyParse(res, 'status', parseAsNumber, false);
+
+        return status === 201;
     } catch (error: unknown) {
-        errorHandler(error, 'We could not fetch your saved addresses.');
+        errorHandler(error, 'Failed to create address.');
     }
 
-    return null;
+    return false;
 }
 
 export async function deleteAddress(accessToken: string, id: string): Promise<boolean> {
@@ -462,22 +497,53 @@ export async function getAddress(accessToken: string, id: string): Promise<Comme
     return null;
 }
 
-export async function getCustomerAddress(accessToken: string, id: string): Promise<CommerceLayerResponse | null> {
+export async function getCurrentAddress(accessToken: string, id: string): Promise<SingleAddress> {
     try {
         const cl = authClient(accessToken);
-        const response = await cl.get(`/api/customer_addresses/${id}?include=address`);
+        const res = await cl.get(`/api/customer_addresses/${id}?include=address`);
 
-        return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
+        const address = safelyParse(res, 'data.data', parseAsCommerceResponse, {});
+        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, [])[0];
+
+        return {
+            id: safelyParse(address, 'id', parseAsString, ''),
+            addressId: safelyParse(address, 'relationships.address.data.id', parseAsString, ''),
+            name: safelyParse(address, 'attributes.reference', parseAsString, ''),
+            addressLineOne: safelyParse(included, 'attributes.line_1', parseAsString, ''),
+            addressLineTwo: safelyParse(included, 'attributes.line_2', parseAsString, ''),
+            city: safelyParse(included, 'attributes.city', parseAsString, ''),
+            company: safelyParse(included, 'attributes.company', parseAsString, ''),
+            county: safelyParse(included, 'attributes.state_code', parseAsString, ''),
+            firstName: safelyParse(included, 'attributes.first_name', parseAsString, ''),
+            lastName: safelyParse(included, 'attributes.last_name', parseAsString, ''),
+            phone: safelyParse(included, 'attributes.phone', parseAsString, ''),
+            postcode: safelyParse(included, 'attributes.zip_code', parseAsString, ''),
+        };
     } catch (error: unknown) {
         errorHandler(error, 'We could not delete the selected address.');
     }
 
-    return null;
+    return {
+        id: '',
+        addressId: '',
+        name: '',
+        addressLineOne: '',
+        addressLineTwo: '',
+        city: '',
+        company: '',
+        county: '',
+        firstName: '',
+        lastName: '',
+        phone: '',
+        postcode: '',
+    };
 }
 
 export async function editAddress(
     accessToken: string,
+    id: string,
     addressId: string,
+    name: string,
     addressLineOne: string,
     addressLineTwo: string,
     city: string,
@@ -487,11 +553,11 @@ export async function editAddress(
     lastName: string,
     phone: string,
     postcode: string
-): Promise<CommerceLayerResponse | null> {
+): Promise<boolean> {
     try {
         const cl = authClient(accessToken);
 
-        const response = await cl.patch(`/api/addresses/${addressId}`, {
+        const res = await cl.patch(`/api/addresses/${addressId}`, {
             data: {
                 type: 'addresses',
                 id: addressId,
@@ -509,12 +575,25 @@ export async function editAddress(
             },
         });
 
-        return safelyParse(response, 'data.data', parseAsCommerceResponse, null);
+        const customerRes = await cl.patch(`/api/customer_addresses/${id}`, {
+            data: {
+                type: 'customer_addresses',
+                id,
+                attributes: {
+                    reference: name,
+                },
+            },
+        });
+
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
+        const customerStatus = safelyParse(customerRes, 'status', parseAsNumber, 500);
+
+        return status === 200 && customerStatus === 200;
     } catch (error: unknown) {
         errorHandler(error, 'We could not get historical order.');
     }
 
-    return null;
+    return false;
 }
 
 export async function requestPasswordReset(accessToken: string, email: string): Promise<boolean> {

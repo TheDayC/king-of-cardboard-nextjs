@@ -75,6 +75,19 @@ const accountInitialState: AccountState = {
     },
     addresses: [],
     addressPageCount: 0,
+    currentAddress: {
+        id: '',
+        name: '',
+        addressLineOne: '',
+        addressLineTwo: '',
+        city: '',
+        company: '',
+        county: '',
+        firstName: '',
+        lastName: '',
+        phone: '',
+        postcode: '',
+    },
 };
 
 export default accountInitialState;

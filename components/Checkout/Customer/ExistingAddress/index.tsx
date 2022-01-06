@@ -1,16 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
-import { getAddresses } from '../../../../utils/account';
-import { CommerceLayerResponse } from '../../../../types/api';
 import { setCheckoutLoading } from '../../../../store/slices/global';
 import Address from './Address';
 import selector from './selector';
 import Loading from '../../../Loading';
-
-const PER_PAGE = 6;
+import { fetchAddresses } from '../../../../store/slices/account';
 
 interface ExistingAddressProps {
     isShipping: boolean;
@@ -19,31 +16,18 @@ interface ExistingAddressProps {
 const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping }) => {
     const { data: session } = useSession();
     const dispatch = useDispatch();
-    const { accessToken, checkoutLoading } = useSelector(selector);
+    const { accessToken, checkoutLoading, addresses } = useSelector(selector);
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
-    const [addresses, setAddresses] = useState<CommerceLayerResponse[] | null>(null);
     const [shouldFetchAddresses, setShouldFetchAddresses] = useState(true);
-
-    const fetchAddresses = useCallback(
-        async (token: string, email: string, page: number) => {
-            const res = await getAddresses(token, email, PER_PAGE, page);
-
-            if (res) {
-                setAddresses(res.addresses);
-            }
-
-            dispatch(setCheckoutLoading(false));
-        },
-        [dispatch]
-    );
 
     useEffect(() => {
         if (session && shouldFetchAddresses && accessToken && emailAddress) {
             setShouldFetchAddresses(false);
             dispatch(setCheckoutLoading(true));
-            fetchAddresses(accessToken, emailAddress, 1);
+            dispatch(fetchAddresses({ accessToken, emailAddress }));
+            dispatch(setCheckoutLoading(false));
         }
-    }, [session, accessToken, emailAddress, shouldFetchAddresses, dispatch, fetchAddresses]);
+    }, [session, accessToken, emailAddress, shouldFetchAddresses, dispatch]);
 
     return (
         <div className="w-full block relative">
