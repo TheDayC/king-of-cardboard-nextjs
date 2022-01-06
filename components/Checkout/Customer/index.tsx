@@ -204,7 +204,6 @@ const Customer: React.FC = () => {
 
             // Parse the shipping address into a customer address partial.
             const shippingAddressParsed = parseExistingAddress(shippingAddress);
-            console.log('🚀 ~ file: index.tsx ~ line 201 ~ shippingAddressParsed', shippingAddressParsed);
 
             // Update shipping address details in commerceLayer. No check for same as billing here.
             await updateAddress(accessToken, orderId, customerDetails, shippingAddressParsed, true);
