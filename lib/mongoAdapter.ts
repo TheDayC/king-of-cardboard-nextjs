@@ -4,7 +4,7 @@ import type { Adapter, AdapterSession, AdapterUser, VerificationToken } from 'ne
 import type { MongoClient } from 'mongodb';
 import type { Account } from 'next-auth';
 
-export interface MongoDBAdapterOptions {
+interface MongoDBAdapterOptions {
     collections?: {
         Users?: string;
         Accounts?: string;
@@ -13,14 +13,14 @@ export interface MongoDBAdapterOptions {
     };
 }
 
-export const defaultCollections: Required<Required<MongoDBAdapterOptions>['collections']> = {
+const defaultCollections: Required<Required<MongoDBAdapterOptions>['collections']> = {
     Users: 'users',
     Accounts: 'accounts',
     Sessions: 'sessions',
     VerificationTokens: 'verification_tokens',
 };
 
-export const format = {
+const format = {
     /** Takes a mongoDB object and returns a plain old JavaScript object */
     from<T = Record<string, unknown>>(object: Record<string, any>): T {
         const newObject: Record<string, unknown> = {};
@@ -54,7 +54,7 @@ export const format = {
 };
 
 /** Converts from string to ObjectId */
-export function _id(hex?: string): ObjectId {
+function _id(hex?: string): ObjectId {
     if (hex?.length !== 24) return new ObjectId();
     return new ObjectId(hex);
 }
