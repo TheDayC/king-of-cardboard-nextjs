@@ -3,6 +3,7 @@ import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
 import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../../types/account';
+import { SocialMedia } from '../../types/profile';
 import {
     getGiftCard,
     getOrderPageCount,
@@ -12,6 +13,7 @@ import {
     getAddressPageCount,
     getCustomerAddress,
     getCurrentAddress,
+    getSocialMedia,
 } from '../../utils/account';
 import accountInitialState from '../state/account';
 import { CommonThunkInput } from '../types/state';
@@ -101,6 +103,13 @@ export const fetchCurrentAddress = createAsyncThunk(
     }
 );
 
+export const fetchSocialMedia = createAsyncThunk(
+    'account/fetchSocialMedia',
+    async (emailAddress: string): Promise<SocialMedia> => {
+        return await getSocialMedia(emailAddress);
+    }
+);
+
 const accountSlice = createSlice({
     name: 'account',
     initialState: accountInitialState,
@@ -136,6 +145,9 @@ const accountSlice = createSlice({
             }),
             builder.addCase(fetchCurrentAddress.fulfilled, (state, action) => {
                 state.currentAddress = action.payload;
+            }),
+            builder.addCase(fetchSocialMedia.fulfilled, (state, action) => {
+                state.socialMedia = action.payload;
             }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,

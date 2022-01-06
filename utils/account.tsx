@@ -17,6 +17,7 @@ import {
 import { AddressResponse, CommerceLayerResponse } from '../types/api';
 import { authClient } from './auth';
 import { errorHandler } from '../middleware/errors';
+import { SocialMedia } from '../types/profile';
 
 export async function getOrders(
     accessToken: string,
@@ -694,6 +695,30 @@ export async function updateUsername(emailAddress: string, username: string): Pr
     return false;
 }
 
+export async function getSocialMedia(emailAddress: string): Promise<SocialMedia> {
+    try {
+        const res = await axios.post('/api/account/getSocialMedia', { emailAddress });
+
+        return {
+            instagram: safelyParse(res, 'data.socialMedia.instagram', parseAsString, ''),
+            twitter: safelyParse(res, 'data.socialMedia.twitter', parseAsString, ''),
+            twitch: safelyParse(res, 'data.socialMedia.twitch', parseAsString, ''),
+            youtube: safelyParse(res, 'data.socialMedia.youtube', parseAsString, ''),
+            ebay: safelyParse(res, 'data.socialMedia.ebay', parseAsString, ''),
+        };
+    } catch (error: unknown) {
+        errorHandler(error, 'Failed to update social media.');
+    }
+
+    return {
+        instagram: '',
+        twitter: '',
+        twitch: '',
+        youtube: '',
+        ebay: '',
+    };
+}
+
 export async function updateSocialMedia(
     emailAddress: string,
     instagram: string,
@@ -712,7 +737,7 @@ export async function updateSocialMedia(
             ebay,
         });
 
-        const status = safelyParse(res, 'response.status', parseAsNumber, 500);
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
         return status === 200;
     } catch (error: unknown) {

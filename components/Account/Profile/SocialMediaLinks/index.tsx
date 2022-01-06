@@ -7,7 +7,7 @@ import { BsInstagram, BsTwitter, BsTwitch, BsYoutube } from 'react-icons/bs';
 import { FaEbay } from 'react-icons/fa';
 
 import { parseAsSocialMedia, parseAsString, safelyParse } from '../../../../utils/parsers';
-import { setSocialMedia } from '../../../../store/slices/account';
+import { fetchSocialMedia, setSocialMedia } from '../../../../store/slices/account';
 import selector from './selector';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updateSocialMedia } from '../../../../utils/account';
@@ -21,7 +21,7 @@ interface SubmitData {
 }
 
 export const SocialMediaLinks: React.FC = () => {
-    const { socialMedia: savedSocialMedia } = useSelector(selector);
+    const { socialMedia } = useSelector(selector);
     const {
         register,
         handleSubmit,
@@ -29,6 +29,7 @@ export const SocialMediaLinks: React.FC = () => {
         formState: { errors },
     } = useForm();
     const [loading, setLoading] = useState(false);
+    const [shouldFetch, setShouldFetch] = useState(true);
     const { data: session } = useSession();
     const dispatch = useDispatch();
 
@@ -51,6 +52,7 @@ export const SocialMediaLinks: React.FC = () => {
 
         if (hasUpdatedSocialMedia) {
             dispatch(addSuccess('Social media updated!'));
+            dispatch(fetchSocialMedia(emailAddress));
         } else {
             dispatch(addError('Failed to update social media.'));
         }
@@ -58,38 +60,22 @@ export const SocialMediaLinks: React.FC = () => {
         setLoading(false);
     };
 
-    const fetchSocialMedia = useCallback(
-        async (email: string) => {
-            const response = await axios.post('/api/account/getSocialMedia', {
-                emailAddress: email,
-            });
-
-            if (response) {
-                const socialMedia = safelyParse(response, 'data.socialMedia', parseAsSocialMedia, null);
-
-                if (socialMedia) {
-                    dispatch(setSocialMedia(socialMedia));
-                }
-            }
-        },
-        [dispatch]
-    );
+    useEffect(() => {
+        if (emailAddress && shouldFetch) {
+            setShouldFetch(false);
+            dispatch(fetchSocialMedia(emailAddress));
+        }
+    }, [emailAddress, dispatch, shouldFetch]);
 
     useEffect(() => {
-        if (emailAddress) {
-            fetchSocialMedia(emailAddress);
+        if (socialMedia) {
+            setValue('instagram', socialMedia.instagram);
+            setValue('twitter', socialMedia.twitter);
+            setValue('twitch', socialMedia.twitch);
+            setValue('youtube', socialMedia.youtube);
+            setValue('ebay', socialMedia.ebay);
         }
-    }, [emailAddress, fetchSocialMedia]);
-
-    useEffect(() => {
-        if (savedSocialMedia) {
-            setValue('instagram', savedSocialMedia.instagram);
-            setValue('twitter', savedSocialMedia.twitter);
-            setValue('twitch', savedSocialMedia.twitch);
-            setValue('youtube', savedSocialMedia.youtube);
-            setValue('ebay', savedSocialMedia.ebay);
-        }
-    }, [savedSocialMedia, setValue]);
+    }, [socialMedia, setValue]);
 
     return (
         <React.Fragment>
