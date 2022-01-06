@@ -35,16 +35,10 @@ const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping }) => {
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 relative">
                 {addresses.length > 0 &&
                     addresses.map((address) => {
-                        const { name, full_address, addressId } = address;
+                        const { name, addressId } = address;
 
                         return (
-                            <Address
-                                id={addressId}
-                                name={name}
-                                full_address={full_address}
-                                isShipping={isShipping}
-                                key={`address-${addressId}`}
-                            />
+                            <Address id={addressId} name={name} isShipping={isShipping} key={`address-${addressId}`} />
                         );
                     })}
             </div>
