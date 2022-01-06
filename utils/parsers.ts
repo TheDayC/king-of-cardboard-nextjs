@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types */
-import { Counties } from '../enums/checkout';
-import { CustomerAddress, CustomerDetails } from '../store/types/state';
-import { Order } from '../types/cart';
+import { CustomerAddress } from '../store/types/state';
 import {
     isString,
     isNumber,
@@ -11,92 +9,28 @@ import {
     isCommerceResponse,
     isCommerceResponseArray,
     isArrayOfStrings,
-    isAttributes,
     isEnumMember,
-    isCommerceMeta,
     isArrayOfLineItemRelationships,
-    isHistoricalAddress,
-    isPaymentMethodDetails,
-    isAxiosError,
-    isObjective,
     isArrayOfObjectives,
     isArrayOfAchievements,
-    isCommerceLayerError,
     isArrayofCommerceLayerErrors,
     isImageCollection,
     isImageItem,
     isSkuInventory,
-    isSkuOption,
     isArrayofSkuOptions,
-    isOrder,
-    isItem,
     isArrayofItems,
     isCustomerDetails,
-    isError,
-    isContentfulBreak,
     isArrayOfContentfulBreaks,
-    isBreakTypeItem,
-    isArrayOfBreakTypeItems,
-    isContentfulPage,
     isArrayOfContentfulPages,
-    isContentfulProduct,
     isArrayOfContentfulProducts,
     isUnknown,
-    isBreakSlot,
     isArrayOfBreakSlots,
-    isArrayOfImageItems,
-    isContent,
-    isArrayOfContent,
-    isContentJSON,
     isArrayOfContentJSON,
     isCustomerAddress,
     isBreakSlotsCollection,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
-
-export function parseOrderData(order: unknown, included: unknown[]): Order | null {
-    if (!order) {
-        return null;
-    }
-
-    return {
-        id: safelyParse(order, 'id', parseAsString, ''),
-        number: safelyParse(order, 'attributes.number', parseAsNumber, 0),
-        sku_count: safelyParse(order, 'attributes.sku_count', parseAsNumber, 0),
-        formatted_subtotal_amount: safelyParse(order, 'attributes.formatted_subtotal_amount', parseAsString, '£0.00'),
-        formatted_discount_amount: safelyParse(order, 'attributes.formatted_discount_amount', parseAsString, '£0.00'),
-        formatted_shipping_amount: safelyParse(order, 'attributes.formatted_shipping_amount', parseAsString, '£0.00'),
-        formatted_total_tax_amount: safelyParse(order, 'attributes.formatted_total_tax_amount', parseAsString, '£0.00'),
-        formatted_gift_card_amount: safelyParse(order, 'attributes.formatted_gift_card_amount', parseAsString, '£0.00'),
-        formatted_total_amount_with_taxes: safelyParse(
-            order,
-            'attributes.formatted_total_amount_with_taxes',
-            parseAsString,
-            '£0.00'
-        ),
-        status: safelyParse(order, 'attributes.status', parseAsString, 'draft'),
-        payment_status: safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid'),
-        fulfillment_status: safelyParse(order, 'attributes.fulfillment_status', parseAsString, 'unfulfilled'),
-        line_items: safelyParse(order, 'attributes.line_items', parseAsArrayOfStrings, [] as string[]),
-        included: included.length
-            ? included.map((include: unknown) => ({
-                  id: safelyParse(include, 'id', parseAsString, ''),
-                  type: safelyParse(include, 'type', parseAsString, ''),
-                  attributes: safelyParse(include, 'attributes', parseAsAttributes, null),
-              }))
-            : [],
-    };
-}
-
-export function parseCustomerDetails(data: unknown): CustomerDetails {
-    return {
-        first_name: safelyParse(data, 'firstName', parseAsString, null),
-        last_name: safelyParse(data, 'lastName', parseAsString, null),
-        email: safelyParse(data, 'email', parseAsString, null),
-        phone: safelyParse(data, 'phone', parseAsString, null),
-    };
-}
 
 export function parseAddress(data: unknown): CustomerAddress {
     return {
@@ -271,46 +205,24 @@ export const parseAsBoolean = parseAsType(isBoolean);
 export const parseAsArray = parseAsType(isArray);
 export const parseAsUnknown = parseAsType(isUnknown);
 export const parseAsArrayOfStrings = parseAsType(isArrayOfStrings);
-export const parseAsError = parseAsType(isError);
 export const parseAsSocialMedia = parseAsType(isSocialMedia);
 export const parseAsCommerceResponse = parseAsType(isCommerceResponse);
 export const parseAsArrayOfCommerceResponse = parseAsType(isCommerceResponseArray);
-export const parseAsCommerceMeta = parseAsType(isCommerceMeta);
-export const parseAsAttributes = parseAsType(isAttributes);
-export const parseAsCounties = parseAsType(isEnumMember(Counties));
 export const parseAsArrayOfLineItemRelationships = parseAsType(isArrayOfLineItemRelationships);
-export const parseAsHistoricalAddress = parseAsType(isHistoricalAddress);
-export const parseAsPaymentMethodDetails = parseAsType(isPaymentMethodDetails);
-export const parseAsAxiosError = parseAsType(isAxiosError);
-export const parseAsObjective = parseAsType(isObjective);
 export const parseAsArrayOfObjectives = parseAsType(isArrayOfObjectives);
 export const parseAsArrayOfAchievements = parseAsType(isArrayOfAchievements);
-export const parseAsCommerceLayerError = parseAsType(isCommerceLayerError);
 export const parseAsArrayOfCommerceLayerErrors = parseAsType(isArrayofCommerceLayerErrors);
 export const parseAsSlug = parseAsType(isEnumMember(Slugs));
 export const parseAsImageCollection = parseAsType(isImageCollection);
 export const parseAsBreakSlotsCollection = parseAsType(isBreakSlotsCollection);
 export const parseAsImageItem = parseAsType(isImageItem);
-export const parseAsArrayOfImageItems = parseAsType(isArrayOfImageItems);
 export const parseAsSkuInventory = parseAsType(isSkuInventory);
-export const parseAsSkuOption = parseAsType(isSkuOption);
 export const parseAsArrayOfSkuOptions = parseAsType(isArrayofSkuOptions);
-export const parseAsOrder = parseAsType(isOrder);
-export const parseAsItem = parseAsType(isItem);
 export const parseAsArrayOfItems = parseAsType(isArrayofItems);
 export const parseAsCustomerDetails = parseAsType(isCustomerDetails);
 export const parseAsCustomerAddress = parseAsType(isCustomerAddress);
-export const parseAsContentfulBreak = parseAsType(isContentfulBreak);
 export const parseAsArrayOfContentfulBreaks = parseAsType(isArrayOfContentfulBreaks);
-export const parseAsBreakTypeItem = parseAsType(isBreakTypeItem);
-export const parseAsArrayOfBreakTypeItems = parseAsType(isArrayOfBreakTypeItems);
-export const parseAsContentfulPage = parseAsType(isContentfulPage);
 export const parseAsArrayOfContentfulPages = parseAsType(isArrayOfContentfulPages);
-export const parseAsContentfulProduct = parseAsType(isContentfulProduct);
 export const parseAsArrayOfContentfulProducts = parseAsType(isArrayOfContentfulProducts);
-export const parseAsBreakSlot = parseAsType(isBreakSlot);
 export const parseAsArrayOfBreakSlots = parseAsType(isArrayOfBreakSlots);
-export const parseAsContent = parseAsType(isContent);
-export const parseAsArrayOfContent = parseAsType(isArrayOfContent);
-export const parseAsContentJSON = parseAsType(isContentJSON);
 export const parseAsArrayOfContentJSON = parseAsType(isArrayOfContentJSON);

@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 import { errorHandler } from '../middleware/errors';
-import { CartItem, CustomerAddress, CustomerDetails } from '../store/types/state';
+import { CustomerAddress, CustomerDetails } from '../store/types/state';
+import { CartItem } from '../types/cart';
 import { authClient } from './auth';
 import { parseAsNumber, safelyParse } from './parsers';
 

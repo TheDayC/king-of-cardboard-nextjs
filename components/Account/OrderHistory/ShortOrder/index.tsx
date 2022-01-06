@@ -4,10 +4,10 @@ import Image from 'next/image';
 import { DateTime } from 'luxon';
 
 import { statusColour, paymentStatusColour, fulfillmentStatusColour } from '../../../../utils/account';
-import { OrderHistoryLineItem } from '../../../../types/account';
+import { OrderLineItem } from '../../../../types/account';
 
 interface OrderProps {
-    orderNumber: number | null;
+    orderNumber: number;
     status: string;
     paymentStatus: string;
     fulfillmentStatus: string;
@@ -16,7 +16,7 @@ interface OrderProps {
     total: string;
     placedAt: string;
     updatedAt: string;
-    lineItems: OrderHistoryLineItem[] | null;
+    lineItems: OrderLineItem[];
 }
 
 export const ShortOrder: React.FC<OrderProps> = ({
@@ -40,7 +40,7 @@ export const ShortOrder: React.FC<OrderProps> = ({
                 <div className="flex flex-row justify-between items-center">
                     <div className="flex flex-col">
                         <h3 className="card-title text-sm md:text-md mb-2">
-                            {orderNumber && (
+                            {orderNumber > 0 && (
                                 <Link
                                     href={{
                                         pathname: '/account/orderHistory/[orderNumber]',

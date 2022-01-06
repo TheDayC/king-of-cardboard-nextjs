@@ -1,7 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAction, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
+import { AppState } from '..';
 import pagesInitialState from '../state/pages';
+
+const hydrate = createAction<AppState>(HYDRATE);
 
 const pagesSlice = createSlice({
     name: 'pages',
@@ -16,17 +19,14 @@ const pagesSlice = createSlice({
         setShouldLoadPages(state, action) {
             state.shouldLoadPages = action.payload;
         },
-        resetPages() {
-            return pagesInitialState;
-        },
     },
-    extraReducers: {
-        [HYDRATE]: (state, action) => ({
+    extraReducers: (builder) => {
+        builder.addCase(hydrate, (state, action) => ({
             ...state,
-            ...action.payload.subject,
-        }),
+            ...action.payload[pagesSlice.name],
+        }));
     },
 });
 
-export const { setPages, setLoadingPages, resetPages, setShouldLoadPages } = pagesSlice.actions;
+export const { setPages, setLoadingPages, setShouldLoadPages } = pagesSlice.actions;
 export default pagesSlice.reducer;

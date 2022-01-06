@@ -17,10 +17,11 @@ import {
 } from '../../../store/slices/checkout';
 import {
     parseAddress,
+    parseAsString,
     parseBillingAddress,
-    parseCustomerDetails,
     parseExistingAddress,
     parseShippingAddress,
+    safelyParse,
 } from '../../../utils/parsers';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import { addWarning } from '../../../store/slices/alerts';
@@ -116,7 +117,14 @@ const Customer: React.FC = () => {
         setValue,
     } = useForm();
     const isCurrentStep = currentStep === 0;
-    const hasErrors = Object.keys(errors).length > 0;
+    const hasBillingAddress = Boolean(billingAddress.id);
+    const isNewBillingAddress = billingAddressEntryChoice === 'newBillingAddress';
+    const hasShippingAddress = Boolean(shippingAddress.id);
+    const isNewShippingAddress = shippingAddressEntryChoice === 'newShippingAddress';
+    const hasErrors =
+        Object.keys(errors).length > 0 ||
+        (!hasBillingAddress && !isNewBillingAddress) ||
+        (!hasShippingAddress && !isNewShippingAddress && !isShippingSameAsBilling);
 
     const handleNewBillingAddress = useCallback(
         async (data: unknown, customerDetails: CustomerDetails) => {
@@ -142,7 +150,7 @@ const Customer: React.FC = () => {
 
     const handleExistingBillingAddress = useCallback(
         async (customerDetails: CustomerDetails) => {
-            if (!accessToken || !orderId) return;
+            if (!accessToken || !orderId || !billingAddress.id) return;
 
             // Parse the billing address into a customer address partial.
             // CommerceLayer only expects the basic user input on their side hence the partial data parse.
@@ -225,7 +233,12 @@ const Customer: React.FC = () => {
         dispatch(setCheckoutLoading(true));
 
         // Parse the customer details like name, email, phone etc
-        const customerDetails = parseCustomerDetails(data);
+        const customerDetails = {
+            first_name: safelyParse(data, 'firstName', parseAsString, ''),
+            last_name: safelyParse(data, 'lastName', parseAsString, ''),
+            email: safelyParse(data, 'email', parseAsString, ''),
+            phone: safelyParse(data, 'phone', parseAsString, ''),
+        };
         dispatch(setCustomerDetails(customerDetails));
 
         // Handle a new billing address.
@@ -356,7 +369,7 @@ const Customer: React.FC = () => {
                                 defaultChecked={!Boolean(session)}
                                 onSelect={handleBillingSelect}
                             >
-                                <BillingAddress register={register} errors={errors} />
+                                <BillingAddress register={register} errors={errors} setValue={setValue} />
                             </SelectionWrapper>
                             <ShipToBilling />
                             <div className="divider lightDivider"></div>

@@ -11,7 +11,7 @@ export interface ContentJSON {
     data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export interface Content {
+interface Content {
     nodeType: string;
     value: string;
     marks: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -23,7 +23,7 @@ interface SliderCollection {
     items: SliderImage[];
 }
 
-export interface SliderImage {
+interface SliderImage {
     title: string;
     description: string;
     contentType: string;
@@ -33,7 +33,6 @@ export interface SliderImage {
     height: number;
 }
 
-// Type the Hero JSON response.
 interface Hero {
     title: string;
     content: string[];

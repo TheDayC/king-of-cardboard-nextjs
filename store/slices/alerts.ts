@@ -1,9 +1,12 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAction, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 import { DateTime } from 'luxon';
 
 import alertsInitialState from '../state/alerts';
 import { AlertLevel } from '../../enums/system';
+import { AppState } from '..';
+
+const hydrate = createAction<AppState>(HYDRATE);
 
 const alertsSlice = createSlice({
     name: 'alerts',
@@ -56,11 +59,11 @@ const alertsSlice = createSlice({
             state.alerts = state.alerts.filter((alert) => alert.id !== action.payload);
         },
     },
-    extraReducers: {
-        [HYDRATE]: (state, action) => ({
+    extraReducers: (builder) => {
+        builder.addCase(hydrate, (state, action) => ({
             ...state,
-            ...action.payload.subject,
-        }),
+            ...action.payload[alertsSlice.name],
+        }));
     },
 });
 

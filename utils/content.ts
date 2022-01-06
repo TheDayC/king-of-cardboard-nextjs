@@ -52,9 +52,7 @@ export const PAGES_QUERY = `
 
 export async function fetchContent(query: string): Promise<AxiosResponse<unknown> | void> {
     try {
-        const response = await axios.post('/api/content/fetchContent', { query });
-
-        return response;
+        return await axios.post('/api/content/fetchContent', { query });
     } catch (error: unknown) {
         errorHandler(error, 'We could not create an auth token, please refresh.');
     }

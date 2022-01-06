@@ -1,7 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAction, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
+import { AppState } from '..';
 import confirmationInitialState from '../state/confirmation';
+
+const hydrate = createAction<AppState>(HYDRATE);
 
 const confirmationSlice = createSlice({
     name: 'confirmation',
@@ -23,11 +26,11 @@ const confirmationSlice = createSlice({
             return confirmationInitialState;
         },
     },
-    extraReducers: {
-        [HYDRATE]: (state, action) => ({
+    extraReducers: (builder) => {
+        builder.addCase(hydrate, (state, action) => ({
             ...state,
-            ...action.payload.subject,
-        }),
+            ...action.payload[confirmationSlice.name],
+        }));
     },
 });
 

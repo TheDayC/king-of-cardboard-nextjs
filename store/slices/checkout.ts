@@ -61,23 +61,6 @@ const checkoutSlice = createSlice({
         setSameAsBilling(state, action) {
             state.isShippingSameAsBilling = action.payload;
         },
-        setShipmentsWithMethods(state, action) {
-            state.shipmentsWithMethods = action.payload;
-        },
-        addShipmentWithMethod(state, action) {
-            const { shipmentId, methodId } = action.payload;
-            const currentState = state.shipmentsWithMethods;
-
-            if (currentState) {
-                const existingIndex = currentState.findIndex((cS) => cS.shipmentId === shipmentId);
-
-                state.shipmentsWithMethods = currentState.slice(existingIndex, existingIndex);
-
-                state.shipmentsWithMethods.push({ shipmentId, methodId });
-            } else {
-                state.shipmentsWithMethods = [{ shipmentId, methodId }];
-            }
-        },
         resetCheckoutDetails() {
             return checkoutInitialState;
         },
@@ -107,8 +90,6 @@ export const {
     setCloneBillingAddressId,
     setCloneShippingAddressId,
     setSameAsBilling,
-    setShipmentsWithMethods,
-    addShipmentWithMethod,
     resetCheckoutDetails,
 } = checkoutSlice.actions;
 

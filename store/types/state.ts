@@ -2,8 +2,8 @@ import { DateTime } from 'luxon';
 
 import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
-import { GiftCard } from '../../types/account';
-import { Break, ContentfulBreak, SingleBreak } from '../../types/breaks';
+import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../../types/account';
+import { Break, SingleBreak } from '../../types/breaks';
 import { CartItem } from '../../types/cart';
 import { MergedShipmentMethods } from '../../types/checkout';
 import { ContentfulPage } from '../../types/pages';
@@ -15,8 +15,6 @@ export interface IAppState {
     products: ProductsState;
     cart: CartState;
     alerts: AlertsState;
-    productType: ProductType[];
-    categories: Categories[];
     filters: Filters;
     checkout: Checkout;
     confirmation: Confirmation;
@@ -56,13 +54,10 @@ export interface Global {
     checkoutLoading: boolean;
     accessToken: string | null;
     expires: string | null;
-    shouldSetNewOrder: boolean;
-    shouldShowDrawer: boolean;
 }
 
 export interface Checkout {
     currentStep: number;
-    shipmentsWithMethods: ShipmentsWithMethods[] | null;
     customerDetails: CustomerDetails;
     billingAddress: CustomerAddress;
     shippingAddress: CustomerAddress;
@@ -185,6 +180,12 @@ export interface AccountState {
     balance: number;
     shouldFetchRewards: boolean;
     giftCard: GiftCard;
+    orders: Order[];
+    orderPageCount: number;
+    currentOrder: SingleOrder;
+    addresses: Address[];
+    addressPageCount: number;
+    currentAddress: SingleAddress;
 }
 
 export interface AlertsState {

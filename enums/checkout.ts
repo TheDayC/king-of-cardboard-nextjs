@@ -1,9 +1,3 @@
-export enum Steps {
-    Customer,
-    Delivery,
-    Payment,
-}
-
 export enum Counties {
     Aberdeenshire = 'Aberdeenshire',
     Angus = 'Angus',

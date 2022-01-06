@@ -2,30 +2,20 @@ import { isArray, join } from 'lodash';
 
 import { Categories, ProductType } from '../enums/shop';
 import { CommerceLayerResponse } from '../types/api';
-import { SkuItem, SkuProduct } from '../types/commerce';
-import {
-    ContentfulProduct,
-    ContentfulProductResponse,
-    ContentfulProductShort,
-    Product,
-    SingleProduct,
-} from '../types/products';
+import { ContentfulProduct, ContentfulProductShort, Product, SingleProduct } from '../types/products';
 import { authClient } from './auth';
 import { fetchContent } from './content';
 import {
     parseAsArrayOfCommerceResponse,
     parseAsArrayOfContentfulProducts,
-    parseAsArrayOfSkuOptions,
     parseAsArrayOfStrings,
     parseAsCommerceResponse,
     parseAsImageCollection,
-    parseAsImageItem,
     parseAsNumber,
     parseAsSkuInventory,
     parseAsString,
     safelyParse,
 } from './parsers';
-import { isNotNullOrUndefined } from './typeguards';
 
 export function parseProductType(type: string): ProductType {
     switch (type) {
@@ -306,35 +296,6 @@ export async function fetchProductImagesByProductLink(productLink: string[]): Pr
     }
 
     return productCollection;
-}
-
-export function mergeProductData(products: ContentfulProduct[], skuItems: SkuItem[]): Product[] {
-    const filteredProducts = products.filter((product) => {
-        const { productLink: sku_code } = product;
-        const skuItem = skuItems.find((s) => s.sku_code === sku_code) || null;
-
-        return Boolean(skuItem);
-    });
-
-    return filteredProducts.map((product) => {
-        const { productLink: sku_code } = product;
-        const skuItem = skuItems.find((s) => s.sku_code === sku_code) || null;
-
-        return {
-            id: safelyParse(skuItem, 'id', parseAsString, null),
-            name: safelyParse(product, 'name', parseAsString, null),
-            slug: safelyParse(product, 'slug', parseAsString, null),
-            sku_code: safelyParse(product, 'productLink', parseAsString, null),
-            description: safelyParse(product, 'description', parseAsString, null),
-            types: safelyParse(product, 'types', parseAsArrayOfStrings, null),
-            categories: safelyParse(product, 'categories', parseAsArrayOfStrings, null),
-            images: safelyParse(product, 'imageCollection', parseAsImageCollection, null),
-            cardImage: safelyParse(product, 'cardImage', parseAsImageItem, null),
-            tags: safelyParse(product, 'tags', parseAsArrayOfStrings, null),
-            amount: safelyParse(skuItem, 'amount', parseAsString, null),
-            compare_amount: safelyParse(skuItem, 'compare_amount', parseAsString, null),
-        };
-    });
 }
 
 export async function getSingleProduct(accessToken: string, slug: string): Promise<SingleProduct> {

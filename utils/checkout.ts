@@ -1,102 +1,11 @@
 import { Counties } from '../enums/checkout';
 import { PaymentMethod, CustomerAddress, CustomerDetails, ShipmentsWithLineItems } from '../store/types/state';
-import {
-    DeliveryLeadTimes,
-    MergedShipmentMethods,
-    PaymentAttributes,
-    Shipments,
-    ShippingMethods,
-} from '../types/checkout';
+import { DeliveryLeadTimes, MergedShipmentMethods, PaymentAttributes } from '../types/checkout';
 import { authClient } from './auth';
 import { CommerceLayerResponse } from '../types/api';
 import { errorHandler } from '../middleware/errors';
 import { isArray } from './typeguards';
 import { parseAsArrayOfCommerceResponse, parseAsNumber, parseAsString, parseAsUnknown, safelyParse } from './parsers';
-
-function regexEmail(email: string): boolean {
-    // eslint-disable-next-line no-useless-escape
-    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-        email
-    );
-}
-
-function regexName(name: string): boolean {
-    return /^[a-z ,.'-]+$/i.test(name);
-}
-
-function regexPostCode(postcode: string): boolean {
-    return /^([A-Z][A-HJ-Y]?\d[A-Z\d]? ?\d[A-Z]{2}|GIR ?0A{2})$/gim.test(postcode);
-}
-
-function regexPhone(phone: string): boolean {
-    return /^(\+\d{1,3}[- ]?)?\d{10}$/gm.test(phone);
-}
-
-export function shouldEmailError(email: string | null): boolean {
-    let shouldError = true;
-
-    if (email !== null) {
-        const isValid = regexEmail(email);
-
-        if (isValid) {
-            shouldError = false;
-        } else {
-            shouldError = true;
-        }
-    } else {
-        shouldError = false;
-    }
-
-    return shouldError;
-}
-
-export function shouldNameError(name: string | null): boolean {
-    let shouldError = true;
-
-    if (name !== null) {
-        const isValid = regexName(name);
-
-        if (isValid) {
-            shouldError = false;
-        } else {
-            shouldError = true;
-        }
-    } else {
-        shouldError = false;
-    }
-
-    return shouldError;
-}
-
-export function shouldAddressLineError(line: string | null): boolean {
-    if (line !== null) {
-        return line.length <= 0;
-    } else {
-        return false;
-    }
-}
-
-export function shouldPostcodeError(code: string | null): boolean {
-    let shouldError = true;
-
-    if (code !== null) {
-        const isValid = regexPostCode(code);
-
-        if (isValid) {
-            shouldError = false;
-        } else {
-            shouldError = true;
-        }
-    } else {
-        shouldError = false;
-    }
-
-    return shouldError;
-}
-
-export function shouldPhoneError(phone: string): boolean {
-    return regexPhone(phone);
-}
 
 export function getCounties(): Counties[] {
     return [
@@ -420,20 +329,6 @@ export async function getDeliveryLeadTimes(accessToken: string): Promise<Deliver
     }
 
     return null;
-}
-
-export function mergeMethodsAndLeadTimes(
-    shippingMethods: ShippingMethods[],
-    leadTimes: DeliveryLeadTimes[]
-): MergedShipmentMethods[] {
-    return shippingMethods.map((method) => {
-        const matchingLeadTime = findLeadTimeIdFromMethodName(method.name, leadTimes);
-
-        return {
-            ...method,
-            leadTimes: matchingLeadTime,
-        };
-    });
 }
 
 function findLeadTimeIdFromMethodName(name: string, leadTimes: DeliveryLeadTimes[]): DeliveryLeadTimes | null {

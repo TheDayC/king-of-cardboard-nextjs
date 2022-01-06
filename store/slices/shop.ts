@@ -1,26 +1,26 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAction, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
+import { AppState } from '..';
 import shopInitialState from '../state/shop';
+
+const hydrate = createAction<AppState>(HYDRATE);
 
 const shopSlice = createSlice({
     name: 'shop',
     initialState: shopInitialState,
     reducers: {
-        setPage(state, action) {
-            state.currentPage = action.payload;
-        },
         setIsLoadingProducts(state, action) {
             state.isLoadingProducts = action.payload;
         },
     },
-    extraReducers: {
-        [HYDRATE]: (state, action) => ({
+    extraReducers: (builder) => {
+        builder.addCase(hydrate, (state, action) => ({
             ...state,
-            ...action.payload.subject,
-        }),
+            ...action.payload[shopSlice.name],
+        }));
     },
 });
 
-export const { setPage, setIsLoadingProducts } = shopSlice.actions;
+export const { setIsLoadingProducts } = shopSlice.actions;
 export default shopSlice.reducer;

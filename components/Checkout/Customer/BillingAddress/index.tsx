@@ -1,5 +1,5 @@
-import React from 'react';
-import { UseFormRegister, FieldValues } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { UseFormRegister, FieldValues, UseFormSetValue } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
 import { FormErrors } from '../../../../types/checkout';
@@ -10,9 +10,10 @@ import selector from './selector';
 interface BillingAddressProps {
     register: UseFormRegister<FieldValues>;
     errors: FormErrors;
+    setValue: UseFormSetValue<FieldValues>;
 }
 
-const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => {
+const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors, setValue }) => {
     const { billingAddress } = useSelector(selector);
     const {
         line_1: addressLineOne,
@@ -30,6 +31,42 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
     const billingCountyErr = safelyParse(errors, 'billingCounty.message', parseAsString, null);
     const billingCompanyErr = safelyParse(errors, 'billingCompany.message', parseAsString, null);
 
+    useEffect(() => {
+        if (addressLineOne) {
+            setValue('addressLineOne', addressLineOne);
+        }
+    }, [addressLineOne, setValue]);
+
+    useEffect(() => {
+        if (addressLineTwo) {
+            setValue('addressLineTwo', addressLineTwo);
+        }
+    }, [addressLineTwo, setValue]);
+
+    useEffect(() => {
+        if (city) {
+            setValue('city', city);
+        }
+    }, [city, setValue]);
+
+    useEffect(() => {
+        if (postcode) {
+            setValue('postcode', postcode);
+        }
+    }, [postcode, setValue]);
+
+    useEffect(() => {
+        if (county) {
+            setValue('county', county);
+        }
+    }, [county, setValue]);
+
+    useEffect(() => {
+        if (company) {
+            setValue('company', company);
+        }
+    }, [company, setValue]);
+
     return (
         <div className="grid grid-cols-1 gap-2">
             <div className="form-control">
@@ -41,7 +78,6 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                     placeholder="Address Line One"
                     {...register('billingAddressLineOne', {
                         required: { value: true, message: 'Required' },
-                        value: addressLineOne,
                     })}
                     className={`input input-sm input-bordered${billingLineOneErr ? ' input-error' : ''}`}
                 />
@@ -58,7 +94,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                 <input
                     type="text"
                     placeholder="Address Line Two"
-                    {...register('billingAddressLineTwo', { value: addressLineTwo })}
+                    {...register('billingAddressLineTwo')}
                     className={`input input-sm input-bordered${billingLineTwoErr ? ' input-error' : ''}`}
                 />
                 {billingLineTwoErr && (
@@ -76,7 +112,6 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                     placeholder="Company"
                     {...register('billingCompany', {
                         required: false,
-                        value: company,
                     })}
                     className={`input input-sm input-bordered${billingCompanyErr ? ' input-error' : ''}`}
                 />
@@ -95,7 +130,6 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                     placeholder="City"
                     {...register('billingCity', {
                         required: { value: true, message: 'Required' },
-                        value: city,
                     })}
                     className={`input input-sm input-bordered${billingCityErr ? ' input-error' : ''}`}
                 />
@@ -118,7 +152,6 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                             value: /^([A-Z][A-HJ-Y]?\d[A-Z\d]? ?\d[A-Z]{2}|GIR ?0A{2})$/gim,
                             message: fieldPatternMsgs('billingPostcode'),
                         },
-                        value: postcode,
                     })}
                     className={`input input-sm input-bordered${billingPostcodeErr ? ' input-error' : ''}`}
                 />
@@ -137,7 +170,6 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                     placeholder="County"
                     {...register('billingCounty', {
                         required: { value: true, message: 'Required' },
-                        value: county,
                     })}
                     className={`input input-sm input-bordered${billingCountyErr ? ' input-error' : ''}`}
                 />

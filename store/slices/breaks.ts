@@ -43,9 +43,6 @@ const breakSlice = createSlice({
     name: 'breaks',
     initialState: breaksInitialState,
     reducers: {
-        setPage(state, action) {
-            state.currentPage = action.payload;
-        },
         setIsLoadingBreaks(state, action) {
             state.isLoadingBreaks = action.payload;
         },
@@ -67,5 +64,5 @@ const breakSlice = createSlice({
     },
 });
 
-export const { setPage, setIsLoadingBreaks } = breakSlice.actions;
+export const { setIsLoadingBreaks } = breakSlice.actions;
 export default breakSlice.reducer;

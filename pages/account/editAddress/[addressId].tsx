@@ -1,17 +1,16 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import Error from 'next/error';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import AccountMenu from '../../../components/Account/Menu';
-import { getCustomerAddress, getAddress } from '../../../utils/account';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import selector from './selector';
-import { CommerceLayerResponse } from '../../../types/api';
 import Loading from '../../../components/Loading';
 import Fields from '../../../components/Account/AddressBook/Fields';
 import PageWrapper from '../../../components/PageWrapper';
+import { fetchCurrentAddress } from '../../../store/slices/account';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -47,38 +46,18 @@ interface OrderProps {
 }
 
 export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId, emailAddress }) => {
-    const { accessToken } = useSelector(selector);
-    const [currentAddress, setCurrentAddress] = useState<CommerceLayerResponse | null>(null);
+    const { accessToken, currentAddress } = useSelector(selector);
+    const [shouldFetch, setShouldFetch] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
-
-    const fetchAddress = useCallback(async (token: string, id: string) => {
-        const customerAddressRes = await getCustomerAddress(token, id);
-        if (customerAddressRes) {
-            // CL separates customer and original addresses.
-            const originalAddressId = safelyParse(
-                customerAddressRes,
-                'relationships.address.data.id',
-                parseAsString,
-                null
-            );
-
-            if (originalAddressId) {
-                const res = await getAddress(token, originalAddressId);
-
-                if (res) {
-                    setCurrentAddress(res);
-                }
-            }
-        }
-
-        setIsLoading(false);
-    }, []);
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        if (accessToken && emailAddress && addressId) {
-            fetchAddress(accessToken, addressId);
+        if (accessToken && emailAddress && addressId && shouldFetch) {
+            setShouldFetch(false);
+            dispatch(fetchCurrentAddress({ accessToken, id: addressId }));
+            setIsLoading(false);
         }
-    }, [accessToken, emailAddress, addressId, fetchAddress]);
+    }, [accessToken, emailAddress, addressId, dispatch, shouldFetch]);
 
     // Show error page if a code is provided.
     if (errorCode && typeof errorCode === 'number') {
@@ -99,20 +78,20 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId, em
                 </div>
                 <div className="flex flex-col py-2 px-6 md:py-4 md:px-8 w-full md:w-3/4 relative">
                     <Loading show={isLoading} />
-                    {currentAddress && (
-                        <Fields
-                            addressId={currentAddress.id}
-                            addressLineOne={safelyParse(currentAddress, 'attributes.line_1', parseAsString, '')}
-                            addressLineTwo={safelyParse(currentAddress, 'attributes.line_2', parseAsString, '')}
-                            city={safelyParse(currentAddress, 'attributes.city', parseAsString, '')}
-                            company={safelyParse(currentAddress, 'attributes.company', parseAsString, '')}
-                            county={safelyParse(currentAddress, 'attributes.state_code', parseAsString, '')}
-                            firstName={safelyParse(currentAddress, 'attributes.first_name', parseAsString, '')}
-                            lastName={safelyParse(currentAddress, 'attributes.last_name', parseAsString, '')}
-                            phone={safelyParse(currentAddress, 'attributes.phone', parseAsString, '')}
-                            postcode={safelyParse(currentAddress, 'attributes.zip_code', parseAsString, '')}
-                        />
-                    )}
+                    <Fields
+                        id={currentAddress.id}
+                        name={currentAddress.name}
+                        addressId={currentAddress.addressId}
+                        addressLineOne={currentAddress.addressLineOne}
+                        addressLineTwo={currentAddress.addressLineTwo}
+                        city={currentAddress.city}
+                        company={currentAddress.company}
+                        county={currentAddress.county}
+                        firstName={currentAddress.firstName}
+                        lastName={currentAddress.lastName}
+                        phone={currentAddress.phone}
+                        postcode={currentAddress.postcode}
+                    />
                 </div>
             </div>
         </PageWrapper>

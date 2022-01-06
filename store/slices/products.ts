@@ -48,11 +48,7 @@ export const fetchSingleProduct = createAsyncThunk(
 const productsSlice = createSlice({
     name: 'products',
     initialState: productsInitialState,
-    reducers: {
-        addSkuItems(state, action) {
-            return action.payload;
-        },
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder.addCase(fetchProducts.fulfilled, (state, action) => {
             state.products = action.payload;
@@ -70,5 +66,4 @@ const productsSlice = createSlice({
     },
 });
 
-export const { addSkuItems } = productsSlice.actions;
 export default productsSlice.reducer;

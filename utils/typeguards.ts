@@ -1,20 +1,10 @@
-import axios, { AxiosError } from 'axios';
-
-import { CartItem, CustomerAddress, CustomerDetails } from '../store/types/state';
-import { OrderHistoryAddress, OrderHistoryPaymentMethod } from '../types/account';
+import { CustomerAddress, CustomerDetails } from '../store/types/state';
 import { Achievement, Objective } from '../types/achievements';
-import {
-    CommerceLayerError,
-    CommerceLayerLineItemRelationship,
-    CommerceLayerMeta,
-    CommerceLayerObject,
-    CommerceLayerResponse,
-    ErrorResponse,
-} from '../types/api';
+import { CommerceLayerError, CommerceLayerLineItemRelationship, CommerceLayerResponse } from '../types/api';
 import { BreakSlot, BreakSlotsCollection, BreakTypeItem, ContentfulBreak } from '../types/breaks';
-import { Order } from '../types/cart';
+import { CartItem } from '../types/cart';
 import { SkuInventory, SkuOption } from '../types/commerce';
-import { Content, ContentfulPage, ContentJSON } from '../types/pages';
+import { ContentfulPage, ContentJSON } from '../types/pages';
 import { ITypeGuard } from '../types/parsers';
 import { ContentfulProduct, ImageCollection, ImageItem } from '../types/products';
 import { SocialMedia } from '../types/profile';
@@ -67,24 +57,8 @@ export function isCommerceResponseArray(candidate: unknown): candidate is Commer
     return isArray(candidate) && isCommerceResponse(candidate[0]);
 }
 
-export function isCommerceMeta(candidate: unknown): candidate is CommerceLayerMeta {
-    return isNotNullOrUndefined<object>(candidate) && 'page_count' in candidate;
-}
-
 export function isArrayOfStrings(candidate: unknown): candidate is string[] {
     return isArray(candidate) && typeof candidate[0] === 'string';
-}
-
-export function isError(candidate: unknown): candidate is ErrorResponse {
-    return isNotNullOrUndefined<object>(candidate) && isObject(candidate) && 'status' in candidate;
-}
-
-export function isArrayOfErrors(candidate: unknown): candidate is ErrorResponse[] {
-    return isArray(candidate) && isError(candidate[0]);
-}
-
-export function isAttributes(candidate: unknown): candidate is CommerceLayerObject {
-    return isNotNullOrUndefined<object>(candidate) && 'name' in candidate;
 }
 
 export function isLineItemRelationship(candidate: unknown): candidate is CommerceLayerLineItemRelationship {
@@ -93,18 +67,6 @@ export function isLineItemRelationship(candidate: unknown): candidate is Commerc
 
 export function isArrayOfLineItemRelationships(candidate: unknown): candidate is CommerceLayerLineItemRelationship[] {
     return isArray(candidate) && isLineItemRelationship(candidate[0]);
-}
-
-export function isHistoricalAddress(candidate: unknown): candidate is OrderHistoryAddress {
-    return isNotNullOrUndefined<object>(candidate) && 'line_1' in candidate;
-}
-
-export function isPaymentMethodDetails(candidate: unknown): candidate is OrderHistoryPaymentMethod {
-    return isNotNullOrUndefined<object>(candidate) && 'brand' in candidate;
-}
-
-export function isAxiosError(candidate: unknown): candidate is AxiosError {
-    return isNotNullOrUndefined<object>(candidate) && axios.isAxiosError(candidate);
 }
 
 export function isObjective(candidate: unknown): candidate is Objective {
@@ -143,10 +105,6 @@ export function isImageItem(candidate: unknown): candidate is ImageItem {
     return isNotNullOrUndefined<object>(candidate) && 'url' in candidate;
 }
 
-export function isArrayOfImageItems(candidate: unknown): candidate is ImageItem[] {
-    return isArray(candidate) && isImageItem(candidate[0]);
-}
-
 export function isSkuInventory(candidate: unknown): candidate is SkuInventory {
     return isNotNullOrUndefined<object>(candidate) && 'available' in candidate;
 }
@@ -159,12 +117,8 @@ export function isArrayofSkuOptions(candidate: unknown): candidate is SkuOption[
     return isArray(candidate) && isSkuOption(candidate[0]);
 }
 
-export function isOrder(candidate: unknown): candidate is Order {
-    return isNotNullOrUndefined<object>(candidate) && 'payment_status' in candidate;
-}
-
 export function isItem(candidate: unknown): candidate is CartItem {
-    return isNotNullOrUndefined<object>(candidate) && 'attributes.type' in candidate;
+    return isNotNullOrUndefined<object>(candidate) && 'quantity' in candidate;
 }
 
 export function isArrayofItems(candidate: unknown): candidate is CartItem[] {
@@ -189,10 +143,6 @@ export function isArrayOfContentfulBreaks(candidate: unknown): candidate is Cont
 
 export function isBreakTypeItem(candidate: unknown): candidate is BreakTypeItem {
     return isNotNullOrUndefined<object>(candidate) && 'title' in candidate;
-}
-
-export function isArrayOfBreakTypeItems(candidate: unknown): candidate is BreakTypeItem[] {
-    return isArray(candidate) && isBreakTypeItem(candidate[0]);
 }
 
 export function isContentfulPage(candidate: unknown): candidate is ContentfulPage {
@@ -225,12 +175,4 @@ export function isContentJSON(candidate: unknown): candidate is ContentJSON {
 
 export function isArrayOfContentJSON(candidate: unknown): candidate is ContentJSON[] {
     return isArray(candidate) && isContentJSON(candidate[0]);
-}
-
-export function isContent(candidate: unknown): candidate is Content {
-    return isNotNullOrUndefined<object>(candidate) && 'value' in candidate;
-}
-
-export function isArrayOfContent(candidate: unknown): candidate is Content[] {
-    return isArray(candidate) && isContent(candidate[0]);
 }

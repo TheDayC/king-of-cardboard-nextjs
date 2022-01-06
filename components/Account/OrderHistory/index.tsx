@@ -1,118 +1,69 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import selector from './selector';
-import { parseAsArrayOfLineItemRelationships, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
-import { getHistoricalOrders } from '../../../utils/account';
-import { CommerceLayerResponse } from '../../../types/api';
+import { parseAsString, safelyParse } from '../../../utils/parsers';
 import ShortOrder from './ShortOrder';
 import Loading from '../../Loading';
 import Pagination from '../../Pagination';
-import { OrderHistoryLineItem } from '../../../types/account';
-import { addError } from '../../../store/slices/alerts';
+import { fetchOrderPageCount, fetchOrders } from '../../../store/slices/account';
 
-const ORDERS_PER_PAGE = 5;
+const PER_PAGE = 5;
 
 export const OrderHistory: React.FC = () => {
-    const { accessToken } = useSelector(selector);
+    const { accessToken, orders, orderPageCount } = useSelector(selector);
     const { data: session } = useSession();
-    const [orders, setOrders] = useState<CommerceLayerResponse[] | null>(null);
-    const [included, setIncluded] = useState<CommerceLayerResponse[] | null>(null);
-    const [pageCount, setPageCount] = useState<number | null>(null);
-    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [shouldFetch, setShouldFetch] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
     const dispatch = useDispatch();
 
-    const fetchOrderHistory = useCallback(
-        async (token: string, email: string, page: number = 0, perPage: number = ORDERS_PER_PAGE) => {
-            const res = await getHistoricalOrders(token, email, perPage, page + 1);
-
-            if (res) {
-                const { orders: responseOrders, included: responseIncluded, meta } = res;
-
-                setOrders(responseOrders);
-                setIncluded(responseIncluded);
-
-                if (meta) {
-                    setPageCount(meta.page_count);
-                }
-
-                setCurrentPage(page);
-            } else {
-                dispatch(addError('Failed to fetch order history.'));
-            }
-        },
-        [dispatch]
-    );
-
     const handlePageNumber = (nextPage: number) => {
         if (accessToken && emailAddress) {
-            setOrders(null);
-            fetchOrderHistory(accessToken, emailAddress, nextPage);
+            const page = nextPage + 1;
+
+            setIsLoading(true);
+            dispatch(fetchOrders({ accessToken, emailAddress, pageSize: PER_PAGE, page }));
+            setCurrentPage(page);
+            setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        if (accessToken && emailAddress) {
-            fetchOrderHistory(accessToken, emailAddress);
+        if (accessToken && emailAddress && shouldFetch) {
+            setShouldFetch(false);
+            dispatch(fetchOrders({ accessToken, emailAddress, pageSize: PER_PAGE, page: currentPage }));
+            dispatch(fetchOrderPageCount({ accessToken, emailAddress }));
+            setIsLoading(false);
         }
-    }, [accessToken, emailAddress, fetchOrderHistory]);
+    }, [dispatch, accessToken, emailAddress, shouldFetch, currentPage]);
 
     return (
         <React.Fragment>
-            <Loading show={Boolean(!orders || !included)} />
+            <Loading show={isLoading} />
             <h1 className="text-xl mb-2 md:text-3xl md:mb-6">Order History</h1>
-            {orders &&
+            {orders.length > 0 &&
                 orders.map((order, i) => {
-                    const lineItems = safelyParse(
-                        order,
-                        'relationships.line_items.data',
-                        parseAsArrayOfLineItemRelationships,
-                        null
-                    );
-                    const mergedLineItems: OrderHistoryLineItem[] | null = lineItems
-                        ? lineItems.map((lineItem) => {
-                              const includedLineItem =
-                                  included && included.filter((include) => include.id === lineItem.id);
-
-                              return {
-                                  ...lineItem,
-                                  sku_code: safelyParse(includedLineItem, 'attributes.sku_code', parseAsString, null),
-                                  quantity: safelyParse(includedLineItem, 'attributes.quantity', parseAsNumber, 0),
-                                  image_url: safelyParse(includedLineItem, 'attributes.image_url', parseAsString, null),
-                              };
-                          })
-                        : null;
-
                     return (
                         <ShortOrder
-                            orderNumber={safelyParse(order, 'attributes.number', parseAsNumber, null)}
-                            status={safelyParse(order, 'attributes.status', parseAsString, 'draft')}
-                            paymentStatus={safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid')}
-                            fulfillmentStatus={safelyParse(
-                                order,
-                                'attributes.fulfillment_status',
-                                parseAsString,
-                                'unfulfilled'
-                            )}
-                            itemCount={safelyParse(order, 'attributes.skus_count', parseAsNumber, 0)}
-                            shipmentsCount={safelyParse(order, 'attributes.shipments_count', parseAsNumber, 0)}
-                            total={safelyParse(
-                                order,
-                                'attributes.formatted_total_amount_with_taxes',
-                                parseAsString,
-                                ''
-                            )}
-                            placedAt={safelyParse(order, 'attributes.placed_at', parseAsString, '')}
-                            updatedAt={safelyParse(order, 'attributes.updated_at', parseAsString, '')}
-                            lineItems={mergedLineItems}
+                            orderNumber={order.number}
+                            status={order.status}
+                            paymentStatus={order.payment_status}
+                            fulfillmentStatus={order.fulfillment_status}
+                            itemCount={order.skus_count}
+                            shipmentsCount={order.shipments_count}
+                            total={order.formatted_total_amount_with_taxes}
+                            placedAt={order.placed_at}
+                            updatedAt={order.updated_at}
+                            lineItems={order.lineItems}
                             key={`order-${i}`}
                         />
                     );
                 })}
-            {pageCount && pageCount > 1 && (
-                <Pagination currentPage={currentPage} pageCount={pageCount} handlePageNumber={handlePageNumber} />
+            {orderPageCount > 1 && (
+                <Pagination currentPage={currentPage} pageCount={orderPageCount} handlePageNumber={handlePageNumber} />
             )}
         </React.Fragment>
     );

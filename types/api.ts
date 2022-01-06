@@ -4,11 +4,6 @@ export interface ErrorResponse {
     description: string;
 }
 
-export interface StripeLineItems {
-    price: string;
-    quantity: number;
-}
-
 export interface CommerceLayerResponse {
     id: string;
     type: string;
@@ -54,9 +49,4 @@ interface CommerceLayerErrorSource {
 interface CommerceLayerErrorMeta {
     error: string;
     value: string;
-}
-
-export interface AddressResponse {
-    addresses: CommerceLayerResponse[] | null;
-    meta: CommerceLayerMeta | null;
 }

@@ -88,7 +88,7 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
                     );
                     const itemsImgData = items.map((item) => ({
                         filename: item.name,
-                        path: item.image_url.length > 0 ? item.image_url : 'https://via.placeholder.com/50',
+                        path: item.image.url.length > 0 ? item.image.url : 'https://via.placeholder.com/50',
                         cid: item.id, //same cid value as in the html img src
                     }));
                     const htmlData = fs.readFileSync(filePath, 'utf8');

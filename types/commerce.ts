@@ -1,6 +1,3 @@
-import { CartStaticProps } from './cart';
-import { Product } from './products';
-
 export interface CreateToken {
     token: string | null;
     expires: string;
@@ -9,40 +6,6 @@ export interface CreateToken {
 export interface CommerceAuthProps {
     accessToken: string;
     expires: string;
-}
-
-export interface CommerceProductProps {
-    products: Product[] | null;
-}
-
-export interface CommerceStaticProps extends CommerceAuthProps, CommerceProductProps, CartStaticProps {}
-
-export interface StockItem {
-    id: string;
-    attributes: StockItemAttributes;
-}
-
-interface StockItemAttributes {
-    sku_code: string;
-    reference: string;
-    quantity: number;
-    created_at: string;
-}
-
-export interface SkuItem {
-    id: string;
-    sku_code: string;
-    image_url: string;
-    name: string;
-    amount: string;
-    compare_amount: string;
-}
-
-export interface SkuProduct {
-    formatted_amount: string | null;
-    formatted_compare_at_amount: string | null;
-    inventory: SkuInventory | null;
-    options: SkuOption[];
 }
 
 export interface SkuInventory {
@@ -86,20 +49,6 @@ export interface SkuOption {
     sku_code_regex: string;
     delay_days: number;
     delay_hours: number;
-}
-
-export interface Price {
-    id: string;
-    attributes: PriceAttributes;
-}
-
-interface PriceAttributes {
-    sku_code: string;
-    created_at: string;
-    formatted_amount: string;
-    currency_code: string;
-    amount_float: number;
-    amount_cents: number;
 }
 
 export interface LineItemAttributes {
