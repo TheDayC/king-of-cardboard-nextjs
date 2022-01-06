@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
 import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../../types/account';
-import { Break, ContentfulBreak, SingleBreak } from '../../types/breaks';
+import { Break, SingleBreak } from '../../types/breaks';
 import { CartItem } from '../../types/cart';
 import { MergedShipmentMethods } from '../../types/checkout';
 import { ContentfulPage } from '../../types/pages';

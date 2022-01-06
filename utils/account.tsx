@@ -7,14 +7,13 @@ import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../types/a
 import {
     parseAsArrayOfCommerceResponse,
     safelyParse,
-    parseAsCommerceMeta,
     parseAsString,
     parseAsNumber,
     parseAsCommerceResponse,
     parseAsBoolean,
     parseAsArrayOfLineItemRelationships,
 } from './parsers';
-import { AddressResponse, CommerceLayerResponse } from '../types/api';
+import { CommerceLayerResponse } from '../types/api';
 import { authClient } from './auth';
 import { errorHandler } from '../middleware/errors';
 import { SocialMedia } from '../types/profile';

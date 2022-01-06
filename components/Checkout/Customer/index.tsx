@@ -17,10 +17,12 @@ import {
 } from '../../../store/slices/checkout';
 import {
     parseAddress,
+    parseAsString,
     parseBillingAddress,
     parseCustomerDetails,
     parseExistingAddress,
     parseShippingAddress,
+    safelyParse,
 } from '../../../utils/parsers';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import { addWarning } from '../../../store/slices/alerts';
@@ -225,7 +227,12 @@ const Customer: React.FC = () => {
         dispatch(setCheckoutLoading(true));
 
         // Parse the customer details like name, email, phone etc
-        const customerDetails = parseCustomerDetails(data);
+        const customerDetails = {
+            first_name: safelyParse(data, 'firstName', parseAsString, ''),
+            last_name: safelyParse(data, 'lastName', parseAsString, ''),
+            email: safelyParse(data, 'email', parseAsString, ''),
+            phone: safelyParse(data, 'phone', parseAsString, ''),
+        };
         dispatch(setCustomerDetails(customerDetails));
 
         // Handle a new billing address.
