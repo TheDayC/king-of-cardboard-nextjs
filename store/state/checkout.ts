@@ -32,7 +32,6 @@ const defaultAddress = {
 
 const checkoutInitialState: Checkout = {
     currentStep: 0,
-    shipmentsWithMethods: null,
     customerDetails: {
         email: null,
         first_name: null,

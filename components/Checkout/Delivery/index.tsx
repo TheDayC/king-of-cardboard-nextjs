@@ -45,8 +45,6 @@ export const Delivery: React.FC = () => {
             methodId: data.method[shipment].methodId,
         }));
 
-        dispatch(setShipmentsWithMethods(mappedData));
-
         // for...of used here over forEach to avoid race conditions with await.
         for (const mD of mappedData) {
             await updateShipmentMethod(accessToken, mD.shipmentId, mD.methodId);

@@ -77,6 +77,7 @@ const accountInitialState: AccountState = {
     addressPageCount: 0,
     currentAddress: {
         id: '',
+        addressId: '',
         name: '',
         addressLineOne: '',
         addressLineTwo: '',

@@ -61,9 +61,6 @@ const checkoutSlice = createSlice({
         setSameAsBilling(state, action) {
             state.isShippingSameAsBilling = action.payload;
         },
-        setShipmentsWithMethods(state, action) {
-            state.shipmentsWithMethods = action.payload;
-        },
         resetCheckoutDetails() {
             return checkoutInitialState;
         },
@@ -93,7 +90,6 @@ export const {
     setCloneBillingAddressId,
     setCloneShippingAddressId,
     setSameAsBilling,
-    setShipmentsWithMethods,
     resetCheckoutDetails,
 } = checkoutSlice.actions;
 

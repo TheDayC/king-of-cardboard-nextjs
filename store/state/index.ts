@@ -3,8 +3,6 @@ import globalInitialState from './global';
 import productsInitialState from './products';
 import cartInitialState from './cart';
 import alertsInitialState from './alerts';
-import categoriesInitialState from './categories';
-import productTypeInitialState from './productType';
 import filtersInitialState from './filters';
 import checkoutInitialState from './checkout';
 import confirmationInitialState from './confirmation';
@@ -20,8 +18,6 @@ export function createInitialState(): IAppState {
         products: productsInitialState,
         cart: cartInitialState,
         alerts: alertsInitialState,
-        categories: categoriesInitialState,
-        productType: productTypeInitialState,
         filters: filtersInitialState,
         checkout: checkoutInitialState,
         confirmation: confirmationInitialState,

@@ -1,4 +1,4 @@
-import { Categories, ProductType } from '../../enums/shop';
+import { ProductType } from '../../enums/shop';
 import {
     IAppState,
     Filters,
@@ -19,7 +19,6 @@ export const selectGlobalData = (state: IAppState): Global => state.global;
 export const selectProductData = (state: IAppState): ProductsState => state.products;
 export const selectCartData = (state: IAppState): CartState => state.cart;
 export const selectAlertsData = (state: IAppState): AlertsState => state.alerts;
-export const selectCategoryData = (state: IAppState): Categories[] => state.categories;
 export const selectProductTypeData = (state: IAppState): ProductType[] => state.productType;
 export const selectFiltersData = (state: IAppState): Filters => state.filters;
 export const selectCheckoutData = (state: IAppState): Checkout => state.checkout;

@@ -5,7 +5,6 @@ import globalReducer from './global';
 import productsReducer from './products';
 import cartReducer from './cart';
 import alertsReducer from './alerts';
-import productTypeReducer from './productType';
 import filtersReducer from './filters';
 import checkoutReducer from './checkout';
 import confirmationReducer from './confirmation';
@@ -19,7 +18,6 @@ const rootReducer = combineReducers<IAppState>({
     products: productsReducer,
     cart: cartReducer,
     alerts: alertsReducer,
-    productType: productTypeReducer,
     filters: filtersReducer,
     checkout: checkoutReducer,
     confirmation: confirmationReducer,

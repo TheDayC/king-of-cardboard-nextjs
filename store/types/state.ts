@@ -15,7 +15,6 @@ export interface IAppState {
     products: ProductsState;
     cart: CartState;
     alerts: AlertsState;
-    productType: ProductType[];
     filters: Filters;
     checkout: Checkout;
     confirmation: Confirmation;
@@ -55,13 +54,10 @@ export interface Global {
     checkoutLoading: boolean;
     accessToken: string | null;
     expires: string | null;
-    shouldSetNewOrder: boolean;
-    shouldShowDrawer: boolean;
 }
 
 export interface Checkout {
     currentStep: number;
-    shipmentsWithMethods: ShipmentsWithMethods[] | null;
     customerDetails: CustomerDetails;
     billingAddress: CustomerAddress;
     shippingAddress: CustomerAddress;
