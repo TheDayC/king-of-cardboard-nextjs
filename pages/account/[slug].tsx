@@ -1,20 +1,19 @@
 import React from 'react';
-import { getSession } from 'next-auth/react';
 import Error from 'next/error';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
+import { GetServerSideProps } from 'next';
 
 import AccountMenu from '../../components/Account/Menu';
-import { ServerSideRedirectProps } from '../../types/pages';
 import Account from '../../components/Account';
 import selector from './slugSelector';
 import Content from '../../components/Content';
 import { parseAsArrayOfContentJSON, parseAsSlug, parseAsString, safelyParse } from '../../utils/parsers';
 import PageWrapper from '../../components/PageWrapper';
+import { fetchSession } from '../../utils/auth';
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-export async function getServerSideProps(context: any): Promise<ServerSideRedirectProps | object> {
-    const session = await getSession(context);
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const session = await fetchSession(context);
     const slug = safelyParse(context, 'query.slug', parseAsSlug, null);
 
     const errorCode = slug ? false : 404;
@@ -33,7 +32,7 @@ export async function getServerSideProps(context: any): Promise<ServerSideRedire
     return {
         props: { errorCode },
     };
-}
+};
 
 interface AccountSubPageProps {
     errorCode: number | boolean;

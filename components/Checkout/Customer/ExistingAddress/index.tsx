@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
@@ -8,13 +7,14 @@ import Address from './Address';
 import selector from './selector';
 import Loading from '../../../Loading';
 import { fetchAddresses } from '../../../../store/slices/account';
+import { useCustomSession } from '../../../../hooks/auth';
 
 interface ExistingAddressProps {
     isShipping: boolean;
 }
 
 const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping }) => {
-    const { data: session } = useSession();
+    const { data: session } = useCustomSession();
     const dispatch = useDispatch();
     const { accessToken, checkoutLoading, addresses } = useSelector(selector);
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);

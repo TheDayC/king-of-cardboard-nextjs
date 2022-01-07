@@ -25,6 +25,12 @@ const globalSlice = createSlice({
         setCheckoutLoading(state, action) {
             state.checkoutLoading = action.payload;
         },
+        setHasRejected(state, action) {
+            state.hasRejected = action.payload;
+        },
+        setSessionEmail(state, action) {
+            state.sessionEmail = action.payload;
+        },
     },
     extraReducers: (builder) => {
         // Add reducers for additional action types here, and handle loading state as needed
@@ -41,5 +47,5 @@ const globalSlice = createSlice({
     },
 });
 
-export const { setAccessToken, setExpires, setCheckoutLoading } = globalSlice.actions;
+export const { setAccessToken, setExpires, setCheckoutLoading, setHasRejected, setSessionEmail } = globalSlice.actions;
 export default globalSlice.reducer;

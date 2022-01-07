@@ -4,6 +4,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import thunkMiddleware from 'redux-thunk';
 import { createWrapper } from 'next-redux-wrapper';
+import Cookies from 'js-cookie';
 
 import rootReducer from './slices';
 
@@ -24,8 +25,9 @@ const makeConfiguredStore = (rootReducer: any) =>
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const makeStore = () => {
     const isServer = typeof window === 'undefined';
+    const cookieConsent = Boolean(Cookies.get('cookieConsent'));
 
-    if (isServer) {
+    if (isServer || !cookieConsent) {
         return makeConfiguredStore(rootReducer);
     } else {
         const persistedReducer = persistReducer(persistConfig, rootReducer);

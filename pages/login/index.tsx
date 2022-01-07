@@ -1,28 +1,21 @@
 import React, { useState } from 'react';
-import { ClientSafeProvider, getProviders, LiteralUnion, getCsrfToken, getSession } from 'next-auth/react';
+import { ClientSafeProvider, getProviders, LiteralUnion, getCsrfToken } from 'next-auth/react';
 import { BuiltInProviderType } from 'next-auth/providers';
+import { GetServerSideProps } from 'next';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/router';
 
-import Header from '../../components/Header';
 import Register from '../../components/Register';
 import ResetPassword from '../../components/ResetPassword';
 import Login from '../../components/Login';
-import { ServerSideRedirectProps } from '../../types/pages';
 import { Tabs } from '../../enums/auth';
-import Footer from '../../components/Footer';
 import PageWrapper from '../../components/PageWrapper';
+import { fetchSession } from '../../utils/auth';
 
-interface ServerSideProps {
-    props: {
-        providers?: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null;
-        csrfToken?: string | null;
-    };
-}
-
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-export async function getServerSideProps(context: any): Promise<ServerSideProps | ServerSideRedirectProps> {
+export const getServerSideProps: GetServerSideProps = async (context) => {
     const providers = await getProviders();
     const csrfToken = await getCsrfToken(context);
-    const session = await getSession(context);
+    const session = await fetchSession(context);
 
     if (session && csrfToken) {
         return {
@@ -39,7 +32,7 @@ export async function getServerSideProps(context: any): Promise<ServerSideProps 
             csrfToken: csrfToken || null,
         },
     };
-}
+};
 
 interface LoginPageProps {
     providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null;
@@ -49,9 +42,11 @@ interface LoginPageProps {
 export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) => {
     const [currentTab, setCurrentTab] = useState(Tabs.Login);
     const [regSuccess, setRegSuccess] = useState(false);
+    const router = useRouter();
     const isLogin = currentTab === Tabs.Login;
     const isRegister = currentTab === Tabs.Register;
     const isReset = currentTab === Tabs.Reset;
+    const cookieConsent = Boolean(Cookies.get('cookieConsent'));
 
     const handleLoginTab = () => {
         setCurrentTab(Tabs.Login);
@@ -64,6 +59,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
     const handleResetTab = () => {
         setCurrentTab(Tabs.Reset);
     };
+
+    // Show error page if a code is provided.
+    if (!cookieConsent) {
+        router.push('/');
+    }
 
     if (!providers || !csrfToken) return null;
 

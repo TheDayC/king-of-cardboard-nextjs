@@ -3,11 +3,13 @@ import { useForm } from 'react-hook-form';
 import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
 import { useSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
+import Cookies from 'js-cookie';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import selector from './selector';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updatePassword } from '../../../../utils/account';
+import { useCustomSession } from '../../../../hooks/auth';
 
 const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -25,7 +27,7 @@ export const UpdatePassword: React.FC = () => {
     } = useForm();
     const password = watch('password', ''); // Watch password field for changes.
     const [loading, setLoading] = useState(false);
-    const { data: session } = useSession();
+    const { data: session } = useCustomSession();
     const { accessToken: token } = useSelector(selector);
     const dispatch = useDispatch();
 

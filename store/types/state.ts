@@ -54,6 +54,8 @@ export interface Global {
     checkoutLoading: boolean;
     accessToken: string | null;
     expires: string | null;
+    hasRejected: boolean;
+    sessionEmail: string | null;
 }
 
 export interface Checkout {

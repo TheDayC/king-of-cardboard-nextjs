@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/react';
 import Error from 'next/error';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -11,9 +10,10 @@ import Loading from '../../../components/Loading';
 import Fields from '../../../components/Account/AddressBook/Fields';
 import PageWrapper from '../../../components/PageWrapper';
 import { fetchCurrentAddress } from '../../../store/slices/account';
+import { fetchSession } from '../../../utils/auth';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await getSession(context);
+    const session = await fetchSession(context);
     const addressId = safelyParse(context, 'query.addressId', parseAsString, null);
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
 

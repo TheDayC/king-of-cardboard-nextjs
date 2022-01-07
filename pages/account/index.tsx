@@ -1,17 +1,16 @@
 import React from 'react';
-import { getSession } from 'next-auth/react';
 import { useSelector } from 'react-redux';
+import { GetServerSideProps } from 'next';
 
 import AccountMenu from '../../components/Account/Menu';
-import { ServerSideRedirectProps } from '../../types/pages';
 import selector from './selector';
 import Content from '../../components/Content';
 import { parseAsArrayOfContentJSON, safelyParse } from '../../utils/parsers';
 import PageWrapper from '../../components/PageWrapper';
+import { fetchSession } from '../../utils/auth';
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-export async function getServerSideProps(context: any): Promise<ServerSideRedirectProps | object> {
-    const session = await getSession(context);
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const session = await fetchSession(context);
 
     if (!session) {
         return {
@@ -23,7 +22,7 @@ export async function getServerSideProps(context: any): Promise<ServerSideRedire
     }
 
     return { props: {} };
-}
+};
 
 export const AccountPage: React.FC = () => {
     const { page } = useSelector(selector);

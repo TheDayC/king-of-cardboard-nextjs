@@ -3,12 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { upperFirst, upperCase } from 'lodash';
 
 import selector from './selector';
-import { combinedFilters, FilterTypes, ProductType } from '../../../enums/shop';
+import { Categories, combinedFilters, FilterTypes, ProductType } from '../../../enums/shop';
 import { addCategory, addProductType, removeCategory, removeProductType } from '../../../store/slices/filters';
 import Filter from './Filter';
 
+const categories = [Categories.Sealed, Categories.Singles, Categories.Breaks];
+const productTypes = [ProductType.Sports, ProductType.TCG];
+
 export const Filters: React.FC = () => {
-    const { categories, productTypes, filters, hasProductTypes, hasCategories } = useSelector(selector);
+    const { filters } = useSelector(selector);
     const dispatch = useDispatch();
 
     const handleFilterOnChange = (filter: combinedFilters, filterType: FilterTypes, addFilter: boolean) => {
@@ -39,7 +42,7 @@ export const Filters: React.FC = () => {
 
     return (
         <div className="flex flex-col md:mr-4 relative">
-            {hasProductTypes && (
+            {productTypes.length > 0 && (
                 <div className="card bordered mb-2 lg:mb-4 rounded-md">
                     <div className="card-body p-2 lg:p-4">
                         <h3 className="card-title text-sm mb-2 lg:text-lg lg:mb-4">Product Types</h3>
@@ -56,7 +59,7 @@ export const Filters: React.FC = () => {
                     </div>
                 </div>
             )}
-            {hasCategories && (
+            {categories.length > 0 && (
                 <div className="card bordered mb-4 rounded-md">
                     <div className="card-body p-2 lg:p-4">
                         <h3 className="card-title text-sm mb-2 lg:text-lg lg:mb-4">Categories</h3>

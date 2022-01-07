@@ -2,6 +2,7 @@ import React from 'react';
 
 import Header from '../Header';
 import Footer from '../Footer';
+import GDPR from '../GDPR';
 
 export const PageWrapper: React.FC = ({ children }) => (
     <React.Fragment>
@@ -10,6 +11,7 @@ export const PageWrapper: React.FC = ({ children }) => (
             <div className="container mx-auto">{children}</div>
         </div>
         <Footer />
+        <GDPR />
     </React.Fragment>
 );
 

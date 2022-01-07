@@ -10,7 +10,7 @@ import Images from './Images';
 import Details from './Details';
 import { fetchSingleProduct } from '../../store/slices/products';
 import { addError, addSuccess } from '../../store/slices/alerts';
-import Loading from '../Loading';
+import { gaEvent } from '../../utils/ga';
 
 interface ProductProps {
     slug: string;
@@ -22,10 +22,11 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
     const [loading, setLoading] = useState(false);
     const [shouldFetch, setShouldFetch] = useState(true);
     const { handleSubmit } = useForm();
-    const stock = currentProduct.inventory.quantity;
-    const currentLineItem = items && currentProduct ? items.find((c) => c.sku_code === currentProduct.sku_code) : null;
+    const { inventory, sku_code, description: productDesc, name, images, types, categories } = currentProduct;
+    const stock = inventory.quantity;
+    const currentLineItem = items.length > 0 ? items.find((c) => c.sku_code === sku_code) : null;
     const hasExceededStock = currentLineItem ? currentLineItem.quantity >= stock : false;
-    const description = split(currentProduct.description, '\n\n');
+    const description = split(productDesc, '\n\n');
     const btnDisabled = hasExceededStock ? ' btn-disabled' : ' btn-primary';
     const btnLoading = loading ? ' loading btn-square' : '';
 
@@ -36,14 +37,14 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
 
         const attributes = {
             quantity: 1,
-            sku_code: currentProduct.sku_code,
-            name: currentProduct.name,
-            image_url: currentProduct.images.items[0].url,
+            sku_code: sku_code,
+            name: name,
+            image_url: images.items[0].url,
             _external_price: false,
             _update_quantity: true,
             metadata: {
-                types: currentProduct.types,
-                categories: currentProduct.categories,
+                types: types,
+                categories: categories,
             },
         };
 
@@ -61,13 +62,14 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         if (hasLineItemUpdated) {
             dispatch(fetchItemCount({ accessToken, orderId }));
             dispatch(fetchCartItems({ accessToken, orderId }));
-            dispatch(addSuccess(`${currentProduct.name} added to cart.`));
+            gaEvent('addProductToCart', { sku_code });
+            dispatch(addSuccess(`${name} added to cart.`));
         } else {
             dispatch(addError('Failed to add product to cart.'));
         }
 
         setLoading(false);
-    }, [accessToken, currentProduct, orderId, dispatch, loading, hasExceededStock]);
+    }, [accessToken, orderId, dispatch, loading, hasExceededStock, sku_code, categories, images.items, name, types]);
 
     useEffect(() => {
         if (accessToken && slug && shouldFetch) {

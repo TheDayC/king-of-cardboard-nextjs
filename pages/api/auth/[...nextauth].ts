@@ -17,6 +17,7 @@ import {
 import { authClient, userClient } from '../../../utils/auth';
 import clientPromise from '../../../lib/mongodb';
 import { MongoDBAdapter } from '../../../lib/mongoAdapter';
+import { gaEvent } from '../../../utils/ga';
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     return await NextAuth(req, res, {
@@ -160,6 +161,8 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                             const profile = await profileCollection.findOne({ emailAddress });
                             const achievements = await achievementsCollection.findOne({ emailAddress });
                             const hasAchievements = Boolean(achievements);
+
+                            gaEvent('login', { email: emailAddress });
 
                             // Reserve credentials when a user signs in if they don't exist.
                             if (!creds) {
