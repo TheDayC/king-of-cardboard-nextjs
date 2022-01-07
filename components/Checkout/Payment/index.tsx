@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { useRouter } from 'next/router';
-import { useSession } from 'next-auth/react';
 import { BsPaypal, BsFillCreditCard2BackFill } from 'react-icons/bs';
 
 import { setCurrentStep } from '../../../store/slices/checkout';
@@ -20,6 +19,8 @@ import Source from './Source';
 import { buildPaymentAttributes, paymentBtnText, updatePaymentMethod } from '../../../utils/checkout';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import UseCoins from '../../UseCoins';
+import { gaEvent } from '../../../utils/ga';
+import { useCustomSession } from '../../../hooks/auth';
 
 const STRIPE_METHOD = 'stripe_payments';
 const PAYPAL_METHOD = 'paypal_payments';
@@ -45,7 +46,7 @@ export const Payment: React.FC = () => {
         shippingAddress,
     } = useSelector(selector);
     const { handleSubmit, register } = useForm();
-    const { data: session } = useSession();
+    const { data: session } = useCustomSession();
     const isCurrentStep = currentStep === 2;
     const [paymentMethod, setPaymentMethod] = useState(STRIPE_METHOD);
     const btnText = paymentBtnText(paymentMethod);
@@ -239,6 +240,8 @@ export const Payment: React.FC = () => {
 
         // Update the user's payment method choice on selection.
         await updatePaymentMethod(accessToken, orderId, paymentMethodData.id);
+
+        gaEvent('checkout', { paymentMethod: formPaymentMethod });
 
         // Handle a credit / debit card order.
         if (formPaymentMethod === STRIPE_METHOD) {

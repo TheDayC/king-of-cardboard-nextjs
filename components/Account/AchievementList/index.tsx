@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useSession } from 'next-auth/react';
 
 import selector from './selector';
 import Achievements from '../../../services/achievments';
 import { Achievement, Objective as ObjectiveType } from '../../../types/achievements';
 import Loading from '../../Loading';
 import Objective from './Objective';
+import { fetchSession } from '../../../utils/auth';
 
 export const AchievementList: React.FC = () => {
     const { accessToken } = useSelector(selector);
-    const { data: session } = useSession();
+    const session = fetchSession();
     const [shouldFetchAchievements, setShouldFetchAchievements] = useState(true);
     const [objectives, setObjectives] = useState<ObjectiveType[] | null>(null);
     const [achievements, setAchievements] = useState<Achievement[] | null>(null);

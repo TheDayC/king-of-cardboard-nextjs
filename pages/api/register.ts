@@ -4,6 +4,7 @@ import { connectToDatabase } from '../../middleware/database';
 import { parseAsNumber, parseAsString, safelyParse } from '../../utils/parsers';
 import { authClient } from '../../utils/auth';
 import { apiErrorHandler } from '../../middleware/errors';
+import { gaEvent } from '../../utils/ga';
 
 async function register(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
@@ -39,6 +40,8 @@ async function register(req: NextApiRequest, res: NextApiResponse): Promise<void
                 };
 
                 const createdUser = await credsCollection.insertOne(userDocument);
+
+                gaEvent('register', { email: emailAddress });
 
                 res.status(200).json({ success: true, data: createdUser });
             }

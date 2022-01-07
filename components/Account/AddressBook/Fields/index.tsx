@@ -10,6 +10,7 @@ import { fieldPatternMsgs } from '../../../../utils/checkout';
 import { addAddress, editAddress } from '../../../../utils/account';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { fetchAddresses } from '../../../../store/slices/account';
+import { useCustomSession } from '../../../../hooks/auth';
 
 interface FormData {
     name: string;
@@ -54,7 +55,7 @@ export const Fields: React.FC<FieldProps> = ({
     postcode,
 }) => {
     const { accessToken } = useSelector(selector);
-    const { data: session } = useSession();
+    const { data: session } = useCustomSession();
     const dispatch = useDispatch();
     const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
     const [isLoading, setIsLoading] = useState(false);

@@ -9,6 +9,7 @@ import selector from './selector';
 import { fetchCartItems, fetchItemCount } from '../../../../../store/slices/cart';
 import { ImageItem } from '../../../../../types/products';
 import { addError, addSuccess } from '../../../../../store/slices/alerts';
+import { gaEvent } from '../../../../../utils/ga';
 
 interface SlotProps {
     image: ImageItem;
@@ -48,6 +49,7 @@ export const Slot: React.FC<SlotProps> = ({ image, sku_code, name, amount, compa
         const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
 
         if (hasLineItemUpdated) {
+            gaEvent('addBreakToCart', { sku_code });
             dispatch(addSuccess(`${name} added to your cart!`));
             dispatch(fetchItemCount({ accessToken, orderId }));
             dispatch(fetchCartItems({ accessToken, orderId }));

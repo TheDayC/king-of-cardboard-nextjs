@@ -3,14 +3,14 @@ import { AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
 import { BsFillRecord2Fill } from 'react-icons/bs';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useSession } from 'next-auth/react';
 
 import logo from '../../images/logo-full.png';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import Rewards from '../Header/Rewards';
+import { useCustomSession } from '../../hooks/auth';
 
 export const Drawer: React.FC = ({ children }) => {
-    const { data: session, status } = useSession();
+    const { data: session, status } = useCustomSession();
     const email = safelyParse(session, 'user.email', parseAsString, null);
 
     return (

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BsInstagram, BsTwitter, BsTwitch, BsYoutube } from 'react-icons/bs';
 import { FaEbay } from 'react-icons/fa';
@@ -10,6 +9,7 @@ import { fetchSocialMedia } from '../../../../store/slices/account';
 import selector from './selector';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updateSocialMedia } from '../../../../utils/account';
+import { useCustomSession } from '../../../../hooks/auth';
 
 interface SubmitData {
     instagram: string;
@@ -29,7 +29,7 @@ export const SocialMediaLinks: React.FC = () => {
     } = useForm();
     const [loading, setLoading] = useState(false);
     const [shouldFetch, setShouldFetch] = useState(true);
-    const { data: session } = useSession();
+    const { data: session } = useCustomSession();
     const dispatch = useDispatch();
 
     const hasErrors = Object.keys(errors).length > 0;

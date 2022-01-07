@@ -1,5 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
+import Cookies from 'js-cookie';
 import { DateTime } from 'luxon';
+import { Session } from 'next-auth';
+import { getSession, GetSessionParams } from 'next-auth/react';
 
 import { errorHandler } from '../middleware/errors';
 import { CreateToken } from '../types/commerce';
@@ -82,4 +85,14 @@ export async function registerUser(
     }
 
     return false;
+}
+
+export async function fetchSession(context?: GetSessionParams): Promise<Session | null> {
+    const cookieConsent = Boolean(Cookies.get('cookieConsent'));
+
+    if (cookieConsent) {
+        return await getSession(context);
+    }
+
+    return null;
 }

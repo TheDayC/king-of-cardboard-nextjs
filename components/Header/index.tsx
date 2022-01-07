@@ -2,18 +2,21 @@ import React from 'react';
 import { AiOutlineUser, AiOutlineMenu } from 'react-icons/ai';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSession, signOut } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import { toSvg } from 'jdenticon';
 import md5 from 'md5';
+import Cookies from 'js-cookie';
 
 import logo from '../../images/logo-full.png';
 import Rewards from './Rewards';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import NavBar from './Navbar';
 import CartIcon from './CartIcon';
+import { useCustomSession } from '../../hooks/auth';
 
 export const Header: React.FC = () => {
-    const { data: session, status } = useSession();
+    const { data: session, status } = useCustomSession();
+    const cookieConsent = Boolean(Cookies.get('cookieConsent'));
     const icon = safelyParse(session, 'user.image', parseAsString, null);
     const email = safelyParse(session, 'user.email', parseAsString, null);
 
@@ -42,7 +45,7 @@ export const Header: React.FC = () => {
                         </div>
                     )}
                     <CartIcon />
-                    {status === 'unauthenticated' && (
+                    {status === 'unauthenticated' && cookieConsent && (
                         <Link href="/login" passHref>
                             <div className="flex justify-start items-center cursor-pointer rounded-md hover:bg-neutral-focus">
                                 <div className="p-2 text-2xl">
