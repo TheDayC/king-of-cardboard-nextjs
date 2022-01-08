@@ -862,6 +862,10 @@
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
 
+"@corex/deepmerge@^2.6.148":
+  version "2.6.148"
+  resolved "https://registry.yarnpkg.com/@corex/deepmerge/-/deepmerge-2.6.148.tgz#8fa825d53ffd1cbcafce1b6a830eefd3dcc09dd5"
+
 "@cspotcode/source-map-consumer@0.8.0":
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/@cspotcode/source-map-consumer/-/source-map-consumer-0.8.0.tgz#33bf4b7b39c178821606f669bbc447a6a629786b"
@@ -4533,6 +4537,12 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
+matcher@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/matcher/-/matcher-4.0.0.tgz#a42a05a09aaed92e2d241eb91fddac689461ea51"
+  dependencies:
+    escape-string-regexp "^4.0.0"
+
 md5.js@^1.3.4:
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/md5.js/-/md5.js-1.3.5.tgz#b5d07b8e3216e3e27cd728d72f70d1e6a342005f"
@@ -4721,6 +4731,14 @@ next-connect@^0.11.0:
 next-redux-wrapper@^7.0.5:
   version "7.0.5"
   resolved "https://registry.yarnpkg.com/next-redux-wrapper/-/next-redux-wrapper-7.0.5.tgz#109cd3fe02183b18fbd094924cfcbd21262039dc"
+
+next-sitemap@^1.6.261:
+  version "1.6.261"
+  resolved "https://registry.yarnpkg.com/next-sitemap/-/next-sitemap-1.6.261.tgz#550aeb40b6b1273628237ff7efcfacf9d0244f26"
+  dependencies:
+    "@corex/deepmerge" "^2.6.148"
+    matcher "^4.0.0"
+    minimist "^1.2.5"
 
 next@^12.0.7:
   version "12.0.7"

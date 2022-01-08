@@ -5,6 +5,7 @@
     "scripts": {
         "dev": "next dev",
         "build": "next build",
+        "postbuild": "next-sitemap",
         "start": "next start",
         "lint": "next lint",
         "prettier": "prettier --write .",
@@ -74,6 +75,7 @@
         "jest-transform-stub": "^2.0.0",
         "lint-staged": "^11.2.3",
         "msw": "^0.36.3",
+        "next-sitemap": "^1.6.261",
         "postcss": "^8.3.9",
         "prettier": "^2.4.1",
         "tailwindcss": "^2.2.17",
