@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Header from '../../../components/Header';
 import Steps from '../../../components/Checkout/Steps';
 import Summary from '../../../components/Checkout/Summary';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -10,7 +9,6 @@ import Complete from '../../../components/Checkout/Complete';
 import selector from './selector';
 import { getPayPalPaymentIdByOrder } from '../../../utils/checkout';
 import { setCheckoutLoading } from '../../../store/slices/global';
-import Footer from '../../../components/Footer';
 import PageWrapper from '../../../components/PageWrapper';
 
 interface CompleteOrderPageProps {

@@ -1,16 +1,16 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { GetServerSideProps } from 'next';
+import { getSession } from 'next-auth/react';
 
 import AccountMenu from '../../components/Account/Menu';
 import selector from './selector';
 import Content from '../../components/Content';
 import { parseAsArrayOfContentJSON, safelyParse } from '../../utils/parsers';
 import PageWrapper from '../../components/PageWrapper';
-import { fetchSession } from '../../utils/auth';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await fetchSession(context);
+    const session = await getSession(context);
 
     if (!session) {
         return {
@@ -40,7 +40,7 @@ export const AccountPage: React.FC = () => {
                     </div>
                     <AccountMenu isDropdown />
                 </div>
-                <div className="flex flex-col relative w-full px-2 py-0 md:w-3/4 md:px-4 md:px-8">
+                <div className="flex flex-col relative w-full px-2 py-0 md:w-3/4 md:px-4 md:px-8" data-testid="content">
                     {content && <Content content={content} />}
                 </div>
             </div>

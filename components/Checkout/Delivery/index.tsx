@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 
 import selector from './selector';
-import { fetchPaymentMethods, setCurrentStep, setShipmentsWithMethods } from '../../../store/slices/checkout';
+import { fetchPaymentMethods, setCurrentStep } from '../../../store/slices/checkout';
 import { updateShipmentMethod } from '../../../utils/checkout';
 import Shipment from './Shipment';
-import { fetchCartItems, fetchCartTotals, fetchItemCount } from '../../../store/slices/cart';
+import { fetchCartTotals } from '../../../store/slices/cart';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Loading from '../../Loading';
 import { ShipmentsWithMethods } from '../../../store/types/state';

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import Error from 'next/error';
 import { useDispatch, useSelector } from 'react-redux';
+import { getSession } from 'next-auth/react';
 
 import AccountMenu from '../../../components/Account/Menu';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -10,12 +11,11 @@ import Loading from '../../../components/Loading';
 import Fields from '../../../components/Account/AddressBook/Fields';
 import PageWrapper from '../../../components/PageWrapper';
 import { fetchCurrentAddress } from '../../../store/slices/account';
-import { fetchSession } from '../../../utils/auth';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await fetchSession(context);
+    const session = await getSession(context);
     const addressId = safelyParse(context, 'query.addressId', parseAsString, null);
-    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
+    const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
 
     const errorCode = addressId ? false : 404;
 

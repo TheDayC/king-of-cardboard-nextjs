@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 import selector from './selector';
 import CartItem from './CartItem';
@@ -15,12 +16,11 @@ import {
     setUpdatingCart,
 } from '../../store/slices/cart';
 import UseCoins from '../UseCoins';
-import { useCustomSession } from '../../hooks/auth';
 
 export const Cart: React.FC = () => {
     const { itemCount, items, isUpdatingCart, accessToken, orderId, shouldUpdateCart } = useSelector(selector);
     const dispatch = useDispatch();
-    const { data: session } = useCustomSession();
+    const data = useSession();
     const [shouldFetch, setShouldFetch] = useState(true);
     const itemPlural = itemCount === 1 ? 'item' : 'items';
 
@@ -82,7 +82,7 @@ export const Cart: React.FC = () => {
                                 ))}
                         </div>
                         <CartTotals />
-                        {session && <UseCoins />}
+                        {data && data.data && <UseCoins />}
                         <div className="flex flex-col items-end mt-4 lg:mt-6">
                             <Link href="/checkout" passHref>
                                 <button

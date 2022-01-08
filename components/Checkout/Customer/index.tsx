@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
+import { useSession } from 'next-auth/react';
 
 import selector from './selector';
 import { updateAddress, updateAddressClone, updateSameAsBilling } from '../../../utils/checkout';
@@ -31,7 +32,6 @@ import PersonalDetails from './PersonalDetails';
 import SelectionWrapper from '../../SelectionWrapper';
 import ExistingAddress from './ExistingAddress';
 import { CustomerAddress, CustomerDetails } from '../../../store/types/state';
-import { useCustomSession } from '../../../hooks/auth';
 
 const defaultBillingAddress: CustomerAddress = {
     id: null,
@@ -94,7 +94,7 @@ const defaultShippingAddress: CustomerAddress = {
 };
 
 const Customer: React.FC = () => {
-    const { data: session } = useCustomSession();
+    const session = useSession();
     const {
         currentStep,
         orderId,

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSession } from 'next-auth/react';
 
 import selector from './selector';
 import Loading from '../../Loading';
@@ -7,12 +8,11 @@ import { parseAsString, safelyParse } from '../../../utils/parsers';
 import Add from './Add';
 import Address from './Address';
 import { fetchAddresses, fetchAddressPageCount } from '../../../store/slices/account';
-import { useCustomSession } from '../../../hooks/auth';
 
 export const AddressBook: React.FC = () => {
     const { accessToken, addresses } = useSelector(selector);
-    const { data: session } = useCustomSession();
-    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
+    const session = useSession();
+    const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
     const [shouldFetchAddresses, setShouldFetchAddresses] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();

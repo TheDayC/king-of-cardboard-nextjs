@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSession } from 'next-auth/react';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import selector from './selector';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updatePassword } from '../../../../utils/account';
-import { useCustomSession } from '../../../../hooks/auth';
 
 const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -25,14 +25,14 @@ export const UpdatePassword: React.FC = () => {
     } = useForm();
     const password = watch('password', ''); // Watch password field for changes.
     const [loading, setLoading] = useState(false);
-    const { data: session } = useCustomSession();
+    const session = useSession();
     const { accessToken: token } = useSelector(selector);
     const dispatch = useDispatch();
 
     const hasErrors = Object.keys(errors).length > 0;
     const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
     const confirmPasswordErr = safelyParse(errors, 'confirmPassword.message', parseAsString, null);
-    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
+    const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
 
     const onSubmit = async (data: SubmitData) => {
         const { password: newPassword, confirmPassword } = data;

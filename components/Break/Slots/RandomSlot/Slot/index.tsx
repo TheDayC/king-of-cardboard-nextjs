@@ -1,13 +1,11 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Image from 'next/image';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { GiCardRandom } from 'react-icons/gi';
 
 import { setLineItem } from '../../../../../utils/commerce';
 import selector from './selector';
 import { fetchCartItems, fetchItemCount } from '../../../../../store/slices/cart';
-import { ImageItem } from '../../../../../types/products';
 import { addError, addSuccess } from '../../../../../store/slices/alerts';
 
 interface SlotProps {

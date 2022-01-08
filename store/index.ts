@@ -1,10 +1,8 @@
-import { configureStore, ThunkAction } from '@reduxjs/toolkit';
-import { Action } from 'redux';
+import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import thunkMiddleware from 'redux-thunk';
 import { createWrapper } from 'next-redux-wrapper';
-import Cookies from 'js-cookie';
 
 import rootReducer from './slices';
 
@@ -14,20 +12,20 @@ const persistConfig = {
     whitelist: ['cart', 'checkout', 'global', 'confirmation', 'pages'],
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const makeConfiguredStore = (rootReducer: any) =>
-    configureStore({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types
+export const makeConfiguredStore = (rootReducer: any) => {
+    return configureStore({
         reducer: rootReducer,
         middleware: [thunkMiddleware],
         devTools: process.env.NODE_ENV !== 'production',
     });
+};
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const makeStore = () => {
     const isServer = typeof window === 'undefined';
-    const cookieConsent = Boolean(Cookies.get('cookieConsent'));
 
-    if (isServer || !cookieConsent) {
+    if (isServer) {
         return makeConfiguredStore(rootReducer);
     } else {
         const persistedReducer = persistReducer(persistConfig, rootReducer);

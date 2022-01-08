@@ -57,7 +57,6 @@ export async function getProducts(
     const query = `
         query {
             productCollection (limit: ${limit}, skip: ${skip}, where: {${where}}) {
-                total
                 items {
                     name
                     slug

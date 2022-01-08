@@ -5,16 +5,16 @@ import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
+import { getSession } from 'next-auth/react';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { addError, addSuccess } from '../../store/slices/alerts';
 import selector from './selector';
 import { resetPassword } from '../../utils/account';
 import PageWrapper from '../../components/PageWrapper';
-import { fetchSession } from '../../utils/auth';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await fetchSession(context);
+    const session = await getSession(context);
     const resetToken = safelyParse(context, 'query.token', parseAsString, null);
     const emailAddress = safelyParse(context, 'query.email', parseAsString, null);
     const id = safelyParse(context, 'query.id', parseAsString, null);
