@@ -1,8 +1,8 @@
+import { useSession } from 'next-auth/react';
 import React, { useEffect } from 'react';
 import { UseFormRegister, FieldValues, UseFormSetValue } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
-import { useCustomSession } from '../../../../hooks/auth';
 import { FormErrors } from '../../../../types/checkout';
 import { fieldPatternMsgs } from '../../../../utils/checkout';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
@@ -15,7 +15,7 @@ interface PersonalDetailsProps {
 }
 
 const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, setValue }) => {
-    const { data: session } = useCustomSession();
+    const session = useSession();
     const { customerDetails } = useSelector(selector);
     const { first_name: firstName, last_name: lastName, email, phone } = customerDetails;
     const firstNameErr = safelyParse(errors, 'firstName.message', parseAsString, null);
@@ -23,7 +23,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
     const emailErr = safelyParse(errors, 'email.message', parseAsString, null);
     const mobileErr = safelyParse(errors, 'mobile.message', parseAsString, null);
 
-    const accountEmail = safelyParse(session, 'user.email', parseAsString, null);
+    const accountEmail = safelyParse(session, 'data.user.email', parseAsString, null);
 
     useEffect(() => {
         if (email) {

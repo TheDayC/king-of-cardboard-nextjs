@@ -15,7 +15,7 @@ export const GDPR: React.FC = () => {
     const handleAcceptCookies = () => {
         Cookies.set('cookieConsent', 'true');
         setIsLoading(true);
-        location.reload();
+        //location.reload();
     };
 
     const handleRejectCookies = () => {

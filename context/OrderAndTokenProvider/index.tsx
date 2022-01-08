@@ -1,12 +1,12 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
+import { useSession } from 'next-auth/react';
 
 import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect';
 import selector from './selector';
 import { fetchToken } from '../../store/slices/global';
 import { createCLOrder } from '../../store/slices/cart';
-import { useCustomSession } from '../../hooks/auth';
 
 const OrderAndTokenProvider: React.FC = ({ children }) => {
     const { accessToken, expires, shouldCreateOrder } = useSelector(selector);
@@ -14,8 +14,8 @@ const OrderAndTokenProvider: React.FC = ({ children }) => {
     const currentDate = DateTime.now().setZone('Europe/London');
     const expiryDate = DateTime.fromISO(expires || currentDate.toISO(), { zone: 'Europe/London' });
     const hasExpired = Boolean(expires && expiryDate < currentDate);
-    const { data: session } = useCustomSession();
-    const isGuest = !Boolean(session);
+    const session = useSession();
+    const isGuest = !Boolean(session && session.status === 'authenticated');
 
     // If accessToken doesn't exist create one.
     useIsomorphicLayoutEffect(() => {

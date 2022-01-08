@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { useRouter } from 'next/router';
 import { BsPaypal, BsFillCreditCard2BackFill } from 'react-icons/bs';
+import { useSession } from 'next-auth/react';
 
 import { setCurrentStep } from '../../../store/slices/checkout';
 import { createPaymentSource } from '../../../utils/commerce';
@@ -20,7 +21,6 @@ import { buildPaymentAttributes, paymentBtnText, updatePaymentMethod } from '../
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import UseCoins from '../../UseCoins';
 import { gaEvent } from '../../../utils/ga';
-import { useCustomSession } from '../../../hooks/auth';
 
 const STRIPE_METHOD = 'stripe_payments';
 const PAYPAL_METHOD = 'paypal_payments';
@@ -46,7 +46,7 @@ export const Payment: React.FC = () => {
         shippingAddress,
     } = useSelector(selector);
     const { handleSubmit, register } = useForm();
-    const { data: session } = useCustomSession();
+    const session = useSession();
     const isCurrentStep = currentStep === 2;
     const [paymentMethod, setPaymentMethod] = useState(STRIPE_METHOD);
     const btnText = paymentBtnText(paymentMethod);
@@ -72,7 +72,7 @@ export const Payment: React.FC = () => {
         // Figure out achievement progress now that the order has been confirmed.
         if (!session || !items || !accessToken) return;
 
-        const achievements = new Achievements(session, accessToken);
+        const achievements = new Achievements(session.data, accessToken);
         items.forEach(async (item) => {
             const { categories, types } = item.metadata;
             const hasFetchedObjectives = await achievements.fetchObjectives(categories, types);

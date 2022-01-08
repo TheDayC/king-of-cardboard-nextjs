@@ -2,23 +2,20 @@ import React from 'react';
 import { AiOutlineUser, AiOutlineMenu } from 'react-icons/ai';
 import Image from 'next/image';
 import Link from 'next/link';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { toSvg } from 'jdenticon';
 import md5 from 'md5';
-import Cookies from 'js-cookie';
 
 import logo from '../../images/logo-full.png';
 import Rewards from './Rewards';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import NavBar from './Navbar';
 import CartIcon from './CartIcon';
-import { useCustomSession } from '../../hooks/auth';
 
 export const Header: React.FC = () => {
-    const { data: session, status } = useCustomSession();
-    const cookieConsent = Boolean(Cookies.get('cookieConsent'));
-    const icon = safelyParse(session, 'user.image', parseAsString, null);
-    const email = safelyParse(session, 'user.email', parseAsString, null);
+    const session = useSession();
+    const icon = safelyParse(session, 'data.user.image', parseAsString, null);
+    const email = safelyParse(session, 'data.user.email', parseAsString, null);
 
     const handleLogout = () => {
         signOut();
@@ -45,7 +42,7 @@ export const Header: React.FC = () => {
                         </div>
                     )}
                     <CartIcon />
-                    {status === 'unauthenticated' && cookieConsent && (
+                    {status === 'unauthenticated' && (
                         <Link href="/login" passHref>
                             <div className="flex justify-start items-center cursor-pointer rounded-md hover:bg-neutral-focus">
                                 <div className="p-2 text-2xl">

@@ -22,7 +22,7 @@ class Achievements {
     private _points: number = 0;
 
     constructor(session: Session | null, accessToken: string | null) {
-        this._email = safelyParse(session, 'user.email', parseAsString, null);
+        this._email = safelyParse(session, 'data.user.email', parseAsString, null);
         this._accessToken = accessToken;
 
         this.fetchAchievments();

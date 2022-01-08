@@ -6,7 +6,7 @@ import selector from './selector';
 import Loading from '../../../Loading';
 
 export const PickSlot: React.FC = () => {
-    const { accessToken, currentBreak } = useSelector(selector);
+    const { currentBreak } = useSelector(selector);
     const [loading, setLoading] = useState(false);
     const { breakSlots } = currentBreak;
 

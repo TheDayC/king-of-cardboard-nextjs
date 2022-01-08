@@ -3,13 +3,13 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { BsInstagram, BsTwitter, BsTwitch, BsYoutube } from 'react-icons/bs';
 import { FaEbay } from 'react-icons/fa';
+import { useSession } from 'next-auth/react';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import { fetchSocialMedia } from '../../../../store/slices/account';
 import selector from './selector';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updateSocialMedia } from '../../../../utils/account';
-import { useCustomSession } from '../../../../hooks/auth';
 
 interface SubmitData {
     instagram: string;
@@ -29,7 +29,7 @@ export const SocialMediaLinks: React.FC = () => {
     } = useForm();
     const [loading, setLoading] = useState(false);
     const [shouldFetch, setShouldFetch] = useState(true);
-    const { data: session } = useCustomSession();
+    const session = useSession();
     const dispatch = useDispatch();
 
     const hasErrors = Object.keys(errors).length > 0;
@@ -38,7 +38,7 @@ export const SocialMediaLinks: React.FC = () => {
     const twitchErr = safelyParse(errors, 'twitch.message', parseAsString, null);
     const youtubeErr = safelyParse(errors, 'youtube.message', parseAsString, null);
     const ebayErr = safelyParse(errors, 'ebay.message', parseAsString, null);
-    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
+    const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
 
     const onSubmit = async (data: SubmitData) => {
         if (!emailAddress) return;

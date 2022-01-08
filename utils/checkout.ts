@@ -1,5 +1,3 @@
-import Cookies from 'js-cookie';
-
 import { Counties } from '../enums/checkout';
 import { PaymentMethod, CustomerAddress, CustomerDetails, ShipmentsWithLineItems } from '../store/types/state';
 import { DeliveryLeadTimes, MergedShipmentMethods, PaymentAttributes } from '../types/checkout';
@@ -494,31 +492,22 @@ export function paymentBtnText(method: string): string {
 
 export async function getPaymentMethods(accessToken: string, orderId: string): Promise<PaymentMethod[]> {
     try {
-        const cookieConsent = Boolean(Cookies.get('cookieConsent'));
         const apiUrl = `/api/orders/${orderId}?include=available_payment_methods&fields[payment_methods]=id,name,payment_source_type&fields[orders]=id`;
 
         const cl = authClient(accessToken);
         const res = await cl.get(apiUrl);
         const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
 
-        if (cookieConsent) {
-            return included.map((include) => ({
+        return included
+            .filter(
+                (include) =>
+                    safelyParse(include, 'attributes.payment_source_type', parseAsString, '') !== 'paypal_payments'
+            )
+            .map((include) => ({
                 id: safelyParse(include, 'id', parseAsString, ''),
                 name: safelyParse(include, 'attributes.name', parseAsString, ''),
                 payment_source_type: safelyParse(include, 'attributes.payment_source_type', parseAsString, ''),
             }));
-        } else {
-            return included
-                .filter(
-                    (include) =>
-                        safelyParse(include, 'attributes.payment_source_type', parseAsString, '') !== 'paypal_payments'
-                )
-                .map((include) => ({
-                    id: safelyParse(include, 'id', parseAsString, ''),
-                    name: safelyParse(include, 'attributes.name', parseAsString, ''),
-                    payment_source_type: safelyParse(include, 'attributes.payment_source_type', parseAsString, ''),
-                }));
-        }
     } catch (error: unknown) {
         errorHandler(error, 'We could not fetch an order.');
     }

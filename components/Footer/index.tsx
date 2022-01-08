@@ -52,11 +52,15 @@ export const Footer: React.FC = () => {
                             <li className="text-sm mb-2 hover:underline">
                                 <Link href="/returns-and-exchanges">Returns &amp; Exchanges</Link>
                             </li>
-                            <li className="text-sm mb-2 hover:underline" target="__blank">
-                                <a href="mailto:admin@kingofcardboard.co.uk">Contact Us</a>
+                            <li className="text-sm mb-2 hover:underline">
+                                <a href="mailto:admin@kingofcardboard.co.uk" target="__blank">
+                                    Contact Us
+                                </a>
                             </li>
-                            <li className="text-sm mb-2 hover:underline" target="__blank">
-                                <a href="mailto:admin@kingofcardboard.co.uk">Submit Bug</a>
+                            <li className="text-sm mb-2 hover:underline">
+                                <a href="mailto:admin@kingofcardboard.co.uk" target="__blank">
+                                    Submit Bug
+                                </a>
                             </li>
                         </ul>
                     </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useSession } from 'next-auth/react';
 
 import selector from './selector';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -7,17 +8,16 @@ import ShortOrder from './ShortOrder';
 import Loading from '../../Loading';
 import Pagination from '../../Pagination';
 import { fetchOrderPageCount, fetchOrders } from '../../../store/slices/account';
-import { useCustomSession } from '../../../hooks/auth';
 
 const PER_PAGE = 5;
 
 export const OrderHistory: React.FC = () => {
     const { accessToken, orders, orderPageCount } = useSelector(selector);
-    const { data: session } = useCustomSession();
+    const session = useSession();
     const [currentPage, setCurrentPage] = useState(1);
     const [shouldFetch, setShouldFetch] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
-    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
+    const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
     const dispatch = useDispatch();
 
     const handlePageNumber = (nextPage: number) => {

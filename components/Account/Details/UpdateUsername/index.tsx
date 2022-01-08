@@ -7,7 +7,6 @@ import { useDispatch } from 'react-redux';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updateUsername } from '../../../../utils/account';
-import { useCustomSession } from '../../../../hooks/auth';
 
 const USER_PATTERN = /^[a-zA-Z]{4,}$/;
 
@@ -22,12 +21,12 @@ export const UpdateUsername: React.FC = () => {
         formState: { errors },
     } = useForm();
     const [loading, setLoading] = useState(false);
-    const { data: session } = useCustomSession();
+    const session = useSession();
     const dispatch = useDispatch();
 
     const hasErrors = Object.keys(errors).length > 0;
     const usernameErr = safelyParse(errors, 'username.message', parseAsString, null);
-    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
+    const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
 
     const onSubmit = async (data: SubmitData) => {
         const { username } = data;

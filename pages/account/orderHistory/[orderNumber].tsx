@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import Error from 'next/error';
 import { useDispatch, useSelector } from 'react-redux';
+import { getSession } from 'next-auth/react';
 
 import PageWrapper from '../../../components/PageWrapper';
 import AccountMenu from '../../../components/Account/Menu';
@@ -10,10 +11,9 @@ import selector from './selector';
 import LongOrder from '../../../components/Account/OrderHistory/LongOrder';
 import Loading from '../../../components/Loading';
 import { fetchCurrentOrder } from '../../../store/slices/account';
-import { fetchSession } from '../../../utils/auth';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await fetchSession(context);
+    const session = await getSession(context);
     const orderNumber = safelyParse(context, 'query.orderNumber', parseAsString, null);
 
     const errorCode = orderNumber ? false : 404;

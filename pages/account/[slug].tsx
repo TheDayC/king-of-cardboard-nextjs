@@ -3,6 +3,7 @@ import Error from 'next/error';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
+import { getSession } from 'next-auth/react';
 
 import AccountMenu from '../../components/Account/Menu';
 import Account from '../../components/Account';
@@ -10,10 +11,9 @@ import selector from './slugSelector';
 import Content from '../../components/Content';
 import { parseAsArrayOfContentJSON, parseAsSlug, parseAsString, safelyParse } from '../../utils/parsers';
 import PageWrapper from '../../components/PageWrapper';
-import { fetchSession } from '../../utils/auth';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await fetchSession(context);
+    const session = await getSession(context);
     const slug = safelyParse(context, 'query.slug', parseAsSlug, null);
 
     const errorCode = slug ? false : 404;
