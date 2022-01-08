@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
-import { useSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
-import Cookies from 'js-cookie';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import selector from './selector';
