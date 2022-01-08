@@ -52,7 +52,7 @@ export const Summary: React.FC<SummaryProps> = ({ isConfirmation = false }) => {
                         </React.Fragment>
                     ))}
             </div>
-            <div className="overflow-x-auto">
+            <div className="block w-full">
                 <Totals isConfirmation={isConfirmation} />
             </div>
         </div>

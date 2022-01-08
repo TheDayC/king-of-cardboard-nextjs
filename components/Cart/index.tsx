@@ -58,7 +58,7 @@ export const Cart: React.FC = () => {
         <div className="flex flex-col">
             <h1 className="mb-4 text-2xl lg:mb-8 lg:text-4xl">{`Cart (${itemCount} ${itemPlural})`}</h1>
             {itemCount > 0 ? (
-                <div className="overflow-x-auto relative">
+                <div className="block w-full relative">
                     <Loading show={isUpdatingCart} />
                     <div className="flex flex-col w-full">
                         <div className="grid grid-cols-3 bg-neutral text-neutral-content p-2 rounded-md text-sm lg:text-md lg:p-4 lg:grid-cols-5">
