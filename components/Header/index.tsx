@@ -44,7 +44,7 @@ export const Header: React.FC = () => {
                     )}
                     <CartIcon />
                     {status === 'authenticated' ? (
-                        <div className="dropdown dropdown-end" role="menu">
+                        <div className="dropdown dropdown-end" role="menu" data-testid="account-dropdown">
                             <div className="avatar cursor-pointer relative" tabIndex={0}>
                                 {icon ? (
                                     <div className="rounded-full w-8 h-8 m-1 bg-white">
@@ -66,7 +66,9 @@ export const Header: React.FC = () => {
                                     <Link href="/account">Account</Link>
                                 </li>
                                 <li role="menuitem">
-                                    <a onClick={handleLogout}>Log Out</a>
+                                    <a onClick={handleLogout} data-testid="logout">
+                                        Log Out
+                                    </a>
                                 </li>
                             </ul>
                         </div>

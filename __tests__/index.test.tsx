@@ -1,4 +1,4 @@
-import { render, screen } from '../utils/testing';
+import { render, screen, waitFor, fireEvent } from '../utils/testing';
 import Home from '../pages/index';
 
 describe('Home', () => {
@@ -14,13 +14,8 @@ describe('Home', () => {
     it('checks the account menu exists in the navbar functions', async () => {
         render(<Home />);
 
-        const menu = screen.getByRole('menu');
+        const menu = screen.getByTestId('account-dropdown');
         expect(menu).toBeVisible();
-
-        menu.click();
-
-        const menuItems = screen.getAllByRole('menuitem');
-        menuItems.forEach((item) => expect(item).toBeVisible());
     });
 
     it('checks the cart is visible', async () => {
@@ -66,5 +61,40 @@ describe('Home', () => {
         const btn = screen.getByText('Learn More');
 
         expect(btn).toBeVisible();
+    });
+
+    // FOOTER
+    it('checks the footer logo is visible', async () => {
+        render(<Home />);
+
+        const footerLogo = screen.getByTestId('footer-logo');
+        expect(footerLogo).toBeVisible();
+    });
+
+    it('checks the slogan is visible', async () => {
+        render(<Home />);
+
+        const slogan = screen.getByText('Collect, Invest, Share.');
+        expect(slogan).toBeVisible();
+    });
+
+    it('checks the sub menus are visible', async () => {
+        render(<Home />);
+
+        const infoMenu = screen.getByText('Information');
+        const customerServiceMenu = screen.getByText('Customer Service');
+        const legalMenu = screen.getByText('Legal');
+
+        expect(infoMenu).toBeVisible();
+        expect(customerServiceMenu).toBeVisible();
+        expect(legalMenu).toBeVisible();
+    });
+
+    it('checks social media is visible in the footer', async () => {
+        render(<Home />);
+
+        const socialMedia = screen.getByTestId('social-media');
+
+        expect(socialMedia).toBeVisible();
     });
 });

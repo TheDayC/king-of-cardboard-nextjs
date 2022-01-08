@@ -17,8 +17,12 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ isDropdown }) => {
     const orderNumber = safelyParse(router, 'query.orderNumber', parseAsString, null);
 
     return (
-        <ul className={`menu p-4 shadow-lg bg-base-100 rounded-md${isDropdown ? ' dropdown-content' : ''}`}>
-            <li className={`${slug === Slugs.Details ? 'bordered' : 'hover-bordered'}`}>
+        <ul
+            className={`menu p-4 shadow-lg bg-base-100 rounded-md${isDropdown ? ' dropdown-content' : ''}`}
+            role="menu"
+            data-testid="account-menu"
+        >
+            <li className={`${slug === Slugs.Details ? 'bordered' : 'hover-bordered'}`} role="menuitem">
                 <Link
                     href={{
                         pathname: '/account/[slug]',
@@ -32,7 +36,7 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ isDropdown }) => {
                     </a>
                 </Link>
             </li>
-            <li className={`${slug === Slugs.Profile ? 'bordered' : 'hover-bordered'}`}>
+            <li className={`${slug === Slugs.Profile ? 'bordered' : 'hover-bordered'}`} role="menuitem">
                 <Link
                     href={{
                         pathname: '/account/[slug]',
@@ -46,7 +50,7 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ isDropdown }) => {
                     </a>
                 </Link>
             </li>
-            <li className={`${slug === Slugs.AddressBook ? 'bordered' : 'hover-bordered'}`}>
+            <li className={`${slug === Slugs.AddressBook ? 'bordered' : 'hover-bordered'}`} role="menuitem">
                 <Link
                     href={{
                         pathname: '/account/[slug]',
@@ -60,7 +64,10 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ isDropdown }) => {
                     </a>
                 </Link>
             </li>
-            <li className={`${slug === Slugs.OrderHistory || orderNumber ? 'bordered' : 'hover-bordered'}`}>
+            <li
+                className={`${slug === Slugs.OrderHistory || orderNumber ? 'bordered' : 'hover-bordered'}`}
+                role="menuitem"
+            >
                 <Link
                     href={{
                         pathname: '/account/[slug]',
@@ -74,7 +81,7 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ isDropdown }) => {
                     </a>
                 </Link>
             </li>
-            <li className={`${slug === Slugs.Achievements ? 'bordered' : 'hover-bordered'}`}>
+            <li className={`${slug === Slugs.Achievements ? 'bordered' : 'hover-bordered'}`} role="menuitem">
                 <Link
                     href={{
                         pathname: '/account/[slug]',

@@ -16,6 +16,7 @@ export const Grid: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [shouldFetch, setShouldFetch] = useState(true);
     const productPageCount = ceil(divide(productsTotal, PER_PAGE));
+    const hasFilters = categories.length > 0 || productTypes.length > 0;
 
     // Handle the page number and set it in local state.
     const handlePageNumber = useCallback(
@@ -36,20 +37,19 @@ export const Grid: React.FC = () => {
             setShouldFetch(false);
             dispatch(fetchProductsTotal());
             dispatch(fetchProducts({ accessToken, limit: 0, skip: 0, categories, productTypes }));
-            //createProductCollection(accessToken, 0, filters.categories, filters.productTypes);
         }
     }, [dispatch, accessToken, shouldFetch, categories, productTypes]);
 
     // Filter the collection.
     useEffect(() => {
-        if (accessToken) {
+        if (accessToken && hasFilters) {
             dispatch(fetchProductsTotal());
             dispatch(fetchProducts({ accessToken, limit: 0, skip: 0, categories, productTypes }));
         }
-    }, [dispatch, accessToken, categories, productTypes]);
+    }, [dispatch, accessToken, categories, productTypes, hasFilters]);
 
     return (
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col w-full" data-testid="shop-grid">
             <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl2:grid-cols-6">
                 {products.length > 0 &&
                     products.map((product) => (

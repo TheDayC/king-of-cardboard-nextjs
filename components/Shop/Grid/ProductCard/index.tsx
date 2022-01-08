@@ -26,7 +26,7 @@ export const ProductCard: React.FC<CardProps> = ({
     const shouldShowCompare = amount !== compareAmount && compareAmount.length > 0;
 
     return (
-        <div className="card shadow-md rounded-md bordered pt-4">
+        <div className="card shadow-md rounded-md bordered pt-4" data-testid="product-card">
             {image.length > 0 && (
                 <div className="relative w-full h-40">
                     <Image

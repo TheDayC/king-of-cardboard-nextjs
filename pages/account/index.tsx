@@ -40,7 +40,7 @@ export const AccountPage: React.FC = () => {
                     </div>
                     <AccountMenu isDropdown />
                 </div>
-                <div className="flex flex-col relative w-full px-2 py-0 md:w-3/4 md:px-4 md:px-8">
+                <div className="flex flex-col relative w-full px-2 py-0 md:w-3/4 md:px-4 md:px-8" data-testid="content">
                     {content && <Content content={content} />}
                 </div>
             </div>

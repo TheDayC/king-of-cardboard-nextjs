@@ -13,19 +13,19 @@ export const Content: React.FC<ContentProps> = ({ content }) => (
                 switch (node.nodeType) {
                     case 'heading-1':
                         return node.content.map((item, i) => (
-                            <h1 key={`item-${i}`} className="text-4xl mb-4">
+                            <h1 key={`item-${i}`} className="text-4xl mb-4" role="heading" data-testid="h1">
                                 {item.value}
                             </h1>
                         ));
                     case 'heading-2':
                         return node.content.map((item, i) => (
-                            <h2 key={`item-${i}`} className="text-3xl mb-2">
+                            <h2 key={`item-${i}`} className="text-3xl mb-2" role="heading" data-testid="h2">
                                 {item.value}
                             </h2>
                         ));
                     case 'heading-3':
                         return node.content.map((item, i) => (
-                            <h3 key={`item-${i}`} className="text-2xl mb-2">
+                            <h3 key={`item-${i}`} className="text-2xl mb-2" role="heading" data-testid="h3">
                                 {item.value}
                             </h3>
                         ));
