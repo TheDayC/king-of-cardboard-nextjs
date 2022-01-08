@@ -16,15 +16,24 @@ const OrderAndTokenProvider: React.FC = ({ children }) => {
     const hasExpired = Boolean(expires && expiryDate < currentDate);
     const session = useSession();
     const isGuest = !Boolean(session && session.status === 'authenticated');
+    const shouldResetToken = localStorage.getItem('kingofcardboard-401');
 
     // If accessToken doesn't exist create one.
     useIsomorphicLayoutEffect(() => {
-        if (!accessToken || hasExpired) {
+        if (!accessToken || hasExpired || shouldResetToken === 'true') {
             dispatch(fetchToken());
+            localStorage.setItem('kingofcardboard-401', 'false');
         }
-    }, [accessToken, hasExpired]);
+    }, [accessToken, hasExpired, shouldResetToken]);
 
     // If the order doesn't exist then create one.
+    useIsomorphicLayoutEffect(() => {
+        if (shouldCreateOrder && accessToken) {
+            dispatch(createCLOrder({ accessToken, isGuest }));
+        }
+    }, [shouldCreateOrder, accessToken, isGuest]);
+
+    // If the token
     useIsomorphicLayoutEffect(() => {
         if (shouldCreateOrder && accessToken) {
             dispatch(createCLOrder({ accessToken, isGuest }));

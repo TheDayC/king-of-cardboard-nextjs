@@ -16,13 +16,16 @@ import {
     setUpdatingCart,
 } from '../../store/slices/cart';
 import UseCoins from '../UseCoins';
+import { parseAsString, safelyParse } from '../../utils/parsers';
 
 export const Cart: React.FC = () => {
-    const { itemCount, items, isUpdatingCart, accessToken, orderId, shouldUpdateCart } = useSelector(selector);
+    const { itemCount, items, isUpdatingCart, accessToken, orderId, shouldUpdateCart, balance } = useSelector(selector);
     const dispatch = useDispatch();
-    const data = useSession();
+    const session = useSession();
     const [shouldFetch, setShouldFetch] = useState(true);
     const itemPlural = itemCount === 1 ? 'item' : 'items';
+    const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
+    const shouldShowCoins = status === 'authenticated' && balance > 0;
 
     // Catch all function to update the primary aspects of the cart.
     const updateCart = useCallback(() => {
@@ -55,7 +58,7 @@ export const Cart: React.FC = () => {
         <div className="flex flex-col">
             <h1 className="mb-4 text-2xl lg:mb-8 lg:text-4xl">{`Cart (${itemCount} ${itemPlural})`}</h1>
             {itemCount > 0 ? (
-                <div className="overflow-x-auto relative">
+                <div className="block w-full relative">
                     <Loading show={isUpdatingCart} />
                     <div className="flex flex-col w-full">
                         <div className="grid grid-cols-3 bg-neutral text-neutral-content p-2 rounded-md text-sm lg:text-md lg:p-4 lg:grid-cols-5">
@@ -82,7 +85,7 @@ export const Cart: React.FC = () => {
                                 ))}
                         </div>
                         <CartTotals />
-                        {data && data.data && <UseCoins />}
+                        {shouldShowCoins && <UseCoins />}
                         <div className="flex flex-col items-end mt-4 lg:mt-6">
                             <Link href="/checkout" passHref>
                                 <button

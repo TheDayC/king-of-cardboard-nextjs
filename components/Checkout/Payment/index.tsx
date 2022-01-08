@@ -12,7 +12,7 @@ import { confirmOrder, refreshPayment, sendOrderConfirmation } from '../../../ut
 import { setCheckoutLoading } from '../../../store/slices/global';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import Achievements from '../../../services/achievments';
-import { setShouldFetchRewards } from '../../../store/slices/account';
+import { fetchGiftCard } from '../../../store/slices/account';
 import { addError } from '../../../store/slices/alerts';
 import selector from './selector';
 import SelectionWrapper from '../../SelectionWrapper';
@@ -44,6 +44,7 @@ export const Payment: React.FC = () => {
         items,
         billingAddress,
         shippingAddress,
+        balance,
     } = useSelector(selector);
     const { handleSubmit, register } = useForm();
     const session = useSession();
@@ -53,6 +54,8 @@ export const Payment: React.FC = () => {
     const paypalClass = 'inline-block mr-3 text-md -mt-0.5 text-blue-800';
     const stripeClass = 'inline-block mr-3 text-md -mt-0.5 text-gray-500';
     const shouldEnable = paymentMethods.length > 0;
+    const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
+    const shouldShowCoins = status === 'authenticated' && balance > 0;
 
     const handleEdit = () => {
         if (!isCurrentStep) {
@@ -71,27 +74,32 @@ export const Payment: React.FC = () => {
     const handleAchievements = useCallback(async () => {
         // Figure out achievement progress now that the order has been confirmed.
         if (!session || !items || !accessToken) return;
+        const emailAddress = safelyParse(session, 'data.user.email', parseAsString, '');
 
         const achievements = new Achievements(session.data, accessToken);
-        items.forEach(async (item) => {
-            const { categories, types } = item.metadata;
-            const hasFetchedObjectives = await achievements.fetchObjectives(categories, types);
 
-            if (hasFetchedObjectives && achievements.objectives) {
-                achievements.objectives.forEach((objective) => {
-                    const { _id, min, max, milestone, reward, milestoneMultiplier: multiplier } = objective;
+        const categories: string[] = [];
+        const types: string[] = [];
 
-                    // Increment the achievement based on the objective found.
-                    achievements.incrementAchievement(_id, min, max, reward, milestone, multiplier);
-                });
+        items.forEach((item) => item.metadata.categories.forEach((cat) => categories.push(cat)));
+        items.forEach((item) => item.metadata.types.forEach((type) => types.push(type)));
 
-                // Update achievements and points once all increments have been achieved.
-                achievements.updateAchievements();
+        const hasFetchedObjectives = await achievements.fetchObjectives(categories, types);
 
-                // Dispatch coin update
-                dispatch(setShouldFetchRewards(true));
-            }
-        });
+        if (hasFetchedObjectives && achievements.objectives) {
+            achievements.objectives.forEach((objective) => {
+                const { _id, min, max, milestone, reward, milestoneMultiplier: multiplier } = objective;
+
+                // Increment the achievement based on the objective found.
+                achievements.incrementAchievement(_id, min, max, reward, milestone, multiplier);
+            });
+
+            // Update achievements and points once all increments have been achieved.
+            achievements.updateAchievements();
+
+            // Dispatch coin update
+            dispatch(fetchGiftCard({ accessToken, emailAddress }));
+        }
     }, [dispatch, session, accessToken, items]);
 
     const handleStripePayment = async () => {
@@ -299,7 +307,7 @@ export const Payment: React.FC = () => {
                                     </SelectionWrapper>
                                 );
                             })}
-                        {session && (
+                        {shouldShowCoins && (
                             <React.Fragment>
                                 <div className="divider lightDivider"></div>
                                 <UseCoins />

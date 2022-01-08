@@ -111,11 +111,7 @@ export const fetchSocialMedia = createAsyncThunk(
 const accountSlice = createSlice({
     name: 'account',
     initialState: accountInitialState,
-    reducers: {
-        setShouldFetchRewards(state, action) {
-            state.shouldFetchRewards = action.payload;
-        },
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder.addCase(fetchGiftCard.fulfilled, (state, action) => {
             state.giftCard = action.payload;
@@ -148,5 +144,5 @@ const accountSlice = createSlice({
     },
 });
 
-export const { setShouldFetchRewards } = accountSlice.actions;
+//export const {} = accountSlice.actions;
 export default accountSlice.reducer;

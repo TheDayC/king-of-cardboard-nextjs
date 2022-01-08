@@ -498,16 +498,11 @@ export async function getPaymentMethods(accessToken: string, orderId: string): P
         const res = await cl.get(apiUrl);
         const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
 
-        return included
-            .filter(
-                (include) =>
-                    safelyParse(include, 'attributes.payment_source_type', parseAsString, '') !== 'paypal_payments'
-            )
-            .map((include) => ({
-                id: safelyParse(include, 'id', parseAsString, ''),
-                name: safelyParse(include, 'attributes.name', parseAsString, ''),
-                payment_source_type: safelyParse(include, 'attributes.payment_source_type', parseAsString, ''),
-            }));
+        return included.map((include) => ({
+            id: safelyParse(include, 'id', parseAsString, ''),
+            name: safelyParse(include, 'attributes.name', parseAsString, ''),
+            payment_source_type: safelyParse(include, 'attributes.payment_source_type', parseAsString, ''),
+        }));
     } catch (error: unknown) {
         errorHandler(error, 'We could not fetch an order.');
     }
