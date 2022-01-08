@@ -44,6 +44,7 @@ export const Payment: React.FC = () => {
         items,
         billingAddress,
         shippingAddress,
+        balance,
     } = useSelector(selector);
     const { handleSubmit, register } = useForm();
     const session = useSession();
@@ -53,6 +54,8 @@ export const Payment: React.FC = () => {
     const paypalClass = 'inline-block mr-3 text-md -mt-0.5 text-blue-800';
     const stripeClass = 'inline-block mr-3 text-md -mt-0.5 text-gray-500';
     const shouldEnable = paymentMethods.length > 0;
+    const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
+    const shouldShowCoins = status === 'authenticated' && balance > 0;
 
     const handleEdit = () => {
         if (!isCurrentStep) {
@@ -304,7 +307,7 @@ export const Payment: React.FC = () => {
                                     </SelectionWrapper>
                                 );
                             })}
-                        {session && (
+                        {shouldShowCoins && (
                             <React.Fragment>
                                 <div className="divider lightDivider"></div>
                                 <UseCoins />

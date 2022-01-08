@@ -16,13 +16,16 @@ import {
     setUpdatingCart,
 } from '../../store/slices/cart';
 import UseCoins from '../UseCoins';
+import { parseAsString, safelyParse } from '../../utils/parsers';
 
 export const Cart: React.FC = () => {
-    const { itemCount, items, isUpdatingCart, accessToken, orderId, shouldUpdateCart } = useSelector(selector);
+    const { itemCount, items, isUpdatingCart, accessToken, orderId, shouldUpdateCart, balance } = useSelector(selector);
     const dispatch = useDispatch();
-    const data = useSession();
+    const session = useSession();
     const [shouldFetch, setShouldFetch] = useState(true);
     const itemPlural = itemCount === 1 ? 'item' : 'items';
+    const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
+    const shouldShowCoins = status === 'authenticated' && balance > 0;
 
     // Catch all function to update the primary aspects of the cart.
     const updateCart = useCallback(() => {
@@ -82,7 +85,7 @@ export const Cart: React.FC = () => {
                                 ))}
                         </div>
                         <CartTotals />
-                        {data && data.data && <UseCoins />}
+                        {shouldShowCoins && <UseCoins />}
                         <div className="flex flex-col items-end mt-4 lg:mt-6">
                             <Link href="/checkout" passHref>
                                 <button

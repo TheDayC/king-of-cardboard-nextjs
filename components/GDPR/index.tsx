@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Cookies from 'js-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { BiCookie } from 'react-icons/bi';
@@ -8,14 +8,11 @@ import selector from './selector';
 
 export const GDPR: React.FC = () => {
     const cookieConsent = Boolean(Cookies.get('cookieConsent'));
-    const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();
     const { hasRejected } = useSelector(selector);
 
     const handleAcceptCookies = () => {
         Cookies.set('cookieConsent', 'true');
-        setIsLoading(true);
-        //location.reload();
     };
 
     const handleRejectCookies = () => {
@@ -39,16 +36,10 @@ export const GDPR: React.FC = () => {
                     </p>
                 </div>
                 <div className="flex flex-col w-full">
-                    <button
-                        className={`btn btn-block btn-primary mb-4 ${isLoading ? ' loading btn-square' : ''}`}
-                        onClick={handleAcceptCookies}
-                    >
-                        {isLoading ? '' : 'Accept Cookies'}
+                    <button className="btn btn-block btn-primary mb-4" onClick={handleAcceptCookies}>
+                        Accept Cookies
                     </button>
-                    <button
-                        className={`btn btn-block ${isLoading ? ' loading btn-square' : ''}`}
-                        onClick={handleRejectCookies}
-                    >
+                    <button className="btn btn-block" onClick={handleRejectCookies}>
                         Reject Cookies
                     </button>
                 </div>
