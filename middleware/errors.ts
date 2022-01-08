@@ -1,15 +1,11 @@
-import { makeStore } from '../store';
-import { setAccessToken, setExpires } from '../store/slices/global';
 import { ErrorResponse } from '../types/api';
 import { parseAsArrayOfCommerceLayerErrors, parseAsNumber, parseAsString, safelyParse } from '../utils/parsers';
 
 function checkForForbidden(errors: ErrorResponse[]): ErrorResponse[] {
-    const store = makeStore();
     const has401 = errors.filter((err) => err.status === 401).length > 0;
 
     if (has401) {
-        store.dispatch(setAccessToken(null));
-        store.dispatch(setExpires(null));
+        localStorage.setItem('kingofcardboard-401', 'true');
     }
 
     return errors.filter((err) => err.status !== 401);
