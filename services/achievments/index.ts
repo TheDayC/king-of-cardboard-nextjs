@@ -42,7 +42,10 @@ class Achievements {
 
     private async fetchAchievments(): Promise<void> {
         try {
-            const response = await axios.post('/api/achievements/getAchievements', { emailAddress: this._email });
+            const response = await axios.post('/api/achievements/getAchievements', {
+                emailAddress: this._email,
+                accessToken: this._accessToken,
+            });
 
             if (response) {
                 this._giftCardId = safelyParse(response, 'data.giftCardId', parseAsString, null);
