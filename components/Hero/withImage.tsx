@@ -24,7 +24,7 @@ export const HeroWithImage: React.FC<HeroWithImageProps> = ({
             <div className={`flex flex-col hero-content p-0 lg:flex-row${shouldReverse ? '-reverse' : ''}`}>
                 {image_url && (
                     <div className="rounded-md shadow-2xl relative overflow-hidden w-full h-40 hidden lg:inline-block lg:w-1/4 lg:h-80">
-                        <Image src={image_url} alt={`${title}-hero-image`} layout="fill" objectFit="cover" />
+                        <Image src={image_url} alt={`${title}-hero-image`} layout="fill" objectFit="cover" role="img" />
                     </div>
                 )}
                 <div className={`w-full lg:w-3/4 ${shouldReverse ? 'lg:mr-4' : 'lg:ml-4'}`}>

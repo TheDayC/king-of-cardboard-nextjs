@@ -20,7 +20,11 @@ export const CartIcon: React.FC = () => {
 
     return (
         <Link href="/cart" passHref>
-            <div className="flex justify-start items-center indicator cursor-pointer rounded-md hover:bg-neutral-focus relative mr-4 lg:mr-2">
+            <div
+                className="flex justify-start items-center indicator cursor-pointer rounded-md hover:bg-neutral-focus relative mr-4 lg:mr-2"
+                role="link"
+                data-testid="cart"
+            >
                 <div className="p-2 text-2xl">
                     <AiOutlineShoppingCart />
                 </div>

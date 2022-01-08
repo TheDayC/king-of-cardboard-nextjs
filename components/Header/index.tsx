@@ -16,6 +16,7 @@ export const Header: React.FC = () => {
     const session = useSession();
     const icon = safelyParse(session, 'data.user.image', parseAsString, null);
     const email = safelyParse(session, 'data.user.email', parseAsString, null);
+    const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
 
     const handleLogout = () => {
         signOut();
@@ -25,12 +26,12 @@ export const Header: React.FC = () => {
         <React.Fragment>
             <div className="navbar shadow-md bg-neutral text-neutral-content">
                 <div className="navbar-start">
-                    <label className="text-2xl px-2 lg:hidden" htmlFor="my-drawer">
+                    <label className="text-2xl px-2 lg:hidden" htmlFor="king-of-cardboard-drawer">
                         <AiOutlineMenu />
                     </label>
                     <Link href="/" passHref>
-                        <div className="h-auto w-44 pointer lg:block">
-                            <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
+                        <div className="h-auto w-44 pointer lg:block" role="link" data-testid="logo">
+                            <Image src={logo} alt="King of Cardboard Logo Header" title="King of Cardboard" />
                         </div>
                     </Link>
                 </div>
@@ -42,17 +43,8 @@ export const Header: React.FC = () => {
                         </div>
                     )}
                     <CartIcon />
-                    {status === 'unauthenticated' && (
-                        <Link href="/login" passHref>
-                            <div className="flex justify-start items-center cursor-pointer rounded-md hover:bg-neutral-focus">
-                                <div className="p-2 text-2xl">
-                                    <AiOutlineUser />
-                                </div>
-                            </div>
-                        </Link>
-                    )}
-                    {status === 'authenticated' && (
-                        <div className="dropdown dropdown-end">
+                    {status === 'authenticated' ? (
+                        <div className="dropdown dropdown-end" role="menu">
                             <div className="avatar cursor-pointer relative" tabIndex={0}>
                                 {icon ? (
                                     <div className="rounded-full w-8 h-8 m-1 bg-white">
@@ -70,14 +62,26 @@ export const Header: React.FC = () => {
                                 tabIndex={0}
                                 className="p-2 shadow menu dropdown-content bg-base-100 rounded-md w-52 text-base-content"
                             >
-                                <li>
+                                <li role="menuitem">
                                     <Link href="/account">Account</Link>
                                 </li>
-                                <li>
+                                <li role="menuitem">
                                     <a onClick={handleLogout}>Log Out</a>
                                 </li>
                             </ul>
                         </div>
+                    ) : (
+                        <Link href="/login" passHref>
+                            <div
+                                className="flex justify-start items-center cursor-pointer rounded-md hover:bg-neutral-focus"
+                                role="button"
+                                data-testid="login-icon"
+                            >
+                                <div className="p-2 text-2xl">
+                                    <AiOutlineUser />
+                                </div>
+                            </div>
+                        </Link>
                     )}
                 </div>
             </div>
