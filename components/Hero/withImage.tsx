@@ -28,7 +28,9 @@ export const HeroWithImage: React.FC<HeroWithImageProps> = ({
                     </div>
                 )}
                 <div className={`w-full lg:w-3/4 ${shouldReverse ? 'lg:mr-4' : 'lg:ml-4'}`}>
-                    <h1 className="font-bold mb-4 text-2xl lg:text-5xl">{title}</h1>
+                    <h1 className="font-bold mb-4 text-2xl lg:text-5xl" role="heading">
+                        {title}
+                    </h1>
                     {content.length > 0 &&
                         content.map((contentItem, index) => (
                             <p className="mb-5" key={`hero-p-${index}`}>
