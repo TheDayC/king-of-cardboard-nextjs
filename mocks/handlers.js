@@ -85,7 +85,6 @@ export const handlers = [
 
     rest.get('https://king-of-cardboard.commercelayer.io/api/skus/*', (req, res, ctx) => {
         const params = req.url.params;
-        console.log('🚀 ~ file: handlers.js ~ line 82 ~ rest.get ~ params', params);
         //?filter[q][code_in]=SNG-MTG-ISD-79,SNG-MTG-ISD-78&filter[q][stock_items_quantity_gt]=0&include=prices&fields[skus]=id,code&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount
         if (params) {
             return res(

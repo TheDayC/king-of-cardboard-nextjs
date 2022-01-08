@@ -17,7 +17,6 @@ const OrderAndTokenProvider: React.FC = ({ children }) => {
     const session = useSession();
     const isGuest = !Boolean(session && session.status === 'authenticated');
     const shouldResetToken = localStorage.getItem('kingofcardboard-401');
-    console.log('🚀 ~ file: index.tsx ~ line 20 ~ shouldResetToken', shouldResetToken);
 
     // If accessToken doesn't exist create one.
     useIsomorphicLayoutEffect(() => {

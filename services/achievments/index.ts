@@ -22,7 +22,7 @@ class Achievements {
     private _points: number = 0;
 
     constructor(session: Session | null, accessToken: string | null) {
-        this._email = safelyParse(session, 'data.user.email', parseAsString, null);
+        this._email = safelyParse(session, 'user.email', parseAsString, null);
         this._accessToken = accessToken;
 
         this.fetchAchievments();
@@ -64,7 +64,7 @@ class Achievements {
     public async fetchObjectives(
         categories: string[] | null = null,
         types: string[] | null = null,
-        page: number = 1
+        page: number = 0
     ): Promise<boolean> {
         try {
             const response = await axios.post('/api/achievements/getObjectives', { categories, types, page });
@@ -85,16 +85,25 @@ class Achievements {
     }
 
     public async updateAchievements(): Promise<void> {
-        const cl = authClient(this._accessToken);
-        await cl.patch(`/api/gift_cards/${this._giftCardId}`, {
-            data: {
-                type: 'gift_cards',
-                id: this._giftCardId,
-                attributes: {
-                    balance_cents: this._points,
+        try {
+            const cl = authClient(this._accessToken);
+            await cl.patch(`/api/gift_cards/${this._giftCardId}`, {
+                data: {
+                    type: 'gift_cards',
+                    id: this._giftCardId,
+                    attributes: {
+                        _balance_change_cents: this._points,
+                    },
                 },
-            },
-        });
+            });
+
+            await axios.post('/api/achievements/updateAchievements', {
+                emailAddress: this._email,
+                achievements: this._achievements,
+            });
+        } catch (error: unknown) {
+            errorHandler(error, 'Failed to update achievements.');
+        }
     }
 
     public incrementAchievement(
@@ -105,6 +114,9 @@ class Achievements {
         milestone: number,
         multiplier: number
     ): void {
+        // For milestones we want to give a slightly larger reward.
+        const milestoneReward = reward * multiplier;
+
         if (this._achievements) {
             const achievementIndex = this._achievements.findIndex((achievement) => achievement.id === id) || null;
 
@@ -112,9 +124,6 @@ class Achievements {
                 // If the current achievement already exists then increment the count.
                 const currentAchievement = this._achievements[achievementIndex];
                 const current = currentAchievement.current + 1;
-
-                // For milestones we want to give a slightly larger reward.
-                const milestoneReward = reward * multiplier;
 
                 // If we've not exceeded the max on the current increment then dish out points.
                 if (!this.hasExceededMaxThreshold(current, max)) {
@@ -143,7 +152,10 @@ class Achievements {
 
             // Check to see if we've hit our min threshold.
             if (this.hasReachedMinThreshold(current, min)) {
-                this._points = this._points + reward;
+                this._points = this._points + milestoneReward;
+            } else if (this.hasReachedMilestone(current, milestone)) {
+                // Check if we've reached a milestone.
+                this._points = this._points + milestoneReward;
             } else {
                 // Apply basic reward.
                 this._points = this._points + reward;

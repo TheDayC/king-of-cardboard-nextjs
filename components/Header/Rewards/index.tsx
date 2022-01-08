@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { GiCrownCoin } from 'react-icons/gi';
 import Link from 'next/link';
 
 import selector from './selector';
-import { setShouldFetchRewards, fetchGiftCard } from '../../../store/slices/account';
+import { fetchGiftCard } from '../../../store/slices/account';
 
 interface RewardsProps {
     emailAddress: string | null;
@@ -12,15 +12,16 @@ interface RewardsProps {
 }
 
 export const Rewards: React.FC<RewardsProps> = ({ emailAddress, fullWidth }) => {
-    const { accessToken, shouldFetchRewards, balance } = useSelector(selector);
+    const { accessToken, balance } = useSelector(selector);
     const dispatch = useDispatch();
+    const [shouldFetch, setShouldFetch] = useState(true);
 
     useEffect(() => {
-        if (shouldFetchRewards && accessToken && emailAddress) {
+        if (shouldFetch && accessToken && emailAddress) {
+            setShouldFetch(false);
             dispatch(fetchGiftCard({ accessToken, emailAddress }));
-            dispatch(setShouldFetchRewards(false));
         }
-    }, [accessToken, emailAddress, shouldFetchRewards, dispatch]);
+    }, [accessToken, emailAddress, shouldFetch, dispatch]);
 
     return (
         <Link href="/account/achievements" passHref>
