@@ -99,14 +99,15 @@ export const Payment: React.FC = () => {
         if (
             checkoutLoading ||
             !accessToken ||
-            !billingAddress ||
+            !billingAddress.line_1 ||
             !elements ||
             !customerDetails ||
             !items ||
             !orderId ||
-            !shippingAddress ||
+            !shippingAddress.line_1 ||
             !stripe
         ) {
+            handleError('Missing some details');
             return;
         }
 
