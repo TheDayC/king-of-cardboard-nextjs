@@ -21,14 +21,11 @@
     "dependencies": {
         "@aws-sdk/client-ses": "^3.45.0",
         "@aws-sdk/credential-provider-node": "^3.45.0",
-        "@paypal/react-paypal-js": "^7.5.0",
         "@reduxjs/toolkit": "^1.6.2",
         "@stripe/react-stripe-js": "^1.6.0",
         "@stripe/stripe-js": "^1.20.2",
         "axios": "^0.23.0",
-        "bcrypt": "^5.0.1",
         "daisyui": "1.16.1",
-        "embla-carousel-react": "^5.0.1",
         "jdenticon": "^3.1.1",
         "js-cookie": "^3.0.1",
         "lodash": "^4.17.21",
@@ -37,7 +34,6 @@
         "mongodb": "^4.2.1",
         "next": "^12.0.7",
         "next-auth": "4.0.5",
-        "next-connect": "^0.11.0",
         "next-redux-wrapper": "^7.0.5",
         "nodemailer": "^6.7.2",
         "react": "17.0.2",
@@ -46,14 +42,12 @@
         "react-icons": "^4.3.1",
         "react-image-magnifiers": "^1.4.0",
         "react-redux": "^7.2.5",
-        "redux-persist": "^6.0.0",
-        "stripe": "^8.183.0"
+        "redux-persist": "^6.0.0"
     },
     "devDependencies": {
         "@testing-library/jest-dom": "^5.16.1",
         "@testing-library/react": "^12.1.2",
         "@types/axios": "^0.14.0",
-        "@types/bcrypt": "^5.0.0",
         "@types/gtag.js": "^0.0.8",
         "@types/js-cookie": "^3.0.1",
         "@types/lodash": "^4.14.175",
