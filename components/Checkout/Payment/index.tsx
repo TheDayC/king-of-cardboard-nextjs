@@ -299,10 +299,13 @@ export const Payment: React.FC = () => {
                                     </SelectionWrapper>
                                 );
                             })}
-
-                        <div className="divider lightDivider"></div>
-                        {session && <UseCoins />}
-                        <div className="divider lightDivider"></div>
+                        {session && (
+                            <React.Fragment>
+                                <div className="divider lightDivider"></div>
+                                <UseCoins />
+                                <div className="divider lightDivider"></div>
+                            </React.Fragment>
+                        )}
                         <div className="flex justify-end">
                             <button
                                 className={`btn btn-primary${checkoutLoading ? ' loading btn-square' : ''}${
