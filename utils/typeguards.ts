@@ -126,7 +126,7 @@ export function isArrayofItems(candidate: unknown): candidate is CartItem[] {
 }
 
 export function isCustomerDetails(candidate: unknown): candidate is CustomerDetails {
-    return isNotNullOrUndefined<object>(candidate) && 'firstName' in candidate;
+    return isNotNullOrUndefined<object>(candidate) && 'first_name' in candidate;
 }
 
 export function isCustomerAddress(candidate: unknown): candidate is CustomerAddress {

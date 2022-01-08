@@ -61,12 +61,12 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
                     const itemsHtml = items.map(
                         (item) =>
                             `<tr>
-                            <td><img src="cid:${item.id}" alt="${item.name} line item image" title="${item.name} image" /></td>
+                            <td align="center"><img src="cid:${item.id}" alt="${item.name} line item image" title="${item.name} image" class="productImg" /></td>
                             <td>
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                     <tbody>
                                         <tr>
-                                            <td align="left">
+                                            <td align="center">
                                                 <h4 class="itemName">${item.name}</h4>
                                                 <p class="skuCode">${item.sku_code}</p>
                                                 <p class="quantity">Quantity: ${item.quantity}</p>
@@ -75,7 +75,7 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
                                     </tbody>
                                 </table>
                             </td>
-                            <td><p class="amount">${item.formatted_total_amount}</p></td>
+                            <td align="center"><p class="amount">${item.formatted_total_amount}</p></td>
                         </tr>`
                     );
                     const itemsText = items.map(
