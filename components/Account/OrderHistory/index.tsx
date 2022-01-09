@@ -43,7 +43,6 @@ export const OrderHistory: React.FC = () => {
     return (
         <React.Fragment>
             <Loading show={isLoading} />
-            <h1 className="text-xl mb-2 md:text-3xl md:mb-6">Order History</h1>
             {orders.length > 0 &&
                 orders.map((order, i) => {
                     return (

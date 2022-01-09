@@ -1,8 +1,8 @@
 export enum Slugs {
     Details = 'details',
     Profile = 'profile',
-    AddressBook = 'addressBook',
-    AddAddress = 'addAddress',
-    OrderHistory = 'orderHistory',
+    AddressBook = 'address-book',
+    AddAddress = 'add-address',
+    OrderHistory = 'order-history',
     Achievements = 'achievements',
 }

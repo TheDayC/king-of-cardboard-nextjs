@@ -39,7 +39,7 @@ export const ShortOrder: React.FC<OrderProps> = ({
             <div className="card-body p-2 md:p-4">
                 <div className="flex flex-row justify-between items-center">
                     <div className="flex flex-col">
-                        <h3 className="card-title text-sm md:text-md mb-2">
+                        <h3 className="card-title text-sm md:text-xl mb-2">
                             {orderNumber > 0 && (
                                 <Link
                                     href={{
