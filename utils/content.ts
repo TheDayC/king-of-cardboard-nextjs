@@ -52,7 +52,7 @@ export const PAGES_QUERY = `
 
 export async function fetchContent(query: string): Promise<AxiosResponse<unknown> | void> {
     try {
-        return await axios.post(`${process.env.SITE_URL}/api/content/fetchContent`, { query });
+        return await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/content/fetchContent`, { query });
     } catch (error: unknown) {
         errorHandler(error, 'Failed to fetch content.');
     }
