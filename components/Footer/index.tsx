@@ -36,6 +36,9 @@ export const Footer: React.FC = () => (
                         <li className="text-sm mb-2 hover:underline" role="menuitem">
                             <Link href="/sports-vs-tcg">Sports vs TCG</Link>
                         </li>
+                        <li className="text-sm mb-2 hover:underline" role="menuitem">
+                            <Link href="/roadmap">Development Roadmap</Link>
+                        </li>
                     </ul>
                 </div>
                 <div className="flex flex-col mx-4" role="menu">

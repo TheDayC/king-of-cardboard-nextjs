@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Cookies from 'js-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { BiCookie } from 'react-icons/bi';
@@ -7,12 +7,13 @@ import { setHasRejected } from '../../store/slices/global';
 import selector from './selector';
 
 export const GDPR: React.FC = () => {
-    const cookieConsent = Boolean(Cookies.get('cookieConsent'));
+    const [cookieConsent, setCookieConsent] = useState(Boolean(Cookies.get('cookieConsent')));
     const dispatch = useDispatch();
     const { hasRejected } = useSelector(selector);
 
     const handleAcceptCookies = () => {
         Cookies.set('cookieConsent', 'true');
+        setCookieConsent(true);
     };
 
     const handleRejectCookies = () => {

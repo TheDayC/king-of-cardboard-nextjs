@@ -31,6 +31,9 @@ const globalSlice = createSlice({
         setSessionEmail(state, action) {
             state.sessionEmail = action.payload;
         },
+        setShowNewsBanner(state, action) {
+            state.showNewsBanner = action.payload;
+        },
     },
     extraReducers: (builder) => {
         // Add reducers for additional action types here, and handle loading state as needed
@@ -47,5 +50,6 @@ const globalSlice = createSlice({
     },
 });
 
-export const { setAccessToken, setExpires, setCheckoutLoading, setHasRejected, setSessionEmail } = globalSlice.actions;
+export const { setAccessToken, setExpires, setCheckoutLoading, setHasRejected, setSessionEmail, setShowNewsBanner } =
+    globalSlice.actions;
 export default globalSlice.reducer;

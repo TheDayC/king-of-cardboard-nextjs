@@ -6,6 +6,7 @@ const globalInitialState: Global = {
     expires: null,
     hasRejected: false,
     sessionEmail: null,
+    showNewsBanner: true,
 };
 
 export default globalInitialState;

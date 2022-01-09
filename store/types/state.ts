@@ -56,6 +56,7 @@ export interface Global {
     expires: string | null;
     hasRejected: boolean;
     sessionEmail: string | null;
+    showNewsBanner: boolean;
 }
 
 export interface Checkout {
