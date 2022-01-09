@@ -93,12 +93,12 @@ export const Footer: React.FC = () => (
                             <Link href="/customer-service/returns-and-exchanges">Returns &amp; Exchanges</Link>
                         </li>
                         <li className={menuItemClass} role="menuitem">
-                            <a href="mailto:admin@kingofcardboard.co.uk" target="__blank">
+                            <a href="mailto:support@kingofcardboard.co.uk" target="__blank">
                                 Contact Us
                             </a>
                         </li>
                         <li className={menuItemClass} role="menuitem">
-                            <a href="mailto:admin@kingofcardboard.co.uk" target="__blank">
+                            <a href="mailto:support@kingofcardboard.co.uk" target="__blank">
                                 Submit Bug
                             </a>
                         </li>
