@@ -25,9 +25,9 @@ import {
     isArrayOfContentfulProducts,
     isUnknown,
     isArrayOfBreakSlots,
-    isArrayOfContentJSON,
     isCustomerAddress,
     isBreakSlotsCollection,
+    isArrayOfDocuments,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
@@ -225,4 +225,4 @@ export const parseAsArrayOfContentfulBreaks = parseAsType(isArrayOfContentfulBre
 export const parseAsArrayOfContentfulPages = parseAsType(isArrayOfContentfulPages);
 export const parseAsArrayOfContentfulProducts = parseAsType(isArrayOfContentfulProducts);
 export const parseAsArrayOfBreakSlots = parseAsType(isArrayOfBreakSlots);
-export const parseAsArrayOfContentJSON = parseAsType(isArrayOfContentJSON);
+export const parseAsArrayOfDocuments = parseAsType(isArrayOfDocuments);

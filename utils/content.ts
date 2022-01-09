@@ -52,8 +52,8 @@ export const PAGES_QUERY = `
 
 export async function fetchContent(query: string): Promise<AxiosResponse<unknown> | void> {
     try {
-        return await axios.post('/api/content/fetchContent', { query });
+        return await axios.post(`${process.env.SITE_URL}/api/content/fetchContent`, { query });
     } catch (error: unknown) {
-        errorHandler(error, 'We could not create an auth token, please refresh.');
+        errorHandler(error, 'Failed to fetch content.');
     }
 }

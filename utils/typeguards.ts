@@ -1,10 +1,12 @@
+import { Document } from '@contentful/rich-text-types';
+
 import { CustomerAddress, CustomerDetails } from '../store/types/state';
 import { Achievement, Objective } from '../types/achievements';
 import { CommerceLayerError, CommerceLayerLineItemRelationship, CommerceLayerResponse } from '../types/api';
 import { BreakSlot, BreakSlotsCollection, BreakTypeItem, ContentfulBreak } from '../types/breaks';
 import { CartItem } from '../types/cart';
 import { SkuInventory, SkuOption } from '../types/commerce';
-import { ContentfulPage, ContentJSON } from '../types/pages';
+import { ContentfulPage } from '../types/pages';
 import { ITypeGuard } from '../types/parsers';
 import { ContentfulProduct, ImageCollection, ImageItem } from '../types/products';
 import { SocialMedia } from '../types/profile';
@@ -169,10 +171,10 @@ export function isArrayOfBreakSlots(candidate: unknown): candidate is BreakSlot[
     return isArray(candidate) && isBreakSlot(candidate[0]);
 }
 
-export function isContentJSON(candidate: unknown): candidate is ContentJSON {
+export function isDocument(candidate: unknown): candidate is Document {
     return isNotNullOrUndefined<object>(candidate) && 'content' in candidate;
 }
 
-export function isArrayOfContentJSON(candidate: unknown): candidate is ContentJSON[] {
-    return isArray(candidate) && isContentJSON(candidate[0]);
+export function isArrayOfDocuments(candidate: unknown): candidate is Document[] {
+    return isArray(candidate) && isDocument(candidate[0]);
 }

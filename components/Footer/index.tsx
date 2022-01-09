@@ -60,22 +60,22 @@ export const Footer: React.FC = () => (
                     <div className="divider lightDivider my-2"></div>
                     <ul>
                         <li className={menuItemClass} role="menuitem">
-                            <Link href="/what-is-king-of-cardboard">What is King of Cardboard?</Link>
+                            <Link href="/information/what-is-king-of-cardboard">What is King of Cardboard?</Link>
                         </li>
                         <li className={menuItemClass} role="menuitem">
-                            <Link href="/break-info">Break Info</Link>
+                            <Link href="/information/break-info">Break Info</Link>
                         </li>
                         <li className={menuItemClass} role="menuitem">
-                            <Link href="/collecting">Collecting</Link>
+                            <Link href="/information/collecting">Collecting</Link>
                         </li>
                         <li className={menuItemClass} role="menuitem">
-                            <Link href="/investing">Investing</Link>
+                            <Link href="/information/investing">Investing</Link>
                         </li>
                         <li className={menuItemClass} role="menuitem">
-                            <Link href="/sports-vs-tcg">Sports vs TCG</Link>
+                            <Link href="/information/sports-vs-tcg">Sports vs TCG</Link>
                         </li>
                         <li className={menuItemClass} role="menuitem">
-                            <Link href="/roadmap">Development Roadmap</Link>
+                            <Link href="/information/roadmap">Development Roadmap</Link>
                         </li>
                     </ul>
                 </div>
@@ -84,13 +84,13 @@ export const Footer: React.FC = () => (
                     <div className="divider lightDivider my-2"></div>
                     <ul>
                         <li className={menuItemClass} role="menuitem">
-                            <Link href="/faq">FAQ</Link>
+                            <Link href="/customer-service/faq">FAQ</Link>
                         </li>
                         <li className={menuItemClass} role="menuitem">
-                            <Link href="/shipping-and-delivery">Shipping &amp; Delivery</Link>
+                            <Link href="/customer-service/shipping-and-delivery">Shipping &amp; Delivery</Link>
                         </li>
                         <li className={menuItemClass} role="menuitem">
-                            <Link href="/returns-and-exchanges">Returns &amp; Exchanges</Link>
+                            <Link href="/customer-service/returns-and-exchanges">Returns &amp; Exchanges</Link>
                         </li>
                         <li className={menuItemClass} role="menuitem">
                             <a href="mailto:admin@kingofcardboard.co.uk" target="__blank">
@@ -109,10 +109,10 @@ export const Footer: React.FC = () => (
                     <div className="divider lightDivider my-2"></div>
                     <ul>
                         <li className={menuItemClass} role="menuitem">
-                            <Link href="/terms-and-conditions">Terms &amp; Conditions</Link>
+                            <Link href="/legal/terms-and-conditions">Terms &amp; Conditions</Link>
                         </li>
                         <li className={menuItemClass} role="menuitem">
-                            <Link href="/privacy-policy">Privacy Policy</Link>
+                            <Link href="/legal/privacy-policy">Privacy Policy</Link>
                         </li>
                     </ul>
                 </div>

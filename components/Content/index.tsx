@@ -1,44 +1,63 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
+import { BLOCKS, MARKS, INLINES, Document, Block, Inline } from '@contentful/rich-text-types';
+import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 
-import { ContentJSON } from '../../types/pages';
+import { parseAsString, safelyParse } from '../../utils/parsers';
 
 interface ContentProps {
-    content: ContentJSON[];
+    content: Document[];
 }
+
+const options = {
+    renderMark: {
+        [MARKS.BOLD]: (text: ReactNode) => <span className="font-bold">{text}</span>,
+        [MARKS.ITALIC]: (text: ReactNode) => <span className="italic">{text}</span>,
+        [MARKS.CODE]: (text: ReactNode) => <code>{text}</code>,
+        [MARKS.UNDERLINE]: (text: ReactNode) => <span className="underline">{text}</span>,
+    },
+    renderNode: {
+        [BLOCKS.PARAGRAPH]: (node: Block | Inline, children: ReactNode) => <p className="mb-6">{children}</p>,
+        [BLOCKS.HEADING_1]: (node: Block | Inline, children: ReactNode) => (
+            <h1 className="text-5xl mb-4" role="heading" data-testid="h1">
+                {children}
+            </h1>
+        ),
+        [BLOCKS.HEADING_2]: (node: Block | Inline, children: ReactNode) => (
+            <h2 className="text-4xl mb-6 mt-10" role="heading" data-testid="h2">
+                {children}
+            </h2>
+        ),
+        [BLOCKS.HEADING_3]: (node: Block | Inline, children: ReactNode) => (
+            <h3 className="text-3xl mb-4 mt-8" role="heading" data-testid="h3">
+                {children}
+            </h3>
+        ),
+        [BLOCKS.HEADING_4]: (node: Block | Inline, children: ReactNode) => (
+            <h4 className="text-2xl mb-2" role="heading" data-testid="h4">
+                {children}
+            </h4>
+        ),
+        [BLOCKS.HEADING_5]: (node: Block | Inline, children: ReactNode) => (
+            <h5 className="text-xl mb-2" role="heading" data-testid="h5">
+                {children}
+            </h5>
+        ),
+        [INLINES.HYPERLINK]: (node: Block | Inline, children: ReactNode) => (
+            <a
+                href={safelyParse(node, 'data.uri', parseAsString, '')}
+                className="text-secondary cursor-pointer hover:underline"
+            >
+                {children}
+            </a>
+        ),
+    },
+};
 
 export const Content: React.FC<ContentProps> = ({ content }) => (
     <React.Fragment>
-        {content &&
-            content.map((node) => {
-                switch (node.nodeType) {
-                    case 'heading-1':
-                        return node.content.map((item, i) => (
-                            <h1 key={`item-${i}`} className="text-4xl mb-4" role="heading" data-testid="h1">
-                                {item.value}
-                            </h1>
-                        ));
-                    case 'heading-2':
-                        return node.content.map((item, i) => (
-                            <h2 key={`item-${i}`} className="text-3xl mb-2" role="heading" data-testid="h2">
-                                {item.value}
-                            </h2>
-                        ));
-                    case 'heading-3':
-                        return node.content.map((item, i) => (
-                            <h3 key={`item-${i}`} className="text-2xl mb-2" role="heading" data-testid="h3">
-                                {item.value}
-                            </h3>
-                        ));
-                    case 'paragraph':
-                        return node.content.map((item, i) => (
-                            <p key={`item-${i}`} className="mb-6">
-                                {item.value}
-                            </p>
-                        ));
-                    default:
-                        return null;
-                }
-            })}
+        {content.map((document, i) => (
+            <React.Fragment key={`document-${i}`}>{documentToReactComponents(document, options)}</React.Fragment>
+        ))}
     </React.Fragment>
 );
 

@@ -1,21 +1,14 @@
+import { Document } from '@contentful/rich-text-types';
+
 export interface ContentfulPage {
     title: string;
-    content: ContentJSON;
+    content: Document;
     sliderCollection: SliderCollection;
     hero: Hero[];
 }
 
-export interface ContentJSON {
-    nodeType: string;
-    content: Content[];
-    data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-}
-
-interface Content {
-    nodeType: string;
-    value: string;
-    marks: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
-    data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+export interface Marks {
+    [x: string]: string;
 }
 
 // Type the slider collection fields.
@@ -47,4 +40,9 @@ export interface ServerSideRedirectProps {
         permanent: boolean;
         destination: string;
     };
+}
+
+export interface Page {
+    title: string;
+    content: Document[] | null;
 }

@@ -9,7 +9,7 @@ import AccountMenu from '../../components/Account/Menu';
 import Account from '../../components/Account';
 import selector from './slugSelector';
 import Content from '../../components/Content';
-import { parseAsArrayOfContentJSON, parseAsSlug, parseAsString, safelyParse } from '../../utils/parsers';
+import { parseAsArrayOfDocuments, parseAsSlug, parseAsString, safelyParse } from '../../utils/parsers';
 import PageWrapper from '../../components/PageWrapper';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -43,9 +43,7 @@ export const AccountSubPage: React.FC<AccountSubPageProps> = ({ errorCode }) => 
     const router = useRouter();
     const slug = safelyParse(router, 'query.slug', parseAsString, '');
     const page = pages.find((page) => page.title.toLowerCase() === slug);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const content = safelyParse(page, 'content.json.content', parseAsArrayOfContentJSON, null);
+    const content = safelyParse(page, 'content.json.content', parseAsArrayOfDocuments, null);
 
     // Show error page if a code is provided.
     if (errorCode && typeof errorCode === 'number') {
