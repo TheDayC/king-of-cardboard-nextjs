@@ -1,18 +1,18 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AiOutlineClose } from 'react-icons/ai';
+//import { AiOutlineClose } from 'react-icons/ai';
 import Link from 'next/link';
 
 import selector from './selector';
-import { setShowNewsBanner } from '../../../store/slices/global';
+//import { setShowNewsBanner } from '../../../store/slices/global';
 
 export const NewsBanner: React.FC = () => {
     const { showNewsBanner } = useSelector(selector);
     const dispatch = useDispatch();
 
-    const handleClose = () => {
+    /* const handleClose = () => {
         dispatch(setShowNewsBanner(false));
-    };
+    }; */
 
     if (!showNewsBanner) return null;
 
@@ -24,9 +24,9 @@ export const NewsBanner: React.FC = () => {
                     <span className="underline cursor-pointer hover:no-underline">here.</span>
                 </Link>
             </p>
-            <div className="ml-4 cursor-pointer">
+            {/* <div className="ml-4 cursor-pointer">
                 <AiOutlineClose className="inline-block text-xl -mt-1" onClick={handleClose} />
-            </div>
+            </div> */}
         </div>
     );
 };
