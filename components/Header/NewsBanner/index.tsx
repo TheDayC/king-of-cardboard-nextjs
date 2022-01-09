@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 //import { AiOutlineClose } from 'react-icons/ai';
 import Link from 'next/link';
 
@@ -8,7 +8,7 @@ import selector from './selector';
 
 export const NewsBanner: React.FC = () => {
     const { showNewsBanner } = useSelector(selector);
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
 
     /* const handleClose = () => {
         dispatch(setShowNewsBanner(false));
