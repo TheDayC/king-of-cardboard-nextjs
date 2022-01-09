@@ -42,6 +42,12 @@ const options = {
                 {children}
             </h5>
         ),
+        [BLOCKS.UL_LIST]: (node: Block | Inline, children: ReactNode) => (
+            <ul className="list-disc pl-10">{children}</ul>
+        ),
+        [BLOCKS.OL_LIST]: (node: Block | Inline, children: ReactNode) => (
+            <ol className="list-decimal pl-10">{children}</ol>
+        ),
         [INLINES.HYPERLINK]: (node: Block | Inline, children: ReactNode) => (
             <a
                 href={safelyParse(node, 'data.uri', parseAsString, '')}
