@@ -1,21 +1,10 @@
+import { Document } from '@contentful/rich-text-types';
+
 export interface ContentfulPage {
     title: string;
-    content: ContentJSON;
+    content: Document;
     sliderCollection: SliderCollection;
     hero: Hero[];
-}
-
-export interface ContentJSON {
-    nodeType: string;
-    content: Content[];
-    data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-}
-
-interface Content {
-    nodeType: string;
-    value: string;
-    marks: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
-    data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 // Type the slider collection fields.
@@ -33,7 +22,7 @@ interface SliderImage {
     height: number;
 }
 
-interface Hero {
+export interface Hero {
     title: string;
     content: string[];
     type: string;
@@ -47,4 +36,9 @@ export interface ServerSideRedirectProps {
         permanent: boolean;
         destination: string;
     };
+}
+
+export interface PageWithHero {
+    content: Document[] | null;
+    heroes: Hero[] | null;
 }

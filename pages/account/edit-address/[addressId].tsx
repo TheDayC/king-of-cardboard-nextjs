@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
-import Error from 'next/error';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSession } from 'next-auth/react';
 
@@ -11,13 +10,12 @@ import Loading from '../../../components/Loading';
 import Fields from '../../../components/Account/AddressBook/Fields';
 import PageWrapper from '../../../components/PageWrapper';
 import { fetchCurrentAddress } from '../../../store/slices/account';
+import Custom404Page from '../../404';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
     const addressId = safelyParse(context, 'query.addressId', parseAsString, null);
     const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
-
-    const errorCode = addressId ? false : 404;
 
     // If session hasn't been established redirect to the login page.
     if (!session) {
@@ -32,7 +30,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     // If we're signed in then decide whether we should show the page or 404.
     return {
         props: {
-            errorCode,
+            errorCode: !addressId ? 404 : null,
             addressId,
             emailAddress,
         },
@@ -59,9 +57,8 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId, em
         }
     }, [accessToken, emailAddress, addressId, dispatch, shouldFetch]);
 
-    // Show error page if a code is provided.
-    if (errorCode && typeof errorCode === 'number') {
-        return <Error statusCode={errorCode} />;
+    if (errorCode) {
+        return <Custom404Page />;
     }
 
     return (

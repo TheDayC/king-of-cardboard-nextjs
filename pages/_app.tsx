@@ -8,7 +8,6 @@ import { SessionProvider } from 'next-auth/react';
 import { wrapper } from '../store';
 import '../styles/globals.css';
 import OrderAndTokenProvider from '../context/OrderAndTokenProvider';
-import PageProvider from '../context/PageProvider';
 import Drawer from '../components/Drawer';
 import Alert from '../components/Alert';
 
@@ -26,14 +25,12 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps: { session, ...pagePro
         <PersistGate persistor={persistor} loading={<div>Loading</div>}>
             <SessionProvider session={session}>
                 <OrderAndTokenProvider>
-                    <PageProvider>
-                        <Elements stripe={stripePromise}>
-                            <Drawer>
-                                <Component {...pageProps} />
-                                <Alert />
-                            </Drawer>
-                        </Elements>
-                    </PageProvider>
+                    <Elements stripe={stripePromise}>
+                        <Drawer>
+                            <Component {...pageProps} />
+                            <Alert />
+                        </Drawer>
+                    </Elements>
                 </OrderAndTokenProvider>
             </SessionProvider>
         </PersistGate>

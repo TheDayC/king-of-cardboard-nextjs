@@ -1,16 +1,17 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
+import { Document } from '@contentful/rich-text-types';
 
 import AccountMenu from '../../components/Account/Menu';
-import selector from './selector';
 import Content from '../../components/Content';
-import { parseAsArrayOfContentJSON, safelyParse } from '../../utils/parsers';
 import PageWrapper from '../../components/PageWrapper';
+import { pageBySlug } from '../../utils/pages';
+import Custom404Page from '../404';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
+    const content = await pageBySlug('account', '');
 
     if (!session) {
         return {
@@ -21,12 +22,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         };
     }
 
-    return { props: {} };
+    return {
+        props: {
+            content,
+        },
+    };
 };
 
-export const AccountPage: React.FC = () => {
-    const { page } = useSelector(selector);
-    const content = safelyParse(page, 'content.json.content', parseAsArrayOfContentJSON, null);
+interface AccountPageProps {
+    content: Document[] | null;
+}
+
+export const AccountPage: React.FC<AccountPageProps> = ({ content }) => {
+    if (!content) {
+        return <Custom404Page />;
+    }
 
     return (
         <PageWrapper>

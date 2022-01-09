@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
-import Error from 'next/error';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSession } from 'next-auth/react';
 
@@ -11,12 +10,11 @@ import selector from './selector';
 import LongOrder from '../../../components/Account/OrderHistory/LongOrder';
 import Loading from '../../../components/Loading';
 import { fetchCurrentOrder } from '../../../store/slices/account';
+import Custom404Page from '../../404';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
     const orderNumber = safelyParse(context, 'query.orderNumber', parseAsString, null);
-
-    const errorCode = orderNumber ? false : 404;
 
     // If session hasn't been established redirect to the login page.
     if (!session) {
@@ -31,7 +29,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     // If we're signed in then decide whether we should show the page or 404.
     return {
         props: {
-            errorCode,
+            errorCode: !orderNumber ? 404 : null,
             orderNumber,
         },
     };
@@ -58,9 +56,8 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
         }
     }, [dispatch, accessToken, orderNumber, shouldFetch]);
 
-    // Show error page if a code is provided.
-    if (errorCode && typeof errorCode === 'number') {
-        return <Error statusCode={errorCode} />;
+    if (errorCode) {
+        return <Custom404Page />;
     }
 
     return (
