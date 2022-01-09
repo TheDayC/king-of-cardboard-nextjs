@@ -28,6 +28,8 @@ import {
     isCustomerAddress,
     isBreakSlotsCollection,
     isArrayOfDocuments,
+    isHero,
+    isArrayOfHeroes,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
@@ -226,3 +228,5 @@ export const parseAsArrayOfContentfulPages = parseAsType(isArrayOfContentfulPage
 export const parseAsArrayOfContentfulProducts = parseAsType(isArrayOfContentfulProducts);
 export const parseAsArrayOfBreakSlots = parseAsType(isArrayOfBreakSlots);
 export const parseAsArrayOfDocuments = parseAsType(isArrayOfDocuments);
+export const parseAsHero = parseAsType(isHero);
+export const parseAsArrayOfHeroes = parseAsType(isArrayOfHeroes);

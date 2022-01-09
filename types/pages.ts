@@ -7,10 +7,6 @@ export interface ContentfulPage {
     hero: Hero[];
 }
 
-export interface Marks {
-    [x: string]: string;
-}
-
 // Type the slider collection fields.
 interface SliderCollection {
     items: SliderImage[];
@@ -26,7 +22,7 @@ interface SliderImage {
     height: number;
 }
 
-interface Hero {
+export interface Hero {
     title: string;
     content: string[];
     type: string;
@@ -42,7 +38,7 @@ export interface ServerSideRedirectProps {
     };
 }
 
-export interface Page {
-    title: string;
+export interface PageWithHero {
     content: Document[] | null;
+    heroes: Hero[] | null;
 }
