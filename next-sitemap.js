@@ -9,5 +9,7 @@ module.exports = {
         '/resetPassword',
         '/resetPassword/*',
         '/selector',
+        '/500',
+        '/404',
     ],
 };
