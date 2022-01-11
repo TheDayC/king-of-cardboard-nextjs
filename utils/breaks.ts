@@ -17,6 +17,7 @@ import {
     parseAsArrayOfCommerceResponse,
     parseAsCommerceResponse,
     parseAsArrayOfBreakSlots,
+    parseAsArrayOfDocuments,
 } from './parsers';
 
 export async function getBreaks(accessToken: string, limit: number, skip: number): Promise<Break[]> {
@@ -27,18 +28,10 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
                 items {
                     title
                     slug
-                    description
                     cardImage {
                         title
                         description
                         url
-                    }
-                    imagesCollection {
-                        items {
-                            title
-                            description
-                            url
-                        }
                     }
                     types
                     breakDate
@@ -119,7 +112,9 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
                 items {
                     title
                     slug
-                    description
+                    description {
+                        json
+                    }
                     cardImage {
                         title
                         description
@@ -234,7 +229,7 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
         sku_code,
         title: safelyParse(contentfulBreak, 'title', parseAsString, ''),
         slug: safelyParse(contentfulBreak, 'slug', parseAsString, ''),
-        description: safelyParse(contentfulBreak, 'description', parseAsString, ''),
+        description: safelyParse(contentfulBreak, 'description.json.content', parseAsArrayOfDocuments, []),
         cardImage: {
             title: safelyParse(contentfulBreak, 'cardImage.title', parseAsString, ''),
             description: safelyParse(contentfulBreak, 'cardImage.description', parseAsString, ''),

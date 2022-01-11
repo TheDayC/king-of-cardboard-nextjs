@@ -1,3 +1,5 @@
+import { Document } from '@contentful/rich-text-types';
+
 import { SkuInventory } from './commerce';
 import { ImageCollection, ImageItem } from './products';
 
@@ -36,7 +38,7 @@ export interface SingleBreak {
     title: string;
     slug: string;
     sku_code: string;
-    description: string;
+    description: Document[];
     types: string;
     images: ImageItem[];
     cardImage: ImageItem;

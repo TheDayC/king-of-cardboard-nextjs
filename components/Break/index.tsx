@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { split } from 'lodash';
 
 import Loading from '../Loading';
 import selector from './selector';
@@ -9,6 +8,7 @@ import Details from './Details';
 import Slots from './Slots';
 import { fetchSingleBreak } from '../../store/slices/breaks';
 import Legend from './Legend';
+import Content from '../Content';
 
 interface BreakProps {
     slug: string;
@@ -20,7 +20,6 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
     const [shouldFetch, setShouldFetch] = useState(true);
     const dispatch = useDispatch();
     const { title, cardImage, images, tags, description } = currentBreak;
-    const splitDesc = description ? split(currentBreak.description, '\n\n') : [];
 
     useEffect(() => {
         if (accessToken && shouldFetch && slug) {
@@ -40,7 +39,8 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
             </div>
             <div id="productDetails" className="flex flex-col items-center w-full lg:w-3/4">
                 <div className="card rounded-md shadow-lg bordered p-4 w-full lg:p-6">
-                    <Details name={title} tags={tags} description={splitDesc} />
+                    <Details name={title} tags={tags} />
+                    {description && <Content content={description} />}
                     <Slots />
                 </div>
             </div>
