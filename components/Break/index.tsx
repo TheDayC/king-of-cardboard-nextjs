@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Loading from '../Loading';
 import selector from './selector';
 import Images from './Images';
 import Details from './Details';
@@ -16,7 +15,6 @@ interface BreakProps {
 
 export const Break: React.FC<BreakProps> = ({ slug }) => {
     const { accessToken, currentBreak } = useSelector(selector);
-    const [loading, setLoading] = useState(false);
     const [shouldFetch, setShouldFetch] = useState(true);
     const dispatch = useDispatch();
     const { title, cardImage, images, tags, description } = currentBreak;
@@ -24,15 +22,12 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
     useEffect(() => {
         if (accessToken && shouldFetch && slug) {
             setShouldFetch(false);
-            setLoading(true);
             dispatch(fetchSingleBreak({ accessToken, slug }));
-            setLoading(false);
         }
     }, [accessToken, slug, dispatch, shouldFetch]);
 
     return (
         <div className="flex flex-col lg:flex-row relative">
-            <Loading show={loading} />
             <div className="flex flex-col w-1/3">
                 <Images mainImage={cardImage} images={images} />
                 <Legend />
