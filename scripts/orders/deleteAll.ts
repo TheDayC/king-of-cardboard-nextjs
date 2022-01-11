@@ -1,6 +1,6 @@
 import path from 'path';
 import * as dotenv from 'dotenv';
-dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 import { authClient } from '../../utils/auth';
 import { parseAsArrayOfCommerceResponse, parseAsString, safelyParse } from '../../utils/parsers';
