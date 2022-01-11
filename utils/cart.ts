@@ -88,7 +88,7 @@ export async function getCartItems(accessToken: string, orderId: string): Promis
             const sku_code = safelyParse(include, 'attributes.sku_code', parseAsString, '');
             const stockBySku = stockWithSkus.find((s) => s.sku_code === sku_code);
             const stock = safelyParse(stockBySku, 'stock', parseAsNumber, 0);
-            const product = cmsProducts ? cmsProducts.find((p) => p.productLink === sku_code) : null;
+            const product = cmsProducts ? cmsProducts.find((p) => p.sku_code === sku_code) : null;
 
             return {
                 id: safelyParse(include, 'id', parseAsString, ''),
@@ -100,9 +100,9 @@ export async function getCartItems(accessToken: string, orderId: string): Promis
                 formatted_unit_amount: safelyParse(include, 'attributes.formatted_unit_amount', parseAsString, ''),
                 formatted_total_amount: safelyParse(include, 'attributes.formatted_total_amount', parseAsString, ''),
                 image: {
-                    title: safelyParse(product, 'cardImage.title', parseAsString, ''),
-                    description: safelyParse(product, 'cardImage.description', parseAsString, ''),
-                    url: safelyParse(product, 'cardImage.url', parseAsString, ''),
+                    title: safelyParse(product, 'title', parseAsString, ''),
+                    description: safelyParse(product, 'description', parseAsString, ''),
+                    url: safelyParse(product, 'url', parseAsString, ''),
                 },
                 metadata: {
                     categories: safelyParse(include, 'attributes.metadata.categories', parseAsArrayOfStrings, []),

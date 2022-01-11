@@ -10,7 +10,7 @@ import selector from './selector';
 import styles from './cartitem.module.css';
 import { addError } from '../../../store/slices/alerts';
 
-interface BasketItemProps {
+interface CartItemProps {
     id: string;
     sku: string;
     name: string;
@@ -21,7 +21,7 @@ interface BasketItemProps {
     stock: number;
 }
 
-export const CartItem: React.FC<BasketItemProps> = ({
+export const CartItem: React.FC<CartItemProps> = ({
     id,
     sku,
     name,

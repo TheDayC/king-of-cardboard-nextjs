@@ -61,3 +61,7 @@ export interface ImageItem {
     description: string;
     url: string;
 }
+
+export interface CartImage extends ImageItem {
+    sku_code: string;
+}
