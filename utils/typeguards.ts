@@ -164,7 +164,7 @@ export function isArrayOfContentfulProducts(candidate: unknown): candidate is Co
 }
 
 export function isBreakSlot(candidate: unknown): candidate is BreakSlot {
-    return isNotNullOrUndefined<object>(candidate) && 'slotIdentifier' in candidate;
+    return isNotNullOrUndefined<object>(candidate) && 'productLink' in candidate;
 }
 
 export function isArrayOfBreakSlots(candidate: unknown): candidate is BreakSlot[] {

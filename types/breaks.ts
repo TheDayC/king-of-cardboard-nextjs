@@ -59,7 +59,6 @@ export interface BreakSlotsCollection {
 export interface ContentfulBreakSlot {
     name: string;
     productLink: string;
-    slotIdentifier: string;
     image: ImageItem;
 }
 

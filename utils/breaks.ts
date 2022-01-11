@@ -40,18 +40,6 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
                         }
                     }
                     types
-                    breakSlotsCollection {
-                        items {
-                            name
-                            productLink
-                            slotIdentifier
-                                image {
-                                    title
-                                    description
-                                    url
-                                }
-                        }
-                    }
                     breakDate
                     tags
                     format
@@ -148,7 +136,6 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
                         items {
                             name
                             productLink
-                            slotIdentifier
                                 image {
                                     title
                                     description
