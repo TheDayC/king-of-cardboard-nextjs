@@ -1,5 +1,6 @@
-import { join } from 'lodash';
+import { chunk, join } from 'lodash';
 
+import { CommerceLayerResponse } from '../types/api';
 import { Break, SingleBreak } from '../types/breaks';
 import { authClient } from './auth';
 import { fetchContent } from './content';
@@ -188,16 +189,24 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
     const breakSlotSkus = breakSlotsCollection.items
         .map((bS) => safelyParse(bS, 'productLink', parseAsString, ''))
         .filter((bS) => bS.length > 0);
-    const breakSlotsString = join(breakSlotSkus, ',');
-    const breakSkusByCodesRes = await cl.get(
-        `/api/skus?filter[q][code_in]=${breakSlotsString}&include=prices&fields[skus]=id,&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount`
-    );
-    const breakSkusByCodesIncluded = safelyParse(
-        breakSkusByCodesRes,
-        'data.included',
-        parseAsArrayOfCommerceResponse,
-        []
-    );
+    const slotSkuChunks = chunk(breakSlotSkus, 25);
+    const breakSkusByCodesIncluded: CommerceLayerResponse[] = [];
+
+    for (const chunk of slotSkuChunks) {
+        const breakSlotsString = join(chunk, ',');
+        const breakSkusByCodesRes = await cl.get(
+            `/api/skus?filter[q][code_in]=${breakSlotsString}&include=prices&fields[skus]=id,&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount&page[size]=25&page[number]=1`
+        );
+        const included = safelyParse(
+            breakSkusByCodesRes,
+            'data.included',
+            parseAsArrayOfCommerceResponse,
+            [] as CommerceLayerResponse[]
+        );
+
+        included.forEach((i) => breakSkusByCodesIncluded.push(i));
+    }
+
     const breakSlots = breakSlotsCollection.items.map((slot) => {
         const sku_code = safelyParse(slot, 'productLink', parseAsString, '');
         const slotPrices = breakSkusByCodesIncluded.find(
