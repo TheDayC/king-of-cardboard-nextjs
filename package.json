@@ -11,7 +11,16 @@
         "prettier": "prettier --write .",
         "prepare": "husky install",
         "test": "jest --watch",
-        "test:ci": "jest --ci"
+        "test:ci": "jest --ci",
+        "delete:orders": "ts-node ./scripts/orders/deleteAll.ts",
+        "delete:lineItems": "ts-node ./scripts/line-items/deleteAll.ts",
+        "delete:stockLineItems": "ts-node ./scripts/stock-line-items/deleteAll.ts",
+        "delete:stockItems": "ts-node ./scripts/stock-items/deleteAll.ts",
+        "delete:skus": "ts-node ./scripts/skus/deleteAll.ts",
+        "delete:prices": "ts-node ./scripts/prices/deleteAll.ts",
+        "delete:paymentMethods": "ts-node ./scripts/payment-methods/deleteAll.ts",
+        "cancel:shipments": "ts-node ./scripts/shipments/cancelAll.ts",
+        "create:skus": "ts-node ./scripts/skus/create.ts"
     },
     "lint-staged": {
         "**/*": [
@@ -63,6 +72,7 @@
         "@typescript-eslint/eslint-plugin": "^5.0.0",
         "@typescript-eslint/parser": "^5.0.0",
         "autoprefixer": "^10.3.7",
+        "dotenv": "^11.0.0",
         "eslint": "<8.0.0",
         "eslint-config-next": "11.1.2",
         "eslint-config-prettier": "^8.3.0",
