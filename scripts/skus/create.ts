@@ -3,22 +3,18 @@ import * as dotenv from 'dotenv';
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 import { authClient } from '../../utils/auth';
-import {
-    parseAsArrayOfCommerceResponse,
-    parseAsCommerceResponse,
-    parseAsString,
-    safelyParse,
-} from '../../utils/parsers';
+import { parseAsString, safelyParse } from '../../utils/parsers';
 import { createToken } from '../token';
 import { errorHandler } from '../../middleware/errors';
-import { premierLeaguePrizmSlots } from './soccerData';
+import { Team } from '../types';
 
-async function createSkus(): Promise<boolean> {
+export async function createSkus(slots: Team[]): Promise<boolean> {
     try {
         const token = await createToken();
         const cl = authClient(token);
 
-        for (const slot of premierLeaguePrizmSlots) {
+        for (const slot of slots) {
+            console.log(`Creating SKU: ${slot.code}`);
             const skuRes = await cl.post(`/api/skus`, {
                 data: {
                     type: 'skus',
@@ -38,9 +34,8 @@ async function createSkus(): Promise<boolean> {
                 },
             });
             const skuId = safelyParse(skuRes, 'data.data.id', parseAsString, '');
-            console.log('🚀 ~ file: create.ts ~ line 36 ~ createSkus ~ skuId', skuId);
 
-            const stockItemsRes = await cl.post(`/api/stock_items`, {
+            await cl.post(`/api/stock_items`, {
                 data: {
                     type: 'stock_items',
                     attributes: {
@@ -64,7 +59,7 @@ async function createSkus(): Promise<boolean> {
                 },
             });
 
-            const pricesRes = await cl.post(`/api/prices`, {
+            await cl.post(`/api/prices`, {
                 data: {
                     type: 'prices',
                     attributes: {
@@ -81,7 +76,7 @@ async function createSkus(): Promise<boolean> {
                     },
                 },
             });
-            console.log('🚀 ~ file: create.ts ~ line 78 ~ createSkus ~ pricesRes', pricesRes.status);
+            console.log('Created!');
         }
 
         return true;
@@ -91,5 +86,3 @@ async function createSkus(): Promise<boolean> {
 
     return false;
 }
-
-createSkus();

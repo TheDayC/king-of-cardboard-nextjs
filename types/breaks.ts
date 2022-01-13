@@ -21,6 +21,7 @@ export interface ContentfulBreak {
 
 export interface Break {
     cardImage: ImageItem;
+    breakNumber: number;
     title: string;
     tags: string[];
     types: string;

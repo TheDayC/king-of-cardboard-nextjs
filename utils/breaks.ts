@@ -16,7 +16,6 @@ import {
     parseAsBreakSlotsCollection,
     parseAsArrayOfCommerceResponse,
     parseAsCommerceResponse,
-    parseAsArrayOfBreakSlots,
     parseAsArrayOfDocuments,
 } from './parsers';
 
@@ -26,6 +25,7 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
         query {
             breaksCollection (limit: ${limit}, skip: ${skip}) {
                 items {
+                    breakNumber
                     title
                     slug
                     cardImage {
@@ -37,6 +37,9 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
                     breakDate
                     tags
                     format
+                    breakSlotsCollection {
+                      total
+                    }
                     isLive
                     isComplete
                     vodLink
@@ -47,7 +50,6 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
 
     // Make the contentful request.
     const response = await fetchContent(query);
-    const cl = authClient(accessToken);
 
     // On success get the item data for products.
     const breaksCollection = safelyParse(
@@ -58,33 +60,24 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
     );
 
     return await Promise.all(
-        breaksCollection.map(async (bC) => {
-            const breakSlots = safelyParse(bC, 'breakSlotsCollection.items', parseAsArrayOfBreakSlots, []);
-            const sku_codes = breakSlots.map((bS) => safelyParse(bS, 'sku_code', parseAsArrayOfStrings, []));
-            const skuFilter = join(sku_codes, ',');
-            const res = await cl.get(
-                `/api/skus?filter[q][code_in]=${skuFilter}&filter[q][stock_items_quantity_gt]=0&fields[skus]=id`
-            );
-            const slots = safelyParse(res, 'data.meta.record_count', parseAsNumber, 0);
-
-            return {
-                cardImage: {
-                    title: safelyParse(bC, 'cardImage.title', parseAsString, ''),
-                    description: safelyParse(bC, 'cardImage.description', parseAsString, ''),
-                    url: safelyParse(bC, 'cardImage.url', parseAsString, ''),
-                },
-                title: safelyParse(bC, 'title', parseAsString, ''),
-                tags: safelyParse(bC, 'tags', parseAsArrayOfStrings, []),
-                types: safelyParse(bC, 'types', parseAsString, ''),
-                slug: safelyParse(bC, 'slug', parseAsString, ''),
-                slots,
-                format: safelyParse(bC, 'format', parseAsString, ''),
-                breakDate: safelyParse(bC, 'breakDate', parseAsString, ''),
-                isLive: safelyParse(bC, 'isLive', parseAsBoolean, false),
-                isComplete: safelyParse(bC, 'isComplete', parseAsBoolean, false),
-                vodLink: safelyParse(bC, 'vodLink', parseAsString, ''),
-            };
-        })
+        breaksCollection.map(async (bC) => ({
+            cardImage: {
+                title: safelyParse(bC, 'cardImage.title', parseAsString, ''),
+                description: safelyParse(bC, 'cardImage.description', parseAsString, ''),
+                url: safelyParse(bC, 'cardImage.url', parseAsString, ''),
+            },
+            breakNumber: safelyParse(bC, 'breakNumber', parseAsNumber, 1),
+            title: safelyParse(bC, 'title', parseAsString, ''),
+            tags: safelyParse(bC, 'tags', parseAsArrayOfStrings, []),
+            types: safelyParse(bC, 'types', parseAsString, ''),
+            slug: safelyParse(bC, 'slug', parseAsString, ''),
+            slots: safelyParse(bC, 'breakSlotsCollection.total', parseAsNumber, 0),
+            format: safelyParse(bC, 'format', parseAsString, ''),
+            breakDate: safelyParse(bC, 'breakDate', parseAsString, ''),
+            isLive: safelyParse(bC, 'isLive', parseAsBoolean, false),
+            isComplete: safelyParse(bC, 'isComplete', parseAsBoolean, false),
+            vodLink: safelyParse(bC, 'vodLink', parseAsString, ''),
+        }))
     );
 }
 

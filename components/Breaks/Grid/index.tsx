@@ -45,6 +45,7 @@ export const Grid: React.FC = () => {
                 {breaks.map((b) => (
                     <BreakCard
                         cardImage={b.cardImage}
+                        breakNumber={b.breakNumber}
                         title={b.title}
                         tags={b.tags}
                         breakType={b.types}

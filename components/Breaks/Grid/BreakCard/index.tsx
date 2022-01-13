@@ -10,6 +10,7 @@ import Countdown from './Countdown';
 
 interface BreakProps {
     cardImage: ImageItem;
+    breakNumber: number;
     title: string;
     tags: string[];
     breakType: string;
@@ -24,6 +25,7 @@ interface BreakProps {
 
 export const BreakCard: React.FC<BreakProps> = ({
     cardImage,
+    breakNumber,
     title,
     tags,
     breakType,
@@ -69,7 +71,8 @@ export const BreakCard: React.FC<BreakProps> = ({
             <div className="justify-between items-start card-body p-0">
                 <div className="flex flex-col justify-start items-start w-full">
                     <div className="p-4 mt-4 lg:p-6">
-                        <h2 className="card-title text-2xl mb-2">{title}</h2>
+                        <h2 className="card-title text-3xl mb-2 font-semibold">Break #{breakNumber}</h2>
+                        <h2 className="card-title text-xl mb-6">{title}</h2>
                         <div className="pl-2">
                             <p className="text-base-200 text-sm">
                                 <AiFillStar className="inline mr-1 w-4 h-4 text-yellow-300" />
