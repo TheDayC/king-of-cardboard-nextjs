@@ -41,7 +41,7 @@ export const Filters: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col md:mr-4 relative">
+        <div className="flex flex-col w-1/6 md:mr-4 relative">
             {productTypes.length > 0 && (
                 <div className="card bordered mb-2 lg:mb-4 rounded-md">
                     <div className="card-body p-2 lg:p-4">
