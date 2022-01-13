@@ -7,13 +7,12 @@ import { authClient } from '../../utils/auth';
 import { parseAsArrayOfCommerceResponse, parseAsNumber, safelyParse } from '../../utils/parsers';
 import { createToken } from '../token';
 import { errorHandler } from '../../middleware/errors';
-//HOOPS-HOBBY-NBA%
 async function deleteAllSkus(): Promise<void> {
     try {
         const token = await createToken();
         const cl = authClient(token);
         const orderIdsRes = await cl.get(
-            '/api/skus/?fields[skus]=id,code&page[size]=25&page[number]=1&filter[q][code_start]=HOOPS-HOBBY-NBA'
+            '/api/skus/?fields[skus]=id,code&page[size]=25&page[number]=1&filter[q][code_cont_any]=VOW,NEO'
         );
         const skus = safelyParse(orderIdsRes, 'data.data', parseAsArrayOfCommerceResponse, []);
 
@@ -57,7 +56,7 @@ async function deleteAllSkus(): Promise<void> {
             const res = await cl.delete(`/api/skus/${sku.id}`);
             const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-            console.log(`Tried to delete stock item - ${sku.id} - status: ${status}`);
+            console.log(`Tried to delete sku - ${sku.id} - status: ${status}`);
         }
     } catch (err: unknown) {
         errorHandler(err, 'An error occurred.');
