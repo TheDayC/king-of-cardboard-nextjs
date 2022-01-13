@@ -93,9 +93,9 @@ export const CartItem: React.FC<CartItemProps> = ({
 
     return (
         <div className="grid grid-cols-3 lg:grid-cols-5 bg-white p-4 border-b p-4">
-            <div className="text-center hidden lg:table-cell">
+            <div className="text-error hidden lg:flex lg:flex-row items-center justify-center">
                 <button aria-label="remove item" onClick={handleRemoveItem}>
-                    <MdDeleteForever />
+                    <MdDeleteForever className="text-2xl" />
                 </button>
             </div>
             <div className="text-center">
@@ -117,8 +117,8 @@ export const CartItem: React.FC<CartItemProps> = ({
                     </div>
                 </div>
             </div>
-            <div className="text-center hidden lg:table-cell">{unitAmount}</div>
-            <div className="text-center">
+            <div className="hidden lg:flex lg:flex-row items-center justify-center">{unitAmount}</div>
+            <div className="flex flex-row items-center justify-center">
                 <button
                     aria-label="subtract one item"
                     onClick={handleDecreaseAmount}
@@ -135,7 +135,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                     <MdAddCircleOutline />
                 </button>
             </div>
-            <div className="text-center">{totalAmount}</div>
+            <div className="flex flex-row items-center justify-center">{totalAmount}</div>
         </div>
     );
 };

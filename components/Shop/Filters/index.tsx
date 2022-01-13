@@ -7,7 +7,7 @@ import { Categories, combinedFilters, FilterTypes, ProductType } from '../../../
 import { addCategory, addProductType, removeCategory, removeProductType } from '../../../store/slices/filters';
 import Filter from './Filter';
 
-const categories = [Categories.Sealed, Categories.Singles, Categories.Breaks];
+const categories = [Categories.Sealed, Categories.Singles];
 const productTypes = [ProductType.Sports, ProductType.TCG];
 
 export const Filters: React.FC = () => {

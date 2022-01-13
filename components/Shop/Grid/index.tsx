@@ -31,22 +31,22 @@ export const Grid: React.FC = () => {
         [accessToken, categories, productTypes, dispatch]
     );
 
+    // Filter the collection.
+    useEffect(() => {
+        if (accessToken && hasFilters) {
+            setShouldFetch(true);
+        }
+    }, [dispatch, accessToken, categories, productTypes, hasFilters]);
+
     // Create the product collection on load.
     useEffect(() => {
         if (shouldFetch && accessToken) {
             setShouldFetch(false);
             dispatch(fetchProductsTotal());
             dispatch(fetchProducts({ accessToken, limit: 0, skip: 0, categories, productTypes }));
+            dispatch(setIsLoadingProducts(false));
         }
     }, [dispatch, accessToken, shouldFetch, categories, productTypes]);
-
-    // Filter the collection.
-    useEffect(() => {
-        if (accessToken && hasFilters) {
-            dispatch(fetchProductsTotal());
-            dispatch(fetchProducts({ accessToken, limit: 0, skip: 0, categories, productTypes }));
-        }
-    }, [dispatch, accessToken, categories, productTypes, hasFilters]);
 
     return (
         <div className="flex flex-col w-5/6" data-testid="shop-grid">
