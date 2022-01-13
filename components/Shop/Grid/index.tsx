@@ -8,7 +8,7 @@ import { setIsLoadingProducts } from '../../../store/slices/shop';
 import ProductCard from './ProductCard';
 import { fetchProducts, fetchProductsTotal } from '../../../store/slices/products';
 
-const PER_PAGE = 9;
+const PER_PAGE = 8;
 
 export const Grid: React.FC = () => {
     const { accessToken, categories, productTypes, products, productsTotal } = useSelector(selector);
@@ -16,7 +16,6 @@ export const Grid: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [shouldFetch, setShouldFetch] = useState(true);
     const productPageCount = ceil(divide(productsTotal, PER_PAGE));
-    const hasFilters = categories.length > 0 || productTypes.length > 0;
 
     // Handle the page number and set it in local state.
     const handlePageNumber = useCallback(
@@ -24,7 +23,7 @@ export const Grid: React.FC = () => {
             if (accessToken) {
                 dispatch(setIsLoadingProducts(true));
                 setCurrentPage(pageNumber);
-                dispatch(fetchProducts({ accessToken, limit: pageNumber, skip: PER_PAGE, categories, productTypes }));
+                dispatch(fetchProducts({ accessToken, limit: PER_PAGE, skip: pageNumber, categories, productTypes }));
                 dispatch(setIsLoadingProducts(false));
             }
         },
@@ -33,17 +32,17 @@ export const Grid: React.FC = () => {
 
     // Filter the collection.
     useEffect(() => {
-        if (accessToken && hasFilters) {
+        if (accessToken) {
             setShouldFetch(true);
         }
-    }, [dispatch, accessToken, categories, productTypes, hasFilters]);
+    }, [accessToken, categories, productTypes]);
 
     // Create the product collection on load.
     useEffect(() => {
         if (shouldFetch && accessToken) {
             setShouldFetch(false);
             dispatch(fetchProductsTotal());
-            dispatch(fetchProducts({ accessToken, limit: 0, skip: 0, categories, productTypes }));
+            dispatch(fetchProducts({ accessToken, limit: PER_PAGE, skip: 0, categories, productTypes }));
             dispatch(setIsLoadingProducts(false));
         }
     }, [dispatch, accessToken, shouldFetch, categories, productTypes]);

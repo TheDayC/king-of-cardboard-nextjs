@@ -83,6 +83,7 @@ export async function getProducts(
             }
         }
     `;
+    console.log('🚀 ~ file: products.ts ~ line 58 ~ query', query);
 
     // Make the contentful request.
     const productResponse = await fetchContent(query);
@@ -158,7 +159,7 @@ export async function getProductsTotal(): Promise<number> {
     const response = await fetchContent(query);
 
     // On a successful request get the total number of items for pagination.
-    return safelyParse(response, 'data.content.breaksCollection.total', parseAsNumber, 0);
+    return safelyParse(response, 'data.content.productCollection.total', parseAsNumber, 0);
 }
 
 export async function fetchProductBySlug(slug: string): Promise<ContentfulProduct | null> {
