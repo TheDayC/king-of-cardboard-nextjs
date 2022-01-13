@@ -60,10 +60,12 @@ export async function getProducts(
                 items {
                     name
                     slug
+                    cardImage {
+                        title
+                        description
+                        url
+                    }
                     description
-                    productLink
-                    types
-                    categories
                     imageCollection {
                         items {
                             title
@@ -71,19 +73,14 @@ export async function getProducts(
                             url
                         }
                     }
-                    cardImage {
-                        title
-                        description
-                        url
-                        width
-                        height
-                    }
+                    types
+                    categories
+                    productLink
                     tags
                 }
             }
         }
     `;
-    console.log('🚀 ~ file: products.ts ~ line 58 ~ query', query);
 
     // Make the contentful request.
     const productResponse = await fetchContent(query);

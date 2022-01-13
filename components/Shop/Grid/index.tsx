@@ -23,7 +23,15 @@ export const Grid: React.FC = () => {
             if (accessToken) {
                 dispatch(setIsLoadingProducts(true));
                 setCurrentPage(pageNumber);
-                dispatch(fetchProducts({ accessToken, limit: PER_PAGE, skip: pageNumber, categories, productTypes }));
+                dispatch(
+                    fetchProducts({
+                        accessToken,
+                        limit: PER_PAGE,
+                        skip: pageNumber * PER_PAGE,
+                        categories,
+                        productTypes,
+                    })
+                );
                 dispatch(setIsLoadingProducts(false));
             }
         },

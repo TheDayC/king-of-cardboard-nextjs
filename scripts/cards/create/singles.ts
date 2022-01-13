@@ -69,7 +69,6 @@ export async function createSingles(cards: Card[], skuWithIds: SkusWithIds[]): P
             }
         }
     } catch (err: unknown) {
-        console.log('🚀 ~ file: createBreaks.ts ~ line 80 ~ createBreaks ~ err', err);
         errorHandler(err, 'An error occurred.');
     }
 }

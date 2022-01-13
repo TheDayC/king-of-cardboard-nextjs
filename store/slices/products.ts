@@ -26,8 +26,6 @@ export const fetchProducts = createAsyncThunk(
     'products/fetchProducts',
     async (data: ProductsThunkInput): Promise<Product[]> => {
         const { accessToken, limit, skip, categories, productTypes } = data;
-        console.log('🚀 ~ file: products.ts ~ line 29 ~ productTypes', productTypes);
-        console.log('🚀 ~ file: products.ts ~ line 29 ~ categories', categories);
 
         return await getProducts(accessToken, limit, skip, categories, productTypes);
     }

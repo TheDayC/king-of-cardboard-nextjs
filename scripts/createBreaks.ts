@@ -90,7 +90,6 @@ export async function createBreaks(
         entry.publish();
         console.log(`Created break ${entry.sys.id}`);
     } catch (err: unknown) {
-        console.log('🚀 ~ file: createBreaks.ts ~ line 80 ~ createBreaks ~ err', err);
         errorHandler(err, 'An error occurred.');
     }
 }
