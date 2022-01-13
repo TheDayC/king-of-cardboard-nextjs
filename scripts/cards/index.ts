@@ -5,19 +5,21 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 import { mtgCards } from './data/mtg';
 import { pokemonCards } from './data/pokemon';
 import { soccerCards } from './data/soccer';
+import { footballCards } from './data/football';
+import { basketballCards } from './data/basketball';
 import { createAssets } from './create/assets';
 import { createSkus } from './create/skus';
 import { createSingles } from './create/singles';
 
 const assetsOptions = {
     limit: 30,
-    'metadata.tags.sys.id[all]': 'soccer,single',
+    'metadata.tags.sys.id[all]': 'nfl,single,football',
 };
 const sku = '{{CODEANDNAME}}-SINGLE';
 
 async function generateCards(): Promise<void> {
     // Create the teams for this break.
-    const cards = await createAssets(sku, assetsOptions, soccerCards);
+    const cards = await createAssets(sku, assetsOptions, footballCards);
 
     if (!cards) return;
 
