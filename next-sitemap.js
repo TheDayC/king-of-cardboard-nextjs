@@ -3,7 +3,9 @@ module.exports = {
     generateRobotsTxt: true,
     robotsTxtOptions: [{ userAgent: '*', disallow: '/' }],
     exclude: [
+        '/account',
         '/account/*',
+        '/checkout',
         '/checkout/*',
         '/confirmation',
         '/confirmation/*',
