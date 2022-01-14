@@ -132,10 +132,10 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
             maxAge: 60 * 60 * 24 * 30,
         },
         pages: {
-            signIn: '/account',
-            signOut: '/login?signedOut=true',
-            error: '/login', // Error code passed in query string as ?error=
-            newUser: '/account',
+            signIn: `${process.env.NEXT_PUBLIC_SITE_URL}/account`,
+            signOut: `${process.env.NEXT_PUBLIC_SITE_URL}/login?signedOut=true`,
+            error: `${process.env.NEXT_PUBLIC_SITE_URL}/login`, // Error code passed in query string as ?error=
+            newUser: `${process.env.NEXT_PUBLIC_SITE_URL}/account`,
         },
         callbacks: {
             async signIn({ user, email, credentials }) {
