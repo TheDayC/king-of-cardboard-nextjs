@@ -56,7 +56,7 @@ export const Grid: React.FC = () => {
     }, [dispatch, accessToken, shouldFetch, categories, productTypes]);
 
     return (
-        <div className="flex flex-col w-5/6" data-testid="shop-grid">
+        <div className="flex flex-col w-full md:w-5/6" data-testid="shop-grid">
             <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl2:grid-cols-6">
                 {products.length > 0 &&
                     products.map((product) => (
