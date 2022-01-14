@@ -17,7 +17,7 @@ export const NewsBanner: React.FC = () => {
     //if (!showNewsBanner) return null;
 
     return (
-        <div className="flex flex-row justify-center w-full p-2 bg-primary shadow-md text-sm md:text-md">
+        <div className="flex flex-row justify-center items-center text-center w-full p-2 bg-primary shadow-md text-sm md:text-md">
             <p>
                 Welcome to the King of Cardboard Beta. Read our v1.0 roadmap{' '}
                 <Link href="/information/roadmap" passHref>
