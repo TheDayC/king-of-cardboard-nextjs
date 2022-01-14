@@ -3,8 +3,11 @@ import { useForm } from 'react-hook-form';
 import { MdOutlineMailOutline } from 'react-icons/md';
 import { RiLockPasswordLine } from 'react-icons/ri';
 import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { BiErrorCircle } from 'react-icons/bi';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
+import { createUserToken } from '../../utils/auth';
 
 interface Submit {
     emailAddress?: string;
@@ -17,7 +20,9 @@ export const Credentials: React.FC = () => {
         handleSubmit,
         formState: { errors },
     } = useForm();
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const hasErrors = Object.keys(errors).length > 0;
     const emailErr = safelyParse(errors, 'emailAddress.message', parseAsString, null);
     const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
@@ -27,13 +32,30 @@ export const Credentials: React.FC = () => {
 
         setLoading(true);
 
-        await signIn('credentials', { emailAddress, password });
+        const hasSignedIn = await signIn('credentials', { emailAddress, password, redirect: false });
+        const formErr = safelyParse(hasSignedIn, 'error', parseAsString, null);
+        console.log('🚀 ~ file: credentials.tsx ~ line 37 ~ onSubmit ~ formErr', formErr);
+        setError(formErr ? 'Log in details incorrect.' : null);
+
+        if (!formErr) {
+            if (emailAddress && password) {
+                const userToken = await createUserToken(emailAddress, password);
+                console.log('🚀 ~ file: credentials.tsx ~ line 42 ~ onSubmit ~ userToken', userToken);
+            }
+            //router.push('/account');
+        }
 
         setLoading(false);
     };
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
+            {error && (
+                <div className="flex flex-row justify-center items-center rounded-md mb-6 p-2 text-neutral-content bg-red-600">
+                    <BiErrorCircle className="inline-block w-6 h-6 mx-2 stroke-current" />
+                    <label>{error}</label>
+                </div>
+            )}
             <div className="form-control">
                 <label className="input-group input-group-md">
                     <span className="bg-base-200">

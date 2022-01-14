@@ -361,10 +361,20 @@ export function cardLogo(card: string | null): JSX.Element {
 export async function getAddresses(accessToken: string, emailAddress: string): Promise<Address[]> {
     try {
         const cl = authClient(accessToken);
-        const include = 'include=address';
+        // Fetch the customer.
+        const customerRes = await cl.get(
+            `/api/customers?filter[q][email_eq]=${emailAddress}&fields[customers]=id,email`
+        );
+        const customerId = safelyParse(customerRes, 'data.data.id', parseAsString, '');
+        const customerEmail = safelyParse(customerRes, 'data.data.attributes.email', parseAsString, '');
+
+        // Fetch the customer's addresses.
+        const addressRes = await cl.get(`/api/customer_addresses?include=address`);
+        console.log('🚀 ~ file: account.tsx ~ line 371 ~ getAddresses ~ addressRes', addressRes);
+
         const filters = `filter[q][email_eq]=${emailAddress}`;
         const fields = `fields[customer_addresses]=id,reference&fields[addresses]=full_address`;
-        const res = await cl.get(`/api/customer_addresses?${filters}&${include}&${fields}`);
+        const res = await cl.get(`/api/customer_addresses?${filters}&${fields}`);
         const addresses = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, []);
         const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
 

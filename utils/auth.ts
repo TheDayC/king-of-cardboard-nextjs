@@ -83,3 +83,22 @@ export async function registerUser(
 
     return false;
 }
+
+export async function createUserToken(emailAddress: string, password: string): Promise<string | null> {
+    try {
+        const tokenRes = await userClient().post('/oauth/token', {
+            grant_type: 'password',
+            username: emailAddress,
+            password,
+            client_id: process.env.NEXT_PUBLIC_ECOM_SALES_ID,
+            scope: 'market:6098',
+        });
+        console.log('🚀 ~ file: auth.ts ~ line 96 ~ tokenRes ~ tokenRes', tokenRes);
+
+        return safelyParse(tokenRes, 'data.access_token', parseAsString, null);
+    } catch (error: unknown) {
+        errorHandler(error, 'Failed to register user at this time.');
+    }
+
+    return null;
+}
