@@ -12,6 +12,7 @@ import { parseAsString, safelyParse } from '../../utils/parsers';
 import NavBar from './Navbar';
 import CartIcon from './CartIcon';
 import NewsBanner from './NewsBanner';
+import IssueBanner from './IssueBar';
 
 export const Header: React.FC = () => {
     const session = useSession();
@@ -89,6 +90,7 @@ export const Header: React.FC = () => {
                 </div>
             </div>
             <NewsBanner />
+            <IssueBanner />
         </React.Fragment>
     );
 };
