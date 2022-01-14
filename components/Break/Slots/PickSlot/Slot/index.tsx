@@ -33,6 +33,7 @@ export const Slot: React.FC<SlotProps> = ({ image, sku_code, name, amount, compa
             sku_code,
             _external_price: false,
             _update_quantity: true,
+            image_url: image.url,
         };
 
         const relationships = {

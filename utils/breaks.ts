@@ -1,5 +1,6 @@
-import { join } from 'lodash';
+import { chunk, join } from 'lodash';
 
+import { CommerceLayerResponse } from '../types/api';
 import { Break, SingleBreak } from '../types/breaks';
 import { authClient } from './auth';
 import { fetchContent } from './content';
@@ -15,7 +16,7 @@ import {
     parseAsBreakSlotsCollection,
     parseAsArrayOfCommerceResponse,
     parseAsCommerceResponse,
-    parseAsArrayOfBreakSlots,
+    parseAsArrayOfDocuments,
 } from './parsers';
 
 export async function getBreaks(accessToken: string, limit: number, skip: number): Promise<Break[]> {
@@ -24,37 +25,21 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
         query {
             breaksCollection (limit: ${limit}, skip: ${skip}) {
                 items {
+                    breakNumber
                     title
                     slug
-                    description
                     cardImage {
                         title
                         description
                         url
                     }
-                    imagesCollection {
-                        items {
-                            title
-                            description
-                            url
-                        }
-                    }
                     types
-                    breakSlotsCollection {
-                        items {
-                            name
-                            productLink
-                            slotIdentifier
-                                image {
-                                    title
-                                    description
-                                    url
-                                }
-                        }
-                    }
                     breakDate
                     tags
                     format
+                    breakSlotsCollection {
+                      total
+                    }
                     isLive
                     isComplete
                     vodLink
@@ -65,7 +50,6 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
 
     // Make the contentful request.
     const response = await fetchContent(query);
-    const cl = authClient(accessToken);
 
     // On success get the item data for products.
     const breaksCollection = safelyParse(
@@ -76,33 +60,24 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
     );
 
     return await Promise.all(
-        breaksCollection.map(async (bC) => {
-            const breakSlots = safelyParse(bC, 'breakSlotsCollection.items', parseAsArrayOfBreakSlots, []);
-            const sku_codes = breakSlots.map((bS) => safelyParse(bS, 'sku_code', parseAsArrayOfStrings, []));
-            const skuFilter = join(sku_codes, ',');
-            const res = await cl.get(
-                `/api/skus?filter[q][code_in]=${skuFilter}&filter[q][stock_items_quantity_gt]=0&fields[skus]=id`
-            );
-            const slots = safelyParse(res, 'data.meta.record_count', parseAsNumber, 0);
-
-            return {
-                cardImage: {
-                    title: safelyParse(bC, 'cardImage.title', parseAsString, ''),
-                    description: safelyParse(bC, 'cardImage.description', parseAsString, ''),
-                    url: safelyParse(bC, 'cardImage.url', parseAsString, ''),
-                },
-                title: safelyParse(bC, 'title', parseAsString, ''),
-                tags: safelyParse(bC, 'tags', parseAsArrayOfStrings, []),
-                types: safelyParse(bC, 'types', parseAsString, ''),
-                slug: safelyParse(bC, 'slug', parseAsString, ''),
-                slots,
-                format: safelyParse(bC, 'format', parseAsString, ''),
-                breakDate: safelyParse(bC, 'breakDate', parseAsString, ''),
-                isLive: safelyParse(bC, 'isLive', parseAsBoolean, false),
-                isComplete: safelyParse(bC, 'isComplete', parseAsBoolean, false),
-                vodLink: safelyParse(bC, 'vodLink', parseAsString, ''),
-            };
-        })
+        breaksCollection.map(async (bC) => ({
+            cardImage: {
+                title: safelyParse(bC, 'cardImage.title', parseAsString, ''),
+                description: safelyParse(bC, 'cardImage.description', parseAsString, ''),
+                url: safelyParse(bC, 'cardImage.url', parseAsString, ''),
+            },
+            breakNumber: safelyParse(bC, 'breakNumber', parseAsNumber, 1),
+            title: safelyParse(bC, 'title', parseAsString, ''),
+            tags: safelyParse(bC, 'tags', parseAsArrayOfStrings, []),
+            types: safelyParse(bC, 'types', parseAsString, ''),
+            slug: safelyParse(bC, 'slug', parseAsString, ''),
+            slots: safelyParse(bC, 'breakSlotsCollection.total', parseAsNumber, 0),
+            format: safelyParse(bC, 'format', parseAsString, ''),
+            breakDate: safelyParse(bC, 'breakDate', parseAsString, ''),
+            isLive: safelyParse(bC, 'isLive', parseAsBoolean, false),
+            isComplete: safelyParse(bC, 'isComplete', parseAsBoolean, false),
+            vodLink: safelyParse(bC, 'vodLink', parseAsString, ''),
+        }))
     );
 }
 
@@ -130,7 +105,9 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
                 items {
                     title
                     slug
-                    description
+                    description {
+                        json
+                    }
                     cardImage {
                         title
                         description
@@ -148,7 +125,6 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
                         items {
                             name
                             productLink
-                            slotIdentifier
                                 image {
                                     title
                                     description
@@ -201,16 +177,24 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
     const breakSlotSkus = breakSlotsCollection.items
         .map((bS) => safelyParse(bS, 'productLink', parseAsString, ''))
         .filter((bS) => bS.length > 0);
-    const breakSlotsString = join(breakSlotSkus, ',');
-    const breakSkusByCodesRes = await cl.get(
-        `/api/skus?filter[q][code_in]=${breakSlotsString}&include=prices&fields[skus]=id,&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount`
-    );
-    const breakSkusByCodesIncluded = safelyParse(
-        breakSkusByCodesRes,
-        'data.included',
-        parseAsArrayOfCommerceResponse,
-        []
-    );
+    const slotSkuChunks = chunk(breakSlotSkus, 25);
+    const breakSkusByCodesIncluded: CommerceLayerResponse[] = [];
+
+    for (const chunk of slotSkuChunks) {
+        const breakSlotsString = join(chunk, ',');
+        const breakSkusByCodesRes = await cl.get(
+            `/api/skus?filter[q][code_in]=${breakSlotsString}&include=prices&fields[skus]=id,&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount&page[size]=25&page[number]=1`
+        );
+        const included = safelyParse(
+            breakSkusByCodesRes,
+            'data.included',
+            parseAsArrayOfCommerceResponse,
+            [] as CommerceLayerResponse[]
+        );
+
+        included.forEach((i) => breakSkusByCodesIncluded.push(i));
+    }
+
     const breakSlots = breakSlotsCollection.items.map((slot) => {
         const sku_code = safelyParse(slot, 'productLink', parseAsString, '');
         const slotPrices = breakSkusByCodesIncluded.find(
@@ -238,7 +222,7 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
         sku_code,
         title: safelyParse(contentfulBreak, 'title', parseAsString, ''),
         slug: safelyParse(contentfulBreak, 'slug', parseAsString, ''),
-        description: safelyParse(contentfulBreak, 'description', parseAsString, ''),
+        description: safelyParse(contentfulBreak, 'description.json.content', parseAsArrayOfDocuments, []),
         cardImage: {
             title: safelyParse(contentfulBreak, 'cardImage.title', parseAsString, ''),
             description: safelyParse(contentfulBreak, 'cardImage.description', parseAsString, ''),

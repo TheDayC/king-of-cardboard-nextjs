@@ -7,7 +7,7 @@ import { fetchBreaks, fetchBreaksTotal, setIsLoadingBreaks } from '../../../stor
 import BreakCard from './BreakCard';
 import selector from './selector';
 
-const PER_PAGE = 9;
+const PER_PAGE = 8;
 
 export const Grid: React.FC = () => {
     const { accessToken, breaks, breaksTotal } = useSelector(selector);
@@ -23,7 +23,7 @@ export const Grid: React.FC = () => {
             if (accessToken) {
                 dispatch(setIsLoadingBreaks(true));
                 setCurrentPage(pageNumber);
-                dispatch(fetchBreaks({ accessToken, limit: pageNumber, skip: PER_PAGE }));
+                dispatch(fetchBreaks({ accessToken, limit: PER_PAGE, skip: pageNumber * PER_PAGE }));
                 dispatch(setIsLoadingBreaks(false));
             }
         },
@@ -45,6 +45,7 @@ export const Grid: React.FC = () => {
                 {breaks.map((b) => (
                     <BreakCard
                         cardImage={b.cardImage}
+                        breakNumber={b.breakNumber}
                         title={b.title}
                         tags={b.tags}
                         breakType={b.types}

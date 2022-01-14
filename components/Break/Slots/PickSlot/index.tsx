@@ -13,7 +13,7 @@ export const PickSlot: React.FC = () => {
     return (
         <div className="w-full relative">
             <Loading show={loading} />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 relative z-10">
                 {breakSlots.length >= 0 &&
                     breakSlots.map((slot) => (
                         <Slot

@@ -1,3 +1,5 @@
+import { Document } from '@contentful/rich-text-types';
+
 import { SkuInventory } from './commerce';
 import { ImageCollection, ImageItem } from './products';
 
@@ -19,6 +21,7 @@ export interface ContentfulBreak {
 
 export interface Break {
     cardImage: ImageItem;
+    breakNumber: number;
     title: string;
     tags: string[];
     types: string;
@@ -36,7 +39,7 @@ export interface SingleBreak {
     title: string;
     slug: string;
     sku_code: string;
-    description: string;
+    description: Document[];
     types: string;
     images: ImageItem[];
     cardImage: ImageItem;
@@ -59,7 +62,6 @@ export interface BreakSlotsCollection {
 export interface ContentfulBreakSlot {
     name: string;
     productLink: string;
-    slotIdentifier: string;
     image: ImageItem;
 }
 

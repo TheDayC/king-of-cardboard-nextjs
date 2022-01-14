@@ -8,7 +8,7 @@ import { setIsLoadingProducts } from '../../../store/slices/shop';
 import ProductCard from './ProductCard';
 import { fetchProducts, fetchProductsTotal } from '../../../store/slices/products';
 
-const PER_PAGE = 9;
+const PER_PAGE = 8;
 
 export const Grid: React.FC = () => {
     const { accessToken, categories, productTypes, products, productsTotal } = useSelector(selector);
@@ -16,7 +16,6 @@ export const Grid: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [shouldFetch, setShouldFetch] = useState(true);
     const productPageCount = ceil(divide(productsTotal, PER_PAGE));
-    const hasFilters = categories.length > 0 || productTypes.length > 0;
 
     // Handle the page number and set it in local state.
     const handlePageNumber = useCallback(
@@ -24,32 +23,40 @@ export const Grid: React.FC = () => {
             if (accessToken) {
                 dispatch(setIsLoadingProducts(true));
                 setCurrentPage(pageNumber);
-                dispatch(fetchProducts({ accessToken, limit: pageNumber, skip: PER_PAGE, categories, productTypes }));
+                dispatch(
+                    fetchProducts({
+                        accessToken,
+                        limit: PER_PAGE,
+                        skip: pageNumber * PER_PAGE,
+                        categories,
+                        productTypes,
+                    })
+                );
                 dispatch(setIsLoadingProducts(false));
             }
         },
         [accessToken, categories, productTypes, dispatch]
     );
 
+    // Filter the collection.
+    useEffect(() => {
+        if (accessToken) {
+            setShouldFetch(true);
+        }
+    }, [accessToken, categories, productTypes]);
+
     // Create the product collection on load.
     useEffect(() => {
         if (shouldFetch && accessToken) {
             setShouldFetch(false);
             dispatch(fetchProductsTotal());
-            dispatch(fetchProducts({ accessToken, limit: 0, skip: 0, categories, productTypes }));
+            dispatch(fetchProducts({ accessToken, limit: PER_PAGE, skip: 0, categories, productTypes }));
+            dispatch(setIsLoadingProducts(false));
         }
     }, [dispatch, accessToken, shouldFetch, categories, productTypes]);
 
-    // Filter the collection.
-    useEffect(() => {
-        if (accessToken && hasFilters) {
-            dispatch(fetchProductsTotal());
-            dispatch(fetchProducts({ accessToken, limit: 0, skip: 0, categories, productTypes }));
-        }
-    }, [dispatch, accessToken, categories, productTypes, hasFilters]);
-
     return (
-        <div className="flex flex-col w-full" data-testid="shop-grid">
+        <div className="flex flex-col w-5/6" data-testid="shop-grid">
             <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl2:grid-cols-6">
                 {products.length > 0 &&
                     products.map((product) => (

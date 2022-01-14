@@ -10,7 +10,7 @@ const breaksInitialState: BreaksState = {
         title: '',
         slug: '',
         sku_code: '',
-        description: '',
+        description: [],
         types: '',
         images: [],
         cardImage: {

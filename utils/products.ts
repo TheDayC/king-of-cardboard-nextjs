@@ -2,7 +2,7 @@ import { isArray, join } from 'lodash';
 
 import { Categories, ProductType } from '../enums/shop';
 import { CommerceLayerResponse } from '../types/api';
-import { ContentfulProduct, ContentfulProductShort, Product, SingleProduct } from '../types/products';
+import { CartImage, ContentfulProduct, ContentfulProductShort, Product, SingleProduct } from '../types/products';
 import { authClient } from './auth';
 import { fetchContent } from './content';
 import {
@@ -60,10 +60,12 @@ export async function getProducts(
                 items {
                     name
                     slug
+                    cardImage {
+                        title
+                        description
+                        url
+                    }
                     description
-                    productLink
-                    types
-                    categories
                     imageCollection {
                         items {
                             title
@@ -71,13 +73,9 @@ export async function getProducts(
                             url
                         }
                     }
-                    cardImage {
-                        title
-                        description
-                        url
-                        width
-                        height
-                    }
+                    types
+                    categories
+                    productLink
                     tags
                 }
             }
@@ -158,7 +156,7 @@ export async function getProductsTotal(): Promise<number> {
     const response = await fetchContent(query);
 
     // On a successful request get the total number of items for pagination.
-    return safelyParse(response, 'data.content.breaksCollection.total', parseAsNumber, 0);
+    return safelyParse(response, 'data.content.productCollection.total', parseAsNumber, 0);
 }
 
 export async function fetchProductBySlug(slug: string): Promise<ContentfulProduct | null> {
@@ -257,7 +255,7 @@ export async function fetchProductByProductLink(
     return isArray(productLink) ? productCollection : productCollection[0];
 }
 
-export async function fetchProductImagesByProductLink(productLink: string[]): Promise<ContentfulProductShort[] | null> {
+export async function fetchProductImagesByProductLink(productLink: string[]): Promise<CartImage[] | null> {
     const productQuery = isArray(productLink) ? 'productLink_in' : 'productLink';
 
     // Piece together query.
@@ -265,17 +263,25 @@ export async function fetchProductImagesByProductLink(productLink: string[]): Pr
         query {
             productCollection (where: {${productQuery}: ${JSON.stringify(productLink)}}) {
                 items {
-                    name
                     productLink
                     cardImage {
                         title
                         description
                         url
-                        width
-                        height
                     }
                 }
             }
+            slotsCollection (where: {${productQuery}: ${JSON.stringify(productLink)}}) {
+                items {
+                    productLink
+                    image {
+                        title
+                        description
+                        url
+                    }
+                }
+            }
+            
         }
     `;
 
@@ -290,11 +296,32 @@ export async function fetchProductImagesByProductLink(productLink: string[]): Pr
         null
     );
 
-    if (!productCollection) {
-        return null;
+    const slotsCollection = safelyParse(
+        productResponse,
+        'data.content.slotsCollection.items',
+        parseAsArrayOfContentfulProducts,
+        null
+    );
+
+    if (productCollection) {
+        return productCollection.map((product) => ({
+            title: safelyParse(product, 'cardImage.title', parseAsString, ''),
+            description: safelyParse(product, 'cardImage.description', parseAsString, ''),
+            url: safelyParse(product, 'cardImage.url', parseAsString, ''),
+            sku_code: safelyParse(product, 'productLink', parseAsString, ''),
+        }));
     }
 
-    return productCollection;
+    if (slotsCollection) {
+        return slotsCollection.map((slot) => ({
+            title: safelyParse(slot, 'image.title', parseAsString, ''),
+            description: safelyParse(slot, 'image.description', parseAsString, ''),
+            url: safelyParse(slot, 'image.url', parseAsString, ''),
+            sku_code: safelyParse(slot, 'productLink', parseAsString, ''),
+        }));
+    }
+
+    return null;
 }
 
 export async function getSingleProduct(accessToken: string, slug: string): Promise<SingleProduct> {
