@@ -16,7 +16,7 @@ export const Pagination: React.FC<PaginationProps> = ({ currentPage, pageCount, 
             if (currentPage === i) {
                 btns.push(
                     <button
-                        className="btn btn-outline btn-sm btn-active rounded-none"
+                        className="btn btn-sm bg-primary rounded-none"
                         onClick={() => handlePageNumber(i)}
                         key={`page-${i}`}
                     >
