@@ -333,10 +333,18 @@ export async function getDeliveryLeadTimes(accessToken: string): Promise<Deliver
 
 function findLeadTimeIdFromMethodName(name: string, leadTimes: DeliveryLeadTimes[]): DeliveryLeadTimes | null {
     switch (name) {
-        case 'Royal Mail 1st Class':
-            return leadTimes.find((time) => time.maxDays === 2) || null;
-        case 'Royal Mail 2nd Class':
-            return leadTimes.find((time) => time.maxDays === 5) || null;
+        case 'Singles - 1st Class':
+            return leadTimes.find((time) => time.id === 'ZBqZKFGdRx') || null;
+        case 'Singles - 2nd Class':
+            return leadTimes.find((time) => time.id === 'EOWbAFEjLp') || null;
+        case 'Sealed - 1st Class':
+            return leadTimes.find((time) => time.id === 'NxgEMFZamO') || null;
+        case 'Sealed - 2nd Class':
+            return leadTimes.find((time) => time.id === 'XxnAYFkwGB') || null;
+        case 'Breaks - 1st Class':
+            return leadTimes.find((time) => time.id === 'JOEbgFkbwB') || null;
+        case 'Breaks - 2nd Class':
+            return leadTimes.find((time) => time.id === 'jOzlrFjlzx') || null;
         default:
             return null;
     }
