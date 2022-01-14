@@ -12,7 +12,7 @@ import { parseAsString, safelyParse } from '../../utils/parsers';
 import NavBar from './Navbar';
 import CartIcon from './CartIcon';
 import NewsBanner from './NewsBanner';
-import IssueBanner from './IssueBar';
+// import IssueBanner from './IssueBar';
 
 export const Header: React.FC = () => {
     const session = useSession();

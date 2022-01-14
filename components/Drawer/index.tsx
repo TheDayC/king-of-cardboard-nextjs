@@ -18,7 +18,7 @@ export const Drawer: React.FC = ({ children }) => {
             <input id="king-of-cardboard-drawer" type="checkbox" className="drawer-toggle" />
             <div className="drawer-content">{children}</div>
             <div className="drawer-side">
-                <label htmlFor="my-drawer" className="drawer-overlay"></label>
+                <label htmlFor="king-of-cardboard-drawer" className="drawer-overlay"></label>
 
                 <ul className="menu p-4 overflow-y-auto w-3/4 sm:w-1/2 md:w-1/4 bg-neutral text-base-content">
                     <li className="text-neutral-content mb-2">
