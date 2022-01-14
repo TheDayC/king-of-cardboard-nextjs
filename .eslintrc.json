@@ -15,7 +15,7 @@
         "sourceType": "module"
     },
     "plugins": ["@typescript-eslint"],
-    "ignorePatterns": [".husky", "*.lock", "*.md", "*.css", "build/", "build-*/", "*.json"],
+    "ignorePatterns": [".husky", "*.lock", "*.md", "*.css", "build/", "build-*/", "*.json", "scripts/*"],
     "rules": {
         "comma-dangle": [
             "error",

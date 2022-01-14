@@ -78,7 +78,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
         }
 
         setLoading(false);
-    }, [accessToken, orderId, dispatch, loading, hasExceededStock, sku_code, categories, images.items, name, types]);
+    }, [accessToken, orderId, dispatch, loading, hasExceededStock, sku_code, categories, name, types, cardImage.url]);
 
     useEffect(() => {
         if (accessToken && slug && shouldFetch) {
