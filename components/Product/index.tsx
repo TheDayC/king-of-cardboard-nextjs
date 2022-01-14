@@ -22,16 +22,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
     const [loading, setLoading] = useState(false);
     const [shouldFetch, setShouldFetch] = useState(true);
     const { handleSubmit } = useForm();
-    const {
-        inventory,
-        sku_code,
-        description: productDesc,
-        name,
-        images,
-        types,
-        categories,
-        cardImage,
-    } = currentProduct;
+    const { inventory, sku_code, description: productDesc, name, types, categories, cardImage } = currentProduct;
     const stock = inventory.quantity;
     const currentLineItem = items.length > 0 ? items.find((c) => c.sku_code === sku_code) : null;
     const hasExceededStock = currentLineItem ? currentLineItem.quantity >= stock : false;

@@ -21,5 +21,5 @@
         }
     },
     "include": ["next-env.d.ts", "global.d.ts", "**/*.ts", "**/*.tsx", "jest.config.js", "mocks/*.js"],
-    "exclude": ["node_modules"]
+    "exclude": ["node_modules", "data", "scripts", "mocks", "__tests__", ".husky", "utils/testing", "jest.*.js"]
 }
