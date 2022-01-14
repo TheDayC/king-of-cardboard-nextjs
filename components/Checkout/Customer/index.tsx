@@ -94,7 +94,7 @@ const defaultShippingAddress: CustomerAddress = {
 };
 
 const Customer: React.FC = () => {
-    const session = useSession();
+    const { data: session } = useSession();
     const {
         currentStep,
         orderId,
