@@ -1,8 +1,16 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 module.exports = {
-    purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
-    darkMode: false, // or 'media' or 'class'
+    content: ['./src/pages/**/*.{js,ts,jsx,tsx}', './src/components/**/*.{js,ts,jsx,tsx}'],
+    //purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
+    purge: false,
     theme: {
-        extend: {},
+        extend: {
+            fontFamily: {
+                sans: ['Inter', ...defaultTheme.fontFamily.sans],
+            },
+        },
         backgroundColor: (theme) => ({
             ...theme('colors'),
             twitch: '#9146FF',
