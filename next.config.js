@@ -21,12 +21,4 @@ module.exports = {
             },
         ];
     },
-    async rewrites() {
-        return [
-            {
-                source: '/api/:path*',
-                destination: 'https://king-of-cardboard-nextjs.vercel.app/:path*',
-            },
-        ];
-    },
 };

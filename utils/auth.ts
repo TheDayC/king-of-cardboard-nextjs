@@ -40,7 +40,7 @@ export function userClient(): AxiosInstance {
 // Create commerce layer access token
 export async function createToken(): Promise<CreateToken> {
     try {
-        const res = await axios.get('/api/getAccessToken');
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_SITE_URL}/api/getAccessToken`);
         const now = DateTime.now().setZone('Europe/London');
         const token = safelyParse(res, 'data.token', parseAsString, null);
         const expires = safelyParse(res, 'data.expires', parseAsNumber, now.toSeconds());
@@ -67,7 +67,7 @@ export async function registerUser(
     password: string
 ): Promise<boolean> {
     try {
-        const response = await axios.post('/api/register', {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/register`, {
             username,
             emailAddress,
             password,

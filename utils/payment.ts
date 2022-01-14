@@ -62,7 +62,7 @@ export async function sendOrderConfirmation(
     shippingAddress: CustomerAddress
 ): Promise<boolean> {
     try {
-        const res = await axios.post('/api/sendOrderConfirmation', {
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/sendOrderConfirmation`, {
             orderNumber,
             subTotal,
             shipping,

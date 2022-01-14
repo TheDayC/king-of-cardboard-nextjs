@@ -599,7 +599,7 @@ export async function editAddress(
 
 export async function requestPasswordReset(accessToken: string, email: string): Promise<boolean> {
     try {
-        const response = await axios.post('/api/account/requestPasswordReset', {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/account/requestPasswordReset`, {
             token: accessToken,
             email,
         });
@@ -680,7 +680,7 @@ export async function resetPassword(
 
 export async function updateUsername(emailAddress: string, username: string): Promise<boolean> {
     try {
-        const res = await axios.post('/api/account/updateUsername', {
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/account/updateUsername`, {
             emailAddress,
             username,
         });
@@ -697,7 +697,9 @@ export async function updateUsername(emailAddress: string, username: string): Pr
 
 export async function getSocialMedia(emailAddress: string): Promise<SocialMedia> {
     try {
-        const res = await axios.post('/api/account/getSocialMedia', { emailAddress });
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/account/getSocialMedia`, {
+            emailAddress,
+        });
 
         return {
             instagram: safelyParse(res, 'data.socialMedia.instagram', parseAsString, ''),
@@ -728,7 +730,7 @@ export async function updateSocialMedia(
     ebay: string
 ): Promise<boolean> {
     try {
-        const res = await axios.post('/api/account/updateSocialMedia', {
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/account/updateSocialMedia`, {
             emailAddress,
             instagram,
             twitter,
