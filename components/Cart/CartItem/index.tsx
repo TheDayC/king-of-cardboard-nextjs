@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { MdDeleteForever, MdRemoveCircleOutline, MdAddCircleOutline } from 'react-icons/md';
-import { useDispatch, useSelector, useStore } from 'react-redux';
+import React, { useCallback } from 'react';
+import { MdDeleteForever } from 'react-icons/md';
+import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
 
 import {
@@ -9,12 +9,12 @@ import {
     setUpdateQuantities,
     setUpdatingCart,
 } from '../../../store/slices/cart';
-import { removeLineItem, updateLineItem } from '../../../utils/commerce';
+import { removeLineItem } from '../../../utils/commerce';
 import { ImageItem } from '../../../types/products';
 import selector from './selector';
 import styles from './cartitem.module.css';
 import { addError } from '../../../store/slices/alerts';
-import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
+import { parseAsString, safelyParse } from '../../../utils/parsers';
 
 interface CartItemProps {
     id: string;
@@ -39,7 +39,6 @@ export const CartItem: React.FC<CartItemProps> = ({
 }) => {
     const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
-    const [currentQty, setCurrentQty] = useState(quantity);
 
     const handleRemoveItem = useCallback(async () => {
         if (!accessToken || !id) return;
@@ -71,10 +70,6 @@ export const CartItem: React.FC<CartItemProps> = ({
             }
         }
     };
-
-    useEffect(() => {
-        setCurrentQty(quantity);
-    }, [quantity]);
 
     return (
         <div className="grid grid-cols-3 lg:grid-cols-5 bg-white p-4 border-b p-4">
