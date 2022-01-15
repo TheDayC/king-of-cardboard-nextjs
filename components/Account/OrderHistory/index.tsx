@@ -21,11 +21,11 @@ export const OrderHistory: React.FC = () => {
     const dispatch = useDispatch();
 
     const handlePageNumber = (nextPage: number) => {
-        if (accessToken && emailAddress) {
+        if (accessToken) {
             const page = nextPage + 1;
 
             setIsLoading(true);
-            dispatch(fetchOrders({ accessToken, emailAddress, pageSize: PER_PAGE, page }));
+            dispatch(fetchOrders({ accessToken, pageSize: PER_PAGE, page }));
             setCurrentPage(page);
             setIsLoading(false);
         }

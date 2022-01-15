@@ -23,7 +23,8 @@ interface EmailThunkInput {
     emailAddress: string;
 }
 
-interface PaginatedThunkInput extends EmailThunkInput {
+interface PaginatedThunkInput {
+    accessToken: string;
     pageSize: number;
     page: number;
 }
@@ -50,9 +51,9 @@ export const fetchGiftCard = createAsyncThunk(
 export const fetchOrders = createAsyncThunk(
     'account/fetchOrders',
     async (data: PaginatedThunkInput): Promise<Order[]> => {
-        const { accessToken, emailAddress, pageSize, page } = data;
+        const { accessToken, pageSize, page } = data;
 
-        return await getOrders(accessToken, emailAddress, pageSize, page);
+        return await getOrders(accessToken, pageSize, page);
     }
 );
 

@@ -114,6 +114,7 @@ export async function createPaymentSource(
                 },
             },
         });
+        console.log('🚀 ~ file: commerce.ts ~ line 117 ~ res', res);
 
         return {
             paymentId: safelyParse(res, 'data.data.id', parseAsString, null),

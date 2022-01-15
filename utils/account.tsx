@@ -18,14 +18,9 @@ import { authClient } from './auth';
 import { errorHandler } from '../middleware/errors';
 import { SocialMedia } from '../types/profile';
 
-export async function getOrders(
-    accessToken: string,
-    emailAddress: string,
-    pageSize: number,
-    page: number
-): Promise<Order[]> {
+export async function getOrders(accessToken: string, pageSize: number, page: number): Promise<Order[]> {
     try {
-        const filters = `filter[q][email_eq]=${emailAddress}&filter[q][status_not_in]=draft,pending`;
+        const filters = `filter[q][status_not_in]=draft,pending`;
         const pagination = `page[size]=${pageSize}&page[number]=${page}`;
         const sort = 'sort=-created_at,number';
         const orderFields =
