@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { delay, split } from 'lodash';
+import { split } from 'lodash';
 
 import { setLineItem } from '../../utils/commerce';
 import selector from './selector';
@@ -32,7 +32,6 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
     const btnDisabled = hasExceededStock ? ' btn-disabled' : ' btn-primary';
     const btnLoading = loading ? ' loading btn-square' : '';
     const isQuantityAtMax = quantity === stock;
-    const isInBasket = Boolean(item);
 
     // Handle the form submission.
     const onSubmit = useCallback(
