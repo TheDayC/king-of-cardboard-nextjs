@@ -81,6 +81,7 @@ export const Delivery: React.FC = () => {
                 <Loading show={!hasShipmentsAndMethods} />
                 <form onSubmit={handleSubmit(handleSelectShippingMethod)}>
                     {hasShipmentsAndMethods &&
+                        hasBothAddresses &&
                         shipments.map((shipment, index) => {
                             return (
                                 <Shipment
