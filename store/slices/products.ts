@@ -48,7 +48,35 @@ export const fetchSingleProduct = createAsyncThunk(
 const productsSlice = createSlice({
     name: 'products',
     initialState: productsInitialState,
-    reducers: {},
+    reducers: {
+        clearCurrentProduct(state) {
+            state.currentProduct = {
+                id: '',
+                name: '',
+                slug: '',
+                sku_code: '',
+                description: '',
+                types: [],
+                categories: [],
+                images: {
+                    items: [],
+                },
+                cardImage: {
+                    title: '',
+                    description: '',
+                    url: '',
+                },
+                tags: [],
+                amount: '',
+                compare_amount: '',
+                inventory: {
+                    available: false,
+                    quantity: 0,
+                    levels: [],
+                },
+            };
+        },
+    },
     extraReducers: (builder) => {
         builder.addCase(fetchProducts.fulfilled, (state, action) => {
             state.products = action.payload;
@@ -65,5 +93,7 @@ const productsSlice = createSlice({
             }));
     },
 });
+
+export const { clearCurrentProduct } = productsSlice.actions;
 
 export default productsSlice.reducer;
