@@ -6,7 +6,7 @@ import selector from './selector';
 import Pagination from '../../Pagination';
 import { setIsLoadingProducts } from '../../../store/slices/shop';
 import ProductCard from './ProductCard';
-import { fetchProducts, fetchProductsTotal } from '../../../store/slices/products';
+import { clearCurrentProduct, fetchProducts, fetchProductsTotal } from '../../../store/slices/products';
 
 const PER_PAGE = 8;
 
@@ -54,6 +54,10 @@ export const Grid: React.FC = () => {
             dispatch(setIsLoadingProducts(false));
         }
     }, [dispatch, accessToken, shouldFetch, categories, productTypes]);
+
+    useEffect(() => {
+        dispatch(clearCurrentProduct());
+    }, [dispatch]);
 
     return (
         <div className="flex flex-col w-full md:w-5/6" data-testid="shop-grid">
