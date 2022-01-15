@@ -103,6 +103,7 @@ const cartSlice = createSlice({
             }),
             builder.addCase(fetchCartItems.fulfilled, (state, action) => {
                 state.items = action.payload;
+                state.isUpdatingCart = false;
             }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,

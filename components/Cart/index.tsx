@@ -36,7 +36,6 @@ export const Cart: React.FC = () => {
         dispatch(fetchCartItems({ accessToken, orderId }));
         dispatch(fetchCartTotals({ accessToken, orderId }));
         dispatch(fetchItemCount({ accessToken, orderId }));
-        dispatch(setUpdatingCart(false));
     }, [dispatch, accessToken, orderId]);
 
     const handleUpdateQuantities = async () => {
