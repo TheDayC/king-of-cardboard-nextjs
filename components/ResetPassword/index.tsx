@@ -46,7 +46,7 @@ export const ResetPassword: React.FC = () => {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="form-control mt-2">
+            <div className="form-control">
                 <label className="input-group input-group-md">
                     <span className="bg-base-200">
                         <MdOutlineMailOutline className="w-5 h-5" />

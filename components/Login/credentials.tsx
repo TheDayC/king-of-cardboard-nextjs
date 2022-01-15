@@ -5,12 +5,11 @@ import { RiLockPasswordLine } from 'react-icons/ri';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { BiErrorCircle } from 'react-icons/bi';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { createUserToken } from '../../utils/auth';
 import { setUserId, setUserToken } from '../../store/slices/global';
-import selector from './selector';
 
 interface Submit {
     emailAddress?: string;

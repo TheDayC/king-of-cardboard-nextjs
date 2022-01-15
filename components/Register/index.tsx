@@ -5,6 +5,7 @@ import { AiOutlineUser } from 'react-icons/ai';
 import { MdOutlineMailOutline } from 'react-icons/md';
 import { RiLockPasswordLine } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
+import Link from 'next/link';
 
 import { Tabs } from '../../enums/auth';
 import { parseAsString, safelyParse } from '../../utils/parsers';
@@ -47,6 +48,7 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
     const confirmEmailErr = safelyParse(errors, 'confirmEmailAddress.message', parseAsString, null);
     const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
     const confirmPasswordErr = safelyParse(errors, 'confirmPassword.message', parseAsString, null);
+    const agreedErr = safelyParse(errors, 'agreed.message', parseAsString, null);
     const error = safelyParse(router, 'query.error', parseAsString, null);
 
     const onSubmit = async (data: Submit) => {
@@ -97,7 +99,7 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
                 </label>
                 {usernameErr && (
                     <label className="label">
-                        <span className="label-text-alt">{usernameErr}</span>
+                        <span className="label-text-alt text-error">{usernameErr}</span>
                     </label>
                 )}
             </div>
@@ -117,8 +119,10 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
                 </label>
                 {emailErr && (
                     <label className="label">
-                        {emailErr && <span className="label-text-alt">{emailErr}</span>}
-                        {confirmEmailErr && <span className="label-text-alt">Email addresses must match.</span>}
+                        {emailErr && <span className="label-text-alt text-error">{emailErr}</span>}
+                        {confirmEmailErr && (
+                            <span className="label-text-alt text-error">Email addresses must match.</span>
+                        )}
                     </label>
                 )}
             </div>
@@ -131,7 +135,7 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
                         type="password"
                         placeholder="Password"
                         {...register('password', {
-                            required: { value: true, message: 'Password required' },
+                            required: { value: true, message: 'Password required and meet complexity requirements.' },
                             pattern: PASS_PATTERN,
                         })}
                         className={`input input-md input-bordered w-full${passwordErr ? ' input-error' : ''}`}
@@ -139,8 +143,40 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
                 </label>
                 {passwordErr && (
                     <label className="label">
-                        {passwordErr && <span className="label-text-alt">{passwordErr}</span>}
-                        {confirmPasswordErr && <span className="label-text-alt">Passwords must match.</span>}
+                        {passwordErr && <span className="label-text-alt text-error">{passwordErr}</span>}
+                        {confirmPasswordErr && <span className="label-text-alt text-error">Passwords must match.</span>}
+                    </label>
+                )}
+            </div>
+            <div className="divider lightDivider"></div>
+            <div className="form-control">
+                <label className="cursor-pointer label p-0">
+                    <span className="label-text text-sm text-left">
+                        Confirm that you understand and agree to our{' '}
+                        <Link href="/legal/terms-and-conditions" passHref>
+                            <span className="text-sm text-secondary hover:underline">Terms & conditions</span>
+                        </Link>{' '}
+                        and our{' '}
+                        <Link href="/legal/privacy-policy" passHref>
+                            <span className="text-sm text-secondary hover:underline">Privacy Policy.</span>
+                        </Link>
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        className={`checkbox rounded-sm w-10 ml-2`}
+                        {...register('agreed', {
+                            required: {
+                                value: true,
+                                message:
+                                    'You must agree to our Terms and Conditions and Privacy Policy before signing up.',
+                            },
+                        })}
+                    />
+                </label>
+                {agreedErr && (
+                    <label className="label text-left">
+                        {agreedErr && <span className="label-text-alt text-error">{agreedErr}</span>}
                     </label>
                 )}
             </div>

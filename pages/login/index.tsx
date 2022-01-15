@@ -62,7 +62,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
             <div className="flex flex-col w-full justify-center items-center">
                 <div className="flex flex-col w-full md:w-1/2 lg:w-1/3 card text-center rounded-md md:shadow-2xl">
                     <div className="card-body p-2 lg:p-6">
-                        <div className="tabs">
+                        <div className="tabs mb-2">
                             <a
                                 className={`tab tab-bordered w-1/3${isLogin ? ' tab-active' : ''}`}
                                 onClick={handleLoginTab}
@@ -82,7 +82,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
                                 Reset
                             </a>
                         </div>
-                        <div className="px-2 py-4 lg:p-4">
+                        <div className="px-0 py-4 lg:py-4">
                             {currentTab === Tabs.Login && (
                                 <Login providers={providers} showRegistrationSuccess={regSuccess} />
                             )}
