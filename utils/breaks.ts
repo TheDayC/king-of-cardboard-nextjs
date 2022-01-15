@@ -11,7 +11,6 @@ import {
     parseAsString,
     safelyParse,
     parseAsImageCollection,
-    parseAsSkuInventory,
     parseAsBoolean,
     parseAsBreakSlotsCollection,
     parseAsArrayOfCommerceResponse,
@@ -164,9 +163,8 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
 
     // Next pull it by id so we can fetch inventory information.
     const id = safelyParse(skuByCodeData, 'id', parseAsString, '');
-    const fields = '&fields[skus]=id,inventory&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount';
+    const fields = '&fields[skus]=id,code&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount';
     const skuRes = await cl.get(`/api/skus/${id}?include=prices${fields}`);
-    const skuData = safelyParse(skuRes, 'data.data', parseAsCommerceResponse, null);
     const included = safelyParse(skuRes, 'data.included', parseAsArrayOfCommerceResponse, []);
     const prices = included.find((i) => i.attributes.sku_code === sku_code && i.type === 'prices');
 
@@ -179,11 +177,16 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
         .filter((bS) => bS.length > 0);
     const slotSkuChunks = chunk(breakSlotSkus, 25);
     const breakSkusByCodesIncluded: CommerceLayerResponse[] = [];
+    const unavailableSlots: string[] = [];
+    const skuIdsWithSkus: unknown[] = [];
 
     for (const chunk of slotSkuChunks) {
         const breakSlotsString = join(chunk, ',');
         const breakSkusByCodesRes = await cl.get(
-            `/api/skus?filter[q][code_in]=${breakSlotsString}&include=prices&fields[skus]=id,&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount&page[size]=25&page[number]=1`
+            `/api/skus?filter[q][code_in]=${breakSlotsString}&include=prices&fields[skus]=id,code&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount&page[size]=25&page[number]=1`
+        );
+        const unavailableSkusRes = await cl.get(
+            `/api/skus?filter[q][code_in]=${breakSlotsString}&fields[skus]=code&page[size]=25&page[number]=1&filter[q][stock_items_quantity_gt]=0`
         );
         const included = safelyParse(
             breakSkusByCodesRes,
@@ -191,8 +194,27 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
             parseAsArrayOfCommerceResponse,
             [] as CommerceLayerResponse[]
         );
+        const unavailableSkus = safelyParse(
+            unavailableSkusRes,
+            'data.data',
+            parseAsArrayOfCommerceResponse,
+            [] as CommerceLayerResponse[]
+        );
+        const data = safelyParse(
+            breakSkusByCodesRes,
+            'data.data',
+            parseAsArrayOfCommerceResponse,
+            [] as CommerceLayerResponse[]
+        );
 
         included.forEach((i) => breakSkusByCodesIncluded.push(i));
+        unavailableSkus.forEach((i) => unavailableSlots.push(safelyParse(i, 'attributes.code', parseAsString, '')));
+        data.forEach((i) => {
+            skuIdsWithSkus.push({
+                id: safelyParse(i, 'id', parseAsString, ''),
+                code: safelyParse(i, 'attributes.code', parseAsString, ''),
+            });
+        });
     }
 
     const breakSlots = breakSlotsCollection.items.map((slot) => {
@@ -200,16 +222,19 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
         const slotPrices = breakSkusByCodesIncluded.find(
             (i) => i.attributes.sku_code === sku_code && i.type === 'prices'
         );
+        const sku = skuIdsWithSkus.find((skuData) => safelyParse(skuData, 'code', parseAsString, '') === sku_code);
 
         return {
-            id: safelyParse(slotPrices, 'id', parseAsString, ''),
+            id: safelyParse(sku, 'id', parseAsString, ''),
             name: slot.name,
             image: slot.image,
             sku_code,
             amount: safelyParse(slotPrices, 'attributes.formatted_amount', parseAsString, '£0.00'),
             compare_amount: safelyParse(prices, 'attributes.formatted_compare_at_amount', parseAsString, '£0.00'),
+            isAvailable: unavailableSlots.includes(sku_code),
         };
     });
+
     const imageCollection = safelyParse(contentfulBreak, 'imageCollection', parseAsImageCollection, { items: [] });
     const images = imageCollection.items.map((iC) => ({
         title: safelyParse(iC, 'cardImage.title', parseAsString, ''),
@@ -237,12 +262,5 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
         isLive: safelyParse(contentfulBreak, 'isLive', parseAsBoolean, false),
         isComplete: safelyParse(contentfulBreak, 'isComplete', parseAsBoolean, false),
         vodLink: safelyParse(contentfulBreak, 'vodLink', parseAsString, ''),
-        amount: safelyParse(prices, 'attributes.formatted_amount', parseAsString, ''),
-        compare_amount: safelyParse(prices, 'attributes.formatted_compare_at_amount', parseAsString, ''),
-        inventory: safelyParse(skuData, 'attributes.inventory', parseAsSkuInventory, {
-            available: false,
-            quantity: 0,
-            levels: [],
-        }),
     };
 }

@@ -4,7 +4,7 @@ import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
 import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../../types/account';
 import { Break, SingleBreak } from '../../types/breaks';
-import { CartItem } from '../../types/cart';
+import { CartItem, UpdateQuantity } from '../../types/cart';
 import { Shipment } from '../../types/checkout';
 import { ContentfulPage } from '../../types/pages';
 import { Product, SingleProduct } from '../../types/products';
@@ -37,6 +37,7 @@ export interface CartState {
     discount: string;
     total: string;
     orderHasGiftCard: boolean;
+    updateQuantities: UpdateQuantity[];
 }
 
 export interface PaymentMethod {

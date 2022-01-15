@@ -22,6 +22,7 @@ export const PickSlot: React.FC = () => {
                             name={slot.name}
                             amount={slot.amount}
                             compare_amount={slot.compare_amount}
+                            isAvailable={slot.isAvailable}
                             setLoading={setLoading}
                             key={`team-${slot.name}`}
                         />
