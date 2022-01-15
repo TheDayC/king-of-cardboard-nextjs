@@ -38,7 +38,7 @@ export const Address: React.FC<AddressProps> = ({ id, name, full_address, fetchA
             <div className="flex flex-row w-full justify-between">
                 <Link
                     href={{
-                        pathname: '/account/editAddress/[addressId]',
+                        pathname: '/account/edit-address/[addressId]',
                         query: { addressId: id },
                     }}
                     passHref
