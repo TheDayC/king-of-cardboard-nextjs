@@ -8,6 +8,7 @@ import selector from './selector';
 import { fetchCartItems, fetchItemCount } from '../../../../../store/slices/cart';
 import { ImageItem } from '../../../../../types/products';
 import { addError, addSuccess } from '../../../../../store/slices/alerts';
+import styles from './slot.module.css';
 
 interface SlotProps {
     image: ImageItem;
@@ -111,14 +112,12 @@ export const Slot: React.FC<SlotProps> = ({
                 </div>
             )}
             {image.url.length > 0 && (
-                <div className="w-full h-10 md:h-20 lg:h-32 relative mb-2">
-                    <Image
+                <div className="flex flex-row justify-center items-center w-full h-10 md:h-20 lg:h-32 relative mb-2">
+                    <img
                         src={image.url}
                         alt={image.description}
                         title={image.title}
-                        layout="fill"
-                        objectFit="scale-down"
-                        className="z-10"
+                        className={`z-10 w-auto h-full ${styles.logo}`}
                     />
                 </div>
             )}
