@@ -40,14 +40,9 @@ export const Delivery: React.FC = () => {
         // Start checkout loader.
         dispatch(setCheckoutLoading(true));
 
-        const mappedData = shipments.map((shipment) => ({
-            shipmentId: shipment,
-            methodId: data.method[shipment].methodId,
-        }));
-
         // for...of used here over forEach to avoid race conditions with await.
-        for (const mD of mappedData) {
-            await updateShipmentMethod(accessToken, mD.shipmentId, mD.methodId);
+        for (const shipment of shipments) {
+            await updateShipmentMethod(accessToken, shipment.id, data.method[shipment.id].methodId);
         }
 
         // Fetch items, totals and item count along with payment methods
@@ -85,8 +80,8 @@ export const Delivery: React.FC = () => {
                         shipments.map((shipment, index) => {
                             return (
                                 <Shipment
-                                    id={shipment}
-                                    shippingMethods={methods}
+                                    id={shipment.id}
+                                    shippingMethods={shipment.methods}
                                     shipmentCount={index + 1}
                                     shipmentsTotal={shipments.length}
                                     register={register}

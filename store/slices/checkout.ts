@@ -2,7 +2,7 @@ import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { MergedShipmentMethods } from '../../types/checkout';
+import { MergedShipmentMethods, Shipment } from '../../types/checkout';
 import { getPaymentMethods, getShipments, getShippingMethods } from '../../utils/checkout';
 import checkoutInitialState from '../state/checkout';
 import { PaymentMethod, CommonThunkInput } from '../types/state';
@@ -20,7 +20,7 @@ export const fetchPaymentMethods = createAsyncThunk(
 
 export const fetchShipments = createAsyncThunk(
     'checkout/fetchShipments',
-    async (data: CommonThunkInput): Promise<string[]> => {
+    async (data: CommonThunkInput): Promise<Shipment[]> => {
         const { accessToken, orderId } = data;
 
         return await getShipments(accessToken, orderId);

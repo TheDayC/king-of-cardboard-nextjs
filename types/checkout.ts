@@ -29,3 +29,17 @@ export interface DeliveryLeadTimes {
 export interface MergedShipmentMethods extends ShippingMethods {
     leadTimes: DeliveryLeadTimes | null;
 }
+
+export interface Method {
+    id: string;
+    name: string;
+    price: string;
+    minDays: number;
+    maxDays: number;
+}
+
+export interface Shipment {
+    id: string;
+    category: string;
+    methods: Method[];
+}
