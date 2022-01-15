@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { split } from 'lodash';
+import { delay, split } from 'lodash';
 
 import { setLineItem } from '../../utils/commerce';
 import selector from './selector';
@@ -69,6 +69,7 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
                 dispatch(fetchCartItems({ accessToken, orderId }));
                 gaEvent('addProductToCart', { sku_code });
                 dispatch(addSuccess(`${name} added to cart.`));
+                setTimeout(() => setLoading(false), 700);
             } else {
                 setLoading(false);
                 dispatch(addError('Failed to add product, please check the quantity.'));
@@ -83,12 +84,6 @@ export const Product: React.FC<ProductProps> = ({ slug }) => {
             dispatch(fetchSingleProduct({ accessToken, slug }));
         }
     }, [accessToken, slug, shouldFetch, dispatch]);
-
-    useEffect(() => {
-        if (isInBasket) {
-            setLoading(false);
-        }
-    }, [isInBasket, setLoading]);
 
     if (currentProduct.id.length <= 0) return null;
 
