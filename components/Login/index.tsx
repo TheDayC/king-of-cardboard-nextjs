@@ -36,9 +36,9 @@ export const Login: React.FC<LoginProps> = ({ providers, showRegistrationSuccess
     return (
         <React.Fragment>
             {credentials && <Credentials />}
-            <div className="divider">OR</div>
+            {/* <div className="divider">OR</div>
             <Google />
-            <Twitch />
+            <Twitch /> */}
         </React.Fragment>
     );
 };
