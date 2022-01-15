@@ -2,8 +2,8 @@ import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { MergedShipmentMethods } from '../../types/checkout';
-import { getPaymentMethods, getShipments, getShippingMethods } from '../../utils/checkout';
+import { Shipment } from '../../types/checkout';
+import { getPaymentMethods, getShipments } from '../../utils/checkout';
 import checkoutInitialState from '../state/checkout';
 import { PaymentMethod, CommonThunkInput } from '../types/state';
 
@@ -20,19 +20,10 @@ export const fetchPaymentMethods = createAsyncThunk(
 
 export const fetchShipments = createAsyncThunk(
     'checkout/fetchShipments',
-    async (data: CommonThunkInput): Promise<string[]> => {
+    async (data: CommonThunkInput): Promise<Shipment[]> => {
         const { accessToken, orderId } = data;
 
         return await getShipments(accessToken, orderId);
-    }
-);
-
-export const fetchShippingMethods = createAsyncThunk(
-    'checkout/fetchShippingMethods',
-    async (data: CommonThunkInput): Promise<MergedShipmentMethods[]> => {
-        const { accessToken, orderId } = data;
-
-        return await getShippingMethods(accessToken, orderId);
     }
 );
 
@@ -71,9 +62,6 @@ const checkoutSlice = createSlice({
         }),
             builder.addCase(fetchShipments.fulfilled, (state, action) => {
                 state.shipments = action.payload;
-            }),
-            builder.addCase(fetchShippingMethods.fulfilled, (state, action) => {
-                state.shippingMethods = action.payload;
             }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,

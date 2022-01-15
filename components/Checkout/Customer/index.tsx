@@ -7,7 +7,6 @@ import selector from './selector';
 import { updateAddress, updateAddressClone, updateSameAsBilling } from '../../../utils/checkout';
 import {
     fetchShipments,
-    fetchShippingMethods,
     setBillingAddress,
     setCloneBillingAddressId,
     setCloneShippingAddressId,
@@ -280,7 +279,6 @@ const Customer: React.FC = () => {
     const submissionCleanup = () => {
         if (accessToken && orderId) {
             dispatch(fetchShipments({ accessToken, orderId }));
-            dispatch(fetchShippingMethods({ accessToken, orderId }));
         }
 
         // Remove load blockers.

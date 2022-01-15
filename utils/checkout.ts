@@ -1,111 +1,9 @@
-import { Counties } from '../enums/checkout';
 import { PaymentMethod, CustomerAddress, CustomerDetails, ShipmentsWithLineItems } from '../store/types/state';
-import { DeliveryLeadTimes, MergedShipmentMethods, PaymentAttributes } from '../types/checkout';
+import { PaymentAttributes, Shipment } from '../types/checkout';
 import { authClient } from './auth';
 import { CommerceLayerResponse } from '../types/api';
 import { errorHandler } from '../middleware/errors';
-import { isArray } from './typeguards';
-import { parseAsArrayOfCommerceResponse, parseAsNumber, parseAsString, parseAsUnknown, safelyParse } from './parsers';
-
-export function getCounties(): Counties[] {
-    return [
-        Counties.Aberdeenshire,
-        Counties.Angus,
-        Counties.Antrim,
-        Counties.Argyll,
-        Counties.Armagh,
-        Counties.Ayrshire,
-        Counties.Banffshire,
-        Counties.Bedfordshire,
-        Counties.Berkshire,
-        Counties.Berwickshire,
-        Counties.Bristol,
-        Counties.Buckinghamshire,
-        Counties.Bute,
-        Counties.Caithness,
-        Counties.Cambridgeshire,
-        Counties.Cheshire,
-        Counties.CityofLondon,
-        Counties.Clackmannanshire,
-        Counties.Clwyd,
-        Counties.Cornwall,
-        Counties.Cumbria,
-        Counties.Derbyshire,
-        Counties.Devon,
-        Counties.Dorset,
-        Counties.Down,
-        Counties.Dumfriesshire,
-        Counties.Dunbartonshire,
-        Counties.Durham,
-        Counties.Dyfed,
-        Counties.EastLothian,
-        Counties.EastRidingofYorkshire,
-        Counties.EastSussex,
-        Counties.Essex,
-        Counties.Fermanagh,
-        Counties.Fife,
-        Counties.Gloucestershire,
-        Counties.GreaterLondon,
-        Counties.GreaterManchester,
-        Counties.Gwent,
-        Counties.Gwynedd,
-        Counties.Hampshire,
-        Counties.Herefordshire,
-        Counties.Hertfordshire,
-        Counties.Invernessshire,
-        Counties.IsleofWight,
-        Counties.Kent,
-        Counties.Kincardineshire,
-        Counties.Kinrossshire,
-        Counties.Kirkcudbrightshire,
-        Counties.Lanarkshire,
-        Counties.Lancashire,
-        Counties.Leicestershire,
-        Counties.Lincolnshire,
-        Counties.Londonderry,
-        Counties.Merseyside,
-        Counties.MidGlamorgan,
-        Counties.Midlothian,
-        Counties.Moray,
-        Counties.Nairnshire,
-        Counties.Norfolk,
-        Counties.NorthYorkshire,
-        Counties.Northamptonshire,
-        Counties.Northumberland,
-        Counties.Nottinghamshire,
-        Counties.Orkney,
-        Counties.Oxfordshire,
-        Counties.Peeblesshire,
-        Counties.Perthshire,
-        Counties.Powys,
-        Counties.Renfrewshire,
-        Counties.RossandCromarty,
-        Counties.Roxburghshire,
-        Counties.Rutland,
-        Counties.Selkirkshire,
-        Counties.Shetland,
-        Counties.Shropshire,
-        Counties.Somerset,
-        Counties.SouthGlamorgan,
-        Counties.SouthYorkshire,
-        Counties.Staffordshire,
-        Counties.Stirlingshire,
-        Counties.Suffolk,
-        Counties.Surrey,
-        Counties.Sutherland,
-        Counties.TyneandWear,
-        Counties.Tyrone,
-        Counties.Warwickshire,
-        Counties.WestGlamorgan,
-        Counties.WestLothian,
-        Counties.WestMidlands,
-        Counties.WestSussex,
-        Counties.WestYorkshire,
-        Counties.Wigtownshire,
-        Counties.Wiltshire,
-        Counties.Worcestershire,
-    ];
-}
+import { parseAsArrayOfCommerceResponse, parseAsNumber, parseAsString, safelyParse } from './parsers';
 
 export function fieldPatternMsgs(field: string): string {
     switch (field) {
@@ -239,67 +137,45 @@ export async function updateSameAsBilling(
     return false;
 }
 
-export async function getShipments(accessToken: string, orderId: string): Promise<string[]> {
+export async function getShipments(accessToken: string, orderId: string): Promise<Shipment[]> {
     try {
         const cl = authClient(accessToken);
-        const res = await cl.get(`/api/orders/${orderId}/shipments?include=available_shipping_methods`);
+        const methodFields = 'fields[shipping_methods]=id,name,formatted_price_amount_for_shipment';
+        const shipmentFields = 'fields[shipments]=id,available_shipping_methods';
+        const res = await cl.get(
+            `/api/orders/${orderId}/shipments?include=available_shipping_methods&${methodFields}&${shipmentFields}`
+        );
         const shipments = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, []);
+        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
 
-        return shipments.map((shipment) => shipment.id);
-    } catch (error: unknown) {
-        errorHandler(error, 'Failed to fetch shipments.');
-    }
-
-    return [];
-}
-
-export async function getShippingMethods(accessToken: string, orderId: string): Promise<MergedShipmentMethods[]> {
-    try {
-        const cl = authClient(accessToken);
-        const shipmentsRes = await cl.get(`/api/orders/${orderId}/shipments?include=available_shipping_methods`);
-        const shipmentsIncluded = safelyParse(shipmentsRes, 'data.included', parseAsArrayOfCommerceResponse, []);
-
-        const deliveryLeadTimesRes = await cl.get('/api/delivery_lead_times?include=shipping_method');
+        const deliveryLeadTimesRes = await cl.get(
+            '/api/delivery_lead_times?fields[delivery_lead_times]=min_days,max_days,shipping_method&include=shipping_method'
+        );
         const deliveryLeadTimes = safelyParse(deliveryLeadTimesRes, 'data.data', parseAsArrayOfCommerceResponse, []);
 
-        const leadTimes = deliveryLeadTimes.map((leadTime: unknown) => ({
-            id: safelyParse(leadTime, 'id', parseAsString, ''),
-            minHours: safelyParse(leadTime, 'attributes.min_hours', parseAsNumber, 0),
-            maxHours: safelyParse(leadTime, 'attributes.max_hours', parseAsNumber, 0),
-            minDays: safelyParse(leadTime, 'attributes.min_days', parseAsNumber, 0),
-            maxDays: safelyParse(leadTime, 'attributes.max_days', parseAsNumber, 0),
-        }));
+        return shipments.map((shipment) => {
+            const methodIds: string[] = shipment.relationships.available_shipping_methods.data.map((m: unknown) =>
+                safelyParse(m, 'id', parseAsString, '')
+            );
 
-        return shipmentsIncluded.map((shipment) => {
-            const name = safelyParse(shipment, 'attributes.name', parseAsString, '');
-            const matchingLeadTime = findLeadTimeIdFromMethodName(name, leadTimes);
+            const methods = included
+                .filter((i) => i.type === 'shipping_methods' && methodIds.includes(i.id))
+                .map((i) => {
+                    const leadTime = deliveryLeadTimes.find((dLT) => dLT.relationships.shipping_method.data.id) || null;
+
+                    return {
+                        id: safelyParse(i, 'id', parseAsString, ''),
+                        name: safelyParse(i, 'attributes.name', parseAsString, ''),
+                        minDays: safelyParse(leadTime, 'attributes.min_days', parseAsNumber, 0),
+                        maxDays: safelyParse(leadTime, 'attributes.max_days', parseAsNumber, 0),
+                        price: safelyParse(i, 'attributes.formatted_price_amount_for_shipment', parseAsString, ''),
+                    };
+                });
 
             return {
                 id: safelyParse(shipment, 'id', parseAsString, ''),
-                name,
-                price_amount_cents: safelyParse(shipment, 'attributes.price_amount_cents', parseAsNumber, 0),
-                price_amount_float: safelyParse(shipment, 'attributes.price_amount_float', parseAsNumber, 0),
-                price_amount_for_shipment_cents: safelyParse(
-                    shipment,
-                    'attributes.price_amount_for_shipment_cents',
-                    parseAsNumber,
-                    0
-                ),
-                price_amount_for_shipment_float: safelyParse(
-                    shipment,
-                    'attributes.price_amount_for_shipment_float',
-                    parseAsNumber,
-                    0
-                ),
-                currency_code: safelyParse(shipment, 'attributes.currency_code', parseAsString, ''),
-                formatted_price_amount: safelyParse(shipment, 'attributes.formatted_price_amount', parseAsString, ''),
-                formatted_price_amount_for_shipment: safelyParse(
-                    shipment,
-                    'attributes.formatted_price_amount_for_shipment',
-                    parseAsString,
-                    ''
-                ),
-                leadTimes: matchingLeadTime,
+                category: safelyParse(shipment, 'relationships.shipping_category.data.id', parseAsString, ''),
+                methods,
             };
         });
     } catch (error: unknown) {
@@ -307,47 +183,6 @@ export async function getShippingMethods(accessToken: string, orderId: string): 
     }
 
     return [];
-}
-
-export async function getDeliveryLeadTimes(accessToken: string): Promise<DeliveryLeadTimes[] | null> {
-    try {
-        const cl = authClient(accessToken);
-        const res = await cl.get('/api/delivery_lead_times?include=shipping_method');
-        const deliveryLeadTimes = safelyParse(res, 'data.data', parseAsUnknown, null);
-
-        if (deliveryLeadTimes && isArray(deliveryLeadTimes)) {
-            return deliveryLeadTimes.map((leadTime: unknown) => ({
-                id: safelyParse(leadTime, 'id', parseAsString, ''),
-                minHours: safelyParse(leadTime, 'attributes.min_hours', parseAsNumber, 0),
-                maxHours: safelyParse(leadTime, 'attributes.max_hours', parseAsNumber, 0),
-                minDays: safelyParse(leadTime, 'attributes.min_days', parseAsNumber, 0),
-                maxDays: safelyParse(leadTime, 'attributes.max_days', parseAsNumber, 0),
-            }));
-        }
-    } catch (error: unknown) {
-        errorHandler(error, 'Failed to fetch delivery lead times.');
-    }
-
-    return null;
-}
-
-function findLeadTimeIdFromMethodName(name: string, leadTimes: DeliveryLeadTimes[]): DeliveryLeadTimes | null {
-    switch (name) {
-        case 'Singles - 1st Class':
-            return leadTimes.find((time) => time.id === 'ZBqZKFGdRx') || null;
-        case 'Singles - 2nd Class':
-            return leadTimes.find((time) => time.id === 'EOWbAFEjLp') || null;
-        case 'Sealed - 1st Class':
-            return leadTimes.find((time) => time.id === 'NxgEMFZamO') || null;
-        case 'Sealed - 2nd Class':
-            return leadTimes.find((time) => time.id === 'XxnAYFkwGB') || null;
-        case 'Breaks - 1st Class':
-            return leadTimes.find((time) => time.id === 'JOEbgFkbwB') || null;
-        case 'Breaks - 2nd Class':
-            return leadTimes.find((time) => time.id === 'jOzlrFjlzx') || null;
-        default:
-            return null;
-    }
 }
 
 export async function updateShipmentMethod(

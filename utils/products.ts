@@ -257,6 +257,7 @@ export async function fetchProductByProductLink(
 
 export async function fetchProductImagesByProductLink(productLink: string[]): Promise<CartImage[] | null> {
     const productQuery = isArray(productLink) ? 'productLink_in' : 'productLink';
+    const cartImages: CartImage[] = [];
 
     // Piece together query.
     const query = `
@@ -304,24 +305,28 @@ export async function fetchProductImagesByProductLink(productLink: string[]): Pr
     );
 
     if (productCollection) {
-        return productCollection.map((product) => ({
-            title: safelyParse(product, 'cardImage.title', parseAsString, ''),
-            description: safelyParse(product, 'cardImage.description', parseAsString, ''),
-            url: safelyParse(product, 'cardImage.url', parseAsString, ''),
-            sku_code: safelyParse(product, 'productLink', parseAsString, ''),
-        }));
+        for (const product of productCollection) {
+            cartImages.push({
+                title: safelyParse(product, 'cardImage.title', parseAsString, ''),
+                description: safelyParse(product, 'cardImage.description', parseAsString, ''),
+                url: safelyParse(product, 'cardImage.url', parseAsString, ''),
+                sku_code: safelyParse(product, 'productLink', parseAsString, ''),
+            });
+        }
     }
 
     if (slotsCollection) {
-        return slotsCollection.map((slot) => ({
-            title: safelyParse(slot, 'image.title', parseAsString, ''),
-            description: safelyParse(slot, 'image.description', parseAsString, ''),
-            url: safelyParse(slot, 'image.url', parseAsString, ''),
-            sku_code: safelyParse(slot, 'productLink', parseAsString, ''),
-        }));
+        for (const slot of slotsCollection) {
+            cartImages.push({
+                title: safelyParse(slot, 'image.title', parseAsString, ''),
+                description: safelyParse(slot, 'image.description', parseAsString, ''),
+                url: safelyParse(slot, 'image.url', parseAsString, ''),
+                sku_code: safelyParse(slot, 'productLink', parseAsString, ''),
+            });
+        }
     }
 
-    return null;
+    return cartImages;
 }
 
 export async function getSingleProduct(accessToken: string, slug: string): Promise<SingleProduct> {

@@ -26,3 +26,8 @@ export interface CartItem {
     };
     stock: number;
 }
+
+export interface UpdateQuantity {
+    id: string;
+    quantity: number;
+}

@@ -21,8 +21,7 @@ interface FormData {
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
-    const { accessToken, currentStep, orderId, checkoutLoading, hasBothAddresses, shipments, methods } =
-        useSelector(selector);
+    const { accessToken, currentStep, orderId, checkoutLoading, hasBothAddresses, shipments } = useSelector(selector);
     const {
         register,
         handleSubmit,
@@ -30,7 +29,7 @@ export const Delivery: React.FC = () => {
     } = useForm();
     const isCurrentStep = currentStep === 1;
     const hasErrors = Object.keys(errors).length > 0;
-    const hasShipmentsAndMethods = shipments.length > 0 && methods.length > 0;
+    const hasShipments = shipments.length > 0;
 
     const handleSelectShippingMethod = async (data: FormData) => {
         if (hasErrors || checkoutLoading || !accessToken || !shipments || !orderId) {
@@ -40,14 +39,9 @@ export const Delivery: React.FC = () => {
         // Start checkout loader.
         dispatch(setCheckoutLoading(true));
 
-        const mappedData = shipments.map((shipment) => ({
-            shipmentId: shipment,
-            methodId: data.method[shipment].methodId,
-        }));
-
         // for...of used here over forEach to avoid race conditions with await.
-        for (const mD of mappedData) {
-            await updateShipmentMethod(accessToken, mD.shipmentId, mD.methodId);
+        for (const shipment of shipments) {
+            await updateShipmentMethod(accessToken, shipment.id, data.method[shipment.id].methodId);
         }
 
         // Fetch items, totals and item count along with payment methods
@@ -78,19 +72,19 @@ export const Delivery: React.FC = () => {
                 {hasBothAddresses ? 'Delivery - Edit' : 'Delivery'}
             </h3>
             <div className="collapse-content p-0 relative">
-                <Loading show={!hasShipmentsAndMethods} />
+                <Loading show={!hasShipments} />
                 <form onSubmit={handleSubmit(handleSelectShippingMethod)}>
-                    {hasShipmentsAndMethods &&
+                    {hasShipments &&
                         hasBothAddresses &&
                         shipments.map((shipment, index) => {
                             return (
                                 <Shipment
-                                    id={shipment}
-                                    shippingMethods={methods}
+                                    id={shipment.id}
+                                    shippingMethods={shipment.methods}
                                     shipmentCount={index + 1}
                                     shipmentsTotal={shipments.length}
                                     register={register}
-                                    defaultChecked={methods[0].id}
+                                    defaultChecked={shipment.methods[0].id}
                                     key={`shipment-${index}`}
                                 />
                             );

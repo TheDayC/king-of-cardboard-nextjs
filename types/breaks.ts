@@ -43,9 +43,6 @@ export interface SingleBreak {
     types: string;
     images: ImageItem[];
     cardImage: ImageItem;
-    amount: string;
-    compare_amount: string;
-    inventory: SkuInventory;
     breakSlots: BreakSlot[];
     breakDate: string;
     tags: string[];
@@ -72,6 +69,7 @@ export interface BreakSlot {
     sku_code: string;
     amount: string;
     compare_amount: string;
+    isAvailable: boolean;
 }
 
 export interface BreakTypeItem {

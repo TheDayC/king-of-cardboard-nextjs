@@ -13,6 +13,7 @@ const cartInitialState: CartState = {
     discount: '£0.00',
     total: '£0.00',
     orderHasGiftCard: false,
+    updateQuantities: [],
 };
 
 export default cartInitialState;
