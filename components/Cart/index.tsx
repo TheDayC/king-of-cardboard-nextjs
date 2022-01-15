@@ -9,6 +9,7 @@ import CartTotals from './CartTotals';
 import { resetConfirmationDetails } from '../../store/slices/confirmation';
 import Loading from '../Loading';
 import {
+    clearUpdateQuantities,
     fetchCartItems,
     fetchCartTotals,
     fetchItemCount,
@@ -17,9 +18,11 @@ import {
 } from '../../store/slices/cart';
 import UseCoins from '../UseCoins';
 import { parseAsString, safelyParse } from '../../utils/parsers';
+import { updateLineItem } from '../../utils/commerce';
 
 export const Cart: React.FC = () => {
-    const { itemCount, items, isUpdatingCart, accessToken, orderId, shouldUpdateCart, balance } = useSelector(selector);
+    const { itemCount, items, isUpdatingCart, accessToken, orderId, shouldUpdateCart, balance, updateQuantities } =
+        useSelector(selector);
     const dispatch = useDispatch();
     const session = useSession();
     const [shouldFetch, setShouldFetch] = useState(true);
@@ -35,6 +38,19 @@ export const Cart: React.FC = () => {
         dispatch(fetchItemCount({ accessToken, orderId }));
         dispatch(setUpdatingCart(false));
     }, [dispatch, accessToken, orderId]);
+
+    const handleUpdateQuantities = async () => {
+        if (!accessToken || updateQuantities.length <= 0) return;
+
+        dispatch(setUpdatingCart(true));
+
+        for (const item of updateQuantities) {
+            await updateLineItem(accessToken, item.id, item.quantity);
+        }
+        dispatch(clearUpdateQuantities());
+        updateCart();
+        dispatch(setUpdatingCart(false));
+    };
 
     useEffect(() => {
         dispatch(resetConfirmationDetails());
@@ -53,6 +69,12 @@ export const Cart: React.FC = () => {
             updateCart();
         }
     }, [dispatch, updateCart, shouldUpdateCart]);
+
+    useEffect(() => {
+        if (itemCount <= 0) {
+            dispatch(clearUpdateQuantities());
+        }
+    }, [dispatch, itemCount]);
 
     return (
         <div className="flex flex-col">
@@ -86,7 +108,16 @@ export const Cart: React.FC = () => {
                         </div>
                         <CartTotals />
                         {shouldShowCoins && <UseCoins />}
-                        <div className="flex flex-col items-end mt-4 lg:mt-6">
+                        <div className="flex flex-row justify-end items-end mt-4 lg:mt-6">
+                            <button
+                                className={`btn bg-green-400 hover:bg-green-600 border-none btn-wide rounded-md mr-4 lg:btn-wide${
+                                    isUpdatingCart ? ' loading btn-square' : ''
+                                }${updateQuantities.length <= 0 ? ' btn-disabled' : ''}`}
+                                disabled={updateQuantities.length <= 0}
+                                onClick={handleUpdateQuantities}
+                            >
+                                {isUpdatingCart ? '' : 'Update quantities'}
+                            </button>
                             <Link href="/checkout" passHref>
                                 <button
                                     className={`btn btn-primary btn-block rounded-md lg:btn-wide${

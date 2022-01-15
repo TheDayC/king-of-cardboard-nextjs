@@ -67,6 +67,16 @@ const cartSlice = createSlice({
         setOrderHasGiftCard(state, action) {
             state.orderHasGiftCard = action.payload;
         },
+        setUpdateQuantities(state, action) {
+            const { id } = action.payload;
+            const newUpdateQtys = state.updateQuantities.filter((uQ) => uQ.id !== id);
+
+            newUpdateQtys.push(action.payload);
+            state.updateQuantities = newUpdateQtys;
+        },
+        clearUpdateQuantities(state) {
+            state.updateQuantities = [];
+        },
         resetCart() {
             return cartInitialState;
         },
@@ -101,6 +111,13 @@ const cartSlice = createSlice({
     },
 });
 
-export const { resetCart, setUpdatingCart, setShouldCreateOrder, setShouldUpdateCart, setOrderHasGiftCard } =
-    cartSlice.actions;
+export const {
+    resetCart,
+    setUpdatingCart,
+    setShouldCreateOrder,
+    setShouldUpdateCart,
+    setOrderHasGiftCard,
+    setUpdateQuantities,
+    clearUpdateQuantities,
+} = cartSlice.actions;
 export default cartSlice.reducer;

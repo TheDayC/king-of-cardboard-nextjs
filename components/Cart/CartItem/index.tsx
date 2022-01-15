@@ -1,14 +1,20 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { MdDeleteForever, MdRemoveCircleOutline, MdAddCircleOutline } from 'react-icons/md';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, useStore } from 'react-redux';
 import Image from 'next/image';
 
-import { setShouldUpdateCart, setUpdatingCart } from '../../../store/slices/cart';
+import {
+    clearUpdateQuantities,
+    setShouldUpdateCart,
+    setUpdateQuantities,
+    setUpdatingCart,
+} from '../../../store/slices/cart';
 import { removeLineItem, updateLineItem } from '../../../utils/commerce';
 import { ImageItem } from '../../../types/products';
 import selector from './selector';
 import styles from './cartitem.module.css';
 import { addError } from '../../../store/slices/alerts';
+import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 
 interface CartItemProps {
     id: string;
@@ -33,6 +39,7 @@ export const CartItem: React.FC<CartItemProps> = ({
 }) => {
     const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
+    const [currentQty, setCurrentQty] = useState(quantity);
 
     const handleRemoveItem = useCallback(async () => {
         if (!accessToken || !id) return;
@@ -48,48 +55,26 @@ export const CartItem: React.FC<CartItemProps> = ({
         }
     }, [dispatch, accessToken, id]);
 
-    const handleDecreaseAmount = useCallback(async () => {
-        if (!accessToken || !id) return;
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = safelyParse(e, 'target.value', parseAsString, null);
 
-        const newQuantity = quantity - 1;
+        if (value) {
+            const newQty = parseInt(value, 10);
 
-        if (newQuantity > 0) {
-            // If the quantity is still above zero then add load blocker and update line item.
-            dispatch(setUpdatingCart(true));
-            const hasLineItemUpdated = await updateLineItem(accessToken, id, newQuantity);
-
-            if (hasLineItemUpdated) {
-                dispatch(setShouldUpdateCart(true));
-            } else {
-                dispatch(setUpdatingCart(false));
+            if (newQty > stock) {
+                dispatch(clearUpdateQuantities());
+                return;
             }
-        } else {
-            // If the new quantity is zero or less remove the item from the cart.
-            handleRemoveItem();
+
+            if (newQty !== quantity) {
+                dispatch(setUpdateQuantities({ id, quantity: parseInt(value, 10) }));
+            }
         }
-    }, [accessToken, id, quantity, dispatch, handleRemoveItem]);
+    };
 
-    const handleIncreaseAmount = useCallback(async () => {
-        if (!accessToken || !id) return;
-
-        const newQuantity = quantity + 1;
-
-        // If we're not allowed to increase anymore then just return.
-        if (newQuantity > stock) {
-            return;
-        }
-
-        // If the new qty is still within stock levles then update the line item.
-        dispatch(setUpdatingCart(true));
-
-        const hasLineItemUpdated = await updateLineItem(accessToken, id, newQuantity);
-
-        if (hasLineItemUpdated) {
-            dispatch(setShouldUpdateCart(true));
-        } else {
-            dispatch(setUpdatingCart(false));
-        }
-    }, [accessToken, id, quantity, stock, dispatch]);
+    useEffect(() => {
+        setCurrentQty(quantity);
+    }, [quantity]);
 
     return (
         <div className="grid grid-cols-3 lg:grid-cols-5 bg-white p-4 border-b p-4">
@@ -119,21 +104,14 @@ export const CartItem: React.FC<CartItemProps> = ({
             </div>
             <div className="hidden lg:flex lg:flex-row items-center justify-center">{unitAmount}</div>
             <div className="flex flex-row items-center justify-center">
-                <button
-                    aria-label="subtract one item"
-                    onClick={handleDecreaseAmount}
-                    className={`btn btn-xs btn-secondary btn-circle`}
-                >
-                    <MdRemoveCircleOutline />
-                </button>
-                <span className="px-2 lg:px-4">{quantity}</span>
-                <button
-                    aria-label="add one item"
-                    onClick={handleIncreaseAmount}
-                    className={`btn btn-xs btn-circle${quantity >= stock ? ' btn-disabled' : ' btn-secondary'}`}
-                >
-                    <MdAddCircleOutline />
-                </button>
+                <input
+                    type="number"
+                    defaultValue={quantity}
+                    name="quantity"
+                    placeholder="1"
+                    className="input input-sm input-bordered text-center"
+                    onChange={handleChange}
+                />
             </div>
             <div className="flex flex-row items-center justify-center">{totalAmount}</div>
         </div>
