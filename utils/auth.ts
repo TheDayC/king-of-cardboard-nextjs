@@ -93,7 +93,6 @@ export async function createUserToken(emailAddress: string, password: string): P
             client_id: process.env.NEXT_PUBLIC_ECOM_SALES_ID,
             scope: 'market:6098',
         });
-        console.log('🚀 ~ file: auth.ts ~ line 96 ~ tokenRes ~ tokenRes', tokenRes);
 
         return safelyParse(tokenRes, 'data.access_token', parseAsString, null);
     } catch (error: unknown) {

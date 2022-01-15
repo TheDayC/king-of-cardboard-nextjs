@@ -5,9 +5,13 @@ import { RiLockPasswordLine } from 'react-icons/ri';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { BiErrorCircle } from 'react-icons/bi';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { createUserToken } from '../../utils/auth';
+import { setUserToken } from '../../store/slices/global';
+import { updateOrderWithBlankAttributes } from '../../utils/commerce';
+import selector from './selector';
 
 interface Submit {
     emailAddress?: string;
@@ -21,11 +25,13 @@ export const Credentials: React.FC = () => {
         formState: { errors },
     } = useForm();
     const router = useRouter();
+    const { orderId } = useSelector(selector);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const hasErrors = Object.keys(errors).length > 0;
     const emailErr = safelyParse(errors, 'emailAddress.message', parseAsString, null);
     const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
+    const dispatch = useDispatch();
 
     const onSubmit = async (data: Submit) => {
         const { emailAddress, password } = data;
@@ -34,15 +40,21 @@ export const Credentials: React.FC = () => {
 
         const hasSignedIn = await signIn('credentials', { emailAddress, password, redirect: false });
         const formErr = safelyParse(hasSignedIn, 'error', parseAsString, null);
-        console.log('🚀 ~ file: credentials.tsx ~ line 37 ~ onSubmit ~ formErr', formErr);
         setError(formErr ? 'Log in details incorrect.' : null);
 
         if (!formErr) {
             if (emailAddress && password) {
                 const userToken = await createUserToken(emailAddress, password);
-                console.log('🚀 ~ file: credentials.tsx ~ line 42 ~ onSubmit ~ userToken', userToken);
+
+                if (userToken) {
+                    if (orderId) {
+                        await updateOrderWithBlankAttributes(userToken, orderId);
+                    }
+
+                    dispatch(setUserToken(userToken));
+                }
             }
-            //router.push('/account');
+            router.push('/account');
         }
 
         setLoading(false);

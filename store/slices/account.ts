@@ -76,19 +76,15 @@ export const fetchOrderPageCount = createAsyncThunk(
 
 export const fetchAddresses = createAsyncThunk(
     'account/fetchAddresses',
-    async (data: EmailThunkInput): Promise<Address[]> => {
-        const { accessToken, emailAddress } = data;
-
-        return await getAddresses(accessToken, emailAddress);
+    async (accessToken: string): Promise<Address[]> => {
+        return await getAddresses(accessToken);
     }
 );
 
 export const fetchAddressPageCount = createAsyncThunk(
     'account/fetchAddressPageCount',
-    async (data: EmailThunkInput): Promise<number> => {
-        const { accessToken, emailAddress } = data;
-
-        return await getAddressPageCount(accessToken, emailAddress);
+    async (accessToken: string): Promise<number> => {
+        return await getAddressPageCount(accessToken);
     }
 );
 
