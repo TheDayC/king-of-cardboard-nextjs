@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Image from 'next/image';
 import { AiOutlineShoppingCart, AiFillCloseCircle } from 'react-icons/ai';
 
 import { removeLineItem, setLineItem } from '../../../../../utils/commerce';

@@ -50,6 +50,7 @@
                 "newlines-between": "always"
             }
         ],
-        "import/no-named-as-default": "off"
+        "import/no-named-as-default": "off",
+        "@next/next/no-img-element": "off"
     }
 }
