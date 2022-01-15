@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { MdDeleteForever } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import {
     clearUpdateQuantities,
@@ -12,7 +13,6 @@ import {
 import { removeLineItem } from '../../../utils/commerce';
 import { ImageItem } from '../../../types/products';
 import selector from './selector';
-import styles from './cartitem.module.css';
 import { addError } from '../../../store/slices/alerts';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 
@@ -72,30 +72,32 @@ export const CartItem: React.FC<CartItemProps> = ({
     };
 
     return (
-        <div className="grid grid-cols-3 lg:grid-cols-5 bg-white p-4 border-b p-4">
+        <div className="grid grid-cols-3 lg:grid-cols-6 bg-white p-4 border-b p-4">
             <div className="text-error hidden lg:flex lg:flex-row items-center justify-center">
                 <button aria-label="remove item" onClick={handleRemoveItem}>
                     <MdDeleteForever className="text-2xl" />
                 </button>
             </div>
-            <div className="text-center">
-                <div className="flex flex-col lg:flex-row justify-center items-center lg:space-x-4">
-                    {image.url.length > 0 && (
-                        <div className={`mb-2 lg:mb-0 ${styles.imageContainer}`}>
-                            <Image
-                                src={image.url}
-                                alt={image.description}
-                                title={image.title}
-                                layout="fill"
-                                objectFit="scale-down"
-                            />
-                        </div>
-                    )}
-                    <div className="text-center lg:text-left">
-                        <h4 className="text-xs lg:text-md">{name}</h4>
+            <div className="text-error hidden lg:flex lg:flex-row items-center justify-center w-full relative">
+                {image.url.length > 0 && (
+                    <div className="mb-2 lg:mb-0 w-20 h-20">
+                        <Image
+                            src={image.url}
+                            alt={image.description}
+                            title={image.title}
+                            layout="fill"
+                            objectFit="scale-down"
+                        />
+                    </div>
+                )}
+            </div>
+            <div className="flex flex-col justify-center items-center text-center lg:space-x-4">
+                <Link href={`/product/${sku.toLowerCase()}`} passHref>
+                    <div className="cursor-pointer">
+                        <h4 className="text-xs mb-2 lg:text-md hover:underline">{name}</h4>
                         <p className="text-xs text-base-200">{sku || ''}</p>
                     </div>
-                </div>
+                </Link>
             </div>
             <div className="hidden lg:flex lg:flex-row items-center justify-center">{unitAmount}</div>
             <div className="flex flex-row items-center justify-center">
@@ -108,7 +110,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                     onChange={handleChange}
                 />
             </div>
-            <div className="flex flex-row items-center justify-center">{totalAmount}</div>
+            <div className="flex flex-row items-center justify-center font-semibold">{totalAmount}</div>
         </div>
     );
 };

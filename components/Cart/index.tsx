@@ -83,8 +83,9 @@ export const Cart: React.FC = () => {
                 <div className="block w-full relative">
                     <Loading show={isUpdatingCart} />
                     <div className="flex flex-col w-full">
-                        <div className="grid grid-cols-3 bg-neutral text-neutral-content p-2 rounded-md text-sm lg:text-md lg:p-4 lg:grid-cols-5">
+                        <div className="grid grid-cols-3 bg-neutral text-neutral-content p-2 rounded-md text-sm lg:text-md lg:p-4 lg:grid-cols-6">
                             <div className="text-center hidden lg:table-cell">Remove</div>
+                            <div className="text-center hidden lg:table-cell">&nbsp;</div>
                             <div className="text-center">Product</div>
                             <div className="text-center hidden lg:table-cell">Price</div>
                             <div className="text-center">Quantity</div>
