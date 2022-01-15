@@ -3,7 +3,7 @@ import { FieldValues, UseFormRegister } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import Image from 'next/image';
 
-import { MergedShipmentMethods } from '../../../../types/checkout';
+import { Method } from '../../../../types/checkout';
 import { getShipment } from '../../../../utils/checkout';
 import selector from './selector';
 import styles from './shipment.module.css';
@@ -11,7 +11,7 @@ import { parseAsArrayOfStrings, safelyParse } from '../../../../utils/parsers';
 
 interface ShipmentProps {
     id: string;
-    shippingMethods: MergedShipmentMethods[];
+    shippingMethods: Method[];
     shipmentCount: number;
     shipmentsTotal: number;
     register: UseFormRegister<FieldValues>;
@@ -89,11 +89,10 @@ export const Shipment: React.FC<ShipmentProps> = ({
                             <span className="label-text">
                                 <div className="grid grid-cols-1">
                                     <span>
-                                        {method.name} - {method.formatted_price_amount_for_shipment}
+                                        {method.name} - {method.price}
                                     </span>
                                     <span className="text-xs text-base-200 mt-1">
-                                        {method.leadTimes &&
-                                            `Available in ${method.leadTimes.minDays} - ${method.leadTimes.maxDays} days.`}
+                                        {`Available in ${method.minDays} - ${method.maxDays} days.`}
                                     </span>
                                 </div>
                             </span>

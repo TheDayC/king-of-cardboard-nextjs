@@ -45,7 +45,6 @@ const checkoutInitialState: Checkout = {
     isShippingSameAsBilling: false,
     paymentMethods: [],
     shipments: [],
-    shippingMethods: [],
 };
 
 export default checkoutInitialState;
