@@ -6,7 +6,7 @@ const selector = createSelector([selectCheckoutData, selectCartData, selectGloba
     currentStep: checkout.currentStep,
     customerDetails: checkout.customerDetails,
     orderId: cart.orderId,
-    accessToken: global.accessToken,
+    accessToken: global.userToken || global.accessToken,
     checkoutLoading: global.checkoutLoading,
     isShippingSameAsBilling: checkout.isShippingSameAsBilling,
     cloneBillingAddressId: checkout.cloneBillingAddressId,
