@@ -108,7 +108,6 @@ export const Slot: React.FC<SlotProps> = ({
                         onClick={handleRemove}
                     />
                     <AiOutlineShoppingCart className="w-20 h-20 text-green-600" />
-                    {/* <p className="text-2xl font-semibold">Added to Cart</p> */}
                 </div>
             )}
             {image.url.length > 0 && (

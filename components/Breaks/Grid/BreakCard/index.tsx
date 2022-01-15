@@ -43,18 +43,25 @@ export const BreakCard: React.FC<BreakProps> = ({
     const isActive = !isLive && !isComplete;
 
     return (
-        <div className="card shadow-md rounded-md bordered pt-4">
+        <div className="card shadow-md rounded-md bordered pt-4 transition duration-300 ease-in-out hover:shadow-2xl">
             {cardImage && (
-                <div className="relative h-20 md:h-30 lg:h-40">
+                <div className="relative h-20 cursor-pointer md:h-30 lg:h-40">
                     {cardImage.url.length > 0 && (
-                        <Image
-                            src={cardImage.url}
-                            alt={cardImage.description}
-                            title={cardImage.title}
-                            layout="fill"
-                            objectFit="scale-down"
-                            className="rounded-sm"
-                        />
+                        <Link
+                            href={{
+                                pathname: '/breaks/[category]/[slug]',
+                                query: { category: breakType, slug: breakSlug },
+                            }}
+                            passHref
+                        >
+                            <Image
+                                src={cardImage.url}
+                                alt={cardImage.description}
+                                title={cardImage.title}
+                                layout="fill"
+                                objectFit="scale-down"
+                            />
+                        </Link>
                     )}
                     {isActive && (
                         <div className="badge badge-accent absolute -bottom-2 left-0 ml-4 lg:ml-6 shadow-md">
@@ -71,7 +78,17 @@ export const BreakCard: React.FC<BreakProps> = ({
             <div className="justify-between items-start card-body p-0">
                 <div className="flex flex-col justify-start items-start w-full">
                     <div className="p-4 mt-4 lg:p-6">
-                        <h2 className="card-title text-3xl mb-2 font-semibold">Break #{breakNumber}</h2>
+                        <Link
+                            href={{
+                                pathname: '/breaks/[category]/[slug]',
+                                query: { category: breakType, slug: breakSlug },
+                            }}
+                            passHref
+                        >
+                            <h2 className="card-title text-3xl mb-2 font-semibold cursor-pointer hover:underline">
+                                Break #{breakNumber}
+                            </h2>
+                        </Link>
                         <h2 className="card-title text-xl mb-6">{title}</h2>
                         <div className="pl-2">
                             <p className="text-base-200 text-sm">
