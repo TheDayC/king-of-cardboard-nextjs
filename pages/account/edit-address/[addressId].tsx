@@ -15,7 +15,6 @@ import Custom404Page from '../../404';
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
     const addressId = safelyParse(context, 'query.addressId', parseAsString, null);
-    const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
 
     // If session hasn't been established redirect to the login page.
     if (!session) {
@@ -32,7 +31,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         props: {
             errorCode: !addressId ? 404 : null,
             addressId,
-            emailAddress,
         },
     };
 };
@@ -40,22 +38,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 interface OrderProps {
     errorCode: number | boolean;
     addressId: string | null;
-    emailAddress: string | null;
 }
 
-export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId, emailAddress }) => {
+export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId }) => {
     const { accessToken, currentAddress } = useSelector(selector);
     const [shouldFetch, setShouldFetch] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (accessToken && emailAddress && addressId && shouldFetch) {
+        if (accessToken && addressId && shouldFetch) {
             setShouldFetch(false);
             dispatch(fetchCurrentAddress({ accessToken, id: addressId }));
             setIsLoading(false);
         }
-    }, [accessToken, emailAddress, addressId, dispatch, shouldFetch]);
+    }, [accessToken, addressId, dispatch, shouldFetch]);
 
     if (errorCode) {
         return <Custom404Page />;

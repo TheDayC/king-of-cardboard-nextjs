@@ -130,3 +130,18 @@ export async function createPaymentSource(
         approvalUrl: null,
     };
 }
+
+export async function updateOrderWithBlankAttributes(accessToken: string, orderId: string): Promise<void> {
+    try {
+        const cl = authClient(accessToken);
+        await cl.patch(`/orders/${orderId}`, {
+            data: {
+                type: 'orders',
+                id: orderId,
+                attributes: {},
+            },
+        });
+    } catch (error: unknown) {
+        errorHandler(error, 'We could not update your order.');
+    }
+}

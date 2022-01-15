@@ -1,44 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useSession } from 'next-auth/react';
 
 import selector from './selector';
-import { parseAsString, safelyParse } from '../../../utils/parsers';
 import ShortOrder from './ShortOrder';
 import Loading from '../../Loading';
 import Pagination from '../../Pagination';
-import { fetchOrderPageCount, fetchOrders } from '../../../store/slices/account';
+import { fetchOrders } from '../../../store/slices/account';
 
 const PER_PAGE = 5;
 
 export const OrderHistory: React.FC = () => {
-    const { accessToken, orders, orderPageCount } = useSelector(selector);
-    const session = useSession();
+    const { accessToken, orders, orderPageCount, userId } = useSelector(selector);
     const [currentPage, setCurrentPage] = useState(1);
     const [shouldFetch, setShouldFetch] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
-    const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
     const dispatch = useDispatch();
 
     const handlePageNumber = (nextPage: number) => {
-        if (accessToken && emailAddress) {
+        if (accessToken && userId) {
             const page = nextPage + 1;
 
             setIsLoading(true);
-            dispatch(fetchOrders({ accessToken, emailAddress, pageSize: PER_PAGE, page }));
+            dispatch(fetchOrders({ accessToken, userId, pageSize: PER_PAGE, page }));
             setCurrentPage(page);
             setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        if (accessToken && emailAddress && shouldFetch) {
+        if (accessToken && shouldFetch && userId) {
             setShouldFetch(false);
-            dispatch(fetchOrders({ accessToken, emailAddress, pageSize: PER_PAGE, page: currentPage }));
-            dispatch(fetchOrderPageCount({ accessToken, emailAddress }));
+            dispatch(fetchOrders({ accessToken, userId, pageSize: PER_PAGE, page: currentPage }));
             setIsLoading(false);
         }
-    }, [dispatch, accessToken, emailAddress, shouldFetch, currentPage]);
+    }, [dispatch, accessToken, shouldFetch, currentPage, userId]);
 
     return (
         <React.Fragment>

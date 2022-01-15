@@ -43,7 +43,7 @@ export const ShortOrder: React.FC<OrderProps> = ({
                             {orderNumber > 0 && (
                                 <Link
                                     href={{
-                                        pathname: '/account/orderHistory/[orderNumber]',
+                                        pathname: '/account/order-history/[orderNumber]',
                                         query: { orderNumber },
                                     }}
                                 >{`Order #${orderNumber}`}</Link>

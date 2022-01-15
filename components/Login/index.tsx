@@ -5,8 +5,8 @@ import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 
 import Credentials from './credentials';
-import Google from './google';
-import Twitch from './twitch';
+// import Google from './google';
+// import Twitch from './twitch';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { addSuccess, addWarning } from '../../store/slices/alerts';
 
@@ -36,9 +36,9 @@ export const Login: React.FC<LoginProps> = ({ providers, showRegistrationSuccess
     return (
         <React.Fragment>
             {credentials && <Credentials />}
-            <div className="divider">OR</div>
+            {/* <div className="divider">OR</div>
             <Google />
-            <Twitch />
+            <Twitch /> */}
         </React.Fragment>
     );
 };

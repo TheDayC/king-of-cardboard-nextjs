@@ -10,7 +10,7 @@ import Address from './Address';
 import { fetchAddresses, fetchAddressPageCount } from '../../../store/slices/account';
 
 export const AddressBook: React.FC = () => {
-    const { accessToken, addresses } = useSelector(selector);
+    const { accessToken, userToken, addresses } = useSelector(selector);
     const session = useSession();
     const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
     const [shouldFetchAddresses, setShouldFetchAddresses] = useState(true);
@@ -21,11 +21,11 @@ export const AddressBook: React.FC = () => {
         if (shouldFetchAddresses && accessToken && emailAddress) {
             setShouldFetchAddresses(false);
             setIsLoading(true);
-            dispatch(fetchAddresses({ accessToken, emailAddress }));
-            dispatch(fetchAddressPageCount({ accessToken, emailAddress }));
+            dispatch(fetchAddresses(accessToken));
+            dispatch(fetchAddressPageCount(accessToken));
             setIsLoading(false);
         }
-    }, [dispatch, accessToken, emailAddress, shouldFetchAddresses]);
+    }, [dispatch, accessToken, emailAddress, shouldFetchAddresses, userToken]);
 
     return (
         <div className="flex flex-col relative w-full">

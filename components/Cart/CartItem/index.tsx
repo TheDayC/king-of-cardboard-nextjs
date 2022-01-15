@@ -75,7 +75,7 @@ export const CartItem: React.FC<CartItemProps> = ({
         const newQuantity = quantity + 1;
 
         // If we're not allowed to increase anymore then just return.
-        if (newQuantity >= stock) {
+        if (newQuantity > stock) {
             return;
         }
 

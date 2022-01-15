@@ -107,3 +107,8 @@ export interface SingleAddress {
     phone: string;
     postcode: string;
 }
+
+export interface GetOrders {
+    orders: Order[];
+    count: number;
+}

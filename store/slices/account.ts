@@ -2,11 +2,10 @@ import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../../types/account';
+import { Address, GetOrders, GiftCard, SingleAddress, SingleOrder } from '../../types/account';
 import { SocialMedia } from '../../types/profile';
 import {
     getGiftCard,
-    getOrderPageCount,
     getOrders,
     getOrder,
     getAddresses,
@@ -23,7 +22,9 @@ interface EmailThunkInput {
     emailAddress: string;
 }
 
-interface PaginatedThunkInput extends EmailThunkInput {
+interface FetchOrdersThunkInput {
+    accessToken: string;
+    userId: string;
     pageSize: number;
     page: number;
 }
@@ -49,10 +50,10 @@ export const fetchGiftCard = createAsyncThunk(
 
 export const fetchOrders = createAsyncThunk(
     'account/fetchOrders',
-    async (data: PaginatedThunkInput): Promise<Order[]> => {
-        const { accessToken, emailAddress, pageSize, page } = data;
+    async (data: FetchOrdersThunkInput): Promise<GetOrders> => {
+        const { accessToken, userId, pageSize, page } = data;
 
-        return await getOrders(accessToken, emailAddress, pageSize, page);
+        return await getOrders(accessToken, userId, pageSize, page);
     }
 );
 
@@ -65,30 +66,17 @@ export const fetchCurrentOrder = createAsyncThunk(
     }
 );
 
-export const fetchOrderPageCount = createAsyncThunk(
-    'account/fetchOrderPageCount',
-    async (data: EmailThunkInput): Promise<number> => {
-        const { accessToken, emailAddress } = data;
-
-        return await getOrderPageCount(accessToken, emailAddress);
-    }
-);
-
 export const fetchAddresses = createAsyncThunk(
     'account/fetchAddresses',
-    async (data: EmailThunkInput): Promise<Address[]> => {
-        const { accessToken, emailAddress } = data;
-
-        return await getAddresses(accessToken, emailAddress);
+    async (accessToken: string): Promise<Address[]> => {
+        return await getAddresses(accessToken);
     }
 );
 
 export const fetchAddressPageCount = createAsyncThunk(
     'account/fetchAddressPageCount',
-    async (data: EmailThunkInput): Promise<number> => {
-        const { accessToken, emailAddress } = data;
-
-        return await getAddressPageCount(accessToken, emailAddress);
+    async (accessToken: string): Promise<number> => {
+        return await getAddressPageCount(accessToken);
     }
 );
 
@@ -117,10 +105,10 @@ const accountSlice = createSlice({
             state.giftCard = action.payload;
         }),
             builder.addCase(fetchOrders.fulfilled, (state, action) => {
-                state.orders = action.payload;
-            }),
-            builder.addCase(fetchOrderPageCount.fulfilled, (state, action) => {
-                state.orderPageCount = action.payload;
+                const { orders, count } = action.payload;
+
+                state.orders = orders;
+                state.orderPageCount = count;
             }),
             builder.addCase(fetchCurrentOrder.fulfilled, (state, action) => {
                 state.currentOrder = action.payload;
