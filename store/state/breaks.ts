@@ -18,13 +18,6 @@ const breaksInitialState: BreaksState = {
             description: '',
             url: '',
         },
-        amount: '',
-        compare_amount: '',
-        inventory: {
-            available: false,
-            quantity: 0,
-            levels: [],
-        },
         breakSlots: [],
         breakDate: '',
         tags: [],
