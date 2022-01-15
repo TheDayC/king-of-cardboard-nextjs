@@ -39,6 +39,7 @@ export const CartItem: React.FC<CartItemProps> = ({
 }) => {
     const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
+    const isQuantityAtMax = quantity === stock;
 
     const handleRemoveItem = useCallback(async () => {
         if (!accessToken || !id) return;
@@ -101,14 +102,18 @@ export const CartItem: React.FC<CartItemProps> = ({
             </div>
             <div className="hidden lg:flex lg:flex-row items-center justify-center">{unitAmount}</div>
             <div className="flex flex-row items-center justify-center">
-                <input
-                    type="number"
-                    defaultValue={quantity}
-                    name="quantity"
-                    placeholder="1"
-                    className="input input-sm input-bordered text-center"
-                    onChange={handleChange}
-                />
+                {isQuantityAtMax ? (
+                    <p className="px-2 w-full text-center">{quantity}</p>
+                ) : (
+                    <input
+                        type="number"
+                        defaultValue={quantity}
+                        name="quantity"
+                        placeholder="1"
+                        className="input input-sm input-bordered text-center w-1/2 pr-0"
+                        onChange={handleChange}
+                    />
+                )}
             </div>
             <div className="flex flex-row items-center justify-center font-semibold">{totalAmount}</div>
         </div>
