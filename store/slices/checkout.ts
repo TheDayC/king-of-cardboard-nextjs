@@ -2,8 +2,8 @@ import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { MergedShipmentMethods, Shipment } from '../../types/checkout';
-import { getPaymentMethods, getShipments, getShippingMethods } from '../../utils/checkout';
+import { Shipment } from '../../types/checkout';
+import { getPaymentMethods, getShipments } from '../../utils/checkout';
 import checkoutInitialState from '../state/checkout';
 import { PaymentMethod, CommonThunkInput } from '../types/state';
 

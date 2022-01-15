@@ -18,18 +18,6 @@ export interface ShippingMethods {
     formatted_price_amount_for_shipment: string;
 }
 
-export interface DeliveryLeadTimes {
-    id: string;
-    minHours: number;
-    maxHours: number;
-    minDays: number;
-    maxDays: number;
-}
-
-export interface MergedShipmentMethods extends ShippingMethods {
-    leadTimes: DeliveryLeadTimes | null;
-}
-
 export interface Method {
     id: string;
     name: string;

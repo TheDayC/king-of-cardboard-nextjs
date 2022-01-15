@@ -5,7 +5,7 @@ import { AlertLevel } from '../../enums/system';
 import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../../types/account';
 import { Break, SingleBreak } from '../../types/breaks';
 import { CartItem } from '../../types/cart';
-import { MergedShipmentMethods, Shipment } from '../../types/checkout';
+import { Shipment } from '../../types/checkout';
 import { ContentfulPage } from '../../types/pages';
 import { Product, SingleProduct } from '../../types/products';
 import { SocialMedia } from '../../types/profile';
