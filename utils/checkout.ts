@@ -243,6 +243,7 @@ export async function getShipments(accessToken: string, orderId: string): Promis
     try {
         const cl = authClient(accessToken);
         const res = await cl.get(`/api/orders/${orderId}/shipments?include=available_shipping_methods`);
+        console.log('🚀 ~ file: checkout.ts ~ line 246 ~ getShipments ~ res', res);
         const shipments = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, []);
 
         return shipments.map((shipment) => shipment.id);
