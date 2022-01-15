@@ -4,8 +4,8 @@ import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
 import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../../types/account';
 import { Break, SingleBreak } from '../../types/breaks';
-import { CartItem } from '../../types/cart';
-import { MergedShipmentMethods } from '../../types/checkout';
+import { CartItem, UpdateQuantity } from '../../types/cart';
+import { Shipment } from '../../types/checkout';
 import { ContentfulPage } from '../../types/pages';
 import { Product, SingleProduct } from '../../types/products';
 import { SocialMedia } from '../../types/profile';
@@ -37,6 +37,7 @@ export interface CartState {
     discount: string;
     total: string;
     orderHasGiftCard: boolean;
+    updateQuantities: UpdateQuantity[];
 }
 
 export interface PaymentMethod {
@@ -70,8 +71,7 @@ export interface Checkout {
     cloneShippingAddressId: string | null;
     isShippingSameAsBilling: boolean;
     paymentMethods: PaymentMethod[];
-    shipments: string[];
-    shippingMethods: MergedShipmentMethods[];
+    shipments: Shipment[];
 }
 
 export interface CustomerDetails {

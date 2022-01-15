@@ -9,6 +9,7 @@ import CartTotals from './CartTotals';
 import { resetConfirmationDetails } from '../../store/slices/confirmation';
 import Loading from '../Loading';
 import {
+    clearUpdateQuantities,
     fetchCartItems,
     fetchCartTotals,
     fetchItemCount,
@@ -17,9 +18,11 @@ import {
 } from '../../store/slices/cart';
 import UseCoins from '../UseCoins';
 import { parseAsString, safelyParse } from '../../utils/parsers';
+import { updateLineItem } from '../../utils/commerce';
 
 export const Cart: React.FC = () => {
-    const { itemCount, items, isUpdatingCart, accessToken, orderId, shouldUpdateCart, balance } = useSelector(selector);
+    const { itemCount, items, isUpdatingCart, accessToken, orderId, shouldUpdateCart, balance, updateQuantities } =
+        useSelector(selector);
     const dispatch = useDispatch();
     const session = useSession();
     const [shouldFetch, setShouldFetch] = useState(true);
@@ -33,8 +36,20 @@ export const Cart: React.FC = () => {
         dispatch(fetchCartItems({ accessToken, orderId }));
         dispatch(fetchCartTotals({ accessToken, orderId }));
         dispatch(fetchItemCount({ accessToken, orderId }));
-        dispatch(setUpdatingCart(false));
     }, [dispatch, accessToken, orderId]);
+
+    const handleUpdateQuantities = async () => {
+        if (!accessToken || updateQuantities.length <= 0) return;
+
+        dispatch(setUpdatingCart(true));
+
+        for (const item of updateQuantities) {
+            await updateLineItem(accessToken, item.id, item.quantity);
+        }
+        dispatch(clearUpdateQuantities());
+        updateCart();
+        dispatch(setUpdatingCart(false));
+    };
 
     useEffect(() => {
         dispatch(resetConfirmationDetails());
@@ -54,6 +69,12 @@ export const Cart: React.FC = () => {
         }
     }, [dispatch, updateCart, shouldUpdateCart]);
 
+    useEffect(() => {
+        if (itemCount <= 0) {
+            dispatch(clearUpdateQuantities());
+        }
+    }, [dispatch, itemCount]);
+
     return (
         <div className="flex flex-col">
             <h1 className="mb-4 text-2xl lg:mb-8 lg:text-4xl">{`Cart (${itemCount} ${itemPlural})`}</h1>
@@ -61,8 +82,9 @@ export const Cart: React.FC = () => {
                 <div className="block w-full relative">
                     <Loading show={isUpdatingCart} />
                     <div className="flex flex-col w-full">
-                        <div className="grid grid-cols-3 bg-neutral text-neutral-content p-2 rounded-md text-sm lg:text-md lg:p-4 lg:grid-cols-5">
+                        <div className="grid grid-cols-3 bg-neutral text-neutral-content p-2 rounded-md text-sm lg:text-md lg:p-4 lg:grid-cols-6">
                             <div className="text-center hidden lg:table-cell">Remove</div>
+                            <div className="text-center hidden lg:table-cell">&nbsp;</div>
                             <div className="text-center">Product</div>
                             <div className="text-center hidden lg:table-cell">Price</div>
                             <div className="text-center">Quantity</div>
@@ -86,7 +108,16 @@ export const Cart: React.FC = () => {
                         </div>
                         <CartTotals />
                         {shouldShowCoins && <UseCoins />}
-                        <div className="flex flex-col items-end mt-4 lg:mt-6">
+                        <div className="flex flex-row justify-end items-end mt-4 lg:mt-6">
+                            <button
+                                className={`btn bg-green-400 hover:bg-green-600 border-none btn-wide rounded-md mr-4 lg:btn-wide${
+                                    isUpdatingCart ? ' loading btn-square' : ''
+                                }${updateQuantities.length <= 0 ? ' btn-disabled' : ''}`}
+                                disabled={updateQuantities.length <= 0}
+                                onClick={handleUpdateQuantities}
+                            >
+                                {isUpdatingCart ? '' : 'Update quantities'}
+                            </button>
                             <Link href="/checkout" passHref>
                                 <button
                                     className={`btn btn-primary btn-block rounded-md lg:btn-wide${

@@ -10,6 +10,7 @@ const selector = createSelector([selectCartData, selectGlobalData, selectAccount
     orderId: cart.orderId,
     shouldUpdateCart: cart.shouldUpdateCart,
     balance: account.giftCard.balance,
+    updateQuantities: cart.updateQuantities,
 }));
 
 export default selector;
