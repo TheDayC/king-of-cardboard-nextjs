@@ -3,7 +3,7 @@ import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 import { DateTime } from 'luxon';
 
-import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../types/account';
+import { Address, GetOrders, GiftCard, SingleAddress, SingleOrder } from '../types/account';
 import {
     parseAsArrayOfCommerceResponse,
     safelyParse,
@@ -11,7 +11,6 @@ import {
     parseAsNumber,
     parseAsCommerceResponse,
     parseAsBoolean,
-    parseAsArrayOfLineItemRelationships,
 } from './parsers';
 import { CommerceLayerResponse } from '../types/api';
 import { authClient } from './auth';
@@ -20,65 +19,67 @@ import { SocialMedia } from '../types/profile';
 
 export async function getOrders(
     accessToken: string,
-    emailAddress: string,
+    userId: string,
     pageSize: number,
     page: number
-): Promise<Order[]> {
+): Promise<GetOrders> {
     try {
-        const filters = `filter[q][email_eq]=${emailAddress}&filter[q][status_not_in]=draft,pending`;
         const pagination = `page[size]=${pageSize}&page[number]=${page}`;
         const sort = 'sort=-created_at,number';
         const orderFields =
             'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount_with_taxes,shipments_count,placed_at,updated_at,line_items';
-        const include = 'line_items';
-        const lineItemFields = 'fields[line_items]=id,sku_code,image_url,quantity';
+        const include = 'include=orders,orders.line_items';
+        const lineItemFields = 'fields[line_items]=id,name,sku_code,image_url,quantity';
         const cl = authClient(accessToken);
         const res = await cl.get(
-            `/api/orders?${filters}&${sort}&${pagination}&${orderFields}&include=${include}&${lineItemFields}`
+            `/api/customers/${userId}?${include}&${lineItemFields}&${orderFields}&${pagination}&${sort}`
         );
-        const orders = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, []);
         const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
+        const lineItems = included.filter((i) => i.type === 'line_items' && i.attributes.sku_code !== null);
 
-        return orders.map((order) => {
-            const lineItems = safelyParse(
-                order,
-                'relationships.line_items.data',
-                parseAsArrayOfLineItemRelationships,
-                []
-            );
-
-            return {
-                number: safelyParse(order, 'attributes.number', parseAsNumber, 0),
-                status: safelyParse(order, 'attributes.status', parseAsString, 'draft'),
-                payment_status: safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid'),
-                fulfillment_status: safelyParse(order, 'attributes.fulfillment_status', parseAsString, 'unfulfilled'),
-                skus_count: safelyParse(order, 'attributes.skus_count', parseAsNumber, 0),
-                shipments_count: safelyParse(order, 'attributes.shipments_count', parseAsNumber, 0),
-                formatted_total_amount_with_taxes: safelyParse(
-                    order,
-                    'attributes.formatted_total_amount_with_taxes',
-                    parseAsString,
-                    ''
-                ),
-                placed_at: safelyParse(order, 'attributes.placed_at', parseAsString, ''),
-                updated_at: safelyParse(order, 'attributes.updated_at', parseAsString, ''),
-                lineItems: lineItems.map((lineItem) => {
-                    const includedLineItem = included.filter((include) => include.id === lineItem.id);
-
+        return {
+            orders: included
+                .filter((i) => i.type === 'orders')
+                .map((order) => {
                     return {
-                        ...lineItem,
-                        sku_code: safelyParse(includedLineItem, 'attributes.sku_code', parseAsString, ''),
-                        quantity: safelyParse(includedLineItem, 'attributes.quantity', parseAsNumber, 0),
-                        image_url: safelyParse(includedLineItem, 'attributes.image_url', parseAsString, ''),
+                        number: safelyParse(order, 'attributes.number', parseAsNumber, 0),
+                        status: safelyParse(order, 'attributes.status', parseAsString, 'draft'),
+                        payment_status: safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid'),
+                        fulfillment_status: safelyParse(
+                            order,
+                            'attributes.fulfillment_status',
+                            parseAsString,
+                            'unfulfilled'
+                        ),
+                        skus_count: safelyParse(order, 'attributes.skus_count', parseAsNumber, 0),
+                        shipments_count: safelyParse(order, 'attributes.shipments_count', parseAsNumber, 0),
+                        formatted_total_amount_with_taxes: safelyParse(
+                            order,
+                            'attributes.formatted_total_amount_with_taxes',
+                            parseAsString,
+                            ''
+                        ),
+                        placed_at: safelyParse(order, 'attributes.placed_at', parseAsString, ''),
+                        updated_at: safelyParse(order, 'attributes.updated_at', parseAsString, ''),
+                        lineItems: lineItems.map((lineItem) => ({
+                            id: safelyParse(lineItem, 'id', parseAsString, ''),
+                            type: safelyParse(lineItem, 'type', parseAsString, ''),
+                            sku_code: safelyParse(lineItem, 'attributes.sku_code', parseAsString, ''),
+                            quantity: safelyParse(lineItem, 'attributes.quantity', parseAsNumber, 0),
+                            image_url: safelyParse(lineItem, 'attributes.image_url', parseAsString, ''),
+                        })),
                     };
                 }),
-            };
-        });
+            count: safelyParse(res, 'data.meta.page_count', parseAsNumber, 1),
+        };
     } catch (error: unknown) {
         errorHandler(error, 'We could not get historical orders.');
     }
 
-    return [];
+    return {
+        orders: [],
+        count: 1,
+    };
 }
 
 export async function getOrderPageCount(accessToken: string, emailAddress: string): Promise<number> {
@@ -358,13 +359,12 @@ export function cardLogo(card: string | null): JSX.Element {
     }
 }
 
-export async function getAddresses(accessToken: string, emailAddress: string): Promise<Address[]> {
+export async function getAddresses(accessToken: string): Promise<Address[]> {
     try {
         const cl = authClient(accessToken);
-        const include = 'include=address';
-        const filters = `filter[q][email_eq]=${emailAddress}`;
+
         const fields = `fields[customer_addresses]=id,reference&fields[addresses]=full_address`;
-        const res = await cl.get(`/api/customer_addresses?${filters}&${include}&${fields}`);
+        const res = await cl.get(`/api/customer_addresses?include=address&${fields}`);
         const addresses = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, []);
         const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
 
@@ -381,12 +381,10 @@ export async function getAddresses(accessToken: string, emailAddress: string): P
     return [];
 }
 
-export async function getAddressPageCount(accessToken: string, emailAddress: string): Promise<number> {
+export async function getAddressPageCount(accessToken: string): Promise<number> {
     try {
-        const include = 'address';
-        const filters = `filter[q][email_eq]=${emailAddress}`;
         const cl = authClient(accessToken);
-        const res = await cl.get(`/api/customer_addresses?${filters}&include=${include}`);
+        const res = await cl.get(`/api/customer_addresses?include=address`);
 
         return safelyParse(res, 'data.meta.page_count', parseAsNumber, 1);
     } catch (error: unknown) {

@@ -14,6 +14,7 @@ const selector = createSelector(
         currentStep: checkout.currentStep,
         paymentMethods: checkout.paymentMethods,
         accessToken: global.accessToken,
+        userToken: global.userToken,
         customerDetails,
         checkoutLoading: global.checkoutLoading,
         orderId: cart.orderId,

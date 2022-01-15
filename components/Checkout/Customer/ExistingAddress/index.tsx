@@ -17,17 +17,16 @@ const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping }) => {
     const session = useSession();
     const dispatch = useDispatch();
     const { accessToken, checkoutLoading, addresses } = useSelector(selector);
-    const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
     const [shouldFetchAddresses, setShouldFetchAddresses] = useState(true);
 
     useEffect(() => {
-        if (session && shouldFetchAddresses && accessToken && emailAddress) {
+        if (session && shouldFetchAddresses && accessToken) {
             setShouldFetchAddresses(false);
             dispatch(setCheckoutLoading(true));
-            dispatch(fetchAddresses({ accessToken, emailAddress }));
+            dispatch(fetchAddresses(accessToken));
             dispatch(setCheckoutLoading(false));
         }
-    }, [session, accessToken, emailAddress, shouldFetchAddresses, dispatch]);
+    }, [session, accessToken, shouldFetchAddresses, dispatch]);
 
     return (
         <div className="w-full block relative">

@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import { DateTime } from 'luxon';
 
 import { errorHandler } from '../middleware/errors';
+import { UserSession } from '../types/auth';
 import { CreateToken } from '../types/commerce';
 import { parseAsNumber, parseAsString, safelyParse } from './parsers';
 
@@ -82,4 +83,28 @@ export async function registerUser(
     }
 
     return false;
+}
+
+export async function createUserToken(emailAddress: string, password: string): Promise<UserSession> {
+    try {
+        const tokenRes = await userClient().post('/oauth/token', {
+            grant_type: 'password',
+            username: emailAddress,
+            password,
+            client_id: process.env.NEXT_PUBLIC_ECOM_SALES_ID,
+            scope: 'market:6098',
+        });
+
+        return {
+            token: safelyParse(tokenRes, 'data.access_token', parseAsString, null),
+            id: safelyParse(tokenRes, 'data.owner_id', parseAsString, null),
+        };
+    } catch (error: unknown) {
+        errorHandler(error, 'Failed to register user at this time.');
+    }
+
+    return {
+        token: null,
+        id: null,
+    };
 }

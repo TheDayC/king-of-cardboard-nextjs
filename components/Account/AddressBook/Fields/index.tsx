@@ -97,8 +97,8 @@ export const Fields: React.FC<FieldProps> = ({
 
             if (res) {
                 dispatch(addSuccess('Address updated!'));
-                dispatch(fetchAddresses({ accessToken, emailAddress }));
-                router.push('/account/addressBook');
+                dispatch(fetchAddresses(accessToken));
+                router.push('/account/address-book');
             } else {
                 dispatch(addError('Failed to update address.'));
             }
@@ -121,8 +121,8 @@ export const Fields: React.FC<FieldProps> = ({
             if (res) {
                 dispatch(addSuccess('Address successfullly added!'));
                 reset();
-                dispatch(fetchAddresses({ accessToken, emailAddress }));
-                router.push('/account/addressBook');
+                dispatch(fetchAddresses(accessToken));
+                router.push('/account/address-book');
             } else {
                 dispatch(addError('Unable to add address.'));
             }

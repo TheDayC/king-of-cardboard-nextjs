@@ -6,7 +6,7 @@ export const Add: React.FC = () => (
     <Link
         href={{
             pathname: '/account/[slug]',
-            query: { slug: 'addAddress' },
+            query: { slug: 'add-address' },
         }}
         passHref
     >

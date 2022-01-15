@@ -58,7 +58,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                             grant_type: 'password',
                             username: emailAddress,
                             password,
-                            client_id: process.env.ECOM_SALES_ID,
+                            client_id: process.env.NEXT_PUBLIC_ECOM_SALES_ID,
                             scope: 'market:6098',
                         });
                         const token = safelyParse(tokenRes, 'data.access_token', parseAsString, null);
