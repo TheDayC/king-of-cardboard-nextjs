@@ -280,7 +280,6 @@ const Customer: React.FC = () => {
     const submissionCleanup = () => {
         if (accessToken && orderId) {
             dispatch(fetchShipments({ accessToken, orderId }));
-            dispatch(fetchShippingMethods({ accessToken, orderId }));
         }
 
         // Remove load blockers.

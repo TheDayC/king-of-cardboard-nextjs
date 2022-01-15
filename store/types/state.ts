@@ -71,7 +71,6 @@ export interface Checkout {
     isShippingSameAsBilling: boolean;
     paymentMethods: PaymentMethod[];
     shipments: Shipment[];
-    shippingMethods: MergedShipmentMethods[];
 }
 
 export interface CustomerDetails {

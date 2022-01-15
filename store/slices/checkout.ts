@@ -27,15 +27,6 @@ export const fetchShipments = createAsyncThunk(
     }
 );
 
-export const fetchShippingMethods = createAsyncThunk(
-    'checkout/fetchShippingMethods',
-    async (data: CommonThunkInput): Promise<MergedShipmentMethods[]> => {
-        const { accessToken, orderId } = data;
-
-        return await getShippingMethods(accessToken, orderId);
-    }
-);
-
 const checkoutSlice = createSlice({
     name: 'checkout',
     initialState: checkoutInitialState,
@@ -71,9 +62,6 @@ const checkoutSlice = createSlice({
         }),
             builder.addCase(fetchShipments.fulfilled, (state, action) => {
                 state.shipments = action.payload;
-            }),
-            builder.addCase(fetchShippingMethods.fulfilled, (state, action) => {
-                state.shippingMethods = action.payload;
             }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,
