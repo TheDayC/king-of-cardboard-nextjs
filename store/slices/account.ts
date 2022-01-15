@@ -2,11 +2,10 @@ import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../../types/account';
+import { Address, GetOrders, GiftCard, SingleAddress, SingleOrder } from '../../types/account';
 import { SocialMedia } from '../../types/profile';
 import {
     getGiftCard,
-    getOrderPageCount,
     getOrders,
     getOrder,
     getAddresses,
@@ -23,8 +22,9 @@ interface EmailThunkInput {
     emailAddress: string;
 }
 
-interface PaginatedThunkInput {
+interface FetchOrdersThunkInput {
     accessToken: string;
+    userId: string;
     pageSize: number;
     page: number;
 }
@@ -50,10 +50,10 @@ export const fetchGiftCard = createAsyncThunk(
 
 export const fetchOrders = createAsyncThunk(
     'account/fetchOrders',
-    async (data: PaginatedThunkInput): Promise<Order[]> => {
-        const { accessToken, pageSize, page } = data;
+    async (data: FetchOrdersThunkInput): Promise<GetOrders> => {
+        const { accessToken, userId, pageSize, page } = data;
 
-        return await getOrders(accessToken, pageSize, page);
+        return await getOrders(accessToken, userId, pageSize, page);
     }
 );
 
@@ -63,15 +63,6 @@ export const fetchCurrentOrder = createAsyncThunk(
         const { accessToken, orderNumber } = data;
 
         return await getOrder(accessToken, orderNumber);
-    }
-);
-
-export const fetchOrderPageCount = createAsyncThunk(
-    'account/fetchOrderPageCount',
-    async (data: EmailThunkInput): Promise<number> => {
-        const { accessToken, emailAddress } = data;
-
-        return await getOrderPageCount(accessToken, emailAddress);
     }
 );
 
@@ -114,10 +105,10 @@ const accountSlice = createSlice({
             state.giftCard = action.payload;
         }),
             builder.addCase(fetchOrders.fulfilled, (state, action) => {
-                state.orders = action.payload;
-            }),
-            builder.addCase(fetchOrderPageCount.fulfilled, (state, action) => {
-                state.orderPageCount = action.payload;
+                const { orders, count } = action.payload;
+
+                state.orders = orders;
+                state.orderPageCount = count;
             }),
             builder.addCase(fetchCurrentOrder.fulfilled, (state, action) => {
                 state.currentOrder = action.payload;

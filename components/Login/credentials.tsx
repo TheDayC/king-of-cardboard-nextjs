@@ -9,8 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { createUserToken } from '../../utils/auth';
-import { setUserToken } from '../../store/slices/global';
-import { updateOrderWithBlankAttributes } from '../../utils/commerce';
+import { setUserId, setUserToken } from '../../store/slices/global';
 import selector from './selector';
 
 interface Submit {
@@ -25,7 +24,6 @@ export const Credentials: React.FC = () => {
         formState: { errors },
     } = useForm();
     const router = useRouter();
-    const { orderId } = useSelector(selector);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const hasErrors = Object.keys(errors).length > 0;
@@ -44,14 +42,14 @@ export const Credentials: React.FC = () => {
 
         if (!formErr) {
             if (emailAddress && password) {
-                const userToken = await createUserToken(emailAddress, password);
+                const { token, id } = await createUserToken(emailAddress, password);
 
-                if (userToken) {
-                    if (orderId) {
-                        await updateOrderWithBlankAttributes(userToken, orderId);
-                    }
+                if (token) {
+                    dispatch(setUserToken(token));
+                }
 
-                    dispatch(setUserToken(userToken));
+                if (id) {
+                    dispatch(setUserId(id));
                 }
             }
             router.push('/account');

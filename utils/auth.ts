@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import { DateTime } from 'luxon';
 
 import { errorHandler } from '../middleware/errors';
+import { UserSession } from '../types/auth';
 import { CreateToken } from '../types/commerce';
 import { parseAsNumber, parseAsString, safelyParse } from './parsers';
 
@@ -84,7 +85,7 @@ export async function registerUser(
     return false;
 }
 
-export async function createUserToken(emailAddress: string, password: string): Promise<string | null> {
+export async function createUserToken(emailAddress: string, password: string): Promise<UserSession> {
     try {
         const tokenRes = await userClient().post('/oauth/token', {
             grant_type: 'password',
@@ -94,10 +95,16 @@ export async function createUserToken(emailAddress: string, password: string): P
             scope: 'market:6098',
         });
 
-        return safelyParse(tokenRes, 'data.access_token', parseAsString, null);
+        return {
+            token: safelyParse(tokenRes, 'data.access_token', parseAsString, null),
+            id: safelyParse(tokenRes, 'data.owner_id', parseAsString, null),
+        };
     } catch (error: unknown) {
         errorHandler(error, 'Failed to register user at this time.');
     }
 
-    return null;
+    return {
+        token: null,
+        id: null,
+    };
 }

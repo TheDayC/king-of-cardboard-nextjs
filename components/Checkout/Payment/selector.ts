@@ -13,7 +13,8 @@ const selector = createSelector(
     (checkout, cart, global, customerDetails, account) => ({
         currentStep: checkout.currentStep,
         paymentMethods: checkout.paymentMethods,
-        accessToken: global.userToken || global.accessToken,
+        accessToken: global.accessToken,
+        userToken: global.userToken,
         customerDetails,
         checkoutLoading: global.checkoutLoading,
         orderId: cart.orderId,
