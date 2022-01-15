@@ -7,7 +7,6 @@ import selector from './selector';
 import { updateAddress, updateAddressClone, updateSameAsBilling } from '../../../utils/checkout';
 import {
     fetchShipments,
-    fetchShippingMethods,
     setBillingAddress,
     setCloneBillingAddressId,
     setCloneShippingAddressId,
