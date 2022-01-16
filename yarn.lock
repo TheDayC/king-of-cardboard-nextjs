@@ -862,6 +862,12 @@
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
 
+"@commercelayer/sdk@^3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@commercelayer/sdk/-/sdk-3.2.1.tgz#801cd7834a40eed4709fbce8a634ff55526e2e6d"
+  dependencies:
+    axios "^0.24.0"
+
 "@contentful/rich-text-react-renderer@^15.11.1":
   version "15.11.1"
   resolved "https://registry.yarnpkg.com/@contentful/rich-text-react-renderer/-/rich-text-react-renderer-15.11.1.tgz#54305dc9561ed5d98bb65e8eb054ba1707d44af0"
@@ -1893,6 +1899,12 @@ axios@^0.21.4:
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
   dependencies:
     follow-redirects "^1.14.0"
+
+axios@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.24.0.tgz#804e6fa1e4b9c5288501dd9dff56a7a0940d20d6"
+  dependencies:
+    follow-redirects "^1.14.4"
 
 axobject-query@^2.2.0:
   version "2.2.0"

@@ -6,17 +6,21 @@ interface PaginationProps {
     handlePageNumber: (pageNumber: number) => void;
 }
 
+const MAX_PAGES = 5;
+
 export const Pagination: React.FC<PaginationProps> = ({ currentPage, pageCount, handlePageNumber }) => {
+    const shouldTruncate = pageCount > MAX_PAGES;
+
     const getBtns = () => {
         const btns = [];
 
-        for (let i = 0; i < pageCount; i++) {
+        for (let i = currentPage; i < currentPage + MAX_PAGES; i++) {
             const visualCount = i + 1;
 
             if (currentPage === i) {
                 btns.push(
                     <button
-                        className="btn btn-sm bg-primary rounded-none"
+                        className="btn btn-md bg-primary rounded-none border-r-0 border-l-0 border-primary hover:bg-primary hover:border-primary"
                         onClick={() => handlePageNumber(i)}
                         key={`page-${i}`}
                     >
@@ -26,7 +30,7 @@ export const Pagination: React.FC<PaginationProps> = ({ currentPage, pageCount, 
             } else {
                 btns.push(
                     <button
-                        className="btn btn-outline btn-sm rounded-none"
+                        className="btn btn-outline btn-md rounded-none border border-gray-400 hover:bg-gray-400 hover:border-gray-400"
                         onClick={() => handlePageNumber(i)}
                         key={`page-${i}`}
                     >
@@ -54,15 +58,25 @@ export const Pagination: React.FC<PaginationProps> = ({ currentPage, pageCount, 
     return (
         <div className="btn-group mt-4 md:mt-8 lg:mt-16">
             <button
-                className="btn btn-outline btn-sm rounded-l-md w-1/2 lg:w-auto"
+                className="btn btn-outline btn-md border border-r-0 border-gray-400 rounded-l-sm w-1/2 hover:bg-gray-400 hover:border-gray-400 lg:w-auto"
                 disabled={currentPage <= 0}
                 onClick={handlePrevPage}
             >
                 Previous
             </button>
+            {shouldTruncate && currentPage > 0 && (
+                <div className="btn btn-outline btn-md rounded-none border border-gray-400 hover:bg-white hover:border-gray-400 hover:text-neutral">
+                    ...
+                </div>
+            )}
             <div className="hidden lg:inline-block">{getBtns()}</div>
+            {shouldTruncate && (
+                <div className="btn btn-outline btn-md rounded-none border border-gray-400 hover:bg-white hover:border-gray-400 hover:text-neutral">
+                    ...
+                </div>
+            )}
             <button
-                className="btn btn-outline btn-sm rounded-r-md w-1/2 lg:w-auto"
+                className="btn btn-md btn-outline text-sm border border-l-0 border-gray-400 rounded-r-sm w-1/2 hover:bg-gray-400 hover:border-gray-400 lg:w-auto"
                 disabled={currentPage === pageCount - 1}
                 onClick={handleNextPage}
             >

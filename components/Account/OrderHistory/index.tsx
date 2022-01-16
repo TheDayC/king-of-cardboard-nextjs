@@ -10,30 +10,37 @@ import { fetchOrders } from '../../../store/slices/account';
 const PER_PAGE = 5;
 
 export const OrderHistory: React.FC = () => {
-    const { accessToken, orders, orderPageCount, userId } = useSelector(selector);
+    const { accessToken, orders, orderPageCount, userId, userToken } = useSelector(selector);
     const [currentPage, setCurrentPage] = useState(1);
     const [shouldFetch, setShouldFetch] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const dispatch = useDispatch();
 
     const handlePageNumber = (nextPage: number) => {
-        if (accessToken && userId) {
+        if (accessToken && userId && userToken) {
             const page = nextPage + 1;
 
             setIsLoading(true);
-            dispatch(fetchOrders({ accessToken, userId, pageSize: PER_PAGE, page }));
-            setCurrentPage(page);
-            setIsLoading(false);
+            dispatch(fetchOrders({ accessToken, userToken, userId, pageSize: PER_PAGE, page }));
+            //setCurrentPage(page);
+            setTimeout(() => setCurrentPage(page), 700);
+            // setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        if (accessToken && shouldFetch && userId) {
+        if (accessToken && shouldFetch && userId && userToken) {
             setShouldFetch(false);
-            dispatch(fetchOrders({ accessToken, userId, pageSize: PER_PAGE, page: currentPage }));
+            dispatch(fetchOrders({ accessToken, userToken, userId, pageSize: PER_PAGE, page: currentPage }));
             setIsLoading(false);
         }
-    }, [dispatch, accessToken, shouldFetch, currentPage, userId]);
+    }, [dispatch, accessToken, shouldFetch, currentPage, userId, userToken]);
+
+    useEffect(() => {
+        if (currentPage) {
+            setIsLoading(false);
+        }
+    }, [currentPage]);
 
     return (
         <React.Fragment>
@@ -57,7 +64,11 @@ export const OrderHistory: React.FC = () => {
                     );
                 })}
             {orderPageCount > 1 && (
-                <Pagination currentPage={currentPage} pageCount={orderPageCount} handlePageNumber={handlePageNumber} />
+                <Pagination
+                    currentPage={currentPage - 1}
+                    pageCount={orderPageCount}
+                    handlePageNumber={handlePageNumber}
+                />
             )}
         </React.Fragment>
     );
