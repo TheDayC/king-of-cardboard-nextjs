@@ -1,4 +1,3 @@
-import { Categories, ProductType } from '../../enums/shop';
 import {
     IAppState,
     Filters,
@@ -8,7 +7,6 @@ import {
     CartState,
     Confirmation,
     PagesState,
-    ShopState,
     BreaksState,
     AccountState,
     AlertsState,
@@ -24,6 +22,5 @@ export const selectCheckoutData = (state: IAppState): Checkout => state.checkout
 export const selectCheckoutCustomerData = (state: IAppState): CustomerDetails => state.checkout.customerDetails;
 export const selectConfirmationData = (state: IAppState): Confirmation => state.confirmation;
 export const selectPageData = (state: IAppState): PagesState => state.pages;
-export const selectShopData = (state: IAppState): ShopState => state.shop;
 export const selectBreaksData = (state: IAppState): BreaksState => state.breaks;
 export const selectAccountData = (state: IAppState): AccountState => state.account;

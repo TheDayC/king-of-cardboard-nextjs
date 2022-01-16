@@ -4,9 +4,8 @@ import { ceil, divide } from 'lodash';
 
 import selector from './selector';
 import Pagination from '../../Pagination';
-import { setIsLoadingProducts } from '../../../store/slices/shop';
 import ProductCard from './ProductCard';
-import { clearCurrentProduct, fetchProducts } from '../../../store/slices/products';
+import { clearCurrentProduct, fetchProducts, setIsLoadingProducts } from '../../../store/slices/products';
 
 const PER_PAGE = 8;
 
@@ -32,7 +31,6 @@ export const Grid: React.FC = () => {
                         productTypes,
                     })
                 );
-                dispatch(setIsLoadingProducts(false));
             }
         },
         [accessToken, categories, productTypes, dispatch]
@@ -49,8 +47,8 @@ export const Grid: React.FC = () => {
     useEffect(() => {
         if (shouldFetch && accessToken) {
             setShouldFetch(false);
+            dispatch(setIsLoadingProducts(true));
             dispatch(fetchProducts({ accessToken, limit: PER_PAGE, skip: 0, categories, productTypes }));
-            dispatch(setIsLoadingProducts(false));
         }
     }, [dispatch, accessToken, shouldFetch, categories, productTypes]);
 

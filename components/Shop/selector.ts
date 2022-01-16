@@ -1,9 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectShopData } from '../../store/state/selectors';
+import { selectProductData } from '../../store/state/selectors';
 
-const selector = createSelector([selectShopData], (shopData) => ({
-    isLoadingProducts: shopData.isLoadingProducts,
+const selector = createSelector([selectProductData], (products) => ({
+    isLoadingProducts: products.isLoadingProducts,
 }));
 
 export default selector;

@@ -4,7 +4,7 @@ import { HYDRATE } from 'next-redux-wrapper';
 import { AppState } from '..';
 import { Categories, ProductType } from '../../enums/shop';
 import { ProductsWithCount, SingleProduct } from '../../types/products';
-import { getProducts, getProductsTotal, getSingleProduct } from '../../utils/products';
+import { getProducts, getSingleProduct } from '../../utils/products';
 import productsInitialState from '../state/products';
 
 const hydrate = createAction<AppState>(HYDRATE);
@@ -71,12 +71,17 @@ const productsSlice = createSlice({
                 },
             };
         },
+        setIsLoadingProducts(state, action) {
+            state.isLoadingProducts = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(fetchProducts.fulfilled, (state, action) => {
             const { products, count } = action.payload;
+
             state.products = products;
             state.productsTotal = count;
+            state.isLoadingProducts = false;
         }),
             builder.addCase(fetchSingleProduct.fulfilled, (state, action) => {
                 state.currentProduct = action.payload;
@@ -88,6 +93,6 @@ const productsSlice = createSlice({
     },
 });
 
-export const { clearCurrentProduct } = productsSlice.actions;
+export const { clearCurrentProduct, setIsLoadingProducts } = productsSlice.actions;
 
 export default productsSlice.reducer;
