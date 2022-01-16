@@ -10,6 +10,7 @@ const selector = createSelector(
         categories: filters.categories,
         productTypes: filters.productTypes,
         accessToken: global.accessToken,
+        isLoadingProducts: products.isLoadingProducts,
     })
 );
 
