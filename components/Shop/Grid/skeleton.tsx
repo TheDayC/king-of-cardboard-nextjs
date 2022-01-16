@@ -4,7 +4,7 @@ const products = [1, 2, 3, 4, 5, 6, 7, 8];
 
 export const Skeleton: React.FC = () => {
     return (
-        <React.Fragment>
+        <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl2:grid-cols-6">
             {products.map((product) => (
                 <div
                     className="card shadow-md rounded-md bordered pt-4 transition duration-300 ease-in-out hover:shadow-2xl"
@@ -30,7 +30,7 @@ export const Skeleton: React.FC = () => {
                     </div>
                 </div>
             ))}
-        </React.Fragment>
+        </div>
     );
 };
 

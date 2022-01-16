@@ -13,6 +13,7 @@ import { addError, addSuccess } from '../../store/slices/alerts';
 import { gaEvent } from '../../utils/ga';
 import { parseAsNumber, parseAsString, safelyParse } from '../../utils/parsers';
 import Skeleton from './Skeleton';
+import Error404 from '../404';
 import { getSingleProduct } from '../../utils/products';
 import { SingleProduct } from '../../types/products';
 
@@ -130,6 +131,10 @@ export const Product: React.FC = () => {
     }, [shouldFetch, dispatch, fetchSingleProduct, accessToken, slug]);
 
     if (shouldShow) {
+        if (currentProduct.name.length <= 0) {
+            return <Error404 />;
+        }
+
         return (
             <div className="flex flex-col relative lg:flex-row lg:space-x-8">
                 <Images mainImage={currentProduct.cardImage} imageCollection={currentProduct.images.items} />
