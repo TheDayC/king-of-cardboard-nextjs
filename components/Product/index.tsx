@@ -13,6 +13,7 @@ import { addError, addSuccess } from '../../store/slices/alerts';
 import { gaEvent } from '../../utils/ga';
 import { parseAsNumber, parseAsString, safelyParse } from '../../utils/parsers';
 import Skeleton from './Skeleton';
+import Error404 from '../404';
 import { getSingleProduct } from '../../utils/products';
 import { SingleProduct } from '../../types/products';
 
@@ -128,6 +129,10 @@ export const Product: React.FC = () => {
             fetchSingleProduct(accessToken, slug);
         }
     }, [shouldFetch, dispatch, fetchSingleProduct, accessToken, slug]);
+
+    if (stock <= 0) {
+        return <Error404 />;
+    }
 
     if (shouldShow) {
         return (
