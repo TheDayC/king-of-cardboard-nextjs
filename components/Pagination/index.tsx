@@ -1,6 +1,4 @@
-import { divide } from 'lodash';
-import React, { useEffect, useState } from 'react';
-import { useStore } from 'react-redux';
+import React from 'react';
 
 interface PaginationProps {
     currentPage: number;
