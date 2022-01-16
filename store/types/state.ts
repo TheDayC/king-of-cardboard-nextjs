@@ -170,6 +170,7 @@ export interface BreaksState {
     currentPage: number;
     breaksTotal: number;
     isLoadingBreaks: boolean;
+    isLoadingBreak: boolean;
     breaks: Break[];
     currentBreak: SingleBreak;
 }

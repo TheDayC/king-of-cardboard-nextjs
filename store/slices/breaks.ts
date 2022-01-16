@@ -44,6 +44,9 @@ const breakSlice = createSlice({
         setIsLoadingBreaks(state, action) {
             state.isLoadingBreaks = action.payload;
         },
+        setIsLoadingBreak(state, action) {
+            state.isLoadingBreak = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(fetchBreaks.fulfilled, (state, action) => {
@@ -55,6 +58,7 @@ const breakSlice = createSlice({
         }),
             builder.addCase(fetchSingleBreak.fulfilled, (state, action) => {
                 state.currentBreak = action.payload;
+                state.isLoadingBreak = false;
             }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,
@@ -63,5 +67,5 @@ const breakSlice = createSlice({
     },
 });
 
-export const { setIsLoadingBreaks } = breakSlice.actions;
+export const { setIsLoadingBreaks, setIsLoadingBreak } = breakSlice.actions;
 export default breakSlice.reducer;
