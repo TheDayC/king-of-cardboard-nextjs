@@ -100,7 +100,14 @@ export const fetchSocialMedia = createAsyncThunk(
 const accountSlice = createSlice({
     name: 'account',
     initialState: accountInitialState,
-    reducers: {},
+    reducers: {
+        setIsLoadingOrder(state, action) {
+            state.isLoadingOrder = action.payload;
+        },
+        setIsLoadingOrders(state, action) {
+            state.isLoadingOrders = action.payload;
+        },
+    },
     extraReducers: (builder) => {
         builder.addCase(fetchGiftCard.fulfilled, (state, action) => {
             state.giftCard = action.payload;
@@ -110,9 +117,11 @@ const accountSlice = createSlice({
 
                 state.orders = orders;
                 state.orderPageCount = count;
+                state.isLoadingOrders = false;
             }),
             builder.addCase(fetchCurrentOrder.fulfilled, (state, action) => {
                 state.currentOrder = action.payload;
+                state.isLoadingOrder = false;
             }),
             builder.addCase(fetchAddresses.fulfilled, (state, action) => {
                 state.addresses = action.payload;
@@ -133,5 +142,5 @@ const accountSlice = createSlice({
     },
 });
 
-//export const {} = accountSlice.actions;
+export const { setIsLoadingOrder, setIsLoadingOrders } = accountSlice.actions;
 export default accountSlice.reducer;

@@ -185,6 +185,8 @@ export interface AccountState {
     addresses: Address[];
     addressPageCount: number;
     currentAddress: SingleAddress;
+    isLoadingOrder: boolean;
+    isLoadingOrders: boolean;
 }
 
 export interface AlertsState {

@@ -8,7 +8,7 @@ import AccountMenu from '../../../components/Account/Menu';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import selector from './selector';
 import LongOrder from '../../../components/Account/OrderHistory/LongOrder';
-import { fetchCurrentOrder } from '../../../store/slices/account';
+import { fetchCurrentOrder, setIsLoadingOrder } from '../../../store/slices/account';
 import Custom404Page from '../../404';
 import Skeleton from './skeleton';
 
@@ -41,17 +41,15 @@ interface OrderProps {
 }
 
 export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumber }) => {
-    const { accessToken, order } = useSelector(selector);
-    const [isLoading, setIsLoading] = useState(false);
+    const { accessToken, order, isLoadingOrder } = useSelector(selector);
     const [shouldFetch, setShouldFetch] = useState(true);
     const dispatch = useDispatch();
 
     useEffect(() => {
         if (accessToken && orderNumber && shouldFetch) {
             setShouldFetch(false);
-            setIsLoading(true);
+            dispatch(setIsLoadingOrder(true));
             dispatch(fetchCurrentOrder({ accessToken, orderNumber }));
-            setTimeout(() => setIsLoading(false), 700);
         }
     }, [dispatch, accessToken, orderNumber, shouldFetch]);
 
@@ -72,7 +70,7 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
                     <AccountMenu isDropdown />
                 </div>
                 <div className="flex flex-col relative w-full px-2 py-0 md:w-3/4 md:px-4 md:px-8">
-                    {isLoading ? (
+                    {isLoadingOrder ? (
                         <Skeleton />
                     ) : (
                         <LongOrder
