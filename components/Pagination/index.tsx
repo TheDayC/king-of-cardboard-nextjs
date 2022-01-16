@@ -1,4 +1,6 @@
-import React from 'react';
+import { divide } from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { useStore } from 'react-redux';
 
 interface PaginationProps {
     currentPage: number;
@@ -10,12 +12,11 @@ const MAX_PAGES = 5;
 
 export const Pagination: React.FC<PaginationProps> = ({ currentPage, pageCount, handlePageNumber }) => {
     const shouldTruncate = pageCount > MAX_PAGES;
-    const maxPages = shouldTruncate ? currentPage + MAX_PAGES : pageCount;
 
     const getBtns = () => {
         const btns = [];
 
-        for (let i = currentPage; i < maxPages; i++) {
+        for (let i = currentPage; i < currentPage + MAX_PAGES; i++) {
             const visualCount = i + 1;
 
             if (currentPage === i) {
