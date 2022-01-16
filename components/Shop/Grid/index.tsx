@@ -7,6 +7,7 @@ import Pagination from '../../Pagination';
 import ProductCard from './ProductCard';
 import { clearCurrentProduct, fetchProducts, setIsLoadingProducts } from '../../../store/slices/products';
 import Skeleton from './skeleton';
+import NoProducts from './NoProducts';
 
 const PER_PAGE = 8;
 
@@ -59,12 +60,10 @@ export const Grid: React.FC = () => {
 
     return (
         <div className="flex flex-col w-full md:w-5/6" data-testid="shop-grid">
-            <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl2:grid-cols-6">
-                {isLoadingProducts ? (
-                    <Skeleton />
-                ) : (
-                    products.length > 0 &&
-                    products.map((product) => (
+            {isLoadingProducts && <Skeleton />}
+            {products.length > 0 ? (
+                <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl2:grid-cols-6">
+                    {products.map((product) => (
                         <ProductCard
                             name={product.name}
                             image={product.cardImage.url}
@@ -76,9 +75,11 @@ export const Grid: React.FC = () => {
                             slug={product.slug}
                             key={`product-card-${product.name}`}
                         />
-                    ))
-                )}
-            </div>
+                    ))}
+                </div>
+            ) : (
+                <NoProducts />
+            )}
             <div className="flex justify-center">
                 {productPageCount > 1 && (
                     <Pagination

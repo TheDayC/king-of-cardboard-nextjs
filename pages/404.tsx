@@ -12,7 +12,7 @@ export const Custom404Page: React.FC = () => (
                 <Image src={crown} alt="King of Cardboard Crown" title="King of Cardboard Crown" />
             </div>
             <div className="flex flex-col justify-start items-center p-4 text-lg">
-                <h1 className="text-5xl mb-2 font-bold">404</h1>
+                <h1 className="text-5xl mb-4 font-bold">404</h1>
                 <h3 className="text-3xl mb-6 font-semibold">Page not found</h3>
                 <p className="mb-2">We can&apos;t seem to find the page you requested!</p>
                 <p className="mb-2">
