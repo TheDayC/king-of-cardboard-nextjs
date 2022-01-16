@@ -7,6 +7,7 @@ const selector = createSelector([selectGlobalData, selectCartData, selectProduct
     items: cart.items,
     accessToken: global.accessToken,
     currentProduct: products.currentProduct,
+    isUpdatingCart: cart.isUpdatingCart,
 }));
 
 export default selector;
