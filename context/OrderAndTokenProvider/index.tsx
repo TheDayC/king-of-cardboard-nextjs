@@ -40,6 +40,14 @@ const OrderAndTokenProvider: React.FC = ({ children }) => {
         }
     }, [shouldCreateOrder, accessToken, isGuest]);
 
+    // If the user is logged out clear old user data.
+    useIsomorphicLayoutEffect(() => {
+        if (isGuest) {
+            dispatch(setUserToken(null));
+            dispatch(setUserId(null));
+        }
+    }, [dispatch, isGuest]);
+
     return <React.Fragment>{children}</React.Fragment>;
 };
 

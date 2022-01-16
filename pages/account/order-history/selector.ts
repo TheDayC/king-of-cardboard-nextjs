@@ -5,7 +5,6 @@ import { selectGlobalData, selectAccountData } from '../../../store/state/select
 const selector = createSelector([selectGlobalData, selectAccountData], (global, account) => ({
     accessToken: global.accessToken,
     order: account.currentOrder,
-    isLoadingOrder: account.isLoadingOrder,
 }));
 
 export default selector;

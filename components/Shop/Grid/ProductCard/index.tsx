@@ -37,7 +37,14 @@ export const ProductCard: React.FC<CardProps> = ({
             {image.length > 0 && (
                 <Link href={linkOptions} passHref>
                     <div className="relative w-full h-40 cursor-pointer">
-                        <Image src={image} alt={imgDesc} title={imgTitle} layout="fill" objectFit="scale-down" />
+                        <Image
+                            src={image}
+                            alt={imgDesc}
+                            title={imgTitle}
+                            layout="fill"
+                            objectFit="scale-down"
+                            className="rounded-sm"
+                        />
                     </div>
                 </Link>
             )}

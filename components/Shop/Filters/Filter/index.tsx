@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 
 import { combinedFilters, FilterTypes } from '../../../../enums/shop';
-import { setIsLoadingProducts } from '../../../../store/slices/products';
+import { setIsLoadingProducts } from '../../../../store/slices/shop';
 
 interface FilterProps {
     value: combinedFilters;

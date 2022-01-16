@@ -3,7 +3,6 @@ import { ProductsState } from '../types/state';
 const productsInitialState: ProductsState = {
     products: [],
     productsTotal: 0,
-    isLoadingProducts: false,
     currentProduct: {
         id: '',
         name: '',

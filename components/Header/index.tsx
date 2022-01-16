@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
 import { toSvg } from 'jdenticon';
 import md5 from 'md5';
-import { useDispatch } from 'react-redux';
 
 import logo from '../../images/logo-full.png';
 import Rewards from './Rewards';
@@ -13,19 +12,15 @@ import { parseAsString, safelyParse } from '../../utils/parsers';
 import NavBar from './Navbar';
 import CartIcon from './CartIcon';
 import NewsBanner from './NewsBanner';
-import { setUserId, setUserToken } from '../../store/slices/global';
 // import IssueBanner from './IssueBar';
 
 export const Header: React.FC = () => {
-    const dispatch = useDispatch();
     const session = useSession();
     const icon = safelyParse(session, 'data.user.image', parseAsString, null);
     const email = safelyParse(session, 'data.user.email', parseAsString, null);
     const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
 
     const handleLogout = () => {
-        dispatch(setUserToken(null));
-        dispatch(setUserId(null));
         signOut();
     };
 

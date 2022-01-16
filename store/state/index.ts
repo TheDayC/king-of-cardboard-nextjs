@@ -7,6 +7,7 @@ import filtersInitialState from './filters';
 import checkoutInitialState from './checkout';
 import confirmationInitialState from './confirmation';
 import pagesInitialState from './pages';
+import shopInitialState from './shop';
 import breaksInitialState from './breaks';
 import accountInitialState from './account';
 
@@ -21,6 +22,7 @@ export function createInitialState(): IAppState {
         checkout: checkoutInitialState,
         confirmation: confirmationInitialState,
         pages: pagesInitialState,
+        shop: shopInitialState,
         breaks: breaksInitialState,
         account: accountInitialState,
     };

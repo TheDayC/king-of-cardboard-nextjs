@@ -89,8 +89,6 @@ const accountInitialState: AccountState = {
         phone: '',
         postcode: '',
     },
-    isLoadingOrder: false,
-    isLoadingOrders: false,
 };
 
 export default accountInitialState;

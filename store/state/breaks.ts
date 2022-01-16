@@ -4,7 +4,6 @@ const breaksInitialState: BreaksState = {
     currentPage: 1,
     breaksTotal: 0,
     isLoadingBreaks: false,
-    isLoadingBreak: false,
     breaks: [],
     currentBreak: {
         id: '',

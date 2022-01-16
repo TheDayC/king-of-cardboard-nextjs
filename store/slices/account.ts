@@ -24,7 +24,6 @@ interface EmailThunkInput {
 
 interface FetchOrdersThunkInput {
     accessToken: string;
-    userToken: string;
     userId: string;
     pageSize: number;
     page: number;
@@ -52,9 +51,9 @@ export const fetchGiftCard = createAsyncThunk(
 export const fetchOrders = createAsyncThunk(
     'account/fetchOrders',
     async (data: FetchOrdersThunkInput): Promise<GetOrders> => {
-        const { accessToken, userToken, userId, pageSize, page } = data;
+        const { accessToken, userId, pageSize, page } = data;
 
-        return await getOrders(accessToken, userToken, userId, pageSize, page);
+        return await getOrders(accessToken, userId, pageSize, page);
     }
 );
 
@@ -100,14 +99,7 @@ export const fetchSocialMedia = createAsyncThunk(
 const accountSlice = createSlice({
     name: 'account',
     initialState: accountInitialState,
-    reducers: {
-        setIsLoadingOrder(state, action) {
-            state.isLoadingOrder = action.payload;
-        },
-        setIsLoadingOrders(state, action) {
-            state.isLoadingOrders = action.payload;
-        },
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder.addCase(fetchGiftCard.fulfilled, (state, action) => {
             state.giftCard = action.payload;
@@ -117,11 +109,9 @@ const accountSlice = createSlice({
 
                 state.orders = orders;
                 state.orderPageCount = count;
-                state.isLoadingOrders = false;
             }),
             builder.addCase(fetchCurrentOrder.fulfilled, (state, action) => {
                 state.currentOrder = action.payload;
-                state.isLoadingOrder = false;
             }),
             builder.addCase(fetchAddresses.fulfilled, (state, action) => {
                 state.addresses = action.payload;
@@ -142,5 +132,5 @@ const accountSlice = createSlice({
     },
 });
 
-export const { setIsLoadingOrder, setIsLoadingOrders } = accountSlice.actions;
+//export const {} = accountSlice.actions;
 export default accountSlice.reducer;
