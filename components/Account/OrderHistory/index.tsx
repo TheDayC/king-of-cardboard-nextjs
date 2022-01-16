@@ -22,8 +22,9 @@ export const OrderHistory: React.FC = () => {
 
             setIsLoading(true);
             dispatch(fetchOrders({ accessToken, userToken, userId, pageSize: PER_PAGE, page }));
-            setCurrentPage(page);
-            setIsLoading(false);
+            //setCurrentPage(page);
+            setTimeout(() => setCurrentPage(page), 700);
+            // setIsLoading(false);
         }
     };
 
@@ -34,6 +35,12 @@ export const OrderHistory: React.FC = () => {
             setIsLoading(false);
         }
     }, [dispatch, accessToken, shouldFetch, currentPage, userId, userToken]);
+
+    useEffect(() => {
+        if (currentPage) {
+            setIsLoading(false);
+        }
+    }, [currentPage]);
 
     return (
         <React.Fragment>
@@ -57,7 +64,11 @@ export const OrderHistory: React.FC = () => {
                     );
                 })}
             {orderPageCount > 1 && (
-                <Pagination currentPage={currentPage} pageCount={orderPageCount} handlePageNumber={handlePageNumber} />
+                <Pagination
+                    currentPage={currentPage - 1}
+                    pageCount={orderPageCount}
+                    handlePageNumber={handlePageNumber}
+                />
             )}
         </React.Fragment>
     );

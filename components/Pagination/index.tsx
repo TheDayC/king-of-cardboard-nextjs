@@ -6,11 +6,16 @@ interface PaginationProps {
     handlePageNumber: (pageNumber: number) => void;
 }
 
+const MAX_PAGES = 5;
+
 export const Pagination: React.FC<PaginationProps> = ({ currentPage, pageCount, handlePageNumber }) => {
+    const shouldTruncate = pageCount > MAX_PAGES;
+    const maxPages = shouldTruncate ? currentPage + MAX_PAGES : pageCount;
+
     const getBtns = () => {
         const btns = [];
 
-        for (let i = 0; i < pageCount; i++) {
+        for (let i = currentPage; i < maxPages; i++) {
             const visualCount = i + 1;
 
             if (currentPage === i) {
@@ -60,7 +65,17 @@ export const Pagination: React.FC<PaginationProps> = ({ currentPage, pageCount, 
             >
                 Previous
             </button>
+            {shouldTruncate && currentPage > 0 && (
+                <div className="btn btn-outline btn-md rounded-none border border-gray-400 hover:bg-white hover:border-gray-400 hover:text-neutral">
+                    ...
+                </div>
+            )}
             <div className="hidden lg:inline-block">{getBtns()}</div>
+            {shouldTruncate && (
+                <div className="btn btn-outline btn-md rounded-none border border-gray-400 hover:bg-white hover:border-gray-400 hover:text-neutral">
+                    ...
+                </div>
+            )}
             <button
                 className="btn btn-md btn-outline text-sm border border-l-0 border-gray-400 rounded-r-sm w-1/2 hover:bg-gray-400 hover:border-gray-400 lg:w-auto"
                 disabled={currentPage === pageCount - 1}
