@@ -8,6 +8,7 @@ const selector = createSelector([selectGlobalData, selectAccountData], (global, 
     userId: global.userId,
     orders: account.orders,
     orderPageCount: account.orderPageCount,
+    isLoadingOrders: account.isLoadingOrders,
 }));
 
 export default selector;

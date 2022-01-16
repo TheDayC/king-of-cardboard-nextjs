@@ -6,6 +6,7 @@ const selector = createSelector([selectBreaksData, selectGlobalData], (breaks, g
     breaks: breaks.breaks,
     breaksTotal: breaks.breaksTotal,
     accessToken: global.accessToken,
+    isLoadingBreaks: breaks.isLoadingBreaks,
 }));
 
 export default selector;

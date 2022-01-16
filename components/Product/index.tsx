@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 
 import { setLineItem } from '../../utils/commerce';
 import selector from './selector';
-import { fetchCartItems, fetchItemCount } from '../../store/slices/cart';
+import { fetchCartItems, fetchItemCount, setUpdatingCart } from '../../store/slices/cart';
 import Images from './Images';
 import Details from './Details';
 import { addError, addSuccess } from '../../store/slices/alerts';
@@ -45,8 +45,7 @@ const defaultProduct: SingleProduct = {
 export const Product: React.FC = () => {
     const router = useRouter();
     const dispatch = useDispatch();
-    const { accessToken, items, orderId } = useSelector(selector);
-    const [loading, setLoading] = useState(false);
+    const { accessToken, items, orderId, isUpdatingCart } = useSelector(selector);
     const [shouldFetch, setShouldFetch] = useState(true);
     const [shouldShow, setShouldShow] = useState(false);
     const [currentProduct, setCurrentProduct] = useState(defaultProduct);
@@ -58,7 +57,7 @@ export const Product: React.FC = () => {
     const hasExceededStock = quantity >= stock;
     const description = split(productDesc, '\n\n');
     const btnDisabled = hasExceededStock ? ' btn-disabled' : ' btn-primary';
-    const btnLoading = loading ? ' loading btn-square' : '';
+    const btnLoading = isUpdatingCart ? ' loading btn-square' : '';
     const isQuantityAtMax = quantity === stock;
     const slug = safelyParse(router, 'query.slug', parseAsString, '');
 
@@ -72,8 +71,8 @@ export const Product: React.FC = () => {
     // Handle the form submission.
     const onSubmit = useCallback(
         async (data: unknown) => {
-            if (!accessToken || !orderId || loading || hasExceededStock) return;
-            setLoading(true);
+            if (!accessToken || !orderId || isUpdatingCart || hasExceededStock) return;
+            dispatch(setUpdatingCart(true));
 
             const attributes = {
                 quantity: parseInt(safelyParse(data, 'quantity', parseAsString, '1')),
@@ -104,13 +103,23 @@ export const Product: React.FC = () => {
                 dispatch(fetchCartItems({ accessToken, orderId }));
                 gaEvent('addProductToCart', { sku_code });
                 dispatch(addSuccess(`${name} added to cart.`));
-                setTimeout(() => setLoading(false), 700);
             } else {
-                setLoading(false);
+                dispatch(setUpdatingCart(false));
                 dispatch(addError('Failed to add product, please check the quantity.'));
             }
         },
-        [accessToken, orderId, dispatch, loading, hasExceededStock, sku_code, categories, name, types, cardImage.url]
+        [
+            accessToken,
+            orderId,
+            dispatch,
+            isUpdatingCart,
+            hasExceededStock,
+            sku_code,
+            categories,
+            name,
+            types,
+            cardImage.url,
+        ]
     );
 
     useEffect(() => {
@@ -155,7 +164,7 @@ export const Product: React.FC = () => {
                                             className={`btn btn-lg rounded-md${btnDisabled}${btnLoading}`}
                                             disabled={hasExceededStock}
                                         >
-                                            {loading ? '' : 'Add to cart'}
+                                            {isUpdatingCart ? '' : 'Add to cart'}
                                         </button>
                                     </div>
                                 </form>
