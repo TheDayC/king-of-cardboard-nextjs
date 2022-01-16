@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { removeAllCategories, removeAllProductTypes, setUrlProductType } from '../../store/slices/filters';
 import Grid from './Grid';
