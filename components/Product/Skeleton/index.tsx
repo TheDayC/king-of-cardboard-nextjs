@@ -5,7 +5,7 @@ export const Skeleton: React.FC = () => {
         <div className="flex flex-col relative lg:flex-row lg:space-x-8">
             <div className="flex flex-col w-full animate-pulse lg:w-auto">
                 <div className="flex-1 w-40 lg:w-60 mx-auto">
-                    <div className="w-full h-90 bg-base-200 rounded-sm w-3/4"></div>
+                    <div className="w-full h-80 bg-base-200 rounded-sm w-3/4"></div>
                 </div>
             </div>
 

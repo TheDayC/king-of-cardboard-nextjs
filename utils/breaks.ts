@@ -1,7 +1,7 @@
 import { chunk, join } from 'lodash';
 
 import { CommerceLayerResponse } from '../types/api';
-import { Break, SingleBreak } from '../types/breaks';
+import { Break, BreaksWithCount, SingleBreak } from '../types/breaks';
 import { authClient } from './auth';
 import { fetchContent } from './content';
 import {
@@ -18,11 +18,12 @@ import {
     parseAsArrayOfDocuments,
 } from './parsers';
 
-export async function getBreaks(accessToken: string, limit: number, skip: number): Promise<Break[]> {
+export async function getBreaks(accessToken: string, limit: number, skip: number): Promise<BreaksWithCount> {
     // Piece together query.
     const query = `
         query {
             breaksCollection (limit: ${limit}, skip: ${skip}) {
+                total
                 items {
                     breakNumber
                     title
@@ -58,8 +59,8 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
         []
     );
 
-    return await Promise.all(
-        breaksCollection.map(async (bC) => ({
+    return {
+        breaks: breaksCollection.map((bC) => ({
             cardImage: {
                 title: safelyParse(bC, 'cardImage.title', parseAsString, ''),
                 description: safelyParse(bC, 'cardImage.description', parseAsString, ''),
@@ -76,8 +77,9 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
             isLive: safelyParse(bC, 'isLive', parseAsBoolean, false),
             isComplete: safelyParse(bC, 'isComplete', parseAsBoolean, false),
             vodLink: safelyParse(bC, 'vodLink', parseAsString, ''),
-        }))
-    );
+        })),
+        count: safelyParse(response, 'data.content.breaksCollection.total', parseAsNumber, 0),
+    };
 }
 
 export async function getBreaksTotal(): Promise<number> {
