@@ -12,7 +12,7 @@ export const Custom500Page: React.FC = () => (
                 <Image src={crown} alt="King of Cardboard Crown" title="King of Cardboard Crown" />
             </div>
             <div className="flex flex-col justify-start items-center p-4 text-lg">
-                <h1 className="text-5xl mb-2 font-bold">500</h1>
+                <h1 className="text-5xl mb-4 font-bold">500</h1>
                 <h3 className="text-3xl mb-6 font-semibold">Internal Server Error</h3>
                 <p className="mb-2">Something went wrong...</p>
                 <p className="mb-6">Please drop support an email who will be able to investigate the problem.</p>
