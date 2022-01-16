@@ -6,7 +6,7 @@ import selector from './selector';
 import Pagination from '../../Pagination';
 import { setIsLoadingProducts } from '../../../store/slices/shop';
 import ProductCard from './ProductCard';
-import { clearCurrentProduct, fetchProducts, fetchProductsTotal } from '../../../store/slices/products';
+import { clearCurrentProduct, fetchProducts } from '../../../store/slices/products';
 
 const PER_PAGE = 8;
 
@@ -49,7 +49,6 @@ export const Grid: React.FC = () => {
     useEffect(() => {
         if (shouldFetch && accessToken) {
             setShouldFetch(false);
-            dispatch(fetchProductsTotal());
             dispatch(fetchProducts({ accessToken, limit: PER_PAGE, skip: 0, categories, productTypes }));
             dispatch(setIsLoadingProducts(false));
         }
