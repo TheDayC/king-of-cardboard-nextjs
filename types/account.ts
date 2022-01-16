@@ -39,13 +39,11 @@ export interface OrderLineItem {
 
 export interface OrderHistoryLineItemWithSkuData {
     lineItemId: string;
-    skuId: string;
     name: string;
     skuCode: string;
     imageUrl: string;
     quantity: number;
     amount: string;
-    compareAmount: string;
 }
 
 export interface OrderHistoryAddress {

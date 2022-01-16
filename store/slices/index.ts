@@ -9,7 +9,6 @@ import filtersReducer from './filters';
 import checkoutReducer from './checkout';
 import confirmationReducer from './confirmation';
 import pagesReducer from './pages';
-import shopReducer from './shop';
 import breaksReducer from './breaks';
 import accountReducer from './account';
 
@@ -22,7 +21,6 @@ const rootReducer = combineReducers<IAppState>({
     checkout: checkoutReducer,
     confirmation: confirmationReducer,
     pages: pagesReducer,
-    shop: shopReducer,
     breaks: breaksReducer,
     account: accountReducer,
 });

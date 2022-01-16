@@ -4,14 +4,14 @@ import { ceil, divide } from 'lodash';
 
 import selector from './selector';
 import Pagination from '../../Pagination';
-import { setIsLoadingProducts } from '../../../store/slices/shop';
 import ProductCard from './ProductCard';
-import { fetchProducts, fetchProductsTotal } from '../../../store/slices/products';
+import { clearCurrentProduct, fetchProducts, setIsLoadingProducts } from '../../../store/slices/products';
+import Skeleton from './skeleton';
 
 const PER_PAGE = 8;
 
 export const Grid: React.FC = () => {
-    const { accessToken, categories, productTypes, products, productsTotal } = useSelector(selector);
+    const { accessToken, categories, productTypes, products, productsTotal, isLoadingProducts } = useSelector(selector);
     const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(0);
     const [shouldFetch, setShouldFetch] = useState(true);
@@ -32,7 +32,6 @@ export const Grid: React.FC = () => {
                         productTypes,
                     })
                 );
-                dispatch(setIsLoadingProducts(false));
             }
         },
         [accessToken, categories, productTypes, dispatch]
@@ -49,16 +48,22 @@ export const Grid: React.FC = () => {
     useEffect(() => {
         if (shouldFetch && accessToken) {
             setShouldFetch(false);
-            dispatch(fetchProductsTotal());
+            dispatch(setIsLoadingProducts(true));
             dispatch(fetchProducts({ accessToken, limit: PER_PAGE, skip: 0, categories, productTypes }));
-            dispatch(setIsLoadingProducts(false));
         }
     }, [dispatch, accessToken, shouldFetch, categories, productTypes]);
+
+    useEffect(() => {
+        dispatch(clearCurrentProduct());
+    }, [dispatch]);
 
     return (
         <div className="flex flex-col w-full md:w-5/6" data-testid="shop-grid">
             <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl2:grid-cols-6">
-                {products.length > 0 &&
+                {isLoadingProducts ? (
+                    <Skeleton />
+                ) : (
+                    products.length > 0 &&
                     products.map((product) => (
                         <ProductCard
                             name={product.name}
@@ -71,7 +76,8 @@ export const Grid: React.FC = () => {
                             slug={product.slug}
                             key={`product-card-${product.name}`}
                         />
-                    ))}
+                    ))
+                )}
             </div>
             <div className="flex justify-center">
                 {productPageCount > 1 && (

@@ -52,6 +52,11 @@ export interface SingleBreak {
     vodLink: string;
 }
 
+export interface BreaksWithCount {
+    breaks: Break[];
+    count: number;
+}
+
 export interface BreakSlotsCollection {
     items: ContentfulBreakSlot[];
 }

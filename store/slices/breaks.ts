@@ -2,7 +2,7 @@ import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { Break, SingleBreak } from '../../types/breaks';
+import { Break, BreaksWithCount, SingleBreak } from '../../types/breaks';
 import { getBreaks, getBreaksTotal, getSingleBreak } from '../../utils/breaks';
 import breaksInitialState from '../state/breaks';
 
@@ -19,15 +19,13 @@ interface SingleBreakThunkInput {
     slug: string;
 }
 
-export const fetchBreaks = createAsyncThunk('breaks/fetchBreaks', async (data: BreaksThunkInput): Promise<Break[]> => {
-    const { accessToken, limit, skip } = data;
+export const fetchBreaks = createAsyncThunk(
+    'breaks/fetchBreaks',
+    async (data: BreaksThunkInput): Promise<BreaksWithCount> => {
+        const { accessToken, limit, skip } = data;
 
-    return await getBreaks(accessToken, limit, skip);
-});
-
-export const fetchBreaksTotal = createAsyncThunk(
-    'breaks/fetchBreaksTotal',
-    async (): Promise<number> => await getBreaksTotal()
+        return await getBreaks(accessToken, limit, skip);
+    }
 );
 
 export const fetchSingleBreak = createAsyncThunk(
@@ -46,16 +44,21 @@ const breakSlice = createSlice({
         setIsLoadingBreaks(state, action) {
             state.isLoadingBreaks = action.payload;
         },
+        setIsLoadingBreak(state, action) {
+            state.isLoadingBreak = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(fetchBreaks.fulfilled, (state, action) => {
-            state.breaks = action.payload;
+            const { breaks, count } = action.payload;
+
+            state.breaks = breaks;
+            state.breaksTotal = count;
+            state.isLoadingBreaks = false;
         }),
-            builder.addCase(fetchBreaksTotal.fulfilled, (state, action) => {
-                state.breaksTotal = action.payload;
-            }),
             builder.addCase(fetchSingleBreak.fulfilled, (state, action) => {
                 state.currentBreak = action.payload;
+                state.isLoadingBreak = false;
             }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,
@@ -64,5 +67,5 @@ const breakSlice = createSlice({
     },
 });
 
-export const { setIsLoadingBreaks } = breakSlice.actions;
+export const { setIsLoadingBreaks, setIsLoadingBreak } = breakSlice.actions;
 export default breakSlice.reducer;

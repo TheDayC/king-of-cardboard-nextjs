@@ -19,7 +19,6 @@ export interface IAppState {
     checkout: Checkout;
     confirmation: Confirmation;
     pages: PagesState;
-    shop: ShopState;
     breaks: BreaksState;
     account: AccountState;
 }
@@ -167,15 +166,11 @@ export interface PagesState {
     pages: ContentfulPage[];
 }
 
-export interface ShopState {
-    currentPage: number;
-    isLoadingProducts: boolean;
-}
-
 export interface BreaksState {
     currentPage: number;
     breaksTotal: number;
     isLoadingBreaks: boolean;
+    isLoadingBreak: boolean;
     breaks: Break[];
     currentBreak: SingleBreak;
 }
@@ -191,6 +186,8 @@ export interface AccountState {
     addresses: Address[];
     addressPageCount: number;
     currentAddress: SingleAddress;
+    isLoadingOrder: boolean;
+    isLoadingOrders: boolean;
 }
 
 export interface AlertsState {
@@ -212,5 +209,6 @@ export interface CommonThunkInput {
 export interface ProductsState {
     products: Product[];
     productsTotal: number;
+    isLoadingProducts: boolean;
     currentProduct: SingleProduct;
 }

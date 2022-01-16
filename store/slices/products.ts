@@ -3,8 +3,8 @@ import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
 import { Categories, ProductType } from '../../enums/shop';
-import { Product, SingleProduct } from '../../types/products';
-import { getProducts, getProductsTotal, getSingleProduct } from '../../utils/products';
+import { ProductsWithCount, SingleProduct } from '../../types/products';
+import { getProducts, getSingleProduct } from '../../utils/products';
 import productsInitialState from '../state/products';
 
 const hydrate = createAction<AppState>(HYDRATE);
@@ -24,16 +24,11 @@ interface SingleProductThunkInput {
 
 export const fetchProducts = createAsyncThunk(
     'products/fetchProducts',
-    async (data: ProductsThunkInput): Promise<Product[]> => {
+    async (data: ProductsThunkInput): Promise<ProductsWithCount> => {
         const { accessToken, limit, skip, categories, productTypes } = data;
 
         return await getProducts(accessToken, limit, skip, categories, productTypes);
     }
-);
-
-export const fetchProductsTotal = createAsyncThunk(
-    'products/fetchProductsTotal',
-    async (): Promise<number> => await getProductsTotal()
 );
 
 export const fetchSingleProduct = createAsyncThunk(
@@ -48,14 +43,46 @@ export const fetchSingleProduct = createAsyncThunk(
 const productsSlice = createSlice({
     name: 'products',
     initialState: productsInitialState,
-    reducers: {},
+    reducers: {
+        clearCurrentProduct(state) {
+            state.currentProduct = {
+                id: '',
+                name: '',
+                slug: '',
+                sku_code: '',
+                description: '',
+                types: [],
+                categories: [],
+                images: {
+                    items: [],
+                },
+                cardImage: {
+                    title: '',
+                    description: '',
+                    url: '',
+                },
+                tags: [],
+                amount: '',
+                compare_amount: '',
+                inventory: {
+                    available: false,
+                    quantity: 0,
+                    levels: [],
+                },
+            };
+        },
+        setIsLoadingProducts(state, action) {
+            state.isLoadingProducts = action.payload;
+        },
+    },
     extraReducers: (builder) => {
         builder.addCase(fetchProducts.fulfilled, (state, action) => {
-            state.products = action.payload;
+            const { products, count } = action.payload;
+
+            state.products = products;
+            state.productsTotal = count;
+            state.isLoadingProducts = false;
         }),
-            builder.addCase(fetchProductsTotal.fulfilled, (state, action) => {
-                state.productsTotal = action.payload;
-            }),
             builder.addCase(fetchSingleProduct.fulfilled, (state, action) => {
                 state.currentProduct = action.payload;
             }),
@@ -65,5 +92,7 @@ const productsSlice = createSlice({
             }));
     },
 });
+
+export const { clearCurrentProduct, setIsLoadingProducts } = productsSlice.actions;
 
 export default productsSlice.reducer;
