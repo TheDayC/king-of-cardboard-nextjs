@@ -24,6 +24,7 @@ interface EmailThunkInput {
 
 interface FetchOrdersThunkInput {
     accessToken: string;
+    userToken: string;
     userId: string;
     pageSize: number;
     page: number;
@@ -51,9 +52,9 @@ export const fetchGiftCard = createAsyncThunk(
 export const fetchOrders = createAsyncThunk(
     'account/fetchOrders',
     async (data: FetchOrdersThunkInput): Promise<GetOrders> => {
-        const { accessToken, userId, pageSize, page } = data;
+        const { accessToken, userToken, userId, pageSize, page } = data;
 
-        return await getOrders(accessToken, userId, pageSize, page);
+        return await getOrders(accessToken, userToken, userId, pageSize, page);
     }
 );
 

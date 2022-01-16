@@ -3,7 +3,8 @@ import { createSelector } from '@reduxjs/toolkit';
 import { selectGlobalData, selectAccountData } from '../../../store/state/selectors';
 
 const selector = createSelector([selectGlobalData, selectAccountData], (global, account) => ({
-    accessToken: global.userToken || global.accessToken,
+    accessToken: global.accessToken,
+    userToken: global.userToken,
     userId: global.userId,
     orders: account.orders,
     orderPageCount: account.orderPageCount,

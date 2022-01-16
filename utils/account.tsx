@@ -2,6 +2,8 @@ import axios from 'axios';
 import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 import { DateTime } from 'luxon';
+import { join, values } from 'lodash';
+import CommerceLayer from '@commercelayer/sdk';
 
 import { Address, GetOrders, GiftCard, SingleAddress, SingleOrder } from '../types/account';
 import {
@@ -19,58 +21,85 @@ import { SocialMedia } from '../types/profile';
 
 export async function getOrders(
     accessToken: string,
+    userToken: string,
     userId: string,
     pageSize: number,
-    page: number
+    pageNumber: number
 ): Promise<GetOrders> {
     try {
-        const pagination = `page[size]=${pageSize}&page[number]=${page}`;
-        const sort = 'sort=-created_at,number';
-        const orderFields =
-            'fields[orders]=number,status,payment_status,fulfillment_status,skus_count,formatted_total_amount_with_taxes,shipments_count,placed_at,updated_at,line_items';
-        const include = 'include=orders,orders.line_items';
-        const lineItemFields = 'fields[line_items]=id,name,sku_code,image_url,quantity';
-        const cl = authClient(accessToken);
-        const res = await cl.get(
-            `/api/customers/${userId}?${include}&${lineItemFields}&${orderFields}&${pagination}&${sort}`
+        const cl = CommerceLayer({
+            organization: process.env.NEXT_PUBLIC_ECOM_SLUG || '',
+            accessToken: userToken,
+        });
+
+        const customer = await cl.customers.retrieve(userId, {
+            fields: { customers: ['id', 'orders'], orders: ['id'] },
+            include: ['orders'],
+        });
+
+        if (!customer.orders) {
+            return {
+                orders: [],
+                count: 1,
+            };
+        }
+
+        const orderIds = customer.orders.map((order) => order.id);
+
+        const orderRes = await cl.orders.list(
+            {
+                filters: {
+                    id_in: join(orderIds, ','),
+                },
+                fields: {
+                    orders: [
+                        'id',
+                        'number',
+                        'status',
+                        'payment_status',
+                        'fulfillment_status',
+                        'skus_count',
+                        'shipments_count',
+                        'formatted_total_amount_with_taxes',
+                        'placed_at',
+                        'updated_at',
+                    ],
+                },
+                sort: {
+                    created_at: 'desc',
+                    number: 'desc',
+                },
+                pageNumber,
+                pageSize,
+            },
+            {
+                organization: process.env.NEXT_PUBLIC_ECOM_SLUG || '',
+                accessToken,
+            }
         );
-        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
-        const lineItems = included.filter((i) => i.type === 'line_items' && i.attributes.sku_code !== null);
+
+        const { meta, ...ordersAsObj } = orderRes;
+        const orders = values(ordersAsObj);
 
         return {
-            orders: included
-                .filter((i) => i.type === 'orders')
-                .map((order) => {
-                    return {
-                        number: safelyParse(order, 'attributes.number', parseAsNumber, 0),
-                        status: safelyParse(order, 'attributes.status', parseAsString, 'draft'),
-                        payment_status: safelyParse(order, 'attributes.payment_status', parseAsString, 'unpaid'),
-                        fulfillment_status: safelyParse(
-                            order,
-                            'attributes.fulfillment_status',
-                            parseAsString,
-                            'unfulfilled'
-                        ),
-                        skus_count: safelyParse(order, 'attributes.skus_count', parseAsNumber, 0),
-                        shipments_count: safelyParse(order, 'attributes.shipments_count', parseAsNumber, 0),
-                        formatted_total_amount_with_taxes: safelyParse(
-                            order,
-                            'attributes.formatted_total_amount_with_taxes',
-                            parseAsString,
-                            ''
-                        ),
-                        placed_at: safelyParse(order, 'attributes.placed_at', parseAsString, ''),
-                        updated_at: safelyParse(order, 'attributes.updated_at', parseAsString, ''),
-                        lineItems: lineItems.map((lineItem) => ({
-                            id: safelyParse(lineItem, 'id', parseAsString, ''),
-                            type: safelyParse(lineItem, 'type', parseAsString, ''),
-                            sku_code: safelyParse(lineItem, 'attributes.sku_code', parseAsString, ''),
-                            quantity: safelyParse(lineItem, 'attributes.quantity', parseAsNumber, 0),
-                            image_url: safelyParse(lineItem, 'attributes.image_url', parseAsString, ''),
-                        })),
-                    };
-                }),
-            count: safelyParse(res, 'data.meta.page_count', parseAsNumber, 1),
+            orders: orders.map((order) => ({
+                number: safelyParse(order, 'number', parseAsNumber, 0),
+                status: safelyParse(order, 'status', parseAsString, 'draft'),
+                payment_status: safelyParse(order, 'payment_status', parseAsString, 'unpaid'),
+                fulfillment_status: safelyParse(order, 'fulfillment_status', parseAsString, 'unfulfilled'),
+                skus_count: safelyParse(order, 'skus_count', parseAsNumber, 0),
+                shipments_count: safelyParse(order, 'attributes.shipments_count', parseAsNumber, 0),
+                formatted_total_amount_with_taxes: safelyParse(
+                    order,
+                    'formatted_total_amount_with_taxes',
+                    parseAsString,
+                    ''
+                ),
+                placed_at: safelyParse(order, 'placed_at', parseAsString, ''),
+                updated_at: safelyParse(order, 'updated_at', parseAsString, ''),
+                lineItems: [],
+            })),
+            count: meta.pageCount,
         };
     } catch (error: unknown) {
         errorHandler(error, 'We could not get historical orders.');
