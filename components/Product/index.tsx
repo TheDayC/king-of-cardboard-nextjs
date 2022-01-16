@@ -131,7 +131,7 @@ export const Product: React.FC = () => {
     }, [shouldFetch, dispatch, fetchSingleProduct, accessToken, slug]);
 
     if (shouldShow) {
-        if (stock <= 0) {
+        if (currentProduct.name.length <= 0) {
             return <Error404 />;
         }
 
