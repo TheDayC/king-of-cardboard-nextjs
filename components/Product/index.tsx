@@ -130,11 +130,11 @@ export const Product: React.FC = () => {
         }
     }, [shouldFetch, dispatch, fetchSingleProduct, accessToken, slug]);
 
-    if (stock <= 0) {
-        return <Error404 />;
-    }
-
     if (shouldShow) {
+        if (stock <= 0) {
+            return <Error404 />;
+        }
+
         return (
             <div className="flex flex-col relative lg:flex-row lg:space-x-8">
                 <Images mainImage={currentProduct.cardImage} imageCollection={currentProduct.images.items} />
