@@ -76,11 +76,11 @@ export const CartItem: React.FC<CartItemProps> = ({
         <div className="grid grid-cols-4 lg:grid-cols-6 bg-white p-4 border-b p-4">
             <div className="text-error flex flex-row items-center justify-center">
                 <button aria-label="remove item" onClick={handleRemoveItem}>
-                    <MdDeleteForever className="text-2xl" />
+                    <MdDeleteForever className="text-3xl" />
                 </button>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2">
-                <div className="text-error lg:flex lg:flex-row items-center justify-center w-full relative mb-4 lg:mb-0">
+                <div className="text-error lg:flex lg:flex-row items-center justify-center w-full relative">
                     {image.url.length > 0 && (
                         <div className="w-20 h-20">
                             <Image
@@ -96,8 +96,8 @@ export const CartItem: React.FC<CartItemProps> = ({
                 <div className="flex flex-col justify-center items-center text-center lg:space-x-4">
                     <Link href={`/product/${sku.toLowerCase()}`} passHref>
                         <div className="cursor-pointer">
-                            <h4 className="text-xs mb-2 lg:text-md hover:underline">{name}</h4>
-                            <p className="text-xs text-base-200">{sku || ''}</p>
+                            <h4 className="hidden lg:block text-xs mb-2 lg:text-md hover:underline">{name}</h4>
+                            <p className="hidden lg:block text-xs text-base-200">{sku || ''}</p>
                         </div>
                     </Link>
                 </div>
