@@ -18,13 +18,13 @@ export const CheckoutPage: React.FC<CommerceAuthProps> = () => {
             <div className="flex flex-col w-full">
                 <Steps currentStep={currentStep} />
                 <div className="container mx-auto max-w-xxl">
-                    <div className="flex flex-col lg:flex-row lg:space-x-8">
-                        <div className="flex flex-col w-3/5">
+                    <div className="flex flex-col-reverse lg:flex-row lg:space-x-8">
+                        <div className="flex flex-col w-full lg:w-3/5">
                             <Customer />
                             <Delivery />
                             <Payment />
                         </div>
-                        <div className="flex-1 p-2 lg:p-0">
+                        <div className="flex-1 my-4 lg:my-0">
                             <Summary isConfirmation={false} />
                         </div>
                     </div>

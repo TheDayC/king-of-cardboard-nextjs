@@ -69,7 +69,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                                 message: fieldPatternMsgs('firstName'),
                             },
                         })}
-                        className={`input input-sm input-bordered${firstNameErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered${firstNameErr ? ' input-error' : ''}`}
                     />
                     {firstNameErr && (
                         <label className="label">
@@ -91,7 +91,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                                 message: fieldPatternMsgs('lastName'),
                             },
                         })}
-                        className={`input input-sm input-bordered${lastNameErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered${lastNameErr ? ' input-error' : ''}`}
                     />
                     {lastNameErr && (
                         <label className="label">
@@ -113,7 +113,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                                 message: fieldPatternMsgs('email'),
                             },
                         })}
-                        className={`input input-sm input-bordered${emailErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered${emailErr ? ' input-error' : ''}`}
                     />
                     {emailErr && (
                         <label className="label">
@@ -135,7 +135,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                                 message: fieldPatternMsgs('mobile'),
                             },
                         })}
-                        className={`input input-sm input-bordered${mobileErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered${mobileErr ? ' input-error' : ''}`}
                     />
                     {mobileErr && (
                         <label className="label">
