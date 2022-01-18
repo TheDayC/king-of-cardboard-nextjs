@@ -13,7 +13,7 @@ import { parseAsString, safelyParse } from '../../utils/parsers';
 import NavBar from './Navbar';
 import CartIcon from './CartIcon';
 import NewsBanner from './NewsBanner';
-import { setUserId, setUserToken } from '../../store/slices/global';
+import { setIsDrawerOpen, setUserId, setUserToken } from '../../store/slices/global';
 // import IssueBanner from './IssueBar';
 
 export const Header: React.FC = () => {
@@ -29,11 +29,15 @@ export const Header: React.FC = () => {
         signOut();
     };
 
+    const handleDrawerClick = () => {
+        dispatch(setIsDrawerOpen(true));
+    };
+
     return (
         <React.Fragment>
             <div className="navbar shadow-md bg-neutral text-neutral-content">
                 <div className="navbar-start">
-                    <label className="text-2xl px-2 lg:hidden" htmlFor="king-of-cardboard-drawer">
+                    <label className="text-2xl px-2 lg:hidden" onClick={handleDrawerClick}>
                         <AiOutlineMenu />
                     </label>
                     <Link href="/" passHref>

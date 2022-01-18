@@ -59,6 +59,7 @@ export interface Global {
     hasRejected: boolean;
     sessionEmail: string | null;
     showNewsBanner: boolean;
+    isDrawerOpen: boolean;
 }
 
 export interface Checkout {
