@@ -372,6 +372,8 @@ const Customer: React.FC = () => {
                             >
                                 <BillingAddress register={register} errors={errors} setValue={setValue} />
                             </SelectionWrapper>
+
+                            <div className="divider lightDivider"></div>
                             <ShipToBilling />
                             <div className="divider lightDivider"></div>
                             {!isShippingSameAsBilling && (
