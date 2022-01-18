@@ -79,7 +79,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors, setVa
                     {...register('billingAddressLineOne', {
                         required: { value: true, message: 'Required' },
                     })}
-                    className={`input input-sm input-bordered${billingLineOneErr ? ' input-error' : ''}`}
+                    className={`input input-md input-bordered${billingLineOneErr ? ' input-error' : ''}`}
                 />
                 {billingLineOneErr && (
                     <label className="label">
@@ -95,7 +95,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors, setVa
                     type="text"
                     placeholder="Address Line Two"
                     {...register('billingAddressLineTwo')}
-                    className={`input input-sm input-bordered${billingLineTwoErr ? ' input-error' : ''}`}
+                    className={`input input-md input-bordered${billingLineTwoErr ? ' input-error' : ''}`}
                 />
                 {billingLineTwoErr && (
                     <label className="label">
@@ -113,7 +113,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors, setVa
                     {...register('billingCompany', {
                         required: false,
                     })}
-                    className={`input input-sm input-bordered${billingCompanyErr ? ' input-error' : ''}`}
+                    className={`input input-md input-bordered${billingCompanyErr ? ' input-error' : ''}`}
                 />
                 {billingCompanyErr && (
                     <label className="label">
@@ -131,7 +131,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors, setVa
                     {...register('billingCity', {
                         required: { value: true, message: 'Required' },
                     })}
-                    className={`input input-sm input-bordered${billingCityErr ? ' input-error' : ''}`}
+                    className={`input input-md input-bordered${billingCityErr ? ' input-error' : ''}`}
                 />
                 {billingCityErr && (
                     <label className="label">
@@ -153,7 +153,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors, setVa
                             message: fieldPatternMsgs('billingPostcode'),
                         },
                     })}
-                    className={`input input-sm input-bordered${billingPostcodeErr ? ' input-error' : ''}`}
+                    className={`input input-md input-bordered${billingPostcodeErr ? ' input-error' : ''}`}
                 />
                 {billingPostcodeErr && (
                     <label className="label">
@@ -171,7 +171,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors, setVa
                     {...register('billingCounty', {
                         required: { value: true, message: 'Required' },
                     })}
-                    className={`input input-sm input-bordered${billingCountyErr ? ' input-error' : ''}`}
+                    className={`input input-md input-bordered${billingCountyErr ? ' input-error' : ''}`}
                 />
                 {billingCountyErr && (
                     <label className="label">

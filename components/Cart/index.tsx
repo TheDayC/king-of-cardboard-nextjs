@@ -77,15 +77,15 @@ export const Cart: React.FC = () => {
 
     return (
         <div className="flex flex-col">
-            <h1 className="mb-4 text-2xl lg:mb-8 lg:text-4xl">{`Cart (${itemCount} ${itemPlural})`}</h1>
+            <h1 className="mb-4 text-2xl lg:mb-8 lg:text-5xl">{`Cart (${itemCount} ${itemPlural})`}</h1>
             {itemCount > 0 ? (
                 <div className="block w-full relative">
                     <Loading show={isUpdatingCart} />
                     <div className="flex flex-col w-full">
-                        <div className="grid grid-cols-3 bg-neutral text-neutral-content p-2 rounded-md text-sm lg:text-md lg:p-4 lg:grid-cols-6">
+                        <div className="grid grid-cols-4 bg-neutral text-neutral-content p-2 rounded-md text-sm lg:text-md lg:p-4 lg:grid-cols-6">
                             <div className="text-center hidden lg:table-cell">Remove</div>
                             <div className="text-center hidden lg:table-cell">&nbsp;</div>
-                            <div className="text-center">Product</div>
+                            <div className="text-center col-span-2 lg:col-span-1">Product</div>
                             <div className="text-center hidden lg:table-cell">Price</div>
                             <div className="text-center">Quantity</div>
                             <div className="text-center">Total</div>
@@ -108,9 +108,9 @@ export const Cart: React.FC = () => {
                         </div>
                         <CartTotals />
                         {shouldShowCoins && <UseCoins />}
-                        <div className="flex flex-row justify-end items-end mt-4 lg:mt-6">
+                        <div className="flex flex-col justify-center items-center lg:flex-row lg:justify-end lg:items-end mt-4 lg:mt-6">
                             <button
-                                className={`btn bg-green-400 hover:bg-green-600 border-none btn-wide rounded-md mr-4 lg:btn-wide${
+                                className={`btn bg-green-400 hover:bg-green-600 border-none btn-wide rounded-md mb-4 lg:mb-0 lg:mr-4 w-full lg:btn-wide${
                                     isUpdatingCart ? ' loading btn-square' : ''
                                 }${updateQuantities.length <= 0 ? ' btn-disabled' : ''}`}
                                 disabled={updateQuantities.length <= 0}
@@ -120,7 +120,7 @@ export const Cart: React.FC = () => {
                             </button>
                             <Link href="/checkout" passHref>
                                 <button
-                                    className={`btn btn-primary btn-block rounded-md lg:btn-wide${
+                                    className={`btn btn-primary w-full rounded-md lg:btn-wide${
                                         isUpdatingCart ? ' loading btn-square' : ''
                                     }`}
                                 >

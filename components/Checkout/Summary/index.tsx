@@ -30,7 +30,7 @@ export const Summary: React.FC<SummaryProps> = ({ isConfirmation = false }) => {
                     lineItems.map((item) => (
                         <React.Fragment key={`checkout-line-item-${item.sku_code}`}>
                             <div className="flex flex-row justify-between items-center px-4">
-                                <div className={styles.imageContainer}>
+                                <div className="relative w-16 h-16">
                                     {item.image.url.length > 0 && (
                                         <Image
                                             src={item.image.url}
@@ -41,14 +41,14 @@ export const Summary: React.FC<SummaryProps> = ({ isConfirmation = false }) => {
                                         />
                                     )}
                                 </div>
-                                <div>
-                                    <h4 className="text-md">{item.name}</h4>
+                                <div className="px-2">
+                                    <h4 className="text-sm lg:text-md">{item.name}</h4>
                                     <p className="text-xs text-base-200">{item.sku_code}</p>
                                     <p className="text-xs text-base-200">Quantity: {item.quantity}</p>
                                 </div>
-                                <p className="text-md">{item.formatted_total_amount}</p>
+                                <p className="text-sm lg:text-md">{item.formatted_total_amount}</p>
                             </div>
-                            <div className={`divider ${styles.itemDivider}`}></div>
+                            <div className={`divider my-2 lg:my-4${styles.itemDivider}`}></div>
                         </React.Fragment>
                     ))}
             </div>

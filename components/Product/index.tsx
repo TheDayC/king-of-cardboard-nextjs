@@ -58,7 +58,7 @@ export const Product: React.FC = () => {
     const hasExceededStock = quantity >= stock;
     const description = split(productDesc, '\n\n');
     const btnDisabled = hasExceededStock ? ' btn-disabled' : ' btn-primary';
-    const btnLoading = isUpdatingCart ? ' loading btn-square' : '';
+    const btnLoading = isUpdatingCart ? ' loading' : '';
     const isQuantityAtMax = quantity === stock;
     const slug = safelyParse(router, 'query.slug', parseAsString, '');
 
@@ -166,7 +166,7 @@ export const Product: React.FC = () => {
                                         )}
                                         <button
                                             aria-label="add to cart"
-                                            className={`btn btn-lg rounded-md${btnDisabled}${btnLoading}`}
+                                            className={`btn btn-lg w-full lg:w-auto rounded-md${btnDisabled}${btnLoading}`}
                                             disabled={hasExceededStock}
                                         >
                                             {isUpdatingCart ? '' : 'Add to cart'}

@@ -30,7 +30,7 @@ const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping }) => {
     return (
         <div className="w-full block relative">
             <Loading show={checkoutLoading} />
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 relative">
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 relative">
                 {addresses.length > 0 &&
                     addresses.map((address) => {
                         const { name, addressId } = address;
