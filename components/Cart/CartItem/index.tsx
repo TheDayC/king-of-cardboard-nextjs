@@ -79,10 +79,10 @@ export const CartItem: React.FC<CartItemProps> = ({
                     <MdDeleteForever className="text-2xl" />
                 </button>
             </div>
-            <div className="col-span-2">
-                <div className="text-error lg:flex lg:flex-row items-center justify-center w-full relative">
+            <div className="col-span-2 grid grid-cols-1 lg:grid-cols-2">
+                <div className="text-error lg:flex lg:flex-row items-center justify-center w-full relative mb-4 lg:mb-0">
                     {image.url.length > 0 && (
-                        <div className="mb-2 lg:mb-0 w-20 h-20">
+                        <div className="w-20 h-20">
                             <Image
                                 src={image.url}
                                 alt={image.description}
