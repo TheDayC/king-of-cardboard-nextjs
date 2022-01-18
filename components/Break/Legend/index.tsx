@@ -3,7 +3,7 @@ import { GiPerspectiveDiceSixFacesRandom, GiCardRandom } from 'react-icons/gi';
 
 export const Legend: React.FC = () => {
     return (
-        <div className="flex flex-col w-full relative pr-6">
+        <div className="hidden w-full relative pr-6 lg:flex lg:flex-col">
             <h3 className="text-2xl">Key / Legend</h3>
             <div className="divider lightDivider"></div>
             <p className="text-sm mb-4">

@@ -64,13 +64,13 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId }) 
                 <div className="hidden md:block">
                     <AccountMenu isDropdown={false} />
                 </div>
-                <div className="dropdown w-full p-2 md:hidden">
+                <div className="dropdown w-full mb-4 md:hidden">
                     <div tabIndex={0} className="btn btn-block">
                         Account Menu
                     </div>
                     <AccountMenu isDropdown />
                 </div>
-                <div className="flex flex-col py-2 px-6 md:py-4 md:px-8 w-full md:w-3/4 relative">
+                <div className="flex flex-col md:px-4 w-full md:w-3/4 relative">
                     <Loading show={isLoading} />
                     <Fields
                         id={currentAddress.id}

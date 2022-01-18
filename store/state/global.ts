@@ -9,6 +9,7 @@ const globalInitialState: Global = {
     hasRejected: false,
     sessionEmail: null,
     showNewsBanner: true,
+    isDrawerOpen: false,
 };
 
 export default globalInitialState;

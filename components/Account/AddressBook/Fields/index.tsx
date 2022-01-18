@@ -212,7 +212,9 @@ export const Fields: React.FC<FieldProps> = ({
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">Address Name</span>
-                                <span className="label-text-alt">This is what we&apos;ll call your address.</span>
+                                <span className="label-text-alt hidden lg:inline">
+                                    This is what we&apos;ll call your address.
+                                </span>
                             </label>
                             <input
                                 type="text"
@@ -220,7 +222,7 @@ export const Fields: React.FC<FieldProps> = ({
                                 {...register('name', {
                                     required: { value: true, message: 'Required' },
                                 })}
-                                className={`input input-sm input-bordered${nameErr ? ' input-error' : ''}`}
+                                className={`input input-md input-bordered${nameErr ? ' input-error' : ''}`}
                             />
                             {nameErr && (
                                 <label className="label">
@@ -242,7 +244,7 @@ export const Fields: React.FC<FieldProps> = ({
                                         message: fieldPatternMsgs('firstName'),
                                     },
                                 })}
-                                className={`input input-sm input-bordered${firstNameErr ? ' input-error' : ''}`}
+                                className={`input input-md input-bordered${firstNameErr ? ' input-error' : ''}`}
                             />
                             {firstNameErr && (
                                 <label className="label">
@@ -264,7 +266,7 @@ export const Fields: React.FC<FieldProps> = ({
                                         message: fieldPatternMsgs('lastName'),
                                     },
                                 })}
-                                className={`input input-sm input-bordered${lastNameErr ? ' input-error' : ''}`}
+                                className={`input input-md input-bordered${lastNameErr ? ' input-error' : ''}`}
                             />
                             {lastNameErr && (
                                 <label className="label">
@@ -282,7 +284,7 @@ export const Fields: React.FC<FieldProps> = ({
                                 {...register('company', {
                                     required: false,
                                 })}
-                                className={`input input-sm input-bordered${companyErr ? ' input-error' : ''}`}
+                                className={`input input-md input-bordered${companyErr ? ' input-error' : ''}`}
                             />
                             {companyErr && (
                                 <label className="label">
@@ -304,7 +306,7 @@ export const Fields: React.FC<FieldProps> = ({
                                         message: fieldPatternMsgs('mobile'),
                                     },
                                 })}
-                                className={`input input-sm input-bordered${mobileErr ? ' input-error' : ''}`}
+                                className={`input input-md input-bordered${mobileErr ? ' input-error' : ''}`}
                             />
                             {mobileErr && (
                                 <label className="label">
@@ -327,7 +329,7 @@ export const Fields: React.FC<FieldProps> = ({
                                 {...register('addressLineOne', {
                                     required: { value: true, message: 'Required' },
                                 })}
-                                className={`input input-sm input-bordered${lineOneErr ? ' input-error' : ''}`}
+                                className={`input input-md input-bordered${lineOneErr ? ' input-error' : ''}`}
                             />
                             {lineOneErr && (
                                 <label className="label">
@@ -343,7 +345,7 @@ export const Fields: React.FC<FieldProps> = ({
                                 type="text"
                                 placeholder="Address Line Two"
                                 {...register('addressLineTwo', { required: false })}
-                                className={`input input-sm input-bordered${lineTwoErr ? ' input-error' : ''}`}
+                                className={`input input-md input-bordered${lineTwoErr ? ' input-error' : ''}`}
                             />
                             {lineTwoErr && (
                                 <label className="label">
@@ -361,7 +363,7 @@ export const Fields: React.FC<FieldProps> = ({
                                 {...register('city', {
                                     required: { value: true, message: 'Required' },
                                 })}
-                                className={`input input-sm input-bordered${cityErr ? ' input-error' : ''}`}
+                                className={`input input-md input-bordered${cityErr ? ' input-error' : ''}`}
                             />
                             {cityErr && (
                                 <label className="label">
@@ -383,7 +385,7 @@ export const Fields: React.FC<FieldProps> = ({
                                         message: fieldPatternMsgs('postcode'),
                                     },
                                 })}
-                                className={`input input-sm input-bordered${postcodeErr ? ' input-error' : ''}`}
+                                className={`input input-md input-bordered${postcodeErr ? ' input-error' : ''}`}
                             />
                             {postcodeErr && (
                                 <label className="label">
@@ -401,7 +403,7 @@ export const Fields: React.FC<FieldProps> = ({
                                 {...register('county', {
                                     required: { value: true, message: 'Required' },
                                 })}
-                                className={`input input-sm input-bordered${countyErr ? ' input-error' : ''}`}
+                                className={`input input-md input-bordered${countyErr ? ' input-error' : ''}`}
                             />
                             {countyErr && (
                                 <label className="label">
@@ -415,7 +417,7 @@ export const Fields: React.FC<FieldProps> = ({
             <div className="flex w-full justify-end p-4">
                 <button
                     type="submit"
-                    className={`btn${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'}${
+                    className={`btn w-full lg:w-auto${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'}${
                         isLoading ? ' loading btn-square' : ''
                     }`}
                 >
