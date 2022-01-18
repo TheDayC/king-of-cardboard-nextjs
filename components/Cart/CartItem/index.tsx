@@ -74,12 +74,12 @@ export const CartItem: React.FC<CartItemProps> = ({
 
     return (
         <div className="grid grid-cols-4 lg:grid-cols-6 bg-white p-4 border-b p-4">
-            <div className="text-error hidden lg:flex lg:flex-row items-center justify-center">
+            <div className="text-error flex flex-row items-center justify-center">
                 <button aria-label="remove item" onClick={handleRemoveItem}>
                     <MdDeleteForever className="text-2xl" />
                 </button>
             </div>
-            <div className="col-span-2 grid grid-cols-1 lg:grid-cols-2">
+            <div className="grid grid-cols-1 lg:grid-cols-2">
                 <div className="text-error lg:flex lg:flex-row items-center justify-center w-full relative mb-4 lg:mb-0">
                     {image.url.length > 0 && (
                         <div className="w-20 h-20">
