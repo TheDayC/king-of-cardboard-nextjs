@@ -212,7 +212,9 @@ export const Fields: React.FC<FieldProps> = ({
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">Address Name</span>
-                                <span className="label-text-alt">This is what we&apos;ll call your address.</span>
+                                <span className="label-text-alt hidden lg:inline">
+                                    This is what we&apos;ll call your address.
+                                </span>
                             </label>
                             <input
                                 type="text"

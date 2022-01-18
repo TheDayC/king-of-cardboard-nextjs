@@ -30,7 +30,7 @@ export const AddressBook: React.FC = () => {
     return (
         <div className="flex flex-col relative w-full">
             <Loading show={isLoading} />
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {addresses.length > 0 &&
                     addresses.map((address) => (
                         <Address
