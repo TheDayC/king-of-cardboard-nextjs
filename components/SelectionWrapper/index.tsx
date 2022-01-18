@@ -38,15 +38,15 @@ export const SelectionWrapper: React.FC<SelectionWrapperProps> = ({
 
     const radioPropsBase = {
         ...registerValue,
-        className: 'radio',
+        className: 'radio radio-md',
         type: 'radio',
         value: id,
     };
 
     return (
-        <div className="flex flex-col mb-4">
+        <div className="flex flex-col mb-6">
             <label className="label cursor-pointer p-0" onClick={handleSelect}>
-                <span className="label-text text-lg">
+                <span className="label-text text-md lg:text-lg">
                     {titleLogo && titleLogo}
                     {title}
                 </span>

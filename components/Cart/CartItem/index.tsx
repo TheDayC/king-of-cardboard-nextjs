@@ -73,32 +73,34 @@ export const CartItem: React.FC<CartItemProps> = ({
     };
 
     return (
-        <div className="grid grid-cols-3 lg:grid-cols-6 bg-white p-4 border-b p-4">
+        <div className="grid grid-cols-4 lg:grid-cols-6 bg-white p-4 border-b p-4">
             <div className="text-error hidden lg:flex lg:flex-row items-center justify-center">
                 <button aria-label="remove item" onClick={handleRemoveItem}>
                     <MdDeleteForever className="text-2xl" />
                 </button>
             </div>
-            <div className="text-error hidden lg:flex lg:flex-row items-center justify-center w-full relative">
-                {image.url.length > 0 && (
-                    <div className="mb-2 lg:mb-0 w-20 h-20">
-                        <Image
-                            src={image.url}
-                            alt={image.description}
-                            title={image.title}
-                            layout="fill"
-                            objectFit="scale-down"
-                        />
-                    </div>
-                )}
-            </div>
-            <div className="flex flex-col justify-center items-center text-center lg:space-x-4">
-                <Link href={`/product/${sku.toLowerCase()}`} passHref>
-                    <div className="cursor-pointer">
-                        <h4 className="text-xs mb-2 lg:text-md hover:underline">{name}</h4>
-                        <p className="text-xs text-base-200">{sku || ''}</p>
-                    </div>
-                </Link>
+            <div className="col-span-2 grid grid-cols-1 lg:grid-cols-2">
+                <div className="text-error lg:flex lg:flex-row items-center justify-center w-full relative mb-4 lg:mb-0">
+                    {image.url.length > 0 && (
+                        <div className="w-20 h-20">
+                            <Image
+                                src={image.url}
+                                alt={image.description}
+                                title={image.title}
+                                layout="fill"
+                                objectFit="scale-down"
+                            />
+                        </div>
+                    )}
+                </div>
+                <div className="flex flex-col justify-center items-center text-center lg:space-x-4">
+                    <Link href={`/product/${sku.toLowerCase()}`} passHref>
+                        <div className="cursor-pointer">
+                            <h4 className="text-xs mb-2 lg:text-md hover:underline">{name}</h4>
+                            <p className="text-xs text-base-200">{sku || ''}</p>
+                        </div>
+                    </Link>
+                </div>
             </div>
             <div className="hidden lg:flex lg:flex-row items-center justify-center">{unitAmount}</div>
             <div className="flex flex-row items-center justify-center">
@@ -110,8 +112,9 @@ export const CartItem: React.FC<CartItemProps> = ({
                         defaultValue={quantity}
                         name="quantity"
                         placeholder="1"
-                        className="input input-sm input-bordered text-center w-1/2 pr-0"
+                        className="input input-md lg:input-sm input-bordered text-center w-14 px-0"
                         onChange={handleChange}
+                        min={1}
                     />
                 )}
             </div>

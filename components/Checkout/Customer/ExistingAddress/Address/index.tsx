@@ -83,7 +83,7 @@ export const Address: React.FC<AddressProps> = ({ id, name, isShipping }) => {
                 ) : (
                     <IoLocationSharp className="text-secondary text-xl" />
                 )}
-                <div className="text-xs w-3/4">
+                <div className="text-xs w-full">
                     <p className="mb-2 font-bold">{name}</p>
                     <p>{lineOne}</p>
                     {lineTwo.length > 0 && <p>{lineTwo}</p>}

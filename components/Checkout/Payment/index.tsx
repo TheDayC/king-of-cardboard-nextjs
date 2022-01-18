@@ -309,14 +309,14 @@ export const Payment: React.FC = () => {
                             })}
                         {shouldShowCoins && (
                             <React.Fragment>
-                                <div className="divider lightDivider"></div>
+                                <div className="divider lightDivider my-2 lg:my-4"></div>
                                 <UseCoins />
-                                <div className="divider lightDivider"></div>
+                                <div className="divider lightDivider my-2 lg:my-4"></div>
                             </React.Fragment>
                         )}
                         <div className="flex justify-end">
                             <button
-                                className={`btn btn-primary${checkoutLoading ? ' loading btn-square' : ''}${
+                                className={`btn btn-primary w-full lg:w-auto${checkoutLoading ? ' loading' : ''}${
                                     !stripe || checkoutLoading ? ' btn-disabled' : ''
                                 }`}
                             >

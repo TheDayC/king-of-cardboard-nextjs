@@ -98,7 +98,7 @@ export const Shipment: React.FC<ShipmentProps> = ({
                             </span>
                             <input
                                 type="radio"
-                                className="radio radio-sm"
+                                className="radio radio-md"
                                 value={method.id}
                                 defaultChecked={defaultChecked === method.id}
                                 {...register(`method.${id}.methodId`, {
