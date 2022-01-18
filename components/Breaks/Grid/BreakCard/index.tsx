@@ -45,7 +45,7 @@ export const BreakCard: React.FC<BreakProps> = ({
     return (
         <div className="card shadow-md rounded-md bordered pt-4 transition duration-300 ease-in-out hover:shadow-2xl">
             {cardImage && (
-                <div className="relative h-20 cursor-pointer md:h-30 lg:h-40">
+                <div className="relative cursor-pointer h-40">
                     {cardImage.url.length > 0 && (
                         <Link
                             href={{

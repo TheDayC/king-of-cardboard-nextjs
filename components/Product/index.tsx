@@ -140,7 +140,7 @@ export const Product: React.FC = () => {
                 <Images mainImage={currentProduct.cardImage} imageCollection={currentProduct.images.items} />
 
                 <div id="productDetails" className="flex-grow">
-                    <div className="card rounded-md shadow-lg p-2 md:p-4 lg:p-8">
+                    <div className="card rounded-md lg:shadow-lg md:p-4 lg:p-8">
                         <Details
                             name={currentProduct.name}
                             amount={currentProduct.amount}
@@ -161,7 +161,7 @@ export const Product: React.FC = () => {
                                                 {...register('quantity', {
                                                     required: { value: true, message: 'Required' },
                                                 })}
-                                                className="input input-lg input-bordered text-center w-32 pr-0"
+                                                className="input input-lg input-bordered text-center w-32 px-0 w-full mb-4 lg:w-auto lg:mb-0"
                                             />
                                         )}
                                         <button

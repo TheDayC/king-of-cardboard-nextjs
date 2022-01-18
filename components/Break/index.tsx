@@ -38,7 +38,7 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
 
         return (
             <div className="flex flex-col lg:flex-row relative">
-                <div className="flex flex-col w-1/3">
+                <div className="flex flex-col w-full lg:w-1/3">
                     <Images mainImage={cardImage} images={images} />
                     <Legend />
                 </div>

@@ -33,7 +33,7 @@ export const Home: React.FC<HomePageProps> = ({ heroes, content }) => {
                 heroes.map((hero, i) => (
                     <React.Fragment key={`hero-${i}`}>
                         <HeroWithImage {...hero} shouldReverse={!isOdd(i)} />
-                        {i !== heroes.length - 1 && <div className="divider my-0 lg:my-4 before:bg-white"></div>}
+                        {i !== heroes.length - 1 && <div className="divider my-4 before:bg-white"></div>}
                     </React.Fragment>
                 ))}
         </PageWrapper>
