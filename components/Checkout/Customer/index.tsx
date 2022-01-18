@@ -373,9 +373,9 @@ const Customer: React.FC = () => {
                                 <BillingAddress register={register} errors={errors} setValue={setValue} />
                             </SelectionWrapper>
 
-                            <div className="divider lightDivider"></div>
+                            <div className="divider lightDivider my-2 lg:my-4"></div>
                             <ShipToBilling />
-                            <div className="divider lightDivider"></div>
+                            <div className="divider lightDivider my-2 lg:my-4"></div>
                             {!isShippingSameAsBilling && (
                                 <React.Fragment>
                                     <h3 className="text-2xl mb-4 font-semibold">Shipping Details</h3>
@@ -405,12 +405,12 @@ const Customer: React.FC = () => {
                             )}
                         </div>
                     </div>
-                    <div className="flex justify-end p-4">
+                    <div className="flex justify-end px-4">
                         <button
                             type="submit"
-                            className={`btn${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}${
-                                checkoutLoading ? ' loading btn-square' : ''
-                            }`}
+                            className={`btn w-full lg:w-auto${
+                                hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'
+                            }${checkoutLoading ? ' loading' : ''}`}
                         >
                             {checkoutLoading ? '' : 'Delivery'}
                         </button>

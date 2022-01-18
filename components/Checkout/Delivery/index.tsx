@@ -89,12 +89,12 @@ export const Delivery: React.FC = () => {
                                 />
                             );
                         })}
-                    <div className="flex justify-end items-center p-4">
+                    <div className="flex justify-end items-center px-4">
                         <button
                             type="submit"
-                            className={`btn ${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'}${
-                                checkoutLoading ? ' loading btn-square' : ''
-                            }`}
+                            className={`btn w-full lg:w-auto${
+                                hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'
+                            }${checkoutLoading ? ' loading' : ''}`}
                         >
                             {checkoutLoading ? '' : 'Payment'}
                         </button>
