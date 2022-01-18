@@ -77,15 +77,15 @@ export const Cart: React.FC = () => {
 
     return (
         <div className="flex flex-col">
-            <h1 className="mb-4 text-2xl lg:mb-8 lg:text-4xl">{`Cart (${itemCount} ${itemPlural})`}</h1>
+            <h1 className="mb-4 text-2xl lg:mb-8 lg:text-5xl">{`Cart (${itemCount} ${itemPlural})`}</h1>
             {itemCount > 0 ? (
                 <div className="block w-full relative">
                     <Loading show={isUpdatingCart} />
                     <div className="flex flex-col w-full">
-                        <div className="grid grid-cols-3 bg-neutral text-neutral-content p-2 rounded-md text-sm lg:text-md lg:p-4 lg:grid-cols-6">
+                        <div className="grid grid-cols-4 bg-neutral text-neutral-content p-2 rounded-md text-sm lg:text-md lg:p-4 lg:grid-cols-6">
                             <div className="text-center hidden lg:table-cell">Remove</div>
                             <div className="text-center hidden lg:table-cell">&nbsp;</div>
-                            <div className="text-center">Product</div>
+                            <div className="text-center col-span-2">Product</div>
                             <div className="text-center hidden lg:table-cell">Price</div>
                             <div className="text-center">Quantity</div>
                             <div className="text-center">Total</div>
