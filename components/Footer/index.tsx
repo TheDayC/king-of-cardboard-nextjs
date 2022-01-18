@@ -15,7 +15,7 @@ export const Footer: React.FC = () => (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 relative">
                 <div className="flex flex-col items-center mx-2">
                     <Link href="/" passHref>
-                        <div className="h-auto w-3/4 pointer block mb-4" data-testid="footer-logo">
+                        <div className="h-auto w-3/4 cursor-pointer block mb-4" data-testid="footer-logo">
                             <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
                         </div>
                     </Link>
