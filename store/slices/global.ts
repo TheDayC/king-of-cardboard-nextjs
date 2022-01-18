@@ -40,6 +40,9 @@ const globalSlice = createSlice({
         setShowNewsBanner(state, action) {
             state.showNewsBanner = action.payload;
         },
+        setIsDrawerOpen(state, action) {
+            state.isDrawerOpen = action.payload;
+        },
     },
     extraReducers: (builder) => {
         // Add reducers for additional action types here, and handle loading state as needed
@@ -65,5 +68,6 @@ export const {
     setShowNewsBanner,
     setUserToken,
     setUserId,
+    setIsDrawerOpen,
 } = globalSlice.actions;
 export default globalSlice.reducer;

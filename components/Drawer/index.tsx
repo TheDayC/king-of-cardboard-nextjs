@@ -1,32 +1,45 @@
 import React from 'react';
 import { AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
 import { BsFillRecord2Fill } from 'react-icons/bs';
-import Link from 'next/link';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
 
 import logo from '../../images/logo-full.png';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import Rewards from '../Header/Rewards';
+import selector from './selector';
+import { setIsDrawerOpen } from '../../store/slices/global';
 
 export const Drawer: React.FC = ({ children }) => {
+    const { isDrawerOpen } = useSelector(selector);
     const session = useSession();
+    const dispatch = useDispatch();
+    const router = useRouter();
     const email = safelyParse(session, 'data.user.email', parseAsString, null);
+
+    const handleDrawerClick = () => {
+        dispatch(setIsDrawerOpen(!isDrawerOpen));
+    };
+
+    const handleLinkClick = (href: string) => {
+        handleDrawerClick();
+        router.push(href);
+    };
 
     return (
         <div className="bg-none drawer h-screen" data-testid="drawer">
-            <input id="king-of-cardboard-drawer" type="checkbox" className="drawer-toggle" />
+            <input type="checkbox" className="drawer-toggle" checked={isDrawerOpen} />
             <div className="drawer-content">{children}</div>
             <div className="drawer-side">
-                <label htmlFor="king-of-cardboard-drawer" className="drawer-overlay"></label>
+                <label className="drawer-overlay" onClick={handleDrawerClick}></label>
 
                 <ul className="menu p-4 overflow-y-auto w-3/4 sm:w-1/2 md:w-1/4 bg-neutral text-base-content">
-                    <li className="text-neutral-content mb-2">
-                        <Link href="/" passHref>
-                            <div className="w-3/4 xs:w-1/2 sm:w-3/4 md:w-full p-2 mx-auto">
-                                <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
-                            </div>
-                        </Link>
+                    <li className="text-neutral-content mb-2" onClick={() => handleLinkClick('/')}>
+                        <div className="w-3/4 xs:w-1/2 sm:w-3/4 md:w-full p-2 mx-auto">
+                            <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
+                        </div>
                     </li>
                     {session && session.status === 'authenticated' && (
                         <li className="text-neutral-content mb-2">
@@ -34,28 +47,31 @@ export const Drawer: React.FC = ({ children }) => {
                         </li>
                     )}
                     <li className="text-neutral-content mb-4">
-                        <Link href="/" passHref>
-                            <button className="btn btn-ghost btn-sm rounded-btn px-4 w-full h-12">
-                                <AiFillHome className="inline-block w-6 h-6 mr-1.5 stroke-current" />
-                                Home
-                            </button>
-                        </Link>
+                        <button
+                            className="btn btn-ghost btn-sm rounded-btn px-4 w-full h-12"
+                            onClick={() => handleLinkClick('/')}
+                        >
+                            <AiFillHome className="inline-block w-6 h-6 mr-1.5 stroke-current" />
+                            Home
+                        </button>
                     </li>
                     <li className="text-neutral-content mb-2">
-                        <Link href="/shop" passHref>
-                            <button className="btn btn-ghost btn-sm rounded-btn px-4 w-full h-12">
-                                <AiFillShopping className="inline-block w-6 h-6 mr-1.5 stroke-current" />
-                                Shop
-                            </button>
-                        </Link>
+                        <button
+                            className="btn btn-ghost btn-sm rounded-btn px-4 w-full h-12"
+                            onClick={() => handleLinkClick('/shop')}
+                        >
+                            <AiFillShopping className="inline-block w-6 h-6 mr-1.5 stroke-current" />
+                            Shop
+                        </button>
                     </li>
                     <li className="text-neutral-content mb-2">
-                        <Link href="/breaks" passHref>
-                            <button className="btn btn-ghost btn-sm rounded-btn px-4 w-full h-12">
-                                <AiTwotoneCrown className="inline-block w-6 h-6 mr-1.5 stroke-current" />
-                                Breaks
-                            </button>
-                        </Link>
+                        <button
+                            className="btn btn-ghost btn-sm rounded-btn px-4 w-full h-12"
+                            onClick={() => handleLinkClick('/breaks')}
+                        >
+                            <AiTwotoneCrown className="inline-block w-6 h-6 mr-1.5 stroke-current" />
+                            Breaks
+                        </button>
                     </li>
                     <li className="text-neutral-content mb-2">
                         <a href="https://twitch.tv/dayc" target="_blank" rel="noreferrer">

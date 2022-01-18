@@ -33,7 +33,7 @@ export const PageWrapper: React.FC = ({ children }) => {
     return (
         <React.Fragment>
             <Header />
-            <div className="block w-full relative bg-primary-content p-2 md:p-4 lg:p-8">
+            <div className="block w-full relative bg-primary-content p-4 md:p-6 lg:p-8">
                 <div className="container mx-auto">{children}</div>
             </div>
             <Footer />

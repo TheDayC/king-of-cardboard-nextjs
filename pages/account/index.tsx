@@ -44,7 +44,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ content }) => {
                 <div className="hidden md:block">
                     <AccountMenu isDropdown={false} />
                 </div>
-                <div className="dropdown w-full p-2 md:hidden">
+                <div className="dropdown w-full mb-4 md:hidden">
                     <div tabIndex={0} className="btn btn-block">
                         Account Menu
                     </div>

@@ -111,7 +111,7 @@ export const Slot: React.FC<SlotProps> = ({
                 </div>
             )}
             {image.url.length > 0 && (
-                <div className="flex flex-row justify-center items-center w-full h-10 md:h-20 lg:h-32 relative mb-2">
+                <div className="flex flex-row justify-center items-center w-full h-24 xl:h-32 relative mb-4">
                     <img
                         src={image.url}
                         alt={image.description}
