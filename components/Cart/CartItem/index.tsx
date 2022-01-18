@@ -79,7 +79,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                     <MdDeleteForever className="text-3xl" />
                 </button>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2">
+            <div className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2">
                 <div className="text-error lg:flex lg:flex-row items-center justify-center w-full relative">
                     {image.url.length > 0 && (
                         <div className="w-20 h-20">
@@ -118,7 +118,9 @@ export const CartItem: React.FC<CartItemProps> = ({
                     />
                 )}
             </div>
-            <div className="flex flex-row items-center justify-center font-semibold">{totalAmount}</div>
+            <div className="flex flex-row items-center justify-center font-semibold text-sm lg:text-md">
+                {totalAmount}
+            </div>
         </div>
     );
 };
