@@ -2,6 +2,7 @@ import React from 'react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import { Document } from '@contentful/rich-text-types';
+import Head from 'next/head';
 
 import AccountMenu from '../../components/Account/Menu';
 import Account from '../../components/Account';
@@ -10,6 +11,7 @@ import { parseAsSlug, safelyParse } from '../../utils/parsers';
 import PageWrapper from '../../components/PageWrapper';
 import { pageBySlug } from '../../utils/pages';
 import Custom404Page from '../404';
+import { toTitleCase } from '../../utils';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -44,12 +46,18 @@ interface AccountSubPageProps {
 }
 
 export const AccountSubPage: React.FC<AccountSubPageProps> = ({ errorCode, slug, content }) => {
+    const prettySlug = slug ? toTitleCase(slug.replaceAll('-', ' ')) : '';
+
     if (errorCode || !content || !slug) {
         return <Custom404Page />;
     }
 
     return (
         <PageWrapper>
+            <Head>
+                <title>{prettySlug} - Account - King of Cardboard</title>
+                <meta property="og:title" content={`${prettySlug} - Account - King of Cardboard`} key="title" />
+            </Head>
             <div className="flex flex-col md:flex-row w-full justify-start items-start">
                 <div className="hidden md:block">
                     <AccountMenu isDropdown={false} />
