@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { ClientSafeProvider, getProviders, LiteralUnion, getCsrfToken, getSession } from 'next-auth/react';
 import { BuiltInProviderType } from 'next-auth/providers';
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 
 import Register from '../../components/Register';
 import ResetPassword from '../../components/ResetPassword';
 import Login from '../../components/Login';
 import { Tabs } from '../../enums/auth';
 import PageWrapper from '../../components/PageWrapper';
-import Head from 'next/head';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const providers = await getProviders();

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { split } from 'lodash';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 import { setLineItem } from '../../utils/commerce';
 import selector from './selector';
@@ -16,7 +17,6 @@ import Skeleton from './Skeleton';
 import Error404 from '../404';
 import { getSingleProduct } from '../../utils/products';
 import { SingleProduct } from '../../types/products';
-import Head from 'next/head';
 
 const defaultProduct: SingleProduct = {
     id: '',

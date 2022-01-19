@@ -1,7 +1,6 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
 import { Document } from '@contentful/rich-text-types';
-import { useRouter } from 'next/router';
 import Head from 'next/head';
 
 import PageWrapper from '../../components/PageWrapper';
