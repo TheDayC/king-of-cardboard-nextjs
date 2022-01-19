@@ -72,7 +72,9 @@ export const Footer: React.FC = () => (
                             <Link href="/information/investing">Investing</Link>
                         </li>
                         <li className={menuItemClass} role="menuitem">
-                            <Link href="/information/sports-vs-tcg">Sports vs TCG</Link>
+                            <Link href="/information/rarities-parallels-patches-and-autographs">
+                                Rarities, Parallels, Patches and Autographs
+                            </Link>
                         </li>
                         <li className={menuItemClass} role="menuitem">
                             <Link href="/information/roadmap">Development Roadmap</Link>
