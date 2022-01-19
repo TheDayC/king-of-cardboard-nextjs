@@ -65,8 +65,8 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
     const router = useRouter();
 
     const hasErrors = Object.keys(errors).length > 0;
-    const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
-    const confirmPasswordErr = safelyParse(errors, 'confirmPassword.message', parseAsString, null);
+    const passwordTypeErr = safelyParse(errors, 'password.type', parseAsString, null);
+    const confirmPasswordTypeErr = safelyParse(errors, 'confirmPassword.type', parseAsString, null);
 
     const onSubmit = async (data: SubmitData) => {
         const { password: newPassword, confirmPassword } = data;
@@ -120,23 +120,28 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
                                     type="password"
                                     placeholder="Password"
                                     {...register('password', {
-                                        required: { value: true, message: 'Password required' },
-                                        pattern: {
-                                            value: PASS_PATTERN,
-                                            message: 'Password confirmation must follow rules.',
-                                        },
+                                        required: true,
+                                        pattern: PASS_PATTERN,
                                         validate: {
                                             notEmpty: (value: string) => value.length > 0,
                                         },
                                     })}
                                     className={`input input-md input-bordered w-full${
-                                        passwordErr ? ' input-error' : ''
+                                        passwordTypeErr ? ' input-error' : ''
                                     }`}
                                 />
                             </label>
-                            {passwordErr && (
-                                <label className="label">
-                                    {passwordErr && <span className="label-text-alt">{passwordErr}</span>}
+                            {passwordTypeErr === 'required' && (
+                                <label className="label text-left">
+                                    <span className="label-text-alt text-error">Password is required.</span>
+                                </label>
+                            )}
+                            {passwordTypeErr === 'pattern' && (
+                                <label className="label text-left">
+                                    <span className="label-text-alt text-error">
+                                        Passwords must contain at least 8 characters, 1 captial, 1 number &amp; 1
+                                        special character.
+                                    </span>
                                 </label>
                             )}
                         </div>
@@ -159,13 +164,21 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
                                         },
                                     })}
                                     className={`input input-md input-bordered w-full${
-                                        confirmPasswordErr ? ' input-error' : ''
+                                        confirmPasswordTypeErr ? ' input-error' : ''
                                     }`}
                                 />
                             </label>
-                            {confirmPasswordErr && (
-                                <label className="label">
-                                    {confirmPasswordErr && <span className="label-text-alt">{confirmPasswordErr}</span>}
+                            {confirmPasswordTypeErr === 'required' && (
+                                <label className="label text-left">
+                                    <span className="label-text-alt text-error">Confirm password is required.</span>
+                                </label>
+                            )}
+                            {confirmPasswordTypeErr === 'pattern' && (
+                                <label className="label text-left">
+                                    <span className="label-text-alt text-error">
+                                        Passwords must contain at least 8 characters, 1 captial, 1 number &amp; 1
+                                        special character.
+                                    </span>
                                 </label>
                             )}
                         </div>

@@ -9,7 +9,7 @@ import selector from './selector';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updatePassword } from '../../../../utils/account';
 
-const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})$/;
+const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 interface SubmitData {
     password: string;
