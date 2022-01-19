@@ -22,8 +22,10 @@ interface Submit {
 }
 
 // Regexp
-const USER_PATTERN = /^[a-zA-Z]{4,}$/;
-const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const USER_PATTERN = /^[a-zA-Z0-9]{4,}$/;
+const EMAIL_PATTERN =
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})$/;
 
 interface RegisterProps {
     setCurrentTab(tab: Tabs): void;
@@ -43,11 +45,9 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
     const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
 
-    const usernameErr = safelyParse(errors, 'username.message', parseAsString, null);
-    const emailErr = safelyParse(errors, 'emailAddress.message', parseAsString, null);
-    const confirmEmailErr = safelyParse(errors, 'confirmEmailAddress.message', parseAsString, null);
-    const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
-    const confirmPasswordErr = safelyParse(errors, 'confirmPassword.message', parseAsString, null);
+    const usernameTypeErr = safelyParse(errors, 'username.type', parseAsString, null);
+    const emailTypeErr = safelyParse(errors, 'emailAddress.type', parseAsString, null);
+    const passwordTypeErr = safelyParse(errors, 'password.type', parseAsString, null);
     const agreedErr = safelyParse(errors, 'agreed.message', parseAsString, null);
     const error = safelyParse(router, 'query.error', parseAsString, null);
 
@@ -94,12 +94,19 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
                             required: { value: true, message: 'Username required' },
                             pattern: USER_PATTERN,
                         })}
-                        className={`input input-md input-bordered w-full${usernameErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered w-full${usernameTypeErr ? ' input-error' : ''}`}
                     />
                 </label>
-                {usernameErr && (
+                {usernameTypeErr === 'required' && (
                     <label className="label">
-                        <span className="label-text-alt text-error">{usernameErr}</span>
+                        <span className="label-text-alt text-error">Username required.</span>
+                    </label>
+                )}
+                {usernameTypeErr === 'pattern' && (
+                    <label className="label">
+                        <span className="label-text-alt text-error">
+                            Usernames must be a min of 4 characters and only contain letters and numbers.
+                        </span>
                     </label>
                 )}
             </div>
@@ -112,17 +119,22 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
                         type="text"
                         placeholder="Email Address"
                         {...register('emailAddress', {
-                            required: { value: true, message: 'Email address required' },
+                            required: true,
+                            pattern: EMAIL_PATTERN,
                         })}
-                        className={`input input-md input-bordered w-full${emailErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered w-full${emailTypeErr ? ' input-error' : ''}`}
                     />
                 </label>
-                {emailErr && (
+                {emailTypeErr === 'required' && (
                     <label className="label">
-                        {emailErr && <span className="label-text-alt text-error">{emailErr}</span>}
-                        {confirmEmailErr && (
-                            <span className="label-text-alt text-error">Email addresses must match.</span>
-                        )}
+                        <span className="label-text-alt text-error">Email address required.</span>
+                    </label>
+                )}
+                {emailTypeErr === 'pattern' && (
+                    <label className="label">
+                        <span className="label-text-alt text-error">
+                            Must be a valid email address inline with the RFC 5322 official standard.
+                        </span>
                     </label>
                 )}
             </div>
@@ -135,16 +147,22 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
                         type="password"
                         placeholder="Password"
                         {...register('password', {
-                            required: { value: true, message: 'Password required and meet complexity requirements.' },
+                            required: true,
                             pattern: PASS_PATTERN,
                         })}
-                        className={`input input-md input-bordered w-full${passwordErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered w-full${passwordTypeErr ? ' input-error' : ''}`}
                     />
                 </label>
-                {passwordErr && (
-                    <label className="label">
-                        {passwordErr && <span className="label-text-alt text-error">{passwordErr}</span>}
-                        {confirmPasswordErr && <span className="label-text-alt text-error">Passwords must match.</span>}
+                {passwordTypeErr === 'required' && (
+                    <label className="label text-left">
+                        <span className="label-text-alt text-error">Password is required.</span>
+                    </label>
+                )}
+                {passwordTypeErr === 'pattern' && (
+                    <label className="label text-left">
+                        <span className="label-text-alt text-error">
+                            Passwords must contain at least 8 characters, 1 captial, 1 number &amp; 1 special character.
+                        </span>
                     </label>
                 )}
             </div>
