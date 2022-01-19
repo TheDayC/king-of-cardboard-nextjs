@@ -9,7 +9,7 @@ import selector from './selector';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updatePassword } from '../../../../utils/account';
 
-const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})$/;
 
 interface SubmitData {
     password: string;
@@ -30,8 +30,8 @@ export const UpdatePassword: React.FC = () => {
     const dispatch = useDispatch();
 
     const hasErrors = Object.keys(errors).length > 0;
-    const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
-    const confirmPasswordErr = safelyParse(errors, 'confirmPassword.message', parseAsString, null);
+    const passwordTypeErr = safelyParse(errors, 'password.type', parseAsString, null);
+    const confirmPasswordTypeErr = safelyParse(errors, 'confirmPassword.type', parseAsString, null);
     const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
 
     const onSubmit = async (data: SubmitData) => {
@@ -54,14 +54,6 @@ export const UpdatePassword: React.FC = () => {
 
     return (
         <React.Fragment>
-            <div className="text-xs text-error">
-                <p>Passwords must:</p>
-                <ul className="list-disc list-inside pl-6 mb-4">
-                    <li>Contain at least 8 characters</li>
-                    <li>Contain at least 1 number</li>
-                    <li>Contain at least 1 special character</li>
-                </ul>
-            </div>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="form-control mt-2">
                     <label className="input-group input-group-md">
@@ -72,21 +64,26 @@ export const UpdatePassword: React.FC = () => {
                             type="password"
                             placeholder="Password"
                             {...register('password', {
-                                required: { value: true, message: 'Password required' },
-                                pattern: {
-                                    value: PASS_PATTERN,
-                                    message: 'Password confirmation must follow rules.',
-                                },
+                                required: true,
+                                pattern: PASS_PATTERN,
                                 validate: {
                                     notEmpty: (value: string) => value.length > 0,
                                 },
                             })}
-                            className={`input input-md input-bordered w-full${passwordErr ? ' input-error' : ''}`}
+                            className={`input input-md input-bordered w-full${passwordTypeErr ? ' input-error' : ''}`}
                         />
                     </label>
-                    {passwordErr && (
-                        <label className="label">
-                            {passwordErr && <span className="label-text-alt">{passwordErr}</span>}
+                    {passwordTypeErr === 'required' && (
+                        <label className="label text-left">
+                            <span className="label-text-alt text-error">Password is required.</span>
+                        </label>
+                    )}
+                    {passwordTypeErr === 'pattern' && (
+                        <label className="label text-left">
+                            <span className="label-text-alt text-error">
+                                Passwords must contain at least 8 characters, 1 captial, 1 number &amp; 1 special
+                                character.
+                            </span>
                         </label>
                     )}
                 </div>
@@ -99,23 +96,28 @@ export const UpdatePassword: React.FC = () => {
                             type="password"
                             placeholder="Confirm Password"
                             {...register('confirmPassword', {
-                                required: { value: true, message: 'Confirm Password required' },
-                                pattern: {
-                                    value: PASS_PATTERN,
-                                    message: 'Password confirmation must follow rules.',
-                                },
+                                required: true,
+                                pattern: PASS_PATTERN,
                                 validate: {
                                     sameAsPassword: (value: string) => value === password,
                                 },
                             })}
                             className={`input input-md input-bordered w-full${
-                                confirmPasswordErr ? ' input-error' : ''
+                                confirmPasswordTypeErr ? ' input-error' : ''
                             }`}
                         />
                     </label>
-                    {confirmPasswordErr && (
-                        <label className="label">
-                            {confirmPasswordErr && <span className="label-text-alt">{confirmPasswordErr}</span>}
+                    {confirmPasswordTypeErr === 'required' && (
+                        <label className="label text-left">
+                            <span className="label-text-alt text-error">Confirm password is required.</span>
+                        </label>
+                    )}
+                    {confirmPasswordTypeErr === 'pattern' && (
+                        <label className="label text-left">
+                            <span className="label-text-alt text-error">
+                                Passwords must contain at least 8 characters, 1 captial, 1 number &amp; 1 special
+                                character.
+                            </span>
                         </label>
                     )}
                 </div>
