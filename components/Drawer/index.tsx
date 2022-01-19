@@ -28,9 +28,13 @@ export const Drawer: React.FC = ({ children }) => {
         router.push(href);
     };
 
+    const handleToggle = () => {
+        return;
+    };
+
     return (
         <div className="bg-none drawer h-screen" data-testid="drawer">
-            <input type="checkbox" className="drawer-toggle" checked={isDrawerOpen} />
+            <input type="checkbox" className="drawer-toggle" checked={isDrawerOpen} onChange={handleToggle} />
             <div className="drawer-content">{children}</div>
             <div className="drawer-side">
                 <label className="drawer-overlay" onClick={handleDrawerClick}></label>

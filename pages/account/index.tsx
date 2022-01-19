@@ -2,6 +2,7 @@ import React from 'react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import { Document } from '@contentful/rich-text-types';
+import Head from 'next/head';
 
 import AccountMenu from '../../components/Account/Menu';
 import Content from '../../components/Content';
@@ -40,6 +41,10 @@ export const AccountPage: React.FC<AccountPageProps> = ({ content }) => {
 
     return (
         <PageWrapper>
+            <Head>
+                <title>Account - King of Cardboard</title>
+                <meta property="og:title" content="Account - King of Cardboard" key="title" />
+            </Head>
             <div className="flex flex-col md:flex-row w-full justify-start items-start">
                 <div className="hidden md:block">
                     <AccountMenu isDropdown={false} />

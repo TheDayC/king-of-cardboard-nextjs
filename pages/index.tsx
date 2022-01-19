@@ -1,6 +1,7 @@
 import { GetServerSideProps } from 'next';
 import React from 'react';
 import { Document } from '@contentful/rich-text-types';
+import Head from 'next/head';
 
 import HeroWithImage from '../components/Hero/withImage';
 import PageWrapper from '../components/PageWrapper';
@@ -28,6 +29,10 @@ interface HomePageProps {
 export const Home: React.FC<HomePageProps> = ({ heroes, content }) => {
     return (
         <PageWrapper>
+            <Head>
+                <title>Home - King of Cardboard</title>
+                <meta property="og:title" content="Home - King of Cardboard" key="title" />
+            </Head>
             {content && <Content content={content} />}
             {heroes &&
                 heroes.map((hero, i) => (
