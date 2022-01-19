@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { getSession } from 'next-auth/react';
+import Head from 'next/head';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { addError, addSuccess } from '../../store/slices/alerts';
@@ -96,6 +97,10 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
 
     return (
         <PageWrapper>
+            <Head>
+                <title>Reset Password - King of Cardboard</title>
+                <meta property="og:title" content="Reset Password - King of Cardboard" key="title" />
+            </Head>
             <div className="flex flex-col w-full justify-start items-center">
                 <h1 className="text-xl mb-4">
                     Reset password for <b>{emailAddress}</b>
