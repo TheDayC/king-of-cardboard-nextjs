@@ -8,7 +8,7 @@ import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updateUsername } from '../../../../utils/account';
 
-const USER_PATTERN = /^[a-zA-Z]{4,}$/;
+const USER_PATTERN = /^[a-zA-Z0-9]{4,}$/;
 
 interface SubmitData {
     username: string;
@@ -25,8 +25,8 @@ export const UpdateUsername: React.FC = () => {
     const dispatch = useDispatch();
 
     const hasErrors = Object.keys(errors).length > 0;
-    const usernameErr = safelyParse(errors, 'username.message', parseAsString, null);
     const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
+    const usernameTypeErr = safelyParse(errors, 'username.type', parseAsString, null);
 
     const onSubmit = async (data: SubmitData) => {
         const { username } = data;
@@ -47,51 +47,46 @@ export const UpdateUsername: React.FC = () => {
     };
 
     return (
-        <React.Fragment>
-            <div className="text-xs text-error">
-                <p>Usernames must:</p>
-                <ul className="list-disc list-inside pl-6 mb-4">
-                    <li>Contain a minimum of 4 characters.</li>
-                    <li>Contain a maximum of 20 characters.</li>
-                    <li>Not begin with an underscore or period.</li>
-                    <li>Not end with an underscore or period.</li>
-                    <li>Not contain any special characters.</li>
-                </ul>
-            </div>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="form-control">
-                    <label className="input-group input-group-md">
-                        <span className="bg-base-200">
-                            <AiOutlineUser className="w-5 h-5" />
-                        </span>
-                        <input
-                            type="text"
-                            placeholder="Username"
-                            {...register('username', {
-                                required: { value: true, message: 'Username required' },
-                                pattern: USER_PATTERN,
-                            })}
-                            className={`input input-md input-bordered w-full${usernameErr ? ' input-error' : ''}`}
-                        />
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="form-control">
+                <label className="input-group input-group-md">
+                    <span className="bg-base-200">
+                        <AiOutlineUser className="w-5 h-5" />
+                    </span>
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        {...register('username', {
+                            required: { value: true, message: 'Username required' },
+                            pattern: USER_PATTERN,
+                        })}
+                        className={`input input-md input-bordered w-full${usernameTypeErr ? ' input-error' : ''}`}
+                    />
+                </label>
+                {usernameTypeErr === 'required' && (
+                    <label className="label">
+                        <span className="label-text-alt text-error">Username required.</span>
                     </label>
-                    {usernameErr && (
-                        <label className="label">
-                            <span className="label-text-alt">{usernameErr}</span>
-                        </label>
-                    )}
-                </div>
-                <div className="form-control mt-6">
-                    <button
-                        type="submit"
-                        className={`btn btn-block w-full${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'}${
-                            loading ? ' loading btn-square' : ''
-                        }`}
-                    >
-                        {loading ? '' : 'Update Username'}
-                    </button>
-                </div>
-            </form>
-        </React.Fragment>
+                )}
+                {usernameTypeErr === 'pattern' && (
+                    <label className="label">
+                        <span className="label-text-alt text-error">
+                            Usernames must be a min of 4 characters and only contain letters and numbers.
+                        </span>
+                    </label>
+                )}
+            </div>
+            <div className="form-control mt-6">
+                <button
+                    type="submit"
+                    className={`btn btn-block w-full${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'}${
+                        loading ? ' loading btn-square' : ''
+                    }`}
+                >
+                    {loading ? '' : 'Update Username'}
+                </button>
+            </div>
+        </form>
     );
 };
 

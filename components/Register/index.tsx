@@ -45,7 +45,6 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
     const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
 
-    const usernameErr = safelyParse(errors, 'username.message', parseAsString, null);
     const usernameTypeErr = safelyParse(errors, 'username.type', parseAsString, null);
     const emailTypeErr = safelyParse(errors, 'emailAddress.type', parseAsString, null);
     const passwordTypeErr = safelyParse(errors, 'password.type', parseAsString, null);
@@ -95,7 +94,7 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
                             required: { value: true, message: 'Username required' },
                             pattern: USER_PATTERN,
                         })}
-                        className={`input input-md input-bordered w-full${usernameErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered w-full${usernameTypeErr ? ' input-error' : ''}`}
                     />
                 </label>
                 {usernameTypeErr === 'required' && (
