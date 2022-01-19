@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSession } from 'next-auth/react';
+import Head from 'next/head';
 
 import AccountMenu from '../../../components/Account/Menu';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -60,6 +61,10 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId }) 
 
     return (
         <PageWrapper>
+            <Head>
+                <title>Edit Address - Account - King of Cardboard</title>
+                <meta property="og:title" content="Edit Address - Account - King of Cardboard" key="title" />
+            </Head>
             <div className="flex flex-col md:flex-row w-full justify-start items-start">
                 <div className="hidden md:block">
                     <AccountMenu isDropdown={false} />

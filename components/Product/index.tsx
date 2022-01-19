@@ -16,6 +16,7 @@ import Skeleton from './Skeleton';
 import Error404 from '../404';
 import { getSingleProduct } from '../../utils/products';
 import { SingleProduct } from '../../types/products';
+import Head from 'next/head';
 
 const defaultProduct: SingleProduct = {
     id: '',
@@ -137,6 +138,14 @@ export const Product: React.FC = () => {
 
         return (
             <div className="flex flex-col relative lg:flex-row lg:space-x-8">
+                <Head>
+                    <title>{currentProduct.name} - Product - King of Cardboard</title>
+                    <meta
+                        property="og:title"
+                        content={`${currentProduct.name} - Product - King of Cardboard`}
+                        key="title"
+                    />
+                </Head>
                 <Images mainImage={currentProduct.cardImage} imageCollection={currentProduct.images.items} />
 
                 <div id="productDetails" className="flex-grow">

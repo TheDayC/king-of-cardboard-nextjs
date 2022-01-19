@@ -8,6 +8,7 @@ import ResetPassword from '../../components/ResetPassword';
 import Login from '../../components/Login';
 import { Tabs } from '../../enums/auth';
 import PageWrapper from '../../components/PageWrapper';
+import Head from 'next/head';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const providers = await getProviders();
@@ -59,6 +60,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
 
     return (
         <PageWrapper>
+            <Head>
+                <title>Login - King of Cardboard</title>
+                <meta property="og:title" content="Login - King of Cardboard" key="title" />
+            </Head>
             <div className="flex flex-col w-full justify-center items-center">
                 <div className="flex flex-col w-full md:w-1/2 lg:w-1/3 card text-center rounded-md md:shadow-2xl">
                     <div className="card-body p-2 lg:p-6">
