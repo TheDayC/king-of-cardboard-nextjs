@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import Image from 'next/image';
 
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 import { getAssetById } from '../../../utils/content';
@@ -33,7 +32,7 @@ export const ContentImage: React.FC<ImageProps> = ({ assetId }) => {
 
     if (!url) return null;
 
-    return <Image src={`https://${url}`} alt={description} title={title} width={width} height={height} />;
+    return <img src={`https://${url}`} alt={description} title={title} width={width} height={height} />;
 };
 
 export default ContentImage;
