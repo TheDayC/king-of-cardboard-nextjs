@@ -33,7 +33,7 @@ export const ContentImage: React.FC<ImageProps> = ({ assetId }) => {
 
     if (!url) return null;
 
-    return <Image src={`https://${url}`} alt={description} title={title} width={width} height={height} />;
+    return <Image src={`https:${url}`} alt={description} title={title} width={width} height={height} />;
 };
 
 export default ContentImage;
