@@ -57,3 +57,11 @@ export async function fetchContent(query: string): Promise<AxiosResponse<unknown
         errorHandler(error, 'Failed to fetch content.');
     }
 }
+
+export async function getAssetById(assetId: string): Promise<AxiosResponse<unknown> | void> {
+    try {
+        return await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/content/fetchAsset`, { assetId });
+    } catch (error: unknown) {
+        errorHandler(error, 'Failed to fetch asset.');
+    }
+}
