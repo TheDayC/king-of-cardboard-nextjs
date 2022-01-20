@@ -3,8 +3,6 @@ import { BLOCKS, MARKS, INLINES, Document, Block, Inline } from '@contentful/ric
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
-import Image from 'next/image';
-import { fetchAsset } from '../../utils/content';
 import ContentImage from './ContentImage';
 
 interface ContentProps {
