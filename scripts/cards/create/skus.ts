@@ -28,7 +28,7 @@ export async function createSkus(cards: Card[]): Promise<SkusWithIds[]> {
                         shipping_category: {
                             data: {
                                 type: 'shipping_categories',
-                                id: 'gNyDpFrVqK', // Singles category
+                                id: process.env.NEXT_PUBLIC_SHIPPING_CATEGORY_SINGLES, // Singles category
                             },
                         },
                     },
@@ -47,7 +47,7 @@ export async function createSkus(cards: Card[]): Promise<SkusWithIds[]> {
                         stock_location: {
                             data: {
                                 type: 'stock_locations',
-                                id: 'qnPbeuJNWk', // Warehouse
+                                id: process.env.NEXT_PUBLIC_STOCK_LOCATIONS || '', // Warehouse
                             },
                         },
                         sku: {
