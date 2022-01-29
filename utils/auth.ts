@@ -92,7 +92,7 @@ export async function createUserToken(emailAddress: string, password: string): P
             username: emailAddress,
             password,
             client_id: process.env.NEXT_PUBLIC_ECOM_SALES_ID,
-            scope: 'market:6098',
+            scope: process.env.NEXT_PUBLIC_MARKET,
         });
 
         return {

@@ -1,4 +1,4 @@
-import { Teams } from '../types';
+import { Teams } from '../../types';
 
 export const nbaTeams: Teams = {
     'atlanta-hawks': {
