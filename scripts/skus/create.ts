@@ -46,7 +46,7 @@ export async function createSkus(slots: Team[]): Promise<boolean> {
                         stock_location: {
                             data: {
                                 type: 'stock_locations',
-                                id: 'qnPbeuJNWk', // Warehouse
+                                id: process.env.NEXT_PUBLIC_STOCK_LOCATIONS || '', // Warehouse
                             },
                         },
                         sku: {
