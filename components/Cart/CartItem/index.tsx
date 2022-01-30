@@ -84,7 +84,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                     {image.url.length > 0 && (
                         <div className="w-20 h-20">
                             <Image
-                                src={image.url}
+                                src={`${image.url}?w=100`}
                                 alt={image.description}
                                 title={image.title}
                                 layout="fill"
