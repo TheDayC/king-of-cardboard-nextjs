@@ -1,5 +1,5 @@
 import React from 'react';
-import { GlassMagnifier } from 'react-image-magnifiers';
+import { GlassMagnifier, SideBySideMagnifier } from 'react-image-magnifiers';
 import Image from 'next/image';
 
 import { ImageItem } from '../../../types/products';
@@ -14,14 +14,10 @@ export const Images: React.FC<ImageProps> = ({ mainImage, images }) => (
     <div id="productImagesWrapper" className="flex flex-col items-center w-full mb-4 lg:mb-6">
         <div id="productImages" className="w-2/3">
             {mainImage.url.length > 0 && (
-                <GlassMagnifier
-                    imageSrc={mainImage.url}
+                <SideBySideMagnifier
+                    imageSrc={`${mainImage.url}?w=315`}
+                    largeImageSrc={`${mainImage.url}?w=2000`}
                     imageAlt={mainImage.title}
-                    allowOverflow
-                    magnifierSize="50%"
-                    magnifierBorderSize={5}
-                    magnifierBorderColor="rgba(255, 255, 255, .5)"
-                    square={false}
                 />
             )}
         </div>
