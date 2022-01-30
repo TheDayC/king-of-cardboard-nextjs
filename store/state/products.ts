@@ -9,7 +9,7 @@ const productsInitialState: ProductsState = {
         name: '',
         slug: '',
         sku_code: '',
-        description: '',
+        description: null,
         types: [],
         categories: [],
         images: {
