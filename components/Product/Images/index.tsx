@@ -19,16 +19,19 @@ export const Images: React.FC<ImageProps> = ({ mainImage, imageCollection }) => 
     };
 
     return (
-        <div id="productImagesWrapper" className="flex flex-col w-full mb-4 lg:w-auto lg:mb-0">
+        <div
+            id="productImagesWrapper"
+            className="flex flex-col w-full justify-center items-center mb-4 lg:w-auto lg:mb-0"
+        >
             {mainImage.url.length > 0 && (
-                <div id="productImages" className="flex flex-row w-80 mx-auto mb-4">
+                <div id="productImages" className="flex flex-row w-auto mb-4">
                     <SideBySideMagnifier
                         imageSrc={`${currentImage}?w=320`}
                         largeImageSrc={`${currentImage}?w=2000`}
                         imageAlt={mainImage.title}
                         className="input-position"
                         alwaysInPlace={false}
-                        inPlaceMinBreakpoint={641}
+                        inPlaceMinBreakpoint={1024}
                     />
                 </div>
             )}
