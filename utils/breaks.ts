@@ -22,7 +22,7 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
     // Piece together query.
     const query = `
         query {
-            breaksCollection (limit: ${limit}, skip: ${skip}) {
+            breaksCollection (limit: ${limit}, skip: ${skip}, order: [breakNumber_DESC]) {
                 total
                 items {
                     breakNumber

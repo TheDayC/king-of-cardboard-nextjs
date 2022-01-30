@@ -59,7 +59,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                             username: emailAddress,
                             password,
                             client_id: process.env.NEXT_PUBLIC_ECOM_SALES_ID,
-                            scope: 'market:6098',
+                            scope: process.env.NEXT_PUBLIC_MARKET,
                         });
                         const token = safelyParse(tokenRes, 'data.access_token', parseAsString, null);
                         const owner_id = safelyParse(tokenRes, 'data.owner_id', parseAsString, null);
@@ -150,7 +150,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                             grant_type: 'client_credentials',
                             client_id: process.env.ECOM_CLIENT_ID,
                             client_secret: process.env.ECOM_CLIENT_SECRET,
-                            scope: 'market:6098',
+                            scope: process.env.NEXT_PUBLIC_MARKET,
                         });
                         const token = safelyParse(clientTokenRes, 'data.access_token', parseAsString, null);
                         const cl = authClient(token);

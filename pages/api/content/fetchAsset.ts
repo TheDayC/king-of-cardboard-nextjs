@@ -4,7 +4,7 @@ import * as contentful from 'contentful';
 import { errorHandler } from '../../../middleware/errors';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 
-const defaultErr = 'There was a problem fetching this content...';
+const defaultErr = 'There was a problem fetching this asset...';
 
 async function fetchAsset(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {

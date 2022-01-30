@@ -27,7 +27,7 @@ export async function createSkus(slots: Team[]): Promise<boolean> {
                         shipping_category: {
                             data: {
                                 type: 'shipping_categories',
-                                id: 'MWjgYFVZLK', // Break category
+                                id: process.env.NEXT_PUBLIC_SHIPPING_CATEGORY_BREAKS, // Break category
                             },
                         },
                     },
@@ -46,7 +46,7 @@ export async function createSkus(slots: Team[]): Promise<boolean> {
                         stock_location: {
                             data: {
                                 type: 'stock_locations',
-                                id: 'qnPbeuJNWk', // Warehouse
+                                id: process.env.NEXT_PUBLIC_STOCK_LOCATIONS || '', // Warehouse
                             },
                         },
                         sku: {

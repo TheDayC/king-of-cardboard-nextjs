@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { split } from 'lodash';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 
@@ -23,7 +22,7 @@ const defaultProduct: SingleProduct = {
     name: '',
     slug: '',
     sku_code: '',
-    description: '',
+    description: null,
     types: [],
     categories: [],
     images: {
@@ -52,12 +51,11 @@ export const Product: React.FC = () => {
     const [shouldShow, setShouldShow] = useState(false);
     const [currentProduct, setCurrentProduct] = useState(defaultProduct);
     const { handleSubmit, register } = useForm();
-    const { inventory, sku_code, description: productDesc, name, types, categories, cardImage } = currentProduct;
+    const { inventory, sku_code, description, name, types, categories, cardImage } = currentProduct;
     const stock = inventory.quantity;
     const item = items.find((c) => c.sku_code === sku_code);
     const quantity = safelyParse(item, 'quantity', parseAsNumber, 0);
     const hasExceededStock = quantity >= stock;
-    const description = split(productDesc, '\n\n');
     const btnDisabled = hasExceededStock ? ' btn-disabled' : ' btn-primary';
     const btnLoading = isUpdatingCart ? ' loading' : '';
     const isQuantityAtMax = quantity === stock;
@@ -148,7 +146,7 @@ export const Product: React.FC = () => {
                 </Head>
                 <Images mainImage={currentProduct.cardImage} imageCollection={currentProduct.images.items} />
 
-                <div id="productDetails" className="flex-grow">
+                <div id="productDetails" className="flex flex-col w-full lg:w-3/4">
                     <div className="card rounded-md lg:shadow-lg md:p-4 lg:p-8">
                         <Details
                             name={currentProduct.name}

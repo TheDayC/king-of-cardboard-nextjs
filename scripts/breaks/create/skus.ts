@@ -6,29 +6,29 @@ import { authClient } from '../../../utils/auth';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { createToken } from '../../token';
 import { errorHandler } from '../../../middleware/errors';
-import { Card, SkusWithIds } from '../../types';
+import { Card, SkusWithIds, Team } from '../../types';
 
-export async function createSkus(cards: Card[]): Promise<SkusWithIds[]> {
+export async function createSkus(teams: Team[]): Promise<SkusWithIds[]> {
     const skusWithIds = [];
 
     try {
         const token = await createToken();
         const cl = authClient(token);
 
-        for (const card of cards) {
+        for (const team of teams) {
             const skuRes = await cl.post(`/api/skus`, {
                 data: {
                     type: 'skus',
                     attributes: {
-                        code: card.sku,
-                        name: card.name,
-                        image_url: card.image_url,
+                        code: team.sku,
+                        name: team.name,
+                        image_url: team.image_url,
                     },
                     relationships: {
                         shipping_category: {
                             data: {
                                 type: 'shipping_categories',
-                                id: process.env.NEXT_PUBLIC_SHIPPING_CATEGORY_SINGLES, // Singles category
+                                id: process.env.NEXT_PUBLIC_SHIPPING_CATEGORY_BREAKS, // Breaks category
                             },
                         },
                     },
@@ -40,8 +40,8 @@ export async function createSkus(cards: Card[]): Promise<SkusWithIds[]> {
                 data: {
                     type: 'stock_items',
                     attributes: {
-                        sku_code: card.sku,
-                        quantity: card.quantity,
+                        sku_code: team.sku,
+                        quantity: 1,
                     },
                     relationships: {
                         stock_location: {
@@ -64,8 +64,8 @@ export async function createSkus(cards: Card[]): Promise<SkusWithIds[]> {
                 data: {
                     type: 'prices',
                     attributes: {
-                        sku_code: card.sku,
-                        amount_cents: card.amount,
+                        sku_code: team.sku,
+                        amount_cents: team.amount,
                     },
                     relationships: {
                         price_list: {
@@ -77,8 +77,8 @@ export async function createSkus(cards: Card[]): Promise<SkusWithIds[]> {
                     },
                 },
             });
-            skusWithIds.push({ code: card.sku, id: skuId });
-            console.log(`Created SKU: ${card.sku}`);
+            skusWithIds.push({ code: team.code, id: skuId });
+            console.log(`Created SKU: ${team.code}`);
         }
 
         return skusWithIds;

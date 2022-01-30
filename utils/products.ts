@@ -15,6 +15,7 @@ import { fetchContent } from './content';
 import {
     parseAsArrayOfCommerceResponse,
     parseAsArrayOfContentfulProducts,
+    parseAsArrayOfDocuments,
     parseAsArrayOfStrings,
     parseAsCommerceResponse,
     parseAsImageCollection,
@@ -73,7 +74,9 @@ export async function getProducts(
                         description
                         url
                     }
-                    description
+                    description {
+                        json
+                    }
                     imageCollection {
                         items {
                             title
@@ -133,7 +136,7 @@ export async function getProducts(
                     name: safelyParse(pC, 'name', parseAsString, ''),
                     slug: safelyParse(pC, 'slug', parseAsString, ''),
                     sku_code,
-                    description: safelyParse(pC, 'description', parseAsString, ''),
+                    description: safelyParse(pC, 'description.json.content', parseAsArrayOfDocuments, null),
                     types: safelyParse(pC, 'types', parseAsArrayOfStrings, []),
                     categories: safelyParse(pC, 'categories', parseAsArrayOfStrings, []),
                     images: images.items.map((image) => ({
@@ -350,7 +353,9 @@ export async function getSingleProduct(accessToken: string, slug: string): Promi
                 items {
                     name
                     slug
-                    description
+                    description {
+                        json
+                    }
                     productLink
                     types
                     categories
@@ -406,7 +411,7 @@ export async function getSingleProduct(accessToken: string, slug: string): Promi
         name: safelyParse(product, 'name', parseAsString, ''),
         slug: safelyParse(product, 'slug', parseAsString, ''),
         sku_code,
-        description: safelyParse(product, 'description', parseAsString, ''),
+        description: safelyParse(product, 'description.json.content', parseAsArrayOfDocuments, null),
         types: safelyParse(product, 'types', parseAsArrayOfStrings, []),
         categories: safelyParse(product, 'categories', parseAsArrayOfStrings, []),
         images: safelyParse(product, 'imageCollection', parseAsImageCollection, { items: [] }),
