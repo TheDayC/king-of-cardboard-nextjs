@@ -2,8 +2,9 @@ import path from 'path';
 import * as dotenv from 'dotenv';
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
-import { nbaTeams } from './data/basketball';
-import { nflTeams } from './data/football';
+import { nbaTeams } from './data/nba';
+import { nflTeams } from './data/nfl';
+import { eslTeams } from './data/esl';
 import { createAssets } from './create/assets';
 import { createSkus } from './create/skus';
 import { createBreaks } from './create/breaks';
@@ -11,21 +12,22 @@ import { createBreakSlots } from './create/slots';
 
 const assetsOptions = {
     limit: 30,
-    'metadata.tags.sys.id[all]': 'nfl,logos',
+    'metadata.tags.sys.id[all]': 'esl,logos',
 };
-const sku = 'BREAK-1-{{CODEANDNAME}}';
-const title = 'NFL Donruss Hobby 2021 - Break 1';
-const slug = 'nfl-donruss-hobby-2021-break-1';
-const cardImage = '2mK1clbMq5MH6SX3NmhroN';
-const type = 'football';
-const date = '2022-02-13T17:00:00';
+const sku = 'BREAK-3-{{CODEANDNAME}}';
+const title = 'ESL CSGO Set B';
+const slug = 'esl-csgo-set-b-break-3';
+const cardImage = '1fVIaqvQtUdDV8V2knu7Iu';
+const type = 'esports';
+const date = '2022-02-24T19:00:00';
 const format = 'Pick Your Team';
-const breakTags = ['High End'];
-const slotTags = ['nfl', 'break', 'football'];
+const breakTags = ['Entry', 'Enthusiast'];
+const slotTags = ['esl', 'slot'];
+const breakNumber = 3;
 
 async function generateBreaks(): Promise<void> {
     // Create the teams for this break.
-    const teams = await createAssets(sku, assetsOptions, nflTeams);
+    const teams = await createAssets(sku, assetsOptions, eslTeams);
 
     if (!teams) return;
 
@@ -40,7 +42,7 @@ async function generateBreaks(): Promise<void> {
     if (slots.length <= 0) return;
 
     // Create the break in Contentful and link all slots.
-    await createBreaks(title, slug, cardImage, type, date, format, breakTags, slots);
+    await createBreaks(title, slug, cardImage, type, date, format, breakTags, slots, breakNumber);
 }
 
 generateBreaks();

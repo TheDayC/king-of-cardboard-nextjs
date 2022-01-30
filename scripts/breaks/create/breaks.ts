@@ -18,7 +18,8 @@ export async function createBreaks(
     date: string,
     format: string,
     tags: string[],
-    slots: string[]
+    slots: string[],
+    breakNumber: number
 ): Promise<void> {
     try {
         console.log('Created a new break...');
@@ -37,6 +38,9 @@ export async function createBreaks(
             fields: {
                 internalTitle: {
                     [enGB]: title,
+                },
+                breakNumber: {
+                    [enGB]: breakNumber,
                 },
                 title: {
                     [enGB]: title,

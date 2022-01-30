@@ -207,8 +207,8 @@ export const nbaTeams: Teams = {
     'washington-wizards': {
         code: 'WAS',
         name: 'Washington Wizards',
-        amount: '',
+        amount: '700',
         image_url: '',
-        image_id: '700',
+        image_id: '',
     },
 };
