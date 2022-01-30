@@ -18,6 +18,9 @@ export const Images: React.FC<ImageProps> = ({ mainImage, images }) => (
                     imageSrc={`${mainImage.url}?w=315`}
                     largeImageSrc={`${mainImage.url}?w=2000`}
                     imageAlt={mainImage.title}
+                    className="input-position"
+                    alwaysInPlace={false}
+                    inPlaceMinBreakpoint={1024}
                 />
             )}
         </div>

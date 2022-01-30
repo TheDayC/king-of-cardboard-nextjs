@@ -25,7 +25,7 @@ class Achievements {
         this._email = safelyParse(session, 'user.email', parseAsString, null);
         this._accessToken = accessToken;
 
-        this.fetchAchievments();
+        this.fetchAchievements();
     }
 
     private hasReachedMinThreshold(current: number, min: number): boolean {
@@ -40,7 +40,7 @@ class Achievements {
         return current % milestone === 0;
     }
 
-    private async fetchAchievments(): Promise<void> {
+    private async fetchAchievements(): Promise<void> {
         try {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/achievements/getAchievements`, {
                 emailAddress: this._email,
