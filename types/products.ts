@@ -1,3 +1,5 @@
+import { Document } from '@contentful/rich-text-types';
+
 import { SkuInventory } from './commerce';
 
 export interface Product {
@@ -5,7 +7,7 @@ export interface Product {
     name: string;
     slug: string;
     sku_code: string;
-    description: string;
+    description: Document[] | null;
     types: string[];
     categories: string[];
     images: ImageItem[];
@@ -20,7 +22,7 @@ export interface SingleProduct {
     name: string;
     slug: string;
     sku_code: string;
-    description: string;
+    description: Document[] | null;
     types: string[];
     categories: string[];
     images: ImageCollection;

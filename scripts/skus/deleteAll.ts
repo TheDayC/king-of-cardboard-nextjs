@@ -4,16 +4,19 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 import { join } from 'lodash';
 
 import { authClient } from '../../utils/auth';
-import { parseAsArrayOfCommerceResponse, parseAsNumber, safelyParse } from '../../utils/parsers';
+import {
+    parseAsArrayOfCommerceLayerErrors,
+    parseAsArrayOfCommerceResponse,
+    parseAsNumber,
+    safelyParse,
+} from '../../utils/parsers';
 import { createToken } from '../token';
 import { errorHandler } from '../../middleware/errors';
 async function deleteAllSkus(): Promise<void> {
     try {
         const token = await createToken();
         const cl = authClient(token);
-        const orderIdsRes = await cl.get(
-            '/api/skus/?fields[skus]=id,code&page[size]=25&page[number]=1&filter[q][code_cont_any]=VOW,NEO'
-        );
+        const orderIdsRes = await cl.get('/api/skus/?fields[skus]=id,code&page[size]=25&page[number]=1');
         const skus = safelyParse(orderIdsRes, 'data.data', parseAsArrayOfCommerceResponse, []);
 
         if (skus.length <= 0) {

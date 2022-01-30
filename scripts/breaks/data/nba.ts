@@ -1,4 +1,4 @@
-import { Teams } from '../types';
+import { Teams } from '../../types';
 
 export const nbaTeams: Teams = {
     'atlanta-hawks': {
@@ -207,8 +207,8 @@ export const nbaTeams: Teams = {
     'washington-wizards': {
         code: 'WAS',
         name: 'Washington Wizards',
-        amount: '',
+        amount: '700',
         image_url: '',
-        image_id: '700',
+        image_id: '',
     },
 };

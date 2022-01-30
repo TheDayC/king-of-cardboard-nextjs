@@ -22,7 +22,7 @@
         "cancel:shipments": "ts-node ./scripts/shipments/cancelAll.ts",
         "create:skus": "ts-node ./scripts/skus/create.ts",
         "create:cards": "ts-node ./scripts/cards/index.ts",
-        "generate:basketball": "ts-node ./scripts/skus/generateBasketballData.ts"
+        "create:breaks": "ts-node ./scripts/breaks/index.ts"
     },
     "lint-staged": {
         "**/*": [

@@ -55,7 +55,7 @@ export const BreakCard: React.FC<BreakProps> = ({
                             passHref
                         >
                             <Image
-                                src={cardImage.url}
+                                src={`${cardImage.url}?w=370`}
                                 alt={cardImage.description}
                                 title={cardImage.title}
                                 layout="fill"
