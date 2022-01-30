@@ -1,5 +1,5 @@
 import React from 'react';
-import { GlassMagnifier, SideBySideMagnifier } from 'react-image-magnifiers';
+import { SideBySideMagnifier } from 'react-image-magnifiers';
 import Image from 'next/image';
 
 import { ImageItem } from '../../../types/products';

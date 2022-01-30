@@ -50,7 +50,7 @@ const productsSlice = createSlice({
                 name: '',
                 slug: '',
                 sku_code: '',
-                description: '',
+                description: null,
                 types: [],
                 categories: [],
                 images: {
