@@ -147,7 +147,7 @@ export const Product: React.FC = () => {
                 </Head>
                 <Images mainImage={currentProduct.cardImage} imageCollection={currentProduct.images.items} />
 
-                <div id="productDetails" className="flex-grow">
+                <div id="productDetails" className="flex flex-col w-full lg:w-3/4">
                     <div className="card rounded-md lg:shadow-lg md:p-4 lg:p-8">
                         <Details
                             name={currentProduct.name}
