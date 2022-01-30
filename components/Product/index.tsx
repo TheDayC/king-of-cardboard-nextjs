@@ -23,7 +23,7 @@ const defaultProduct: SingleProduct = {
     name: '',
     slug: '',
     sku_code: '',
-    description: '',
+    description: null,
     types: [],
     categories: [],
     images: {
@@ -52,12 +52,11 @@ export const Product: React.FC = () => {
     const [shouldShow, setShouldShow] = useState(false);
     const [currentProduct, setCurrentProduct] = useState(defaultProduct);
     const { handleSubmit, register } = useForm();
-    const { inventory, sku_code, description: productDesc, name, types, categories, cardImage } = currentProduct;
+    const { inventory, sku_code, description, name, types, categories, cardImage } = currentProduct;
     const stock = inventory.quantity;
     const item = items.find((c) => c.sku_code === sku_code);
     const quantity = safelyParse(item, 'quantity', parseAsNumber, 0);
     const hasExceededStock = quantity >= stock;
-    const description = split(productDesc, '\n\n');
     const btnDisabled = hasExceededStock ? ' btn-disabled' : ' btn-primary';
     const btnLoading = isUpdatingCart ? ' loading' : '';
     const isQuantityAtMax = quantity === stock;

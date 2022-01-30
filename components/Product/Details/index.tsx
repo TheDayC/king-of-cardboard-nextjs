@@ -1,4 +1,7 @@
+import { Document } from '@contentful/rich-text-types';
 import React from 'react';
+
+import Content from '../../Content';
 
 interface DetailsProps {
     name: string;
@@ -7,7 +10,7 @@ interface DetailsProps {
     isAvailable: boolean;
     quantity: number;
     tags: string[];
-    description: string[];
+    description: Document[] | null;
 }
 
 export const Details: React.FC<DetailsProps> = ({
@@ -43,14 +46,8 @@ export const Details: React.FC<DetailsProps> = ({
                         </div>
                     ))}
             </div>
-            {description.length > 0 && (
-                <div className="description">
-                    {description.map((d, i) => (
-                        <p className="mb-4" key={`description-${i}`}>
-                            {d}
-                        </p>
-                    ))}
-                </div>
+            {description && description.length > 0 && (
+                <div className="description">{description && <Content content={description} />}</div>
             )}
         </div>
     );
