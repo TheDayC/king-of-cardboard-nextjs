@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { BsTwitter, BsInstagram } from 'react-icons/bs';
-import { SiNextdotjs, SiTypescript, SiReact, SiRedux, SiMongodb, SiAmazonaws } from 'react-icons/si';
+import { SiNextdotjs, SiTypescript, SiReact, SiRedux, SiMongodb } from 'react-icons/si';
 
 import logo from '../../images/logo-full.png';
 
@@ -19,7 +19,7 @@ export const Footer: React.FC = () => (
                             <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
                         </div>
                     </Link>
-                    <p>Collect, Invest, Share.</p>
+                    <p>Collect. Invest. Share.</p>
                     <div className="divider lightDivider my-4 w-full"></div>
                     <h3 className="text-md mb-2">Built on</h3>
                     <div className="flex flex-row flex-wrap items-between">
@@ -46,11 +46,6 @@ export const Footer: React.FC = () => (
                         <div className="p-2">
                             <a href="https://www.mongodb.com/" target="__blank" role="link">
                                 <SiMongodb className={builtOnClass} />
-                            </a>
-                        </div>
-                        <div className="p-2">
-                            <a href="https://aws.amazon.com/" target="__blank" role="link">
-                                <SiAmazonaws className={builtOnClass} />
                             </a>
                         </div>
                     </div>

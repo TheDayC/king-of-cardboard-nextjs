@@ -2,8 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createTransport } from 'nodemailer';
-import { defaultProvider } from '@aws-sdk/credential-provider-node';
-import * as aws from '@aws-sdk/client-ses';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import mandrillTransport from 'nodemailer-mandrill-transport';
 import { DateTime } from 'luxon';
 
 import { connectToDatabase } from '../../../middleware/database';
@@ -12,19 +13,18 @@ import { authClient } from '../../../utils/auth';
 import { shouldResetPassword } from '../../../utils/account';
 import { errorHandler } from '../../../middleware/errors';
 
-const ses = new aws.SES({
-    apiVersion: '2010-12-01',
-    region: process.env.AWS_REGION,
-    credentialDefaultProvider: defaultProvider,
-});
-
-const mailer = createTransport({
-    SES: { ses, aws },
-    sendingRate: 1, // max 1 messages/second
-});
+const mailer = createTransport(
+    mandrillTransport({
+        auth: {
+            apiKey: process.env.MANDRILL_API_KEY || '',
+        },
+    })
+);
 
 const filePath = path.resolve(process.cwd(), 'html', 'resetPassword.html');
 const defaultErr = 'Could not request a password reset.';
+
+const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.png'));
 
 async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
@@ -80,22 +80,17 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
                     subject: 'Password Reset - King of Cardboard',
                     html,
                     text: `Hi ${email}, it looks like you've requested a password reset and are looking at the raw version of our email. Please copy and paste the following link into your browser's address bar: ${link}`,
-                    ses: {
-                        // optional extra arguments for SendRawEmail
-                        Tags: [
-                            {
-                                Name: 'reset_password',
-                                Value: 'reset_password_value',
-                            },
-                        ],
-                    },
-                    attachments: [
-                        {
-                            filename: 'logo-full.png',
-                            path: path.resolve(process.cwd(), 'images', 'logo-full.png'),
-                            cid: 'logo', //same cid value as in the html img src
+                    mandrillOptions: {
+                        message: {
+                            images: [
+                                {
+                                    type: 'image/png',
+                                    name: 'logo',
+                                    content: logo.toString('base64'),
+                                },
+                            ],
                         },
-                    ],
+                    },
                 };
 
                 await mailer.sendMail(mailOptions);
