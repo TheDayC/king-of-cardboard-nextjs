@@ -1,9 +1,11 @@
 import fs from 'fs';
+import https from 'https';
 import path from 'path';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createTransport } from 'nodemailer';
-import { defaultProvider } from '@aws-sdk/credential-provider-node';
-import * as aws from '@aws-sdk/client-ses';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import mandrillTransport from 'nodemailer-mandrill-transport';
 
 import {
     parseAsArrayOfCommerceLayerErrors,
@@ -16,18 +18,16 @@ import {
 } from '../../utils/parsers';
 import { apiErrorHandler } from '../../middleware/errors';
 
-const ses = new aws.SES({
-    apiVersion: '2010-12-01',
-    region: process.env.AWS_REGION,
-    credentialDefaultProvider: defaultProvider,
-});
-
-const mailer = createTransport({
-    SES: { ses, aws },
-    sendingRate: 1, // max 1 messages/second
-});
+const mailer = createTransport(
+    mandrillTransport({
+        auth: {
+            apiKey: process.env.MANDRILL_API_KEY || '',
+        },
+    })
+);
 
 const filePath = path.resolve(process.cwd(), 'html', 'order.html');
+const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.png'));
 
 async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
@@ -79,18 +79,23 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
                         </tr>`
                     );
                     const itemsText = items.map(
-                        (item) =>
-                            `
+                        (item) => `
                             Name: ${item.name}
                             SKU: ${item.sku_code}
                             Quantity: ${item.quantity}
                         `
                     );
-                    const itemsImgData = items.map((item) => ({
-                        filename: item.name,
-                        path: item.image.url.length > 0 ? item.image.url : 'https://via.placeholder.com/50',
-                        cid: item.id, //same cid value as in the html img src
-                    }));
+                    const itemsImgData = items.map((item) => {
+                        const imgUrl = item.image.url.length > 0 ? item.image.url : 'https://via.placeholder.com/50';
+                        const img = fs.readFileSync(path.resolve(imgUrl));
+                        const type = imgUrl.split('.').pop();
+
+                        return {
+                            type: `image/${type}`,
+                            name: item.id,
+                            content: img.toString('base64'),
+                        };
+                    });
                     const htmlData = fs.readFileSync(filePath, 'utf8');
                     const html = htmlData
                         .replace('{{orderNumber}}', `${orderNumber}`)
@@ -170,14 +175,18 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
                                 },
                             ],
                         },
-                        attachments: [
-                            ...itemsImgData,
-                            {
-                                filename: 'logo-full.png',
-                                path: path.resolve(process.cwd(), 'images', 'logo-full.png'),
-                                cid: 'logo', //same cid value as in the html img src
+                        mandrillOptions: {
+                            message: {
+                                images: [
+                                    ...itemsImgData,
+                                    {
+                                        type: 'image/png',
+                                        name: 'logo',
+                                        content: logo.toString('base64'),
+                                    },
+                                ],
                             },
-                        ],
+                        },
                     };
 
                     await mailer.sendMail(mailOptions);
