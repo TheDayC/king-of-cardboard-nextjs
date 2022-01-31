@@ -46,6 +46,13 @@ export async function getOrders(
 
         const orderIds = customer.orders.map((order) => order.id);
 
+        if (orderIds.length <= 0) {
+            return {
+                orders: [],
+                count: 0,
+            };
+        }
+
         const orderRes = await cl.orders.list(
             {
                 filters: {
