@@ -695,7 +695,7 @@ export async function updatePassword(accessToken: string, emailAddress: string, 
                 },
             },
         });
-        const status = safelyParse(res, 'response.status', parseAsNumber, 500);
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
         return status === 200;
     } catch (error: unknown) {
@@ -723,7 +723,7 @@ export async function resetPassword(
                 },
             },
         });
-        const status = safelyParse(res, 'response.status', parseAsNumber, 500);
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
         return status === 200;
     } catch (error: unknown) {
