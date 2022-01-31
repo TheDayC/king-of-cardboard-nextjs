@@ -21,7 +21,7 @@ export const Images: React.FC<ImageProps> = ({ mainImage, imageCollection }) => 
     return (
         <div
             id="productImagesWrapper"
-            className="flex flex-col w-full justify-center items-center mb-4 lg:w-1/4 lg:mb-0"
+            className="flex flex-col w-full justify-start items-center mb-4 lg:w-1/4 lg:mb-0"
         >
             {mainImage.url.length > 0 && (
                 <div id="productImages" className="flex flex-row justify-center items-start w-full mb-4">
@@ -37,7 +37,7 @@ export const Images: React.FC<ImageProps> = ({ mainImage, imageCollection }) => 
             )}
 
             {imageCollection.length > 0 && (
-                <div className="grid grid-cols-4 relative">
+                <div className="grid grid-cols-4 relative w-full">
                     {imageCollection.map((image, index) => (
                         <div
                             className="w-full h-20 cursor-pointer p-2"
