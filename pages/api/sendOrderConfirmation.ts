@@ -1,5 +1,4 @@
 import fs from 'fs';
-import https from 'https';
 import path from 'path';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createTransport } from 'nodemailer';
