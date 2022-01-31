@@ -57,6 +57,7 @@ export async function getOrders(
             {
                 filters: {
                     id_in: join(orderIds, ','),
+                    status_not_eq: 'draft',
                 },
                 fields: {
                     orders: [
