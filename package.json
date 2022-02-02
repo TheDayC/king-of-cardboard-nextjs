@@ -1,11 +1,11 @@
 {
     "name": "king-of-cardboard-nextjs",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "private": true,
     "scripts": {
         "dev": "next dev",
         "build": "next build",
-        "postbuild": "next-sitemap",
+        "postbuild": "next-sitemap --config next-sitemap.config.js",
         "start": "next start",
         "lint": "next lint",
         "prettier": "prettier --write .",
@@ -87,7 +87,7 @@
         "jest-transform-stub": "^2.0.0",
         "lint-staged": "^11.2.3",
         "msw": "^0.36.3",
-        "next-sitemap": "^1.6.261",
+        "next-sitemap": "^2.1.8",
         "postcss": "^8.3.9",
         "prettier": "^2.4.1",
         "tailwindcss": "^2.2.19",

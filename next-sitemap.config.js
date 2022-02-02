@@ -1,8 +1,8 @@
 module.exports = {
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com',
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || '',
     generateRobotsTxt: true,
     robotsTxtOptions: {
-        policies: [{ userAgent: '*', disallow: '/' }],
+        policies: [{ userAgent: '*', allow: '/' }],
     },
     exclude: [
         '/account/*',
