@@ -42,7 +42,6 @@ export const UpdatePassword: React.FC = () => {
         setLoading(true);
 
         const res = await updatePassword(token, emailAddress, password);
-        console.log('🚀 ~ file: index.tsx ~ line 45 ~ onSubmit ~ res', res);
 
         if (res) {
             dispatch(addSuccess('Password updated!'));
