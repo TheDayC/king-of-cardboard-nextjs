@@ -4403,12 +4403,6 @@ mandrill-api@^1.0.45:
   version "1.0.45"
   resolved "https://registry.yarnpkg.com/mandrill-api/-/mandrill-api-1.0.45.tgz#163939cf486bd18277b0f3baf412c3e65d84a72d"
 
-matcher@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/matcher/-/matcher-4.0.0.tgz#a42a05a09aaed92e2d241eb91fddac689461ea51"
-  dependencies:
-    escape-string-regexp "^4.0.0"
-
 md5.js@^1.3.4:
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/md5.js/-/md5.js-1.3.5.tgz#b5d07b8e3216e3e27cd728d72f70d1e6a342005f"
@@ -4575,12 +4569,12 @@ next-redux-wrapper@^7.0.5:
   version "7.0.5"
   resolved "https://registry.yarnpkg.com/next-redux-wrapper/-/next-redux-wrapper-7.0.5.tgz#109cd3fe02183b18fbd094924cfcbd21262039dc"
 
-next-sitemap@^1.6.261:
-  version "1.6.261"
-  resolved "https://registry.yarnpkg.com/next-sitemap/-/next-sitemap-1.6.261.tgz#550aeb40b6b1273628237ff7efcfacf9d0244f26"
+next-sitemap@^2.1.8:
+  version "2.1.8"
+  resolved "https://registry.yarnpkg.com/next-sitemap/-/next-sitemap-2.1.8.tgz#2fbfcfd842f0f14444467fbd895e12345e5c0208"
+  integrity sha512-q7MuDqK3bDQO/RDBkAbC0sP2LDpdKwE6QsOZ+vY/k16MLhSIaY9ZVBjnv2ePAThQDdhQ3dxaj8jKY7z5lnQxxw==
   dependencies:
     "@corex/deepmerge" "^2.6.148"
-    matcher "^4.0.0"
     minimist "^1.2.5"
 
 next@^12.0.7:
