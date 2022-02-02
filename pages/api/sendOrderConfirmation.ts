@@ -1,5 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import axios from 'axios';
+import imageType from 'image-type';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createTransport } from 'nodemailer';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -7,7 +9,6 @@ import { createTransport } from 'nodemailer';
 import mandrillTransport from 'nodemailer-mandrill-transport';
 
 import {
-    parseAsArrayOfCommerceLayerErrors,
     parseAsArrayOfItems,
     parseAsCustomerAddress,
     parseAsCustomerDetails,
@@ -25,6 +26,38 @@ const mailer = createTransport(
     })
 );
 
+/* const toDataURL = (url: string) => fetch(url)
+    .then(response => response.blob())
+    .then(blob => new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result)
+        reader.onerror = reject
+        reader.readAsDataURL(blob)
+    })); */
+interface ImageObject {
+    type: string;
+    name: string;
+    content: string;
+}
+
+async function parseImgData(name: string, url: string): Promise<ImageObject> {
+    const res = await axios.get(url, { responseType: 'arraybuffer' });
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const content = Buffer.from(res.data, 'binary').toString('base64');
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const type = imageType(res.data);
+
+    return {
+        type: type ? type.mime : '',
+        name,
+        content,
+    };
+}
+
 const filePath = path.resolve(process.cwd(), 'html', 'order.html');
 const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.png'));
 
@@ -41,25 +74,24 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
             const shippingAddress = safelyParse(req, 'body.shippingAddress', parseAsCustomerAddress, null);
 
             if (items && customerDetails && billingAddress && shippingAddress) {
-                try {
-                    const { first_name: firstName, last_name: lastName, phone, email } = customerDetails;
-                    const {
-                        line_1: addressLineOne,
-                        line_2: addressLineTwo,
-                        city,
-                        zip_code: postcode,
-                        state_code: county,
-                    } = billingAddress;
-                    const {
-                        line_1: shippingAddressLineOne,
-                        line_2: shippingAddressLineTwo,
-                        city: shippingCity,
-                        zip_code: shippingPostcode,
-                        state_code: shippingCounty,
-                    } = shippingAddress;
-                    const itemsHtml = items.map(
-                        (item) =>
-                            `<tr>
+                const { first_name: firstName, last_name: lastName, phone, email } = customerDetails;
+                const {
+                    line_1: addressLineOne,
+                    line_2: addressLineTwo,
+                    city,
+                    zip_code: postcode,
+                    state_code: county,
+                } = billingAddress;
+                const {
+                    line_1: shippingAddressLineOne,
+                    line_2: shippingAddressLineTwo,
+                    city: shippingCity,
+                    zip_code: shippingPostcode,
+                    state_code: shippingCounty,
+                } = shippingAddress;
+                const itemsHtml = items.map(
+                    (item) =>
+                        `<tr>
                             <td align="center"><img src="cid:${item.id}" alt="${item.name} line item image" title="${item.name} image" class="productImg" /></td>
                             <td>
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
@@ -76,54 +108,72 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
                             </td>
                             <td align="center"><p class="amount">${item.formatted_total_amount}</p></td>
                         </tr>`
-                    );
-                    const itemsText = items.map(
-                        (item) => `
+                );
+                const itemsText = items.map(
+                    (item) => `
                             Name: ${item.name}
                             SKU: ${item.sku_code}
                             Quantity: ${item.quantity}
                         `
-                    );
-                    const itemsImgData = items.map((item) => {
+                );
+
+                const itemsImgData: ImageObject[] = [];
+
+                for (const item of items) {
+                    const imgUrl = item.image.url.length > 0 ? item.image.url : 'https://via.placeholder.com/50';
+                    const imgData = await parseImgData(item.id, imgUrl);
+
+                    itemsImgData.push(imgData);
+                }
+
+                /* const itemsImgData = items.map((item) => {
                         const imgUrl = item.image.url.length > 0 ? item.image.url : 'https://via.placeholder.com/50';
-                        const img = fs.readFileSync(path.resolve(imgUrl));
+                        const img = fs.readFileSync(imgUrl);
                         const type = imgUrl.split('.').pop();
+                        toDataURL(imgUrl)
+                            .then(dataUrl => {
+                                console.log('RESULT:', dataUrl)
+                            })
 
                         return {
                             type: `image/${type}`,
                             name: item.id,
                             content: img.toString('base64'),
                         };
-                    });
-                    const htmlData = fs.readFileSync(filePath, 'utf8');
-                    const html = htmlData
-                        .replace('{{orderNumber}}', `${orderNumber}`)
-                        .replace('{{name}}', firstName || '')
-                        .replace('{{email}}', email || '')
-                        .replace('{{firstName}}', firstName || '')
-                        .replace('{{lastName}}', lastName || '')
-                        .replace('{{phone}}', phone || '')
-                        .replace('{{lineOne}}', addressLineOne || '')
-                        .replace('{{lineTwo}}', addressLineTwo || '')
-                        .replace('{{city}}', city || '')
-                        .replace('{{postcode}}', postcode || '')
-                        .replace('{{county}}', county || '')
-                        .replace('{{shippingLineOne}}', shippingAddressLineOne || '')
-                        .replace('{{shippingLineTwo}}', shippingAddressLineTwo || '')
-                        .replace('{{shippingCity}}', shippingCity || '')
-                        .replace('{{shippingPostcode}}', shippingPostcode || '')
-                        .replace('{{shippingCounty}}', shippingCounty || '')
-                        .replace('{{items}}', itemsHtml.join(''))
-                        .replace('{{subTotal}}', subTotal)
-                        .replace('{{shipping}}', shipping)
-                        .replace('{{total}}', total);
+                    }); */
+                console.log(
+                    '🚀 ~ file: sendOrderConfirmation.ts ~ line 99 ~ itemsImgData ~ itemsImgData',
+                    itemsImgData
+                );
+                const htmlData = fs.readFileSync(filePath, 'utf8');
+                const html = htmlData
+                    .replace('{{orderNumber}}', `${orderNumber}`)
+                    .replace('{{name}}', firstName || '')
+                    .replace('{{email}}', email || '')
+                    .replace('{{firstName}}', firstName || '')
+                    .replace('{{lastName}}', lastName || '')
+                    .replace('{{phone}}', phone || '')
+                    .replace('{{lineOne}}', addressLineOne || '')
+                    .replace('{{lineTwo}}', addressLineTwo || '')
+                    .replace('{{city}}', city || '')
+                    .replace('{{postcode}}', postcode || '')
+                    .replace('{{county}}', county || '')
+                    .replace('{{shippingLineOne}}', shippingAddressLineOne || '')
+                    .replace('{{shippingLineTwo}}', shippingAddressLineTwo || '')
+                    .replace('{{shippingCity}}', shippingCity || '')
+                    .replace('{{shippingPostcode}}', shippingPostcode || '')
+                    .replace('{{shippingCounty}}', shippingCounty || '')
+                    .replace('{{items}}', itemsHtml.join(''))
+                    .replace('{{subTotal}}', subTotal)
+                    .replace('{{shipping}}', shipping)
+                    .replace('{{total}}', total);
 
-                    const mailOptions = {
-                        from: `No Reply <${process.env.MAILER_ADDRESS}>`,
-                        to: `${firstName} ${lastName} <${email}>`,
-                        subject: 'Order Confirmation - King of Cardboard',
-                        html,
-                        text: `
+                const mailOptions = {
+                    from: `No Reply <${process.env.MAILER_ADDRESS}>`,
+                    to: `${firstName} ${lastName} <${email}>`,
+                    subject: 'Order Confirmation - King of Cardboard',
+                    html,
+                    text: `
                             Hi ${firstName},
 
                             Thank you for placing your order with King of Cardboard, we hope you enjoy the products you've bought!
@@ -165,39 +215,23 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
                             Shipping: ${shipping}
                             Total: ${total}
                         `,
-                        ses: {
-                            // optional extra arguments for SendRawEmail
-                            Tags: [
+                    mandrillOptions: {
+                        message: {
+                            images: [
+                                ...itemsImgData,
                                 {
-                                    Name: 'order_confirmation',
-                                    Value: 'order_confirmation_value',
+                                    type: 'image/png',
+                                    name: 'logo',
+                                    content: logo.toString('base64'),
                                 },
                             ],
                         },
-                        mandrillOptions: {
-                            message: {
-                                images: [
-                                    ...itemsImgData,
-                                    {
-                                        type: 'image/png',
-                                        name: 'logo',
-                                        content: logo.toString('base64'),
-                                    },
-                                ],
-                            },
-                        },
-                    };
+                    },
+                };
 
-                    await mailer.sendMail(mailOptions);
+                await mailer.sendMail(mailOptions);
 
-                    res.status(200).json({ success: true });
-                } catch (error) {
-                    const status = safelyParse(error, 'response.status', parseAsNumber, 500);
-                    const statusText = safelyParse(error, 'response.statusText', parseAsString, 'Error');
-                    const message = safelyParse(error, 'response.data.errors', parseAsArrayOfCommerceLayerErrors, null);
-
-                    res.status(status).json({ status, statusText, message: message ? message[0].detail : 'Error' });
-                }
+                res.status(200).json({ success: true });
             } else {
                 res.status(403).json({
                     success: false,
