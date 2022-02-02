@@ -5,7 +5,7 @@ import { errorHandler } from '../../../middleware/errors';
 import { parseAsNumber, parseAsString, parseAsUnknown, safelyParse } from '../../../utils/parsers';
 
 const defaultErr = 'There was a problem fetching this content...';
-const url = `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/master`;
+const url = `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_ENV}`;
 
 async function fetchContent(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
