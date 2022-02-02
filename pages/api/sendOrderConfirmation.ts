@@ -126,25 +126,6 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
                     itemsImgData.push(imgData);
                 }
 
-                /* const itemsImgData = items.map((item) => {
-                        const imgUrl = item.image.url.length > 0 ? item.image.url : 'https://via.placeholder.com/50';
-                        const img = fs.readFileSync(imgUrl);
-                        const type = imgUrl.split('.').pop();
-                        toDataURL(imgUrl)
-                            .then(dataUrl => {
-                                console.log('RESULT:', dataUrl)
-                            })
-
-                        return {
-                            type: `image/${type}`,
-                            name: item.id,
-                            content: img.toString('base64'),
-                        };
-                    }); */
-                console.log(
-                    '🚀 ~ file: sendOrderConfirmation.ts ~ line 99 ~ itemsImgData ~ itemsImgData',
-                    itemsImgData
-                );
                 const htmlData = fs.readFileSync(filePath, 'utf8');
                 const html = htmlData
                     .replace('{{orderNumber}}', `${orderNumber}`)
