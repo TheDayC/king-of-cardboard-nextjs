@@ -13,6 +13,7 @@ async function fetchAsset(req: NextApiRequest, res: NextApiResponse): Promise<vo
             const client = contentful.createClient({
                 space: process.env.CONTENTFUL_SPACE_ID || '',
                 accessToken: process.env.CONTENTFUL_TOKEN || '',
+                environment: process.env.CONTENTFUL_ENV || '',
             });
             const asset = await client.getAsset(assetId);
 
