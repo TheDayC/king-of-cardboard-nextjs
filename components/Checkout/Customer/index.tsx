@@ -104,6 +104,7 @@ const Customer: React.FC = () => {
         cloneShippingAddressId,
         billingAddress,
         shippingAddress,
+        addresses,
     } = useSelector(selector);
     const dispatch = useDispatch();
     const [billingAddressEntryChoice, setBillingAddressEntryChoice] = useState('existingBillingAddress');
@@ -124,6 +125,7 @@ const Customer: React.FC = () => {
         Object.keys(errors).length > 0 ||
         (!hasBillingAddress && !isNewBillingAddress) ||
         (!hasShippingAddress && !isNewShippingAddress && !isShippingSameAsBilling);
+    const showExisting = Boolean(session) && addresses.length > 0;
 
     const handleNewBillingAddress = useCallback(
         async (data: unknown, customerDetails: CustomerDetails) => {
@@ -316,16 +318,14 @@ const Customer: React.FC = () => {
 
     // Session doesn't load in immediately so we need to update the defaults on change.
     useEffect(() => {
-        const hasSession = Boolean(session);
-
-        if (hasSession) {
+        if (showExisting) {
             setBillingAddressEntryChoice('existingBillingAddress');
             setShippingAddressEntryChoice('existingShippingAddress');
         } else {
             setBillingAddressEntryChoice('newBillingAddress');
             setShippingAddressEntryChoice('newShippingAddress');
         }
-    }, [session]);
+    }, [session, showExisting]);
 
     // If we click the sameAs checkbox I want to reset the shipping address.
     useEffect(() => {
@@ -350,13 +350,13 @@ const Customer: React.FC = () => {
                             <PersonalDetails register={register} errors={errors} setValue={setValue} />
                             <div className="divider lightDivider"></div>
                             <h3 className="text-2xl font-semibold mb-4">Billing Details</h3>
-                            {session && (
+                            {showExisting && (
                                 <SelectionWrapper
                                     id="existingBillingAddress"
                                     title="Choose an existing billing address"
                                     name="billingAddress"
                                     isChecked={billingAddressEntryChoice === 'existingBillingAddress'}
-                                    defaultChecked={Boolean(session)}
+                                    defaultChecked={showExisting}
                                     onSelect={handleBillingSelect}
                                 >
                                     <ExistingAddress isShipping={false} />
@@ -367,7 +367,7 @@ const Customer: React.FC = () => {
                                 title="Add a new billing address"
                                 name="billingAddress"
                                 isChecked={billingAddressEntryChoice === 'newBillingAddress'}
-                                defaultChecked={!Boolean(session)}
+                                defaultChecked={!showExisting}
                                 onSelect={handleBillingSelect}
                             >
                                 <BillingAddress register={register} errors={errors} setValue={setValue} />
@@ -379,13 +379,13 @@ const Customer: React.FC = () => {
                             {!isShippingSameAsBilling && (
                                 <React.Fragment>
                                     <h3 className="text-2xl mb-4 font-semibold">Shipping Details</h3>
-                                    {session && (
+                                    {showExisting && (
                                         <SelectionWrapper
                                             id="existingShippingAddress"
                                             title="Choose an existing shipping address"
                                             name="shippingAddress"
                                             isChecked={shippingAddressEntryChoice === 'existingShippingAddress'}
-                                            defaultChecked={Boolean(session)}
+                                            defaultChecked={showExisting}
                                             onSelect={handleShippingSelect}
                                         >
                                             <ExistingAddress isShipping={true} />
@@ -396,7 +396,7 @@ const Customer: React.FC = () => {
                                         title="Add a new shipping address"
                                         name="shippingAddress"
                                         isChecked={shippingAddressEntryChoice === 'newShippingAddress'}
-                                        defaultChecked={!Boolean(session)}
+                                        defaultChecked={!showExisting}
                                         onSelect={handleShippingSelect}
                                     >
                                         <ShippingAddress register={register} errors={errors} />
