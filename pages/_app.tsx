@@ -67,7 +67,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps: { session, ...pagePro
   t.src=v;s=b.getElementsByTagName(e)[0];
   s.parentNode.insertBefore(t,s)}(window, document,'script',
   'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', ${process.env.FB_PIXEL_ID});
+  fbq('init', ${process.env.NEXT_PUBLIC_FB_PIXEL_ID});
   fbq('track', 'PageView');
                                     `,
                                 }}
