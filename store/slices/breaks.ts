@@ -2,8 +2,8 @@ import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { Break, BreaksWithCount, SingleBreak } from '../../types/breaks';
-import { getBreaks, getBreaksTotal, getSingleBreak } from '../../utils/breaks';
+import { BreaksWithCount, SingleBreak } from '../../types/breaks';
+import { getBreaks, getSingleBreak } from '../../utils/breaks';
 import breaksInitialState from '../state/breaks';
 
 const hydrate = createAction<AppState>(HYDRATE);

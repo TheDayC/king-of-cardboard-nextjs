@@ -1,4 +1,5 @@
 import { chunk, join } from 'lodash';
+import CommerceLayer from '@commercelayer/sdk';
 
 import { CommerceLayerResponse } from '../types/api';
 import { Break, BreaksWithCount, SingleBreak } from '../types/breaks';
@@ -14,11 +15,15 @@ import {
     parseAsBoolean,
     parseAsBreakSlotsCollection,
     parseAsArrayOfCommerceResponse,
-    parseAsCommerceResponse,
     parseAsArrayOfDocuments,
 } from './parsers';
 
 export async function getBreaks(accessToken: string, limit: number, skip: number): Promise<BreaksWithCount> {
+    const cl = CommerceLayer({
+        organization: process.env.NEXT_PUBLIC_ECOM_SLUG || '',
+        accessToken: accessToken,
+    });
+
     // Piece together query.
     const query = `
         query {
@@ -38,7 +43,10 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
                     tags
                     format
                     breakSlotsCollection {
-                      total
+                        total
+                      items {
+                        productLink
+                    }
                     }
                     isLive
                     isComplete
@@ -59,8 +67,25 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
         []
     );
 
-    return {
-        breaks: breaksCollection.map((bC) => ({
+    const breaks: Break[] = [];
+    let slots = 0;
+
+    // We're using for...of here to make an async call to Commerce Layer and get the in-stock SKU count.
+    for (const bC of breaksCollection) {
+        const breakSlotSkus = bC.breakSlotsCollection.items.map((bSC) => bSC.productLink);
+        const skusInStock = await cl.skus.list({
+            filters: {
+                stock_items_quantity_gt: 0,
+                code_in: join(breakSlotSkus, ','),
+                status_not_eq: 'draft',
+            },
+            fields: {
+                skus: ['id'],
+            },
+        });
+        slots = skusInStock.meta.recordCount;
+
+        breaks.push({
             cardImage: {
                 title: safelyParse(bC, 'cardImage.title', parseAsString, ''),
                 description: safelyParse(bC, 'cardImage.description', parseAsString, ''),
@@ -71,32 +96,19 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
             tags: safelyParse(bC, 'tags', parseAsArrayOfStrings, []),
             types: safelyParse(bC, 'types', parseAsString, ''),
             slug: safelyParse(bC, 'slug', parseAsString, ''),
-            slots: safelyParse(bC, 'breakSlotsCollection.total', parseAsNumber, 0),
+            slots,
             format: safelyParse(bC, 'format', parseAsString, ''),
             breakDate: safelyParse(bC, 'breakDate', parseAsString, ''),
             isLive: safelyParse(bC, 'isLive', parseAsBoolean, false),
             isComplete: safelyParse(bC, 'isComplete', parseAsBoolean, false),
             vodLink: safelyParse(bC, 'vodLink', parseAsString, ''),
-        })),
+        });
+    }
+
+    return {
+        breaks,
         count: safelyParse(response, 'data.content.breaksCollection.total', parseAsNumber, 0),
     };
-}
-
-export async function getBreaksTotal(): Promise<number> {
-    // Piece together query.
-    const query = `
-        query {
-            breaksCollection (limit: 1, skip: 0) {
-                total
-            }
-        }
-    `;
-
-    // Make the contentful request.
-    const response = await fetchContent(query);
-
-    // On a successful request get the total number of items for pagination.
-    return safelyParse(response, 'data.content.breaksCollection.total', parseAsNumber, 0);
 }
 
 export async function getSingleBreak(accessToken: string, slug: string): Promise<SingleBreak> {
