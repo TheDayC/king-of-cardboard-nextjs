@@ -33,13 +33,6 @@ const OrderAndTokenProvider: React.FC = ({ children }) => {
         }
     }, [shouldCreateOrder, accessToken, isGuest]);
 
-    // If the access token exists create an order.
-    useIsomorphicLayoutEffect(() => {
-        if (shouldCreateOrder && accessToken) {
-            dispatch(createCLOrder({ accessToken, isGuest }));
-        }
-    }, [shouldCreateOrder, accessToken, isGuest]);
-
     return <React.Fragment>{children}</React.Fragment>;
 };
 
