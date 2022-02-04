@@ -15,7 +15,6 @@ export const Grid: React.FC = () => {
     const { accessToken, categories, productTypes, products, productsTotal, isLoadingProducts } = useSelector(selector);
     const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(0);
-    const [shouldFetch, setShouldFetch] = useState(true);
     const productPageCount = ceil(divide(productsTotal, PER_PAGE));
 
     // Handle the page number and set it in local state.
@@ -38,21 +37,13 @@ export const Grid: React.FC = () => {
         [accessToken, categories, productTypes, dispatch]
     );
 
-    // Filter the collection.
-    useEffect(() => {
-        if (accessToken) {
-            setShouldFetch(true);
-        }
-    }, [accessToken, categories, productTypes]);
-
     // Create the product collection on load.
     useEffect(() => {
-        if (shouldFetch && accessToken) {
-            setShouldFetch(false);
+        if (accessToken) {
             dispatch(setIsLoadingProducts(true));
             dispatch(fetchProducts({ accessToken, limit: PER_PAGE, skip: 0, categories, productTypes }));
         }
-    }, [dispatch, accessToken, shouldFetch, categories, productTypes]);
+    }, [dispatch, accessToken, categories, productTypes]);
 
     useEffect(() => {
         dispatch(clearCurrentProduct());
