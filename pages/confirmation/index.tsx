@@ -18,13 +18,10 @@ export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
     useEffect(() => {
         // Check to see if we've just arrived here from a successful order.
         if (confirmationOrderNumber) {
-            // Reset the cart state.
-            dispatch(resetCart());
-
             // Reset the checkout data
             dispatch(resetCheckoutDetails());
 
-            // Tell the system to generate a new order
+            // Tell the system to generate a new order - this also resets the cart.
             dispatch(setShouldCreateOrder(true));
 
             // Checkout has finished loading by moving to the confirmation.

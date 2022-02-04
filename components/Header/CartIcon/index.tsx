@@ -1,22 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import Link from 'next/link';
 
 import selector from './selector';
-import { fetchItemCount } from '../../../store/slices/cart';
 
 export const CartIcon: React.FC = () => {
-    const { accessToken, itemCount, orderId } = useSelector(selector);
-    const [shouldFetch, setShouldFetch] = useState(true);
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        if (accessToken && orderId && shouldFetch) {
-            setShouldFetch(false);
-            dispatch(fetchItemCount({ accessToken, orderId }));
-        }
-    }, [dispatch, accessToken, orderId, shouldFetch]);
+    const { itemCount } = useSelector(selector);
 
     return (
         <Link href="/cart" passHref>
