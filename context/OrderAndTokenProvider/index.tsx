@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 
 import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect';
 import selector from './selector';
-import { fetchToken, setUserId, setUserToken } from '../../store/slices/global';
+import { fetchToken } from '../../store/slices/global';
 import { createCLOrder } from '../../store/slices/cart';
 
 const OrderAndTokenProvider: React.FC = ({ children }) => {
