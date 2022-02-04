@@ -8,7 +8,7 @@ import { createToken } from '../../token';
 import { errorHandler } from '../../../middleware/errors';
 import { Card, SkusWithIds, Team } from '../../types';
 
-export async function createSkus(teams: Team[]): Promise<SkusWithIds[]> {
+export async function createSkus(teams: Team[], breakNumber: number): Promise<SkusWithIds[]> {
     const skusWithIds = [];
 
     try {
@@ -21,7 +21,7 @@ export async function createSkus(teams: Team[]): Promise<SkusWithIds[]> {
                     type: 'skus',
                     attributes: {
                         code: team.sku,
-                        name: team.name,
+                        name: `${team.name} (Break ${breakNumber})`,
                         image_url: team.image_url,
                     },
                     relationships: {
