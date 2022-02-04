@@ -7,7 +7,7 @@ import Summary from '../../components/Checkout/Summary';
 import ConfirmationDetails from '../../components/ConfirmationDetails';
 import PageWrapper from '../../components/PageWrapper';
 import { setCheckoutLoading } from '../../store/slices/global';
-import { resetCart, setShouldCreateOrder } from '../../store/slices/cart';
+import { setShouldCreateOrder } from '../../store/slices/cart';
 import { resetCheckoutDetails } from '../../store/slices/checkout';
 import selector from './selector';
 
