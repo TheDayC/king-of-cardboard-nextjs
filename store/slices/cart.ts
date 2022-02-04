@@ -88,10 +88,35 @@ const cartSlice = createSlice({
         }),
             builder.addCase(createCLOrder.fulfilled, (state, action) => {
                 const { orderId, orderNumber } = action.payload;
+                const {
+                    shouldUpdateCart,
+                    itemCount,
+                    items,
+                    isUpdatingCart,
+                    subTotal,
+                    shipping,
+                    discount,
+                    total,
+                    orderHasGiftCard,
+                    updateQuantities,
+                } = cartInitialState;
 
+                // Set new order id and number.
                 state.orderId = orderId;
                 state.orderNumber = orderNumber;
                 state.shouldCreateOrder = false;
+
+                // Reset remaining data.
+                state.shouldUpdateCart = shouldUpdateCart;
+                state.itemCount = itemCount;
+                state.items = items;
+                state.isUpdatingCart = isUpdatingCart;
+                state.subTotal = subTotal;
+                state.shipping = shipping;
+                state.discount = discount;
+                state.total = total;
+                state.orderHasGiftCard = orderHasGiftCard;
+                state.updateQuantities = updateQuantities;
             }),
             builder.addCase(fetchCartTotals.fulfilled, (state, action) => {
                 const { subTotal, shipping, discount, total } = action.payload;

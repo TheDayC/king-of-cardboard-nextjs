@@ -1,18 +1,27 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectCartData, selectCheckoutData, selectGlobalData } from '../../../store/state/selectors';
+import {
+    selectCartData,
+    selectCheckoutData,
+    selectGlobalData,
+    selectAccountData,
+} from '../../../store/state/selectors';
 
-const selector = createSelector([selectCheckoutData, selectCartData, selectGlobalData], (checkout, cart, global) => ({
-    currentStep: checkout.currentStep,
-    customerDetails: checkout.customerDetails,
-    orderId: cart.orderId,
-    accessToken: global.userToken || global.accessToken,
-    checkoutLoading: global.checkoutLoading,
-    isShippingSameAsBilling: checkout.isShippingSameAsBilling,
-    cloneBillingAddressId: checkout.cloneBillingAddressId,
-    cloneShippingAddressId: checkout.cloneShippingAddressId,
-    billingAddress: checkout.billingAddress,
-    shippingAddress: checkout.shippingAddress,
-}));
+const selector = createSelector(
+    [selectCheckoutData, selectCartData, selectGlobalData, selectAccountData],
+    (checkout, cart, global, account) => ({
+        currentStep: checkout.currentStep,
+        customerDetails: checkout.customerDetails,
+        orderId: cart.orderId,
+        accessToken: global.userToken || global.accessToken,
+        checkoutLoading: global.checkoutLoading,
+        isShippingSameAsBilling: checkout.isShippingSameAsBilling,
+        cloneBillingAddressId: checkout.cloneBillingAddressId,
+        cloneShippingAddressId: checkout.cloneShippingAddressId,
+        billingAddress: checkout.billingAddress,
+        shippingAddress: checkout.shippingAddress,
+        addresses: account.addresses,
+    })
+);
 
 export default selector;

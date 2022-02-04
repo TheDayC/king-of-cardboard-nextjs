@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 
 import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect';
 import selector from './selector';
-import { fetchToken, setUserId, setUserToken } from '../../store/slices/global';
+import { fetchToken } from '../../store/slices/global';
 import { createCLOrder } from '../../store/slices/cart';
 
 const OrderAndTokenProvider: React.FC = ({ children }) => {
@@ -27,13 +27,6 @@ const OrderAndTokenProvider: React.FC = ({ children }) => {
     }, [accessToken, hasExpired, shouldResetToken]);
 
     // If the order doesn't exist then create one.
-    useIsomorphicLayoutEffect(() => {
-        if (shouldCreateOrder && accessToken) {
-            dispatch(createCLOrder({ accessToken, isGuest }));
-        }
-    }, [shouldCreateOrder, accessToken, isGuest]);
-
-    // If the access token exists create an order.
     useIsomorphicLayoutEffect(() => {
         if (shouldCreateOrder && accessToken) {
             dispatch(createCLOrder({ accessToken, isGuest }));

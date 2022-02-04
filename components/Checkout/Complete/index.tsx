@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
+import { MdAdsClick } from 'react-icons/md';
 
 import { addError } from '../../../store/slices/alerts';
 import { completePayPalOrder } from '../../../utils/checkout';
@@ -9,6 +10,7 @@ import { confirmOrder, sendOrderConfirmation } from '../../../utils/payment';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Addresses from './Addresses';
+import { useWarnIfUnsavedChanges } from '../../../utils';
 
 interface CompleteProps {
     paymentId: string | null;
@@ -88,10 +90,27 @@ const Complete: React.FC<CompleteProps> = ({ paymentId, payerId, orderId }) => {
         }
     };
 
+    // Give the user a warning before leaving the page.
+    useWarnIfUnsavedChanges(!checkoutLoading, 'Are you sure you want leave without completing your order?');
+
     return (
         <div className="flex flex-col w-full">
             <h1 className="text-2xl mb-4">Complete Order</h1>
             <p>Please review your details below and complete your order.</p>
+            <div className="flex justify-end mt-4 relative">
+                <span className="flex h-6 w-6 absolute -top-2 -right-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-full w-full bg-secondary"></span>
+                </span>
+                <button
+                    type="submit"
+                    className={`btn w-full btn-lg btn-primary${checkoutLoading ? ' loading' : ''}`}
+                    onClick={handleComplete}
+                >
+                    <MdAdsClick className="inline-block mr-2 w-6 h-6 text-white" />
+                    {checkoutLoading ? '' : 'Complete Order'}
+                </button>
+            </div>
             <div className="divider lightDivider"></div>
             <div className="flex-1 flex-col mb-4">
                 <h4 className="text-lg font-bold">Email Address:</h4>
@@ -103,15 +122,6 @@ const Complete: React.FC<CompleteProps> = ({ paymentId, payerId, orderId }) => {
                 If the personal and item details are correct please click the complete order button below to finalise
                 your payment.
             </p>
-            <div className="flex justify-end p-4">
-                <button
-                    type="submit"
-                    className={`btn btn-primary${checkoutLoading ? ' loading btn-square' : ''}`}
-                    onClick={handleComplete}
-                >
-                    {checkoutLoading ? '' : 'Complete Order'}
-                </button>
-            </div>
         </div>
     );
 };
