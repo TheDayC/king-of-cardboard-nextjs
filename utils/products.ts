@@ -6,7 +6,6 @@ import {
     CartImage,
     ContentfulProduct,
     ContentfulProductShort,
-    Product,
     ProductsWithCount,
     SingleProduct,
 } from '../types/products';
