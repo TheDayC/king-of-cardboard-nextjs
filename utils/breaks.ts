@@ -172,15 +172,8 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
     // Need to find the product by SKU first.
     const sku_code = safelyParse(contentfulBreak, 'productLink', parseAsString, '');
     const skuByCodeRes = await cl.get(`/api/skus?filter[q][code_eq]=${sku_code}&fields[skus]=id`);
-
     const skuByCodeData = safelyParse(skuByCodeRes, 'data.data', parseAsArrayOfCommerceResponse, [])[0];
-
-    // Next pull it by id so we can fetch inventory information.
     const id = safelyParse(skuByCodeData, 'id', parseAsString, '');
-    const fields = '&fields[skus]=id,code&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount';
-    const skuRes = await cl.get(`/api/skus/${id}?include=prices${fields}`);
-    const included = safelyParse(skuRes, 'data.included', parseAsArrayOfCommerceResponse, []);
-    const prices = included.find((i) => i.attributes.sku_code === sku_code && i.type === 'prices');
 
     // We need to do a little bit of extra work here to find the break's sub products.
     const breakSlotsCollection = safelyParse(contentfulBreak, 'breakSlotsCollection', parseAsBreakSlotsCollection, {
@@ -244,7 +237,7 @@ export async function getSingleBreak(accessToken: string, slug: string): Promise
             image: slot.image,
             sku_code,
             amount: safelyParse(slotPrices, 'attributes.formatted_amount', parseAsString, '£0.00'),
-            compare_amount: safelyParse(prices, 'attributes.formatted_compare_at_amount', parseAsString, '£0.00'),
+            compare_amount: safelyParse(slotPrices, 'attributes.formatted_compare_at_amount', parseAsString, '£0.00'),
             isAvailable: unavailableSlots.includes(sku_code),
         };
     });
