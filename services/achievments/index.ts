@@ -122,11 +122,12 @@ class Achievements {
         const milestoneReward = reward * multiplier;
 
         if (this._achievements) {
-            const achievementIndex = this._achievements.findIndex((achievement) => achievement.id === id) || null;
+            const achievements = this._achievements;
+            const achievementIndex = achievements.findIndex((a) => a.id === id) || null;
 
-            if (achievementIndex) {
+            if (achievementIndex && achievementIndex >= 0) {
                 // If the current achievement already exists then increment the count.
-                const currentAchievement = this._achievements[achievementIndex];
+                const currentAchievement = achievements[achievementIndex];
                 const current = currentAchievement.current + 1;
 
                 // If we've not exceeded the max on the current increment then dish out points.
