@@ -88,10 +88,10 @@ export const Shipment: React.FC<ShipmentProps> = ({
                         <label className="label cursor-pointer">
                             <span className="label-text">
                                 <div className="grid grid-cols-1">
-                                    <span>
+                                    <span className="md:text-lg">
                                         {method.name} - {method.price}
                                     </span>
-                                    <span className="text-xs text-base-200 mt-1">
+                                    <span className="text-xs md:text-sm text-gray-400 mt-1">
                                         {`Available in ${method.minDays} - ${method.maxDays} days.`}
                                     </span>
                                 </div>
