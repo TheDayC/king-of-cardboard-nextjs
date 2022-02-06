@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { MdOutlineMailOutline } from 'react-icons/md';
 import { RiLockPasswordLine } from 'react-icons/ri';
@@ -56,6 +56,11 @@ export const Credentials: React.FC = () => {
 
         setLoading(false);
     };
+
+    // Pre-fetch the account page for a better transition.
+    useEffect(() => {
+        router.prefetch('/account');
+    }, [router]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>

@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import selector from './selector';
 
 export const CartIcon: React.FC = () => {
     const { itemCount } = useSelector(selector);
+    const router = useRouter();
+
+    // Pre-fetch the account page for a better transition.
+    useEffect(() => {
+        router.prefetch('/cart');
+    }, [router]);
 
     return (
         <Link href="/cart" passHref>
