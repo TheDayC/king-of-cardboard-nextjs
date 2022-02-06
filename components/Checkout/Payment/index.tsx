@@ -58,7 +58,7 @@ export const Payment: React.FC = () => {
     const shouldShowCoins = status === 'authenticated' && balance > 0;
 
     const handleEdit = () => {
-        if (!isCurrentStep) {
+        if (!isCurrentStep && shouldEnable) {
             dispatch(setCurrentStep(2));
         }
     };
