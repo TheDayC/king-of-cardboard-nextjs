@@ -80,7 +80,7 @@ export const Cart: React.FC = () => {
     // Pre-fetch the checkout page for a better transition.
     useEffect(() => {
         router.prefetch('/checkout');
-    }, []);
+    }, [router]);
 
     return (
         <div className="flex flex-col">

@@ -60,7 +60,7 @@ export const Credentials: React.FC = () => {
     // Pre-fetch the account page for a better transition.
     useEffect(() => {
         router.prefetch('/account');
-    }, []);
+    }, [router]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>

@@ -13,7 +13,7 @@ export const CartIcon: React.FC = () => {
     // Pre-fetch the account page for a better transition.
     useEffect(() => {
         router.prefetch('/cart');
-    }, []);
+    }, [router]);
 
     return (
         <Link href="/cart" passHref>
