@@ -18,10 +18,9 @@ import { setIsDrawerOpen, setUserId, setUserToken } from '../../store/slices/glo
 
 export const Header: React.FC = () => {
     const dispatch = useDispatch();
-    const session = useSession();
-    const icon = safelyParse(session, 'data.user.image', parseAsString, null);
-    const email = safelyParse(session, 'data.user.email', parseAsString, null);
-    const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
+    const { data: session, status } = useSession();
+    const icon = safelyParse(session, 'user.image', parseAsString, null);
+    const email = safelyParse(session, 'user.email', parseAsString, null);
 
     const handleLogout = () => {
         dispatch(setUserToken(null));

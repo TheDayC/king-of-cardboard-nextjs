@@ -11,8 +11,8 @@ import { fetchAddresses, fetchAddressPageCount } from '../../../store/slices/acc
 
 export const AddressBook: React.FC = () => {
     const { accessToken, userToken, addresses } = useSelector(selector);
-    const session = useSession();
-    const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
+    const { data: session } = useSession();
+    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
     const [shouldFetchAddresses, setShouldFetchAddresses] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();

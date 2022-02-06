@@ -47,7 +47,7 @@ export const Payment: React.FC = () => {
         balance,
     } = useSelector(selector);
     const { handleSubmit, register } = useForm();
-    const session = useSession();
+    const { data: session } = useSession();
     const isCurrentStep = currentStep === 2;
     const [paymentMethod, setPaymentMethod] = useState(STRIPE_METHOD);
     const btnText = paymentBtnText(paymentMethod);
@@ -74,9 +74,9 @@ export const Payment: React.FC = () => {
     const handleAchievements = useCallback(async () => {
         // Figure out achievement progress now that the order has been confirmed.
         if (!session || !items || !accessToken) return;
-        const emailAddress = safelyParse(session, 'data.user.email', parseAsString, '');
+        const emailAddress = safelyParse(session, 'user.email', parseAsString, '');
 
-        const achievements = new Achievements(session.data, accessToken);
+        const achievements = new Achievements(session, accessToken);
 
         const categories: string[] = [];
         const types: string[] = [];

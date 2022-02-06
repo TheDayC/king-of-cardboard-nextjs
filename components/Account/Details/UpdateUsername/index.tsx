@@ -16,11 +16,11 @@ export const UpdateUsername: React.FC = () => {
         formState: { errors },
     } = useForm();
     const [loading, setLoading] = useState(false);
-    const session = useSession();
+    const { data: session } = useSession();
     const dispatch = useDispatch();
 
     const hasErrors = Object.keys(errors).length > 0;
-    const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
+    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
     const usernameTypeErr = safelyParse(errors, 'username.type', parseAsString, null);
 
     const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {

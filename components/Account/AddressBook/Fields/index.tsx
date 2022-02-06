@@ -42,9 +42,9 @@ export const Fields: React.FC<FieldProps> = ({
     postcode,
 }) => {
     const { accessToken } = useSelector(selector);
-    const session = useSession();
+    const { data: session } = useSession();
     const dispatch = useDispatch();
-    const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
+    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const {

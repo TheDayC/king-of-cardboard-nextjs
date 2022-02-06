@@ -21,7 +21,7 @@ export const SocialMediaLinks: React.FC = () => {
     } = useForm();
     const [loading, setLoading] = useState(false);
     const [shouldFetch, setShouldFetch] = useState(true);
-    const session = useSession();
+    const { data: session } = useSession();
     const dispatch = useDispatch();
 
     const hasErrors = Object.keys(errors).length > 0;
@@ -30,7 +30,7 @@ export const SocialMediaLinks: React.FC = () => {
     const twitchErr = safelyParse(errors, 'twitch.message', parseAsString, null);
     const youtubeErr = safelyParse(errors, 'youtube.message', parseAsString, null);
     const ebayErr = safelyParse(errors, 'ebay.message', parseAsString, null);
-    const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
+    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
 
     const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         if (!emailAddress) return;
