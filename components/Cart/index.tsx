@@ -25,7 +25,7 @@ export const Cart: React.FC = () => {
     const { itemCount, items, isUpdatingCart, accessToken, orderId, shouldUpdateCart, balance, updateQuantities } =
         useSelector(selector);
     const dispatch = useDispatch();
-    const session = useSession();
+    const { data: session } = useSession();
     const router = useRouter();
     const [shouldFetch, setShouldFetch] = useState(true);
     const itemPlural = itemCount === 1 ? 'item' : 'items';

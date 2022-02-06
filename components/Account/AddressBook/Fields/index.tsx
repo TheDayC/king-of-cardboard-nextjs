@@ -42,9 +42,9 @@ export const Fields: React.FC<FieldProps> = ({
     postcode,
 }) => {
     const { accessToken } = useSelector(selector);
-    const session = useSession();
+    const { data: session } = useSession();
     const dispatch = useDispatch();
-    const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
+    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const {
@@ -393,7 +393,7 @@ export const Fields: React.FC<FieldProps> = ({
             <div className="flex w-full justify-end p-4">
                 <button
                     type="submit"
-                    className={`btn w-full lg:w-auto${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'}${
+                    className={`btn w-full lg:w-40${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'}${
                         isLoading ? ' loading btn-square' : ''
                     }`}
                 >

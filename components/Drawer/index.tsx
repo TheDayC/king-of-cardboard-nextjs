@@ -14,10 +14,10 @@ import { setIsDrawerOpen } from '../../store/slices/global';
 
 export const Drawer: React.FC = ({ children }) => {
     const { isDrawerOpen } = useSelector(selector);
-    const session = useSession();
+    const { data: session, status } = useSession();
     const dispatch = useDispatch();
     const router = useRouter();
-    const email = safelyParse(session, 'data.user.email', parseAsString, null);
+    const email = safelyParse(session, 'user.email', parseAsString, null);
 
     const handleDrawerClick = () => {
         dispatch(setIsDrawerOpen(!isDrawerOpen));
@@ -45,7 +45,7 @@ export const Drawer: React.FC = ({ children }) => {
                             <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
                         </div>
                     </li>
-                    {session && session.status === 'authenticated' && (
+                    {status === 'authenticated' && (
                         <li className="text-neutral-content mb-2">
                             <Rewards emailAddress={email} fullWidth />
                         </li>

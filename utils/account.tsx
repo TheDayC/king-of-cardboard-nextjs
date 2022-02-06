@@ -515,6 +515,18 @@ export async function addAddress(
             },
         });
 
+        const customerAddressId = safelyParse(res, 'data.data.id', parseAsString, null);
+
+        await cl.patch(`/api/customer_addresses/${customerAddressId}`, {
+            data: {
+                type: 'customer_addresses',
+                id: customerAddressId,
+                attributes: {
+                    reference: name,
+                },
+            },
+        });
+
         const status = safelyParse(res, 'status', parseAsNumber, false);
 
         return status === 201;
