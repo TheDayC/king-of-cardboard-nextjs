@@ -336,7 +336,7 @@ const Customer: React.FC = () => {
                 isCurrentStep ? 'open' : 'closed'
             }`}
         >
-            <div className="collapse-title text-lg lg:text-xl" onClick={handleEdit}>
+            <div className="collapse-title text-xl font-medium" onClick={handleEdit}>
                 {!hasErrors && !isCurrentStep ? 'Customer - Edit' : 'Customer'}
             </div>
             <div className="collapse-content bg-base-100 p-0">
