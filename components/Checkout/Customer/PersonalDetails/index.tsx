@@ -2,6 +2,7 @@ import { useSession } from 'next-auth/react';
 import React, { useEffect } from 'react';
 import { UseFormRegister, FieldValues, UseFormSetValue } from 'react-hook-form';
 import { useSelector } from 'react-redux';
+import { EMAIL_PATTERN, NAME_PATTERN, PHONE_PATTERN } from '../../../../regex';
 
 import { FormErrors } from '../../../../types/checkout';
 import { fieldPatternMsgs } from '../../../../utils/checkout';
@@ -65,7 +66,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                         {...register('firstName', {
                             required: { value: true, message: 'Required' },
                             pattern: {
-                                value: /^[a-z ,.'-]+$/i,
+                                value: NAME_PATTERN,
                                 message: fieldPatternMsgs('firstName'),
                             },
                         })}
@@ -73,7 +74,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                     />
                     {firstNameErr && (
                         <label className="label">
-                            <span className="label-text-alt">{firstNameErr}</span>
+                            <span className="label-text-alt text-error">{firstNameErr}</span>
                         </label>
                     )}
                 </div>
@@ -87,7 +88,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                         {...register('lastName', {
                             required: { value: true, message: 'Required' },
                             pattern: {
-                                value: /^[a-z ,.'-]+$/i,
+                                value: NAME_PATTERN,
                                 message: fieldPatternMsgs('lastName'),
                             },
                         })}
@@ -95,7 +96,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                     />
                     {lastNameErr && (
                         <label className="label">
-                            <span className="label-text-alt">{lastNameErr}</span>
+                            <span className="label-text-alt text-error">{lastNameErr}</span>
                         </label>
                     )}
                 </div>
@@ -109,7 +110,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                         {...register('email', {
                             required: { value: true, message: 'Required' },
                             pattern: {
-                                value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                value: EMAIL_PATTERN,
                                 message: fieldPatternMsgs('email'),
                             },
                         })}
@@ -117,7 +118,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                     />
                     {emailErr && (
                         <label className="label">
-                            <span className="label-text-alt">{emailErr}</span>
+                            <span className="label-text-alt text-error">{emailErr}</span>
                         </label>
                     )}
                 </div>
@@ -131,7 +132,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                         {...register('phone', {
                             required: { value: true, message: 'Required' },
                             pattern: {
-                                value: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g,
+                                value: PHONE_PATTERN,
                                 message: fieldPatternMsgs('mobile'),
                             },
                         })}
@@ -139,7 +140,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                     />
                     {mobileErr && (
                         <label className="label">
-                            <span className="label-text-alt">{mobileErr}</span>
+                            <span className="label-text-alt text-error">{mobileErr}</span>
                         </label>
                     )}
                 </div>

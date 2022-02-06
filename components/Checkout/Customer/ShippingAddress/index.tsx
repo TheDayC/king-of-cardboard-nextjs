@@ -1,6 +1,7 @@
-import React from 'react';
-import { UseFormRegister, FieldValues } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { UseFormRegister, FieldValues, UseFormSetValue } from 'react-hook-form';
 import { useSelector } from 'react-redux';
+import { POSTCODE_PATTERN } from '../../../../regex';
 
 import { FormErrors } from '../../../../types/checkout';
 import { fieldPatternMsgs } from '../../../../utils/checkout';
@@ -10,9 +11,10 @@ import selector from './selector';
 interface ShippingAddressProps {
     register: UseFormRegister<FieldValues>;
     errors: FormErrors;
+    setValue: UseFormSetValue<FieldValues>;
 }
 
-const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) => {
+const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors, setValue }) => {
     const { shippingAddress } = useSelector(selector);
     const {
         line_1: addressLineOne,
@@ -24,11 +26,45 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
     } = shippingAddress;
 
     const shippingLineOneErr = safelyParse(errors, 'shippingAddressLineOne.message', parseAsString, null);
-    const shippingLineTwoErr = safelyParse(errors, 'shippingAddressLineTwo.message', parseAsString, null);
     const shippingCityErr = safelyParse(errors, 'shippingCity.message', parseAsString, null);
     const shippingPostcodeErr = safelyParse(errors, 'shippingPostcode.message', parseAsString, null);
     const shippingCountyErr = safelyParse(errors, 'shippingCounty.message', parseAsString, null);
-    const shippingCompanyErr = safelyParse(errors, 'shippingCompany.message', parseAsString, null);
+
+    useEffect(() => {
+        if (addressLineOne) {
+            setValue('shippingAddressLineOne', addressLineOne);
+        }
+    }, [addressLineOne, setValue]);
+
+    useEffect(() => {
+        if (addressLineTwo) {
+            setValue('shippingAddressLineTwo', addressLineTwo);
+        }
+    }, [addressLineTwo, setValue]);
+
+    useEffect(() => {
+        if (city) {
+            setValue('shippingCity', city);
+        }
+    }, [city, setValue]);
+
+    useEffect(() => {
+        if (postcode) {
+            setValue('shippingPostcode', postcode);
+        }
+    }, [postcode, setValue]);
+
+    useEffect(() => {
+        if (county) {
+            setValue('shippingCounty', county);
+        }
+    }, [county, setValue]);
+
+    useEffect(() => {
+        if (company) {
+            setValue('shippingCompany', company);
+        }
+    }, [company, setValue]);
 
     return (
         <div className="grid grid-cols-1 gap-2">
@@ -40,14 +76,13 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
                     type="text"
                     placeholder="Address Line One"
                     {...register('shippingAddressLineOne', {
-                        required: { value: true, message: 'Required' },
-                        value: addressLineOne,
+                        required: { value: true, message: 'Address line on is required' },
                     })}
                     className={`input input-sm input-bordered${shippingLineOneErr ? ' input-error' : ''}`}
                 />
                 {shippingLineOneErr && (
                     <label className="label">
-                        <span className="label-text-alt">{shippingLineOneErr}</span>
+                        <span className="label-text-alt text-error">{shippingLineOneErr}</span>
                     </label>
                 )}
             </div>
@@ -58,16 +93,9 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
                 <input
                     type="text"
                     placeholder="Address Line Two"
-                    {...register('shippingAddressLineTwo', {
-                        value: addressLineTwo,
-                    })}
-                    className={`input input-sm input-bordered${shippingLineTwoErr ? ' input-error' : ''}`}
+                    {...register('shippingAddressLineTwo')}
+                    className="input input-sm input-bordered"
                 />
-                {shippingLineTwoErr && (
-                    <label className="label">
-                        <span className="label-text-alt">{shippingLineTwoErr}</span>
-                    </label>
-                )}
             </div>
             <div className="form-control">
                 <label className="label">
@@ -76,17 +104,9 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
                 <input
                     type="text"
                     placeholder="Company"
-                    {...register('shippingCompany', {
-                        required: false,
-                        value: company,
-                    })}
-                    className={`input input-sm input-bordered${shippingCompanyErr ? ' input-error' : ''}`}
+                    {...register('shippingCompany')}
+                    className="input input-sm input-bordered"
                 />
-                {shippingCompanyErr && (
-                    <label className="label">
-                        <span className="label-text-alt">{shippingCompanyErr}</span>
-                    </label>
-                )}
             </div>
             <div className="form-control">
                 <label className="label">
@@ -96,14 +116,13 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
                     type="text"
                     placeholder="City"
                     {...register('shippingCity', {
-                        required: { value: true, message: 'Required' },
-                        value: city,
+                        required: { value: true, message: 'City is required' },
                     })}
                     className={`input input-sm input-bordered${shippingCityErr ? ' input-error' : ''}`}
                 />
                 {shippingCityErr && (
                     <label className="label">
-                        <span className="label-text-alt">{shippingCityErr}</span>
+                        <span className="label-text-alt text-error">{shippingCityErr}</span>
                     </label>
                 )}
             </div>
@@ -115,18 +134,17 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
                     type="text"
                     placeholder="Postcode"
                     {...register('shippingPostcode', {
-                        required: { value: true, message: 'Required' },
+                        required: { value: true, message: 'Postcode is required' },
                         pattern: {
-                            value: /^([A-Z][A-HJ-Y]?\d[A-Z\d]? ?\d[A-Z]{2}|GIR ?0A{2})$/gim,
+                            value: POSTCODE_PATTERN,
                             message: fieldPatternMsgs('shippingPostcode'),
                         },
-                        value: postcode,
                     })}
                     className={`input input-sm input-bordered${shippingPostcodeErr ? ' input-error' : ''}`}
                 />
                 {shippingPostcodeErr && (
                     <label className="label">
-                        <span className="label-text-alt">{shippingPostcodeErr}</span>
+                        <span className="label-text-alt text-error">{shippingPostcodeErr}</span>
                     </label>
                 )}
             </div>
@@ -138,14 +156,13 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
                     type="text"
                     placeholder="County"
                     {...register('shippingCounty', {
-                        required: { value: true, message: 'Required' },
-                        value: county,
+                        required: { value: true, message: 'County is required' },
                     })}
                     className={`input input-sm input-bordered${shippingCountyErr ? ' input-error' : ''}`}
                 />
                 {shippingCountyErr && (
                     <label className="label">
-                        <span className="label-text-alt">{shippingCountyErr}</span>
+                        <span className="label-text-alt text-error">{shippingCountyErr}</span>
                     </label>
                 )}
             </div>

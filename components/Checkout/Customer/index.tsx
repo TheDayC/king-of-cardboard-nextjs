@@ -399,7 +399,7 @@ const Customer: React.FC = () => {
                                         defaultChecked={!showExisting}
                                         onSelect={handleShippingSelect}
                                     >
-                                        <ShippingAddress register={register} errors={errors} />
+                                        <ShippingAddress register={register} errors={errors} setValue={setValue} />
                                     </SelectionWrapper>
                                 </React.Fragment>
                             )}
