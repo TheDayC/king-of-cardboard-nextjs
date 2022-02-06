@@ -115,16 +115,10 @@ const Customer: React.FC = () => {
         handleSubmit,
         formState: { errors },
         setValue,
+        clearErrors,
     } = useForm();
     const isCurrentStep = currentStep === 0;
-    const hasBillingAddress = Boolean(billingAddress.id);
-    const isNewBillingAddress = billingAddressEntryChoice === 'newBillingAddress';
-    const hasShippingAddress = Boolean(shippingAddress.id);
-    const isNewShippingAddress = shippingAddressEntryChoice === 'newShippingAddress';
-    const hasErrors =
-        Object.keys(errors).length > 0 ||
-        (!hasBillingAddress && !isNewBillingAddress) ||
-        (!hasShippingAddress && !isNewShippingAddress && !isShippingSameAsBilling);
+    const hasErrors = Object.keys(errors).length > 0;
     const showExisting = Boolean(session) && addresses.length > 0;
 
     const handleNewBillingAddress = useCallback(
@@ -329,7 +323,9 @@ const Customer: React.FC = () => {
 
     // If we click the sameAs checkbox I want to reset the shipping address.
     useEffect(() => {
-        if (!isShippingSameAsBilling) {
+        if (isShippingSameAsBilling) {
+            clearErrors();
+        } else {
             dispatch(setShippingAddress(defaultShippingAddress));
         }
     }, [isShippingSameAsBilling, dispatch, billingAddressEntryChoice]);

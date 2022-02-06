@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { UseFormRegister, FieldValues, UseFormSetValue } from 'react-hook-form';
+import { UseFormRegister, FieldValues, UseFormSetValue, UseFormResetField } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { POSTCODE_PATTERN } from '../../../../regex';
 
