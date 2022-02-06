@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useForm } from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
 import selector from './selector';
 import { fetchPaymentMethods, setCurrentStep } from '../../../store/slices/checkout';
@@ -9,15 +9,6 @@ import Shipment from './Shipment';
 import { fetchCartTotals } from '../../../store/slices/cart';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Loading from '../../Loading';
-import { ShipmentsWithMethods } from '../../../store/types/state';
-
-interface FormMethods {
-    [x: string]: ShipmentsWithMethods;
-}
-
-interface FormData {
-    method: FormMethods;
-}
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
@@ -31,7 +22,7 @@ export const Delivery: React.FC = () => {
     const hasErrors = Object.keys(errors).length > 0;
     const hasShipments = shipments.length > 0;
 
-    const handleSelectShippingMethod = async (data: FormData) => {
+    const handleSelectShippingMethod: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         if (hasErrors || checkoutLoading || !accessToken || !shipments || !orderId) {
             return;
         }

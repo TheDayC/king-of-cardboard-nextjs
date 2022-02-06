@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Error from 'next/error';
-import { useForm } from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import { GetServerSideProps } from 'next';
@@ -38,11 +38,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
 };
 
-interface SubmitData {
-    password: string;
-    confirmPassword: string;
-}
-
 interface ResetPasswordPageProps {
     errorCode: number | boolean;
     resetToken: string | null;
@@ -68,7 +63,7 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
     const passwordTypeErr = safelyParse(errors, 'password.type', parseAsString, null);
     const confirmPasswordTypeErr = safelyParse(errors, 'confirmPassword.type', parseAsString, null);
 
-    const onSubmit = async (data: SubmitData) => {
+    const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         const { password: newPassword, confirmPassword } = data;
 
         if (newPassword !== confirmPassword || !emailAddress || !accessToken || !resetToken || !id) return;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { BsInstagram, BsTwitter, BsTwitch, BsYoutube } from 'react-icons/bs';
 import { FaEbay } from 'react-icons/fa';
@@ -10,14 +10,6 @@ import { fetchSocialMedia } from '../../../../store/slices/account';
 import selector from './selector';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updateSocialMedia } from '../../../../utils/account';
-
-interface SubmitData {
-    instagram: string;
-    twitter: string;
-    twitch: string;
-    youtube: string;
-    ebay: string;
-}
 
 export const SocialMediaLinks: React.FC = () => {
     const { socialMedia } = useSelector(selector);
@@ -40,7 +32,7 @@ export const SocialMediaLinks: React.FC = () => {
     const ebayErr = safelyParse(errors, 'ebay.message', parseAsString, null);
     const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
 
-    const onSubmit = async (data: SubmitData) => {
+    const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         if (!emailAddress) return;
 
         const { instagram, twitter, twitch, youtube, ebay } = data;
