@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 import selector from './selector';
 import CartItem from './CartItem';
@@ -25,6 +26,7 @@ export const Cart: React.FC = () => {
         useSelector(selector);
     const dispatch = useDispatch();
     const session = useSession();
+    const router = useRouter();
     const [shouldFetch, setShouldFetch] = useState(true);
     const itemPlural = itemCount === 1 ? 'item' : 'items';
     const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
@@ -75,6 +77,11 @@ export const Cart: React.FC = () => {
         }
     }, [dispatch, itemCount]);
 
+    // Pre-fetch the checkout page for a better transition.
+    useEffect(() => {
+        router.prefetch('/checkout');
+    }, [router]);
+
     return (
         <div className="flex flex-col">
             <h1 className="mb-4 text-2xl lg:mb-8 lg:text-5xl">{`Cart (${itemCount} ${itemPlural})`}</h1>
@@ -115,6 +122,7 @@ export const Cart: React.FC = () => {
                                 }${updateQuantities.length <= 0 ? ' btn-disabled' : ''}`}
                                 disabled={updateQuantities.length <= 0}
                                 onClick={handleUpdateQuantities}
+                                role="button"
                             >
                                 {isUpdatingCart ? '' : 'Update quantities'}
                             </button>
@@ -123,6 +131,7 @@ export const Cart: React.FC = () => {
                                     className={`btn btn-primary w-full rounded-md lg:btn-wide${
                                         isUpdatingCart ? ' loading btn-square' : ''
                                     }`}
+                                    role="button"
                                 >
                                     {isUpdatingCart ? '' : 'Checkout'}
                                 </button>

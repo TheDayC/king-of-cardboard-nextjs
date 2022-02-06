@@ -55,7 +55,7 @@ export const ProductCard: React.FC<CardProps> = ({
                     {tags.length > 0 && (
                         <div className="flex flex-row flex-wrap justify-start items-center">
                             {tags.map((tag) => (
-                                <div className="badge m-2 badge-secondary badge-outline" key={`tag-${tag}`}>
+                                <div className="badge m-2 badge-secondary" key={`tag-${tag}`}>
                                     {tag}
                                 </div>
                             ))}

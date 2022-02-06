@@ -10,6 +10,7 @@ import { fieldPatternMsgs } from '../../../../utils/checkout';
 import { addAddress, editAddress } from '../../../../utils/account';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { fetchAddresses } from '../../../../store/slices/account';
+import { NAME_PATTERN, PHONE_PATTERN, POSTCODE_PATTERN } from '../../../../regex';
 
 interface FormData {
     name: string;
@@ -134,10 +135,8 @@ export const Fields: React.FC<FieldProps> = ({
     const nameErr = safelyParse(errors, 'name.message', parseAsString, null);
     const firstNameErr = safelyParse(errors, 'firstName.message', parseAsString, null);
     const lastNameErr = safelyParse(errors, 'lastName.message', parseAsString, null);
-    const companyErr = safelyParse(errors, 'company.message', parseAsString, null);
     const mobileErr = safelyParse(errors, 'mobile.message', parseAsString, null);
     const lineOneErr = safelyParse(errors, 'addressLineOne.message', parseAsString, null);
-    const lineTwoErr = safelyParse(errors, 'addressLineTwo.message', parseAsString, null);
     const cityErr = safelyParse(errors, 'city.message', parseAsString, null);
     const postcodeErr = safelyParse(errors, 'postcode.message', parseAsString, null);
     const countyErr = safelyParse(errors, 'county.message', parseAsString, null);
@@ -226,7 +225,7 @@ export const Fields: React.FC<FieldProps> = ({
                             />
                             {nameErr && (
                                 <label className="label">
-                                    <span className="label-text-alt">{nameErr}</span>
+                                    <span className="label-text-alt text-error">{nameErr}</span>
                                 </label>
                             )}
                         </div>
@@ -238,9 +237,9 @@ export const Fields: React.FC<FieldProps> = ({
                                 type="text"
                                 placeholder="First Name"
                                 {...register('firstName', {
-                                    required: { value: true, message: 'Required' },
+                                    required: { value: true, message: 'First name is required' },
                                     pattern: {
-                                        value: /^[a-z ,.'-]+$/i,
+                                        value: NAME_PATTERN,
                                         message: fieldPatternMsgs('firstName'),
                                     },
                                 })}
@@ -248,7 +247,7 @@ export const Fields: React.FC<FieldProps> = ({
                             />
                             {firstNameErr && (
                                 <label className="label">
-                                    <span className="label-text-alt">{firstNameErr}</span>
+                                    <span className="label-text-alt text-error">{firstNameErr}</span>
                                 </label>
                             )}
                         </div>
@@ -260,9 +259,9 @@ export const Fields: React.FC<FieldProps> = ({
                                 type="text"
                                 placeholder="Last Name"
                                 {...register('lastName', {
-                                    required: { value: true, message: 'Required' },
+                                    required: { value: true, message: 'Last name required' },
                                     pattern: {
-                                        value: /^[a-z ,.'-]+$/i,
+                                        value: NAME_PATTERN,
                                         message: fieldPatternMsgs('lastName'),
                                     },
                                 })}
@@ -270,7 +269,7 @@ export const Fields: React.FC<FieldProps> = ({
                             />
                             {lastNameErr && (
                                 <label className="label">
-                                    <span className="label-text-alt">{lastNameErr}</span>
+                                    <span className="label-text-alt text-error">{lastNameErr}</span>
                                 </label>
                             )}
                         </div>
@@ -284,13 +283,8 @@ export const Fields: React.FC<FieldProps> = ({
                                 {...register('company', {
                                     required: false,
                                 })}
-                                className={`input input-md input-bordered${companyErr ? ' input-error' : ''}`}
+                                className="input input-md input-bordered"
                             />
-                            {companyErr && (
-                                <label className="label">
-                                    <span className="label-text-alt">{companyErr}</span>
-                                </label>
-                            )}
                         </div>
                         <div className="form-control">
                             <label className="label">
@@ -300,9 +294,9 @@ export const Fields: React.FC<FieldProps> = ({
                                 type="tel"
                                 placeholder="Mobile No."
                                 {...register('phone', {
-                                    required: { value: true, message: 'Required' },
+                                    required: { value: true, message: 'Mobile is required' },
                                     pattern: {
-                                        value: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g,
+                                        value: PHONE_PATTERN,
                                         message: fieldPatternMsgs('mobile'),
                                     },
                                 })}
@@ -310,7 +304,7 @@ export const Fields: React.FC<FieldProps> = ({
                             />
                             {mobileErr && (
                                 <label className="label">
-                                    <span className="label-text-alt">{mobileErr}</span>
+                                    <span className="label-text-alt text-error">{mobileErr}</span>
                                 </label>
                             )}
                         </div>
@@ -327,13 +321,13 @@ export const Fields: React.FC<FieldProps> = ({
                                 type="text"
                                 placeholder="Address Line One"
                                 {...register('addressLineOne', {
-                                    required: { value: true, message: 'Required' },
+                                    required: { value: true, message: 'Address line one required' },
                                 })}
                                 className={`input input-md input-bordered${lineOneErr ? ' input-error' : ''}`}
                             />
                             {lineOneErr && (
                                 <label className="label">
-                                    <span className="label-text-alt">{lineOneErr}</span>
+                                    <span className="label-text-alt text-error">{lineOneErr}</span>
                                 </label>
                             )}
                         </div>
@@ -345,13 +339,8 @@ export const Fields: React.FC<FieldProps> = ({
                                 type="text"
                                 placeholder="Address Line Two"
                                 {...register('addressLineTwo', { required: false })}
-                                className={`input input-md input-bordered${lineTwoErr ? ' input-error' : ''}`}
+                                className="input input-md input-bordered"
                             />
-                            {lineTwoErr && (
-                                <label className="label">
-                                    <span className="label-text-alt">{lineTwoErr}</span>
-                                </label>
-                            )}
                         </div>
                         <div className="form-control">
                             <label className="label">
@@ -361,13 +350,13 @@ export const Fields: React.FC<FieldProps> = ({
                                 type="text"
                                 placeholder="City"
                                 {...register('city', {
-                                    required: { value: true, message: 'Required' },
+                                    required: { value: true, message: 'City is required' },
                                 })}
                                 className={`input input-md input-bordered${cityErr ? ' input-error' : ''}`}
                             />
                             {cityErr && (
                                 <label className="label">
-                                    <span className="label-text-alt">{cityErr}</span>
+                                    <span className="label-text-alt text-error">{cityErr}</span>
                                 </label>
                             )}
                         </div>
@@ -379,9 +368,9 @@ export const Fields: React.FC<FieldProps> = ({
                                 type="text"
                                 placeholder="Postcode"
                                 {...register('postcode', {
-                                    required: { value: true, message: 'Required' },
+                                    required: { value: true, message: 'Postcode is required' },
                                     pattern: {
-                                        value: /^([A-Z][A-HJ-Y]?\d[A-Z\d]? ?\d[A-Z]{2}|GIR ?0A{2})$/gim,
+                                        value: POSTCODE_PATTERN,
                                         message: fieldPatternMsgs('postcode'),
                                     },
                                 })}
@@ -389,7 +378,7 @@ export const Fields: React.FC<FieldProps> = ({
                             />
                             {postcodeErr && (
                                 <label className="label">
-                                    <span className="label-text-alt">{postcodeErr}</span>
+                                    <span className="label-text-alt text-error">{postcodeErr}</span>
                                 </label>
                             )}
                         </div>
@@ -401,13 +390,13 @@ export const Fields: React.FC<FieldProps> = ({
                                 type="text"
                                 placeholder="County"
                                 {...register('county', {
-                                    required: { value: true, message: 'Required' },
+                                    required: { value: true, message: 'County is required' },
                                 })}
                                 className={`input input-md input-bordered${countyErr ? ' input-error' : ''}`}
                             />
                             {countyErr && (
                                 <label className="label">
-                                    <span className="label-text-alt">{countyErr}</span>
+                                    <span className="label-text-alt text-error">{countyErr}</span>
                                 </label>
                             )}
                         </div>

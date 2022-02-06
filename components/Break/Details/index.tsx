@@ -11,7 +11,7 @@ export const Details: React.FC<DetailsProps> = ({ name, tags }) => (
         <div className="flex flex-row flex-wrap justify-center items-center mb-4 space-x-2 lg:justify-start">
             {tags &&
                 tags.map((tag) => (
-                    <div className="badge badge-secondary badge-outline m-1" key={`tag-${tag}`}>
+                    <div className="badge badge-secondary m-1" key={`tag-${tag}`}>
                         {tag}
                     </div>
                 ))}

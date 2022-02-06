@@ -12,6 +12,7 @@ import { parseAsString, safelyParse } from '../../utils/parsers';
 import selector from './selector';
 import { addError } from '../../store/slices/alerts';
 import { registerUser } from '../../utils/auth';
+import { EMAIL_PATTERN, PASS_PATTERN, USER_PATTERN } from '../../regex';
 
 interface Submit {
     username?: string;
@@ -20,12 +21,6 @@ interface Submit {
     password?: string;
     confirmPassword?: string;
 }
-
-// Regexp
-const USER_PATTERN = /^[a-zA-Z0-9]{4,}$/;
-const EMAIL_PATTERN =
-    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 interface RegisterProps {
     setCurrentTab(tab: Tabs): void;

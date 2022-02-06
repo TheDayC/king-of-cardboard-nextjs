@@ -58,7 +58,7 @@ export const Payment: React.FC = () => {
     const shouldShowCoins = status === 'authenticated' && balance > 0;
 
     const handleEdit = () => {
-        if (!isCurrentStep) {
+        if (!isCurrentStep && shouldEnable) {
             dispatch(setCurrentStep(2));
         }
     };
@@ -319,6 +319,7 @@ export const Payment: React.FC = () => {
                                 className={`btn btn-primary w-full lg:w-auto${checkoutLoading ? ' loading' : ''}${
                                     !stripe || checkoutLoading ? ' btn-disabled' : ''
                                 }`}
+                                role="button"
                             >
                                 {!checkoutLoading ? btnText : ''}
                             </button>

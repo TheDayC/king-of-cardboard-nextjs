@@ -115,16 +115,10 @@ const Customer: React.FC = () => {
         handleSubmit,
         formState: { errors },
         setValue,
+        clearErrors,
     } = useForm();
     const isCurrentStep = currentStep === 0;
-    const hasBillingAddress = Boolean(billingAddress.id);
-    const isNewBillingAddress = billingAddressEntryChoice === 'newBillingAddress';
-    const hasShippingAddress = Boolean(shippingAddress.id);
-    const isNewShippingAddress = shippingAddressEntryChoice === 'newShippingAddress';
-    const hasErrors =
-        Object.keys(errors).length > 0 ||
-        (!hasBillingAddress && !isNewBillingAddress) ||
-        (!hasShippingAddress && !isNewShippingAddress && !isShippingSameAsBilling);
+    const hasErrors = Object.keys(errors).length > 0;
     const showExisting = Boolean(session) && addresses.length > 0;
 
     const handleNewBillingAddress = useCallback(
@@ -329,10 +323,12 @@ const Customer: React.FC = () => {
 
     // If we click the sameAs checkbox I want to reset the shipping address.
     useEffect(() => {
-        if (!isShippingSameAsBilling) {
+        if (isShippingSameAsBilling) {
+            clearErrors();
+        } else {
             dispatch(setShippingAddress(defaultShippingAddress));
         }
-    }, [isShippingSameAsBilling, dispatch, billingAddressEntryChoice]);
+    }, [isShippingSameAsBilling, dispatch, billingAddressEntryChoice, clearErrors]);
 
     return (
         <div
@@ -340,7 +336,7 @@ const Customer: React.FC = () => {
                 isCurrentStep ? 'open' : 'closed'
             }`}
         >
-            <div className="collapse-title text-lg lg:text-xl" onClick={handleEdit}>
+            <div className="collapse-title text-xl font-medium" onClick={handleEdit}>
                 {!hasErrors && !isCurrentStep ? 'Customer - Edit' : 'Customer'}
             </div>
             <div className="collapse-content bg-base-100 p-0">
@@ -399,7 +395,7 @@ const Customer: React.FC = () => {
                                         defaultChecked={!showExisting}
                                         onSelect={handleShippingSelect}
                                     >
-                                        <ShippingAddress register={register} errors={errors} />
+                                        <ShippingAddress register={register} errors={errors} setValue={setValue} />
                                     </SelectionWrapper>
                                 </React.Fragment>
                             )}
