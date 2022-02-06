@@ -393,7 +393,7 @@ export const Fields: React.FC<FieldProps> = ({
             <div className="flex w-full justify-end p-4">
                 <button
                     type="submit"
-                    className={`btn w-full lg:w-auto${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'}${
+                    className={`btn w-full lg:w-40${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'}${
                         isLoading ? ' loading btn-square' : ''
                     }`}
                 >
