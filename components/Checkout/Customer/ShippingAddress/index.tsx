@@ -78,7 +78,7 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors, set
                     {...register('shippingAddressLineOne', {
                         required: { value: true, message: 'Address line on is required' },
                     })}
-                    className={`input input-sm input-bordered${shippingLineOneErr ? ' input-error' : ''}`}
+                    className={`input input-md input-bordered${shippingLineOneErr ? ' input-error' : ''}`}
                 />
                 {shippingLineOneErr && (
                     <label className="label">
@@ -94,7 +94,7 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors, set
                     type="text"
                     placeholder="Address Line Two"
                     {...register('shippingAddressLineTwo')}
-                    className="input input-sm input-bordered"
+                    className="input input-md input-bordered"
                 />
             </div>
             <div className="form-control">
@@ -105,7 +105,7 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors, set
                     type="text"
                     placeholder="Company"
                     {...register('shippingCompany')}
-                    className="input input-sm input-bordered"
+                    className="input input-md input-bordered"
                 />
             </div>
             <div className="form-control">
@@ -118,7 +118,7 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors, set
                     {...register('shippingCity', {
                         required: { value: true, message: 'City is required' },
                     })}
-                    className={`input input-sm input-bordered${shippingCityErr ? ' input-error' : ''}`}
+                    className={`input input-md input-bordered${shippingCityErr ? ' input-error' : ''}`}
                 />
                 {shippingCityErr && (
                     <label className="label">
@@ -140,7 +140,7 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors, set
                             message: fieldPatternMsgs('shippingPostcode'),
                         },
                     })}
-                    className={`input input-sm input-bordered${shippingPostcodeErr ? ' input-error' : ''}`}
+                    className={`input input-md input-bordered${shippingPostcodeErr ? ' input-error' : ''}`}
                 />
                 {shippingPostcodeErr && (
                     <label className="label">
@@ -158,7 +158,7 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors, set
                     {...register('shippingCounty', {
                         required: { value: true, message: 'County is required' },
                     })}
-                    className={`input input-sm input-bordered${shippingCountyErr ? ' input-error' : ''}`}
+                    className={`input input-md input-bordered${shippingCountyErr ? ' input-error' : ''}`}
                 />
                 {shippingCountyErr && (
                     <label className="label">
