@@ -2,8 +2,8 @@ import { useSession } from 'next-auth/react';
 import React, { useEffect } from 'react';
 import { UseFormRegister, FieldValues, UseFormSetValue } from 'react-hook-form';
 import { useSelector } from 'react-redux';
-import { EMAIL_PATTERN, NAME_PATTERN, PHONE_PATTERN } from '../../../../regex';
 
+import { EMAIL_PATTERN, NAME_PATTERN, PHONE_PATTERN } from '../../../../regex';
 import { FormErrors } from '../../../../types/checkout';
 import { fieldPatternMsgs } from '../../../../utils/checkout';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';

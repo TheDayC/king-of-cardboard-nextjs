@@ -328,7 +328,7 @@ const Customer: React.FC = () => {
         } else {
             dispatch(setShippingAddress(defaultShippingAddress));
         }
-    }, [isShippingSameAsBilling, dispatch, billingAddressEntryChoice]);
+    }, [isShippingSameAsBilling, dispatch, billingAddressEntryChoice, clearErrors]);
 
     return (
         <div
