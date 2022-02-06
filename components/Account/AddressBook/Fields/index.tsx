@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSession } from 'next-auth/react';
-import { useForm } from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 
 import selector from './selector';
@@ -69,7 +69,7 @@ export const Fields: React.FC<FieldProps> = ({
     } = useForm();
     const hasErrors = Object.keys(errors).length > 0;
 
-    const onSubmit = async (data: FormData) => {
+    const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         if (hasErrors || !emailAddress || !accessToken) {
             return;
         }
