@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSession } from 'next-auth/react';
-import { useForm } from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 
 import selector from './selector';
@@ -11,19 +11,6 @@ import { addAddress, editAddress } from '../../../../utils/account';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { fetchAddresses } from '../../../../store/slices/account';
 import { NAME_PATTERN, PHONE_PATTERN, POSTCODE_PATTERN } from '../../../../regex';
-
-interface FormData {
-    name: string;
-    addressLineOne: string;
-    addressLineTwo: string;
-    city: string;
-    company: string;
-    county: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    postcode: string;
-}
 
 interface FieldProps {
     id?: string;
@@ -69,7 +56,7 @@ export const Fields: React.FC<FieldProps> = ({
     } = useForm();
     const hasErrors = Object.keys(errors).length > 0;
 
-    const onSubmit = async (data: FormData) => {
+    const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         if (hasErrors || !emailAddress || !accessToken) {
             return;
         }
