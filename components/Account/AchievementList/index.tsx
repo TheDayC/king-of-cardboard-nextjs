@@ -10,7 +10,7 @@ import Objective from './Objective';
 
 export const AchievementList: React.FC = () => {
     const { accessToken } = useSelector(selector);
-    const session = useSession();
+    const { data: session } = useSession();
     const [shouldFetchAchievements, setShouldFetchAchievements] = useState(true);
     const [objectives, setObjectives] = useState<ObjectiveType[] | null>(null);
     const [achievements, setAchievements] = useState<Achievement[] | null>(null);
@@ -30,7 +30,7 @@ export const AchievementList: React.FC = () => {
     // Fetch achievements
     useEffect(() => {
         if (shouldFetchAchievements && accessToken && session) {
-            const achievementService = new Achievements(session.data, accessToken);
+            const achievementService = new Achievements(session, accessToken);
 
             fetchObjectives(achievementService);
             setShouldFetchAchievements(false);

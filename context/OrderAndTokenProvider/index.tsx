@@ -15,8 +15,8 @@ const OrderAndTokenProvider: React.FC = ({ children }) => {
     const currentDate = DateTime.now().setZone('Europe/London');
     const expiryDate = DateTime.fromISO(expires || currentDate.toISO(), { zone: 'Europe/London' });
     const hasExpired = Boolean(expires && expiryDate < currentDate);
-    const session = useSession();
-    const isGuest = !Boolean(session && session.status === 'authenticated');
+    const { status } = useSession();
+    const isGuest = status !== 'authenticated';
     const shouldResetToken = !accessToken || hasExpired || localStorage.getItem('kingofcardboard-401') === 'true';
 
     // If accessToken doesn't exist create one.

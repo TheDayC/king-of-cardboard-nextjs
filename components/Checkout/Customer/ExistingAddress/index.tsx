@@ -13,7 +13,7 @@ interface ExistingAddressProps {
 }
 
 const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping }) => {
-    const session = useSession();
+    const { data: session } = useSession();
     const dispatch = useDispatch();
     const { accessToken, checkoutLoading, addresses } = useSelector(selector);
     const [shouldFetchAddresses, setShouldFetchAddresses] = useState(true);
