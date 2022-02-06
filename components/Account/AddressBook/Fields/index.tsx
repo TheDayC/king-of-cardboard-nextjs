@@ -12,19 +12,6 @@ import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { fetchAddresses } from '../../../../store/slices/account';
 import { NAME_PATTERN, PHONE_PATTERN, POSTCODE_PATTERN } from '../../../../regex';
 
-interface FormData {
-    name: string;
-    addressLineOne: string;
-    addressLineTwo: string;
-    city: string;
-    company: string;
-    county: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    postcode: string;
-}
-
 interface FieldProps {
     id?: string;
     addressId?: string;

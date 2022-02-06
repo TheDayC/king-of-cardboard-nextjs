@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlineUser } from 'react-icons/ai';
 import { useSession } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
@@ -8,10 +8,6 @@ import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updateUsername } from '../../../../utils/account';
 import { USER_PATTERN } from '../../../../regex';
-
-interface SubmitData {
-    username: string;
-}
 
 export const UpdateUsername: React.FC = () => {
     const {
@@ -27,7 +23,7 @@ export const UpdateUsername: React.FC = () => {
     const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
     const usernameTypeErr = safelyParse(errors, 'username.type', parseAsString, null);
 
-    const onSubmit = async (data: SubmitData) => {
+    const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         const { username } = data;
 
         if (!username || !emailAddress) return;

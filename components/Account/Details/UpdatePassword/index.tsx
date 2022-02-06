@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSession } from 'next-auth/react';
@@ -9,11 +9,6 @@ import selector from './selector';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updatePassword } from '../../../../utils/account';
 import { PASS_PATTERN } from '../../../../regex';
-
-interface SubmitData {
-    password: string;
-    confirmPassword: string;
-}
 
 export const UpdatePassword: React.FC = () => {
     const {
@@ -33,7 +28,7 @@ export const UpdatePassword: React.FC = () => {
     const confirmPasswordTypeErr = safelyParse(errors, 'confirmPassword.type', parseAsString, null);
     const emailAddress = safelyParse(session, 'data.user.email', parseAsString, null);
 
-    const onSubmit = async (data: SubmitData) => {
+    const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         const { password: newPassword, confirmPassword } = data;
 
         if (newPassword !== confirmPassword || !emailAddress || !token) return;
