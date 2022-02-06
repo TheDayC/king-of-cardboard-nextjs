@@ -7,8 +7,7 @@ import { useDispatch } from 'react-redux';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updateUsername } from '../../../../utils/account';
-
-const USER_PATTERN = /^[a-zA-Z0-9]{4,}$/;
+import { USER_PATTERN } from '../../../../regex';
 
 interface SubmitData {
     username: string;

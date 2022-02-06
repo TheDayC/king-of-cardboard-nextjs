@@ -13,6 +13,7 @@ import { addError, addSuccess } from '../../store/slices/alerts';
 import selector from './selector';
 import { resetPassword } from '../../utils/account';
 import PageWrapper from '../../components/PageWrapper';
+import { PASS_PATTERN } from '../../regex';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -36,8 +37,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         props: { errorCode, resetToken, emailAddress, id },
     };
 };
-
-const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 interface SubmitData {
     password: string;

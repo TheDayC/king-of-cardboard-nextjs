@@ -8,8 +8,7 @@ import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import selector from './selector';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { updatePassword } from '../../../../utils/account';
-
-const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+import { PASS_PATTERN } from '../../../../regex';
 
 interface SubmitData {
     password: string;
