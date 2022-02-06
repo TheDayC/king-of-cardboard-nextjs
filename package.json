@@ -54,7 +54,7 @@
         "nodemailer-mandrill-transport": "^1.2.0",
         "react": "17.0.2",
         "react-dom": "17.0.2",
-        "react-hook-form": "^7.17.4",
+        "react-hook-form": "^7.24.0",
         "react-icons": "^4.3.1",
         "react-image-magnifiers": "^1.4.0",
         "react-redux": "^7.2.5",
