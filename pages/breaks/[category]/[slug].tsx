@@ -45,7 +45,7 @@ export const BreakPage: React.FC<BreakPageProps> = ({ errorCode, slug, prettySlu
                 <title>{prettySlug} - Breaks - King of Cardboard</title>
                 <meta property="og:title" content={`${prettySlug} - Breaks - King of Cardboard`} key="title" />
             </Head>
-            <Break slug={slug} />
+            {slug && <Break slug={slug} />}
         </PageWrapper>
     );
 };
