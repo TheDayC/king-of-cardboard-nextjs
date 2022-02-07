@@ -9,7 +9,6 @@ import { fetchSingleBreak, setIsLoadingBreak } from '../../store/slices/breaks';
 import Legend from './Legend';
 import Skeleton from './Skeleton';
 import Content from '../Content';
-import Error404 from '../404';
 
 interface BreakProps {
     slug: string;
@@ -32,10 +31,6 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
     if (isLoadingBreak) {
         return <Skeleton />;
     } else {
-        if (title.length <= 0) {
-            return <Error404 />;
-        }
-
         return (
             <div className="flex flex-col lg:flex-row relative">
                 <div className="flex flex-col w-full lg:w-1/3">
