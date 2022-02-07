@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { DateTime } from 'luxon';
 import { AiFillStar, AiTwotoneCalendar } from 'react-icons/ai';
-import { BsTwitch, BsFillCheckCircleFill } from 'react-icons/bs';
+import { BsTwitch, BsCollectionPlay, BsYoutube } from 'react-icons/bs';
 
 import { ImageItem } from '../../../../types/products';
 import Countdown from './Countdown';
@@ -117,8 +117,8 @@ export const BreakCard: React.FC<BreakProps> = ({
                     {isComplete && (
                         <a href={vodLink} className="w-full" target="__blank">
                             <div className="flex justify-center items-center w-full bg-gradient-to-r from-green-300 to-green-500 p-2 h-14 mb-4 text-neutral-content cursor-pointer">
-                                <BsFillCheckCircleFill className="inline mr-2" />
-                                <span className="text-lg">Complete</span>
+                                <span className="text-lg">VoD</span>
+                                <BsYoutube className="inline w-6 h-6 ml-2 mt-0.5" />
                             </div>
                         </a>
                     )}
