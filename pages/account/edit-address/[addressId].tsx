@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getSession } from 'next-auth/react';
 import Head from 'next/head';
 
-import AccountMenu from '../../../components/Account/Menu';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import selector from './selector';
 import Loading from '../../../components/Loading';
@@ -66,16 +65,7 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId }) 
                 <meta property="og:title" content="Edit Address - Account - King of Cardboard" key="title" />
             </Head>
             <div className="flex flex-col md:flex-row w-full justify-start items-start">
-                <div className="hidden md:block">
-                    <AccountMenu isDropdown={false} />
-                </div>
-                <div className="dropdown w-full mb-4 md:hidden">
-                    <div tabIndex={0} className="btn btn-block">
-                        Account Menu
-                    </div>
-                    <AccountMenu isDropdown />
-                </div>
-                <div className="flex flex-col md:px-4 w-full md:w-3/4 relative">
+                <div className="flex flex-col md:px-4 w-full relative">
                     <Loading show={isLoading} />
                     <Fields
                         id={currentAddress.id}
