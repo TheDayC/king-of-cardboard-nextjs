@@ -12,6 +12,7 @@ interface BreaksThunkInput {
     accessToken: string;
     limit: number;
     skip: number;
+    order: string;
 }
 
 interface SingleBreakThunkInput {
@@ -22,9 +23,9 @@ interface SingleBreakThunkInput {
 export const fetchBreaks = createAsyncThunk(
     'breaks/fetchBreaks',
     async (data: BreaksThunkInput): Promise<BreaksWithCount> => {
-        const { accessToken, limit, skip } = data;
+        const { accessToken, limit, skip, order } = data;
 
-        return await getBreaks(accessToken, limit, skip);
+        return await getBreaks(accessToken, limit, skip, order);
     }
 );
 
@@ -47,6 +48,9 @@ const breakSlice = createSlice({
         setIsLoadingBreak(state, action) {
             state.isLoadingBreak = action.payload;
         },
+        setOrder(state, action) {
+            state.order = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(fetchBreaks.fulfilled, (state, action) => {
@@ -67,5 +71,5 @@ const breakSlice = createSlice({
     },
 });
 
-export const { setIsLoadingBreaks, setIsLoadingBreak } = breakSlice.actions;
+export const { setIsLoadingBreaks, setIsLoadingBreak, setOrder } = breakSlice.actions;
 export default breakSlice.reducer;

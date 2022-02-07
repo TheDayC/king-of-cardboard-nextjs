@@ -60,9 +60,11 @@ export const Pagination: React.FC<PaginationProps> = ({ currentPage, pageCount, 
             >
                 Previous
             </button>
-            <div className={`hidden lg:inline-block lg:grid lg:grid-cols-${pageCount % 10} gap-1`}>{getBtns()}</div>
+            <div className={`hidden md:inline-block md:grid md:grid-cols-${pageCount < 10 ? pageCount : 10} md:gap-1`}>
+                {getBtns()}
+            </div>
             <button
-                className="btn btn-md btn-outline text-sm border border-gray-400 rounded-r-sm w-1/2 hover:bg-gray-400 hover:border-gray-400 lg:w-auto"
+                className="btn btn-md btn-outline text-sm border border-gray-400 rounded-r-sm w-1/2 hover:bg-gray-400 hover:border-gray-400 md:w-auto"
                 disabled={currentPage === pageCount - 1}
                 onClick={handleNextPage}
             >

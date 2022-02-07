@@ -4,7 +4,6 @@ import { getSession } from 'next-auth/react';
 import { Document } from '@contentful/rich-text-types';
 import Head from 'next/head';
 
-import AccountMenu from '../../components/Account/Menu';
 import Account from '../../components/Account';
 import Content from '../../components/Content';
 import { parseAsSlug, safelyParse } from '../../utils/parsers';
@@ -59,16 +58,7 @@ export const AccountSubPage: React.FC<AccountSubPageProps> = ({ errorCode, slug,
                 <meta property="og:title" content={`${prettySlug} - Account - King of Cardboard`} key="title" />
             </Head>
             <div className="flex flex-col md:flex-row w-full justify-start items-start">
-                <div className="hidden md:block">
-                    <AccountMenu isDropdown={false} />
-                </div>
-                <div className="dropdown w-full mb-4 md:hidden">
-                    <div tabIndex={0} className="btn btn-block">
-                        Account Menu
-                    </div>
-                    <AccountMenu isDropdown />
-                </div>
-                <div className="flex flex-col relative w-full px-2 py-0 md:w-3/4 md:px-4 md md:px-8">
+                <div className="flex flex-col relative w-full px-2 py-0 md:px-4 md md:px-8">
                     <Content content={content} />
                     <Account slug={slug} />
                 </div>

@@ -174,6 +174,7 @@ export interface BreaksState {
     isLoadingBreak: boolean;
     breaks: Break[];
     currentBreak: SingleBreak;
+    order: string;
 }
 
 export interface AccountState {

@@ -30,6 +30,7 @@ import {
     isArrayOfDocuments,
     isHero,
     isArrayOfHeroes,
+    isContentfulBreak,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
@@ -223,6 +224,7 @@ export const parseAsArrayOfSkuOptions = parseAsType(isArrayofSkuOptions);
 export const parseAsArrayOfItems = parseAsType(isArrayofItems);
 export const parseAsCustomerDetails = parseAsType(isCustomerDetails);
 export const parseAsCustomerAddress = parseAsType(isCustomerAddress);
+export const parseAsContentfulBreak = parseAsType(isContentfulBreak);
 export const parseAsArrayOfContentfulBreaks = parseAsType(isArrayOfContentfulBreaks);
 export const parseAsArrayOfContentfulPages = parseAsType(isArrayOfContentfulPages);
 export const parseAsArrayOfContentfulProducts = parseAsType(isArrayOfContentfulProducts);

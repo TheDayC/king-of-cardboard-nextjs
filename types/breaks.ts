@@ -81,3 +81,8 @@ export interface BreakTypeItem {
     title: string;
     link: string;
 }
+
+export interface BreakStatuses {
+    isLive: boolean;
+    isComplete: boolean;
+}

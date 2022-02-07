@@ -5,7 +5,6 @@ import { getSession } from 'next-auth/react';
 import Head from 'next/head';
 
 import PageWrapper from '../../../components/PageWrapper';
-import AccountMenu from '../../../components/Account/Menu';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import selector from './selector';
 import LongOrder from '../../../components/Account/OrderHistory/LongOrder';
@@ -65,16 +64,7 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
                 <meta property="og:title" content={`#${orderNumber} - Account - King of Cardboard`} key="title" />
             </Head>
             <div className="flex flex-row w-full justify-start items-start">
-                <div className="hidden w-1/4 md:block">
-                    <AccountMenu isDropdown={false} />
-                </div>
-                <div className="dropdown w-full mb-4 md:hidden">
-                    <div tabIndex={0} className="btn btn-block">
-                        Account Menu
-                    </div>
-                    <AccountMenu isDropdown />
-                </div>
-                <div className="flex flex-col relative w-full px-2 py-0 md:w-3/4 md:px-4 md:px-8">
+                <div className="flex flex-col relative w-full px-2 py-0 md:px-4 md:px-8">
                     {isLoadingOrder ? (
                         <Skeleton />
                     ) : (

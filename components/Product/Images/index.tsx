@@ -26,11 +26,11 @@ export const Images: React.FC<ImageProps> = ({ mainImage, imageCollection }) => 
             {mainImage.url.length > 0 && (
                 <div id="productImages" className="flex flex-row justify-center items-start w-full mb-4">
                     <SideBySideMagnifier
-                        imageSrc={`${currentImage}?w=375`}
-                        largeImageSrc={`${currentImage}?w=2000`}
+                        imageSrc={`${mainImage.url}?w=375`}
+                        largeImageSrc={`${mainImage.url}?w=2000`}
                         imageAlt={mainImage.title}
-                        className="input-position"
-                        alwaysInPlace={false}
+                        className="overflow-hidden rounded-md shadow-md"
+                        alwaysInPlace={true}
                         inPlaceMinBreakpoint={1024}
                     />
                 </div>
