@@ -132,17 +132,21 @@ export const BreakCard: React.FC<BreakProps> = ({
                         </div>
                     )}
                 </div>
-                <div className="card-actions w-full p-6 pt-0 mt-0">
-                    <Link
-                        href={{
-                            pathname: '/breaks/[category]/[slug]',
-                            query: { category: breakType, slug: breakSlug },
-                        }}
-                        passHref
-                    >
-                        <button className="btn btn-primary btn-sm rounded-md shadow-md w-full mt-0">View Break</button>
-                    </Link>
-                </div>
+                {!isLive && !isComplete && (
+                    <div className="card-actions w-full p-6 pt-0 mt-0">
+                        <Link
+                            href={{
+                                pathname: '/breaks/[category]/[slug]',
+                                query: { category: breakType, slug: breakSlug },
+                            }}
+                            passHref
+                        >
+                            <button className="btn btn-primary btn-sm rounded-md shadow-md w-full mt-0">
+                                View Break
+                            </button>
+                        </Link>
+                    </div>
+                )}
             </div>
         </div>
     );

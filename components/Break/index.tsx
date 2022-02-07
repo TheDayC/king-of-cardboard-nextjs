@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
 
 import selector from './selector';
 import Images from './Images';
@@ -9,7 +10,6 @@ import { fetchSingleBreak, setIsLoadingBreak } from '../../store/slices/breaks';
 import Legend from './Legend';
 import Skeleton from './Skeleton';
 import Content from '../Content';
-import Error404 from '../404';
 
 interface BreakProps {
     slug: string;
@@ -19,7 +19,8 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
     const { accessToken, currentBreak, isLoadingBreak } = useSelector(selector);
     const [shouldFetch, setShouldFetch] = useState(true);
     const dispatch = useDispatch();
-    const { title, cardImage, images, tags, description } = currentBreak;
+    const router = useRouter();
+    const { title, cardImage, images, tags, description, isLive, isComplete } = currentBreak;
 
     useEffect(() => {
         if (accessToken && shouldFetch && slug) {
@@ -32,10 +33,6 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
     if (isLoadingBreak) {
         return <Skeleton />;
     } else {
-        if (title.length <= 0) {
-            return <Error404 />;
-        }
-
         return (
             <div className="flex flex-col lg:flex-row relative">
                 <div className="flex flex-col w-full lg:w-1/3">
