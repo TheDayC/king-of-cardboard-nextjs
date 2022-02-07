@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { BsTwitter, BsInstagram } from 'react-icons/bs';
+import { BsTwitter, BsInstagram, BsFacebook } from 'react-icons/bs';
 import { SiNextdotjs, SiTypescript, SiReact, SiRedux, SiMongodb } from 'react-icons/si';
 
 import logo from '../../images/logo-full.png';
@@ -120,6 +120,9 @@ export const Footer: React.FC = () => (
                 </a>
                 <a href="https://instagram.com/kocardboard" target="__blank" role="link">
                     <BsInstagram className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary" />
+                </a>
+                <a href="https://www.facebook.com/KoCardboard" target="__blank" role="link">
+                    <BsFacebook className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary" />
                 </a>
             </div>
         </div>
