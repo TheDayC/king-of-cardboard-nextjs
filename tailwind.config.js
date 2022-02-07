@@ -15,9 +15,6 @@ module.exports = {
             twitch: '#9146FF',
             'twitch-dark': '#772CE8',
         }),
-        cursor: {
-            crosshair: 'crosshair',
-        },
     },
     variants: {
         extend: {

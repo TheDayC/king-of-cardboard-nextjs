@@ -18,7 +18,7 @@ export const Images: React.FC<ImageProps> = ({ mainImage, images }) => (
                     imageSrc={`${mainImage.url}?w=315`}
                     largeImageSrc={`${mainImage.url}?w=2000`}
                     imageAlt={mainImage.title}
-                    className="cursor-crosshair overflow-hidden rounded-md shadow-md"
+                    className="overflow-hidden rounded-md shadow-md"
                     alwaysInPlace={true}
                     inPlaceMinBreakpoint={1024}
                 />
