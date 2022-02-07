@@ -102,21 +102,21 @@ export const BreakCard: React.FC<BreakProps> = ({
                         </div>
                     </div>
                     {!isLive && !isComplete && (
-                        <div className="flex justify-center items-center w-full bg-secondary bg-gradient-to-r from-secondary to-secondary-focus p-2 py-0 mb-4 text-neutral-content">
+                        <div className="flex justify-center items-center w-full bg-secondary bg-gradient-to-r from-secondary to-secondary-focus p-2 h-14 mb-4 text-neutral-content">
                             <Countdown breakDate={breakDateLuxon} />
                         </div>
                     )}
                     {isLive && !isComplete && (
                         <a href="https://twitch.tv/dayc" className="w-full" target="__blank">
-                            <div className="flex justify-center items-center w-full bg-gradient-to-r from-accent to-accent-focus p-2 mb-4 text-neutral-content cursor-pointer">
-                                <BsTwitch className="inline mr-2" />
+                            <div className="flex justify-center items-center w-full bg-gradient-to-r from-accent to-accent-focus p-2 h-14 mb-4 text-neutral-content cursor-pointer">
+                                <BsTwitch className="inline w-6 h-6 mr-2 animate-bounce" />
                                 <span className="text-lg">Live</span>
                             </div>
                         </a>
                     )}
                     {isComplete && (
                         <a href={vodLink} className="w-full" target="__blank">
-                            <div className="flex justify-center items-center w-full bg-gradient-to-r from-green-300 to-green-500 p-2 mb-4 text-neutral-content cursor-pointer">
+                            <div className="flex justify-center items-center w-full bg-gradient-to-r from-green-300 to-green-500 p-2 h-14 mb-4 text-neutral-content cursor-pointer">
                                 <BsFillCheckCircleFill className="inline mr-2" />
                                 <span className="text-lg">Complete</span>
                             </div>

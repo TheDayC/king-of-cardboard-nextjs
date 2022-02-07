@@ -50,25 +50,25 @@ export const Countdown: React.FC<BreakProps> = ({ breakDate }) => {
 
     return (
         <div className="grid grid-flow-col gap-1 text-center auto-cols-max">
-            <div className="flex flex-col p-2 pl-0 text-sm">
+            <div className="flex flex-col px-2 pl-0 text-sm">
                 <span className="font-mono countdown justify-center items-center">
                     <span style={daysStyle}></span>
                 </span>
                 days
             </div>
-            <div className="flex flex-col p-2 text-sm">
+            <div className="flex flex-col px-2 text-sm">
                 <span className="font-mono countdown justify-center items-center">
                     <span style={hoursStyle}></span>
                 </span>
                 hours
             </div>
-            <div className="flex flex-col p-2 text-sm">
+            <div className="flex flex-col px-2 text-sm">
                 <span className="font-mono countdown justify-center items-center">
                     <span style={minutesStyle}></span>
                 </span>
                 min
             </div>
-            <div className="flex flex-col p-2 text-sm">
+            <div className="flex flex-col px-2 text-sm">
                 <span className="font-mono countdown justify-center items-center">
                     <span style={secondsStyle}></span>
                 </span>
