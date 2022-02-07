@@ -83,7 +83,7 @@ export const Header: React.FC = () => {
                                     className={`${slug === Slugs.Account ? 'bordered' : 'hover-bordered'}`}
                                     role="menuitem"
                                 >
-                                    <Link href="/account">Account</Link>
+                                    <Link href={{ pathname: '/account' }}>Account</Link>
                                 </li>
                                 <li
                                     className={`${slug === Slugs.Details ? 'bordered' : 'hover-bordered'}`}
@@ -94,7 +94,6 @@ export const Header: React.FC = () => {
                                             pathname: '/account/[slug]',
                                             query: { slug: Slugs.Details },
                                         }}
-                                        passHref
                                     >
                                         Details
                                     </Link>
@@ -108,7 +107,6 @@ export const Header: React.FC = () => {
                                             pathname: '/account/[slug]',
                                             query: { slug: Slugs.Profile },
                                         }}
-                                        passHref
                                     >
                                         Profile
                                     </Link>
@@ -122,7 +120,6 @@ export const Header: React.FC = () => {
                                             pathname: '/account/[slug]',
                                             query: { slug: Slugs.AddressBook },
                                         }}
-                                        passHref
                                     >
                                         Address Book
                                     </Link>
@@ -138,7 +135,6 @@ export const Header: React.FC = () => {
                                             pathname: '/account/[slug]',
                                             query: { slug: Slugs.OrderHistory },
                                         }}
-                                        passHref
                                     >
                                         Order History
                                     </Link>
@@ -152,7 +148,6 @@ export const Header: React.FC = () => {
                                             pathname: '/account/[slug]',
                                             query: { slug: Slugs.Achievements },
                                         }}
-                                        passHref
                                     >
                                         Achievements
                                     </Link>
