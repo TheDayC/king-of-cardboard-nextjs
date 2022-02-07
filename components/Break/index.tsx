@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useRouter } from 'next/router';
 
 import selector from './selector';
 import Images from './Images';
@@ -19,8 +18,7 @@ export const Break: React.FC<BreakProps> = ({ slug }) => {
     const { accessToken, currentBreak, isLoadingBreak } = useSelector(selector);
     const [shouldFetch, setShouldFetch] = useState(true);
     const dispatch = useDispatch();
-    const router = useRouter();
-    const { title, cardImage, images, tags, description, isLive, isComplete } = currentBreak;
+    const { title, cardImage, images, tags, description } = currentBreak;
 
     useEffect(() => {
         if (accessToken && shouldFetch && slug) {

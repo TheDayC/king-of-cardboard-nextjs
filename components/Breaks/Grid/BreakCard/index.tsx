@@ -1,9 +1,8 @@
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { DateTime } from 'luxon';
 import { AiFillStar, AiTwotoneCalendar } from 'react-icons/ai';
-import { BsTwitch, BsCollectionPlay, BsYoutube } from 'react-icons/bs';
+import { BsTwitch, BsYoutube } from 'react-icons/bs';
 
 import { ImageItem } from '../../../../types/products';
 import Countdown from './Countdown';
