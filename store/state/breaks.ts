@@ -27,6 +27,7 @@ const breaksInitialState: BreaksState = {
         isComplete: false,
         vodLink: '',
     },
+    order: 'breakNumber_ASC',
 };
 
 export default breaksInitialState;
