@@ -38,9 +38,12 @@ export const BreakCard: React.FC<BreakProps> = ({
     vodLink,
 }) => {
     const plural = slots > 1 ? 'slots' : 'slot';
-    const slotsText = slots > 0 ? `${slots} ${plural} available` : 'Break has sold out!';
     const breakDateLuxon = DateTime.fromISO(breakDate, { zone: 'Europe/London' });
     const isActive = !isLive && !isComplete;
+    const bannerColour =
+        isActive && slots > 0
+            ? 'bg-gradient-to-r from-secondary to-secondary-focus'
+            : 'bg-gradient-to-r from-red-500 to-red-700';
 
     return (
         <div className="card shadow-md rounded-md bordered pt-4 transition duration-300 ease-in-out hover:shadow-2xl">
@@ -63,13 +66,23 @@ export const BreakCard: React.FC<BreakProps> = ({
                             />
                         </Link>
                     )}
-                    {isActive && (
-                        <div className="badge bg-red-400 border-0 absolute -bottom-2 left-0 ml-4 lg:ml-6 shadow-md">
-                            {slotsText}
+                    {isActive && slots > 0 && (
+                        <div className="badge bg-secondary border-0 absolute -bottom-2.5 left-1/4 shadow-md p-3">
+                            {`${slots} ${plural} ${slots <= 3 ? 'remaining!' : 'available'}`}
+                        </div>
+                    )}
+                    {isActive && slots <= 0 && (
+                        <div className="badge bg-red-500 border-0 absolute -bottom-2.5 left-1/4 shadow-md p-3">
+                            Sold out!
+                        </div>
+                    )}
+                    {isLive && !isComplete && (
+                        <div className="badge bg-accent border-0 absolute -bottom-2.5 left-1/4 shadow-md p-3">
+                            Breaking Now!
                         </div>
                     )}
                     {isComplete && (
-                        <div className="badge bg-green-400 border-0 absolute -bottom-2 left-0 ml-4 lg:ml-6 shadow-md">
+                        <div className="badge bg-green-500 border-0 absolute -bottom-2 left-0 ml-4 lg:ml-6 shadow-md p-3">
                             Opened on {breakDateLuxon.toFormat('MMM dd, y')}
                         </div>
                     )}
@@ -102,7 +115,9 @@ export const BreakCard: React.FC<BreakProps> = ({
                         </div>
                     </div>
                     {!isLive && !isComplete && (
-                        <div className="flex justify-center items-center w-full bg-secondary bg-gradient-to-r from-secondary to-secondary-focus p-2 h-14 mb-4 text-neutral-content">
+                        <div
+                            className={`flex justify-center items-center w-full p-2 h-14 mb-4 text-neutral-content ${bannerColour}`}
+                        >
                             <Countdown breakDate={breakDateLuxon} />
                         </div>
                     )}
@@ -116,7 +131,7 @@ export const BreakCard: React.FC<BreakProps> = ({
                     )}
                     {isComplete && (
                         <a href={vodLink} className="w-full" target="__blank">
-                            <div className="flex justify-center items-center w-full bg-gradient-to-r from-green-300 to-green-500 p-2 h-14 mb-4 text-neutral-content cursor-pointer">
+                            <div className="flex justify-center items-center w-full bg-gradient-to-r from-green-500 to-green-700 p-2 h-14 mb-4 text-neutral-content cursor-pointer">
                                 <span className="text-lg">VoD</span>
                                 <BsYoutube className="inline w-6 h-6 ml-2 mt-0.5" />
                             </div>
