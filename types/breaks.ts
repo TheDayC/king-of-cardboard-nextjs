@@ -55,7 +55,6 @@ export interface SingleBreak {
 export interface BreaksWithCount {
     breaks: Break[];
     count: number;
-    order: string;
 }
 
 export interface BreakSlotsCollection {
