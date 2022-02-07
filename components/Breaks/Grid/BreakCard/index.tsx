@@ -56,7 +56,7 @@ export const BreakCard: React.FC<BreakProps> = ({
                             }}
                             passHref
                         >
-                            <div className="rounded-md overflow-hidden shadow-md cursor-pointer">
+                            <div className="block rounded-md overflow-hidden shadow-md cursor-pointer w-auto">
                                 <img
                                     src={`${cardImage.url}?h=315`}
                                     alt={cardImage.description}
