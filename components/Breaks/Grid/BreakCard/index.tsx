@@ -48,7 +48,7 @@ export const BreakCard: React.FC<BreakProps> = ({
     return (
         <div className="card shadow-md rounded-md bordered pt-4 transition duration-300 ease-in-out hover:shadow-2xl">
             {cardImage && (
-                <div className="relative cursor-pointer h-40">
+                <div className="relative cursor-pointer h-40 flex flex-row justify-center">
                     {cardImage.url.length > 0 && (
                         <Link
                             href={{
@@ -57,13 +57,14 @@ export const BreakCard: React.FC<BreakProps> = ({
                             }}
                             passHref
                         >
-                            <Image
-                                src={`${cardImage.url}?w=370`}
-                                alt={cardImage.description}
-                                title={cardImage.title}
-                                layout="fill"
-                                objectFit="scale-down"
-                            />
+                            <div className="relative w-28 h-40 rounded-md overflow-hidden shadow-md">
+                                <img
+                                    src={`${cardImage.url}?h=128`}
+                                    alt={cardImage.description}
+                                    title={cardImage.title}
+                                    className="w-auto h-full"
+                                />
+                            </div>
                         </Link>
                     )}
                     {isActive && slots > 0 && (
