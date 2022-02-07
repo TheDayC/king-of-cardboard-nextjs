@@ -38,7 +38,7 @@ export const BreakCard: React.FC<BreakProps> = ({
     vodLink,
 }) => {
     const plural = slots > 1 ? 'slots' : 'slot';
-    const slotsText = slots > 0 ? `${slots} ${plural} available` : 'Sold Out!';
+    const slotsText = slots > 0 ? `${slots} ${plural} available` : 'Break has sold out!';
     const breakDateLuxon = DateTime.fromISO(breakDate, { zone: 'Europe/London' });
     const isActive = !isLive && !isComplete;
 
@@ -64,12 +64,12 @@ export const BreakCard: React.FC<BreakProps> = ({
                         </Link>
                     )}
                     {isActive && (
-                        <div className="badge badge-accent absolute -bottom-2 left-0 ml-4 lg:ml-6 shadow-md">
+                        <div className="badge bg-red-400 border-0 absolute -bottom-2 left-0 ml-4 lg:ml-6 shadow-md">
                             {slotsText}
                         </div>
                     )}
                     {isComplete && (
-                        <div className="badge badge-success absolute -bottom-4 left-0 ml-4 lg:ml-6 shadow-md">
+                        <div className="badge bg-green-400 border-0 absolute -bottom-2 left-0 ml-4 lg:ml-6 shadow-md">
                             Opened on {breakDateLuxon.toFormat('MMM dd, y')}
                         </div>
                     )}
