@@ -57,9 +57,9 @@ export const BreakCard: React.FC<BreakProps> = ({
                             }}
                             passHref
                         >
-                            <div className="relative w-28 h-40 rounded-md overflow-hidden shadow-md">
+                            <div className="relative w-full h-40 rounded-md overflow-hidden shadow-md">
                                 <img
-                                    src={`${cardImage.url}?h=128`}
+                                    src={`${cardImage.url}?h=305`}
                                     alt={cardImage.description}
                                     title={cardImage.title}
                                     className="w-auto h-full"
