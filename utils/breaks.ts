@@ -19,7 +19,12 @@ import {
     parseAsContentfulBreak,
 } from './parsers';
 
-export async function getBreaks(accessToken: string, limit: number, skip: number): Promise<BreaksWithCount> {
+export async function getBreaks(
+    accessToken: string,
+    limit: number,
+    skip: number,
+    order: string
+): Promise<BreaksWithCount> {
     const cl = CommerceLayer({
         organization: process.env.NEXT_PUBLIC_ECOM_SLUG || '',
         accessToken: accessToken,
@@ -28,7 +33,7 @@ export async function getBreaks(accessToken: string, limit: number, skip: number
     // Piece together query.
     const query = `
         query {
-            breaksCollection (limit: ${limit}, skip: ${skip}, order: [breakNumber_DESC]) {
+            breaksCollection (limit: ${limit}, skip: ${skip}, order: [${order}]) {
                 total
                 items {
                     breakNumber

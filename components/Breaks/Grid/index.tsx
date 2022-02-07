@@ -7,14 +7,14 @@ import { fetchBreaks, setIsLoadingBreaks } from '../../../store/slices/breaks';
 import BreakCard from './BreakCard';
 import selector from './selector';
 import Skeleton from './skeleton';
+import Filters from './Filters';
 
 const PER_PAGE = 8;
 
 export const Grid: React.FC = () => {
-    const { accessToken, breaks, breaksTotal, isLoadingBreaks } = useSelector(selector);
+    const { accessToken, breaks, breaksTotal, isLoadingBreaks, order } = useSelector(selector);
     const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(0);
-    const [shouldFetch, setShouldFetch] = useState(true);
 
     const productPageCount = ceil(divide(breaksTotal, PER_PAGE));
 
@@ -24,26 +24,26 @@ export const Grid: React.FC = () => {
             if (accessToken) {
                 dispatch(setIsLoadingBreaks(true));
                 setCurrentPage(pageNumber);
-                dispatch(fetchBreaks({ accessToken, limit: PER_PAGE, skip: pageNumber * PER_PAGE }));
+                dispatch(fetchBreaks({ accessToken, limit: PER_PAGE, skip: pageNumber * PER_PAGE, order }));
             }
         },
-        [accessToken, dispatch]
+        [accessToken, dispatch, order]
     );
 
     // Fetch all breaks on page load.
     useEffect(() => {
-        if (shouldFetch && accessToken) {
-            setShouldFetch(false);
+        if (accessToken) {
             dispatch(setIsLoadingBreaks(true));
-            dispatch(fetchBreaks({ accessToken, limit: currentPage, skip: 0 }));
+            dispatch(fetchBreaks({ accessToken, limit: currentPage, skip: 0, order }));
         }
-    }, [dispatch, accessToken, currentPage, shouldFetch]);
+    }, [dispatch, accessToken, currentPage, order]);
 
     if (isLoadingBreaks) {
         return <Skeleton />;
     } else {
         return (
             <div className="flex flex-col w-full">
+                <Filters />
                 <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl2:grid-cols-6">
                     {breaks.map((b) => (
                         <BreakCard
