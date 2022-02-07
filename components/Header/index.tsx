@@ -7,8 +7,6 @@ import { toSvg } from 'jdenticon';
 import md5 from 'md5';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
-import { CgDetailsMore } from 'react-icons/cg';
-import { BsFillPersonLinesFill, BsFillCartCheckFill, BsFillAwardFill, BsFillHouseDoorFill } from 'react-icons/bs';
 
 import logo from '../../images/logo-full.png';
 import Rewards from './Rewards';
