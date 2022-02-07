@@ -11,7 +11,6 @@ import Custom404Page from '../../404';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const slug = safelyParse(context, 'query.slug', parseAsString, null);
-    const prettySlug = slug ? toTitleCase(slug.replaceAll('-', ' ')) : '';
     const { isLive, isComplete } = await getBreakStatus(slug);
 
     // Is we're live or complete then perma redirect the break's page.
@@ -28,7 +27,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         props: {
             errorCode: !slug ? 404 : null,
             slug,
-            prettySlug,
             isLive,
             isComplete,
         },
@@ -38,12 +36,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 interface BreakPageProps {
     errorCode: number | null;
     slug: string | null;
-    prettySlug: string;
     isLive: boolean;
     isComplete: boolean;
 }
 
-export const BreakPage: React.FC<BreakPageProps> = ({ errorCode, slug, prettySlug, isLive, isComplete }) => {
+export const BreakPage: React.FC<BreakPageProps> = ({ errorCode, slug, isLive, isComplete }) => {
+    const prettySlug = slug ? toTitleCase(slug.replaceAll('-', ' ')) : '';
+
     // Show error page if a code is provided.
     if (errorCode || isLive || isComplete) {
         return <Custom404Page />;
