@@ -91,12 +91,12 @@ export const BreakCard: React.FC<BreakProps> = ({
                         </Link>
                         <h2 className="card-title text-xl mb-6">{title}</h2>
                         <div className="pl-2">
-                            <p className="text-base-200 text-sm">
-                                <AiFillStar className="inline mr-1 w-4 h-4 text-yellow-300" />
+                            <p className="text-gray-400 text-sm">
+                                <AiFillStar className="inline mr-1 w-4 h-4 text-yellow-300 -mt-1" />
                                 {format}
                             </p>
-                            <p className="text-base-200 text-sm">
-                                <AiTwotoneCalendar className="inline mr-1 w-4 h-4 text-red-300" />
+                            <p className="text-gray-400 text-sm">
+                                <AiTwotoneCalendar className="inline mr-1 w-4 h-4 text-red-300 -mt-1" />
                                 {breakDateLuxon.toLocaleString(DateTime.DATE_FULL)}
                             </p>
                         </div>
