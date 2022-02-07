@@ -14,6 +14,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const prettySlug = slug ? toTitleCase(slug.replaceAll('-', ' ')) : '';
     const { isLive, isComplete } = await getBreakStatus(slug);
 
+    // Is we're live or complete then perma redirect the break's page.
+    if (isLive || isComplete) {
+        return {
+            redirect: {
+                permanent: true,
+                destination: '/breaks',
+            },
+        };
+    }
+
     return {
         props: {
             errorCode: !slug ? 404 : null,
