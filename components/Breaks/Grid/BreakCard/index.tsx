@@ -141,7 +141,10 @@ export const BreakCard: React.FC<BreakProps> = ({
                     {tags && (
                         <div className="flex flex-row flex-wrap justify-center items-start w-full px-2 lg:px-6">
                             {tags.map((tag) => (
-                                <div className="badge badge-secondary badge m-1 text-xs lg:text-md" key={`tag-${tag}`}>
+                                <div
+                                    className="badge badge-secondary badge m-1 p-3 text-xs shadow-md"
+                                    key={`tag-${tag}`}
+                                >
                                     {tag}
                                 </div>
                             ))}
