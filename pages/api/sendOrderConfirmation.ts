@@ -210,7 +210,7 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
                     },
                 };
 
-                await mailer.sendMail(mailOptions);
+                // await mailer.sendMail(mailOptions);
 
                 res.status(200).json({ success: true });
             } else {
