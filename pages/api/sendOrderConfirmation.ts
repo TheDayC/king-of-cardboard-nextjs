@@ -25,6 +25,7 @@ const mailer = createTransport(
         },
     })
 );
+console.log('🚀 ~ file: sendOrderConfirmation.ts ~ line 28 ~ mailer', mailer);
 
 /* const toDataURL = (url: string) => fetch(url)
     .then(response => response.blob())
@@ -209,6 +210,10 @@ async function sendOrderConfirmation(req: NextApiRequest, res: NextApiResponse):
                         },
                     },
                 };
+                console.log(
+                    '🚀 ~ file: sendOrderConfirmation.ts ~ line 213 ~ sendOrderConfirmation ~ mailOptions',
+                    mailOptions
+                );
 
                 // await mailer.sendMail(mailOptions);
 
