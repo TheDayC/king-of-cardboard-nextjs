@@ -72,7 +72,7 @@ export const CompleteOrderPage: React.FC<CompleteOrderPageProps> = ({ orderId, p
             <div className="flex flex-col w-full">
                 <Steps currentStep={3} />
                 <div className="container mx-auto max-w-xxl">
-                    <div className="flex flex-col-reverse lg:flex-row lg:space-x-8">
+                    <div className="flex flex-col lg:flex-row lg:space-x-8">
                         <div className="flex flex-col w-full lg:w-3/5">
                             <Complete paymentId={paymentId} payerId={payerId} orderId={orderId} />
                         </div>
