@@ -5,7 +5,11 @@ import Slot from './Slot';
 import selector from './selector';
 import Loading from '../../../Loading';
 
-export const PickSlot: React.FC = () => {
+interface PickSlotProps {
+    isRandom: boolean;
+}
+
+export const PickSlot: React.FC<PickSlotProps> = ({ isRandom }) => {
     const { currentBreak } = useSelector(selector);
     const [loading, setLoading] = useState(false);
     const { breakSlots } = currentBreak;
@@ -24,6 +28,7 @@ export const PickSlot: React.FC = () => {
                             compare_amount={slot.compare_amount}
                             isAvailable={slot.isAvailable}
                             setLoading={setLoading}
+                            isRandom={isRandom}
                             key={`team-${slot.name}`}
                         />
                     ))}

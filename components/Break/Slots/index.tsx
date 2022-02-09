@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 
 import { PickSlot } from './PickSlot';
 import PickSlotWithRandom from './PickSlotWithRandom';
-import RandomSlot from './RandomSlot';
 import selector from './selector';
 
 export const Slots: React.FC = () => {
@@ -13,14 +12,14 @@ export const Slots: React.FC = () => {
         case 'Pick Your Team':
         case 'Pick Your Colour':
         case 'Pick Your Type':
-            return <PickSlot />;
+            return <PickSlot isRandom={false} />;
         case 'Pick Your Team w/ Random':
             return <PickSlotWithRandom />;
         case 'Random Teams':
         case 'Random Packs':
         case 'Random Colours':
         case 'Random Types':
-            return <RandomSlot />;
+            return <PickSlot isRandom />;
         default:
             return null;
     }

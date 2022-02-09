@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineShoppingCart, AiFillCloseCircle } from 'react-icons/ai';
+import { GiCardRandom } from 'react-icons/gi';
 
 import { removeLineItem, setLineItem } from '../../../../../utils/commerce';
 import selector from './selector';
@@ -16,6 +17,7 @@ interface SlotProps {
     amount: string;
     compare_amount: string;
     isAvailable: boolean;
+    isRandom: boolean;
     setLoading(isLoading: boolean): void;
 }
 
@@ -26,6 +28,7 @@ export const Slot: React.FC<SlotProps> = ({
     amount,
     compare_amount,
     isAvailable,
+    isRandom,
     setLoading,
 }) => {
     const { accessToken, orderId, items } = useSelector(selector);
@@ -110,16 +113,18 @@ export const Slot: React.FC<SlotProps> = ({
                     <AiOutlineShoppingCart className="w-20 h-20 text-green-600" />
                 </div>
             )}
-            {image.url.length > 0 && (
-                <div className="flex flex-row justify-center items-center w-full h-24 xl:h-32 relative mb-4">
+
+            <div className="flex flex-row justify-center items-center w-full h-24 xl:h-32 relative mb-4">
+                {image.url.length > 0 && !isRandom && (
                     <img
                         src={`${image.url}?h=128`}
                         alt={image.description}
                         title={image.title}
                         className={`z-10 w-auto h-full ${styles.logo}`}
                     />
-                </div>
-            )}
+                )}
+                {isRandom && <GiCardRandom className="w-32 h-32 text-secondary" />}
+            </div>
             <p className="text-xs text-center mb-2 lg:mb-4 lg:text-md">{name}</p>
             <div className="flex flex-row justify-center items-center">
                 {shouldShowCompare && (
