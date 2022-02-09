@@ -1,6 +1,6 @@
 import path from 'path';
 import * as dotenv from 'dotenv';
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+dotenv.config({ path: path.resolve(process.cwd(), '.env.scripts') });
 
 import { authClient } from '../../../utils/auth';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -21,7 +21,7 @@ export async function createSkus(teams: Team[], breakNumber: number): Promise<Sk
                     type: 'skus',
                     attributes: {
                         code: team.sku,
-                        name: `${team.name} (Break ${breakNumber})`,
+                        name: team.name,
                         image_url: team.image_url,
                     },
                     relationships: {

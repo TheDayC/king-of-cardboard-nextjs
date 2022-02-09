@@ -1,7 +1,7 @@
 import { createClient } from 'contentful-management';
 import path from 'path';
 import * as dotenv from 'dotenv';
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+dotenv.config({ path: path.resolve(process.cwd(), '.env.scripts') });
 
 import { errorHandler } from '../../../middleware/errors';
 
@@ -37,7 +37,7 @@ export async function createBreaks(
         const entry = await environment.createEntry('breaks', {
             fields: {
                 internalTitle: {
-                    [enGB]: title,
+                    [enGB]: `Break ${breakNumber} - ${title}`,
                 },
                 breakNumber: {
                     [enGB]: breakNumber,
