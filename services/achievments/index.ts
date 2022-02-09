@@ -42,10 +42,13 @@ class Achievements {
 
     private async fetchAchievements(): Promise<void> {
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/achievements/getAchievements`, {
-                emailAddress: this._email,
-                accessToken: this._accessToken,
-            });
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}/api/achievements/getAchievements`,
+                {
+                    emailAddress: this._email,
+                    accessToken: this._accessToken,
+                }
+            );
 
             if (response) {
                 this._giftCardId = safelyParse(response, 'data.giftCardId', parseAsString, null);
@@ -67,11 +70,14 @@ class Achievements {
         page: number = 0
     ): Promise<boolean> {
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/achievements/getObjectives`, {
-                categories,
-                types,
-                page,
-            });
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}/api/achievements/getObjectives`,
+                {
+                    categories,
+                    types,
+                    page,
+                }
+            );
 
             if (response) {
                 this._objectives = safelyParse(response, 'data.objectives', parseAsArrayOfObjectives, null);
@@ -101,10 +107,13 @@ class Achievements {
                 },
             });
 
-            await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/achievements/updateAchievements`, {
-                emailAddress: this._email,
-                achievements: this._achievements,
-            });
+            await axios.post(
+                `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}/api/achievements/updateAchievements`,
+                {
+                    emailAddress: this._email,
+                    achievements: this._achievements,
+                }
+            );
         } catch (error: unknown) {
             errorHandler(error, 'Failed to update achievements.');
         }

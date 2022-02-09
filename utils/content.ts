@@ -52,7 +52,10 @@ export const PAGES_QUERY = `
 
 export async function fetchContent(query: string): Promise<AxiosResponse<unknown> | void> {
     try {
-        return await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/content/fetchContent`, { query });
+        return await axios.post(
+            `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}/api/content/fetchContent`,
+            { query }
+        );
     } catch (error: unknown) {
         errorHandler(error, 'Failed to fetch content.');
     }
@@ -60,7 +63,10 @@ export async function fetchContent(query: string): Promise<AxiosResponse<unknown
 
 export async function getAssetById(assetId: string): Promise<AxiosResponse<unknown> | void> {
     try {
-        return await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/content/fetchAsset`, { assetId });
+        return await axios.post(
+            `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}/api/content/fetchAsset`,
+            { assetId }
+        );
     } catch (error: unknown) {
         errorHandler(error, 'Failed to fetch asset.');
     }

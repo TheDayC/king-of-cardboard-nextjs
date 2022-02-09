@@ -62,16 +62,19 @@ export async function sendOrderConfirmation(
     shippingAddress: CustomerAddress
 ): Promise<boolean> {
     try {
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/sendOrderConfirmation`, {
-            orderNumber,
-            subTotal,
-            shipping,
-            total,
-            items,
-            customerDetails,
-            billingAddress,
-            shippingAddress,
-        });
+        const res = await axios.post(
+            `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}/api/sendOrderConfirmation`,
+            {
+                orderNumber,
+                subTotal,
+                shipping,
+                total,
+                items,
+                customerDetails,
+                billingAddress,
+                shippingAddress,
+            }
+        );
         const status = safelyParse(res, 'status', parseAsNumber, 500);
 
         return status === 200;
