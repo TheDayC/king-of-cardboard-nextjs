@@ -63,7 +63,7 @@ export async function sendOrderConfirmation(
 ): Promise<boolean> {
     try {
         const res = await axios.post(
-            `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}/api/sendOrderConfirmation`,
+            `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_VERCEL_URL}/api/sendOrderConfirmation`,
             {
                 orderNumber,
                 subTotal,

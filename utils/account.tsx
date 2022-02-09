@@ -667,7 +667,9 @@ export async function editAddress(
 export async function requestPasswordReset(accessToken: string, email: string): Promise<boolean> {
     try {
         const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}/api/account/requestPasswordReset`,
+            `${
+                process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_VERCEL_URL
+            }/api/account/requestPasswordReset`,
             {
                 token: accessToken,
                 email,
@@ -751,7 +753,7 @@ export async function resetPassword(
 export async function updateUsername(emailAddress: string, username: string): Promise<boolean> {
     try {
         const res = await axios.post(
-            `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}/api/account/updateUsername`,
+            `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_VERCEL_URL}/api/account/updateUsername`,
             {
                 emailAddress,
                 username,
@@ -771,7 +773,7 @@ export async function updateUsername(emailAddress: string, username: string): Pr
 export async function getSocialMedia(emailAddress: string): Promise<SocialMedia> {
     try {
         const res = await axios.post(
-            `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}/api/account/getSocialMedia`,
+            `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_VERCEL_URL}/api/account/getSocialMedia`,
             {
                 emailAddress,
             }
@@ -807,7 +809,7 @@ export async function updateSocialMedia(
 ): Promise<boolean> {
     try {
         const res = await axios.post(
-            `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}/api/account/updateSocialMedia`,
+            `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_VERCEL_URL}/api/account/updateSocialMedia`,
             {
                 emailAddress,
                 instagram,
