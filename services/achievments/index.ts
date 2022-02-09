@@ -43,9 +43,7 @@ class Achievements {
     private async fetchAchievements(): Promise<void> {
         try {
             const response = await axios.post(
-                `${
-                    process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_VERCEL_URL
-                }/api/achievements/getAchievements`,
+                `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/achievements/getAchievements`,
                 {
                     emailAddress: this._email,
                     accessToken: this._accessToken,
@@ -73,9 +71,7 @@ class Achievements {
     ): Promise<boolean> {
         try {
             const response = await axios.post(
-                `${
-                    process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_VERCEL_URL
-                }/api/achievements/getObjectives`,
+                `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/achievements/getObjectives`,
                 {
                     categories,
                     types,
@@ -111,15 +107,10 @@ class Achievements {
                 },
             });
 
-            await axios.post(
-                `${
-                    process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_VERCEL_URL
-                }/api/achievements/updateAchievements`,
-                {
-                    emailAddress: this._email,
-                    achievements: this._achievements,
-                }
-            );
+            await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/achievements/updateAchievements`, {
+                emailAddress: this._email,
+                achievements: this._achievements,
+            });
         } catch (error: unknown) {
             errorHandler(error, 'Failed to update achievements.');
         }
