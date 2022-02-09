@@ -123,7 +123,7 @@ export const Slot: React.FC<SlotProps> = ({
                         className={`z-10 w-auto h-full ${styles.logo}`}
                     />
                 )}
-                {isRandom && <GiCardRandom className="w-32 h-32 text-gray-500" />}
+                {isRandom && <GiCardRandom className="w-32 h-32 text-secondary" />}
             </div>
             <p className="text-xs text-center mb-2 lg:mb-4 lg:text-md">{name}</p>
             <div className="flex flex-row justify-center items-center">

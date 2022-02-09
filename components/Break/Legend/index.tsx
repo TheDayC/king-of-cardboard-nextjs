@@ -11,8 +11,10 @@ export const Legend: React.FC = () => {
                 <span>You&apos;ll receive a random slot with your purchase at the start of the stream.</span>
             </p>
             <p className="text-sm">
-                <GiCardRandom className="text-3xl text-gray-500 mr-2 inline-block" />
-                <span>Your purchased slot will be random.</span>
+                <GiCardRandom className="text-3xl text-secondary mr-2 inline-block" />
+                <span>
+                    Your purchased slot will be assigned a random team, type or colour based on the set being opened.
+                </span>
             </p>
         </div>
     );
