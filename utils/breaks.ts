@@ -16,7 +16,6 @@ import {
     parseAsBreakSlotsCollection,
     parseAsArrayOfCommerceResponse,
     parseAsArrayOfDocuments,
-    parseAsContentfulBreak,
 } from './parsers';
 
 export async function getBreaks(
