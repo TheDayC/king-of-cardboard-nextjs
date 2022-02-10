@@ -34,9 +34,9 @@ export const Grid: React.FC = () => {
     useEffect(() => {
         if (accessToken) {
             dispatch(setIsLoadingBreaks(true));
-            dispatch(fetchBreaks({ accessToken, limit: currentPage, skip: 0, order }));
+            dispatch(fetchBreaks({ accessToken, limit: PER_PAGE, skip: 0, order }));
         }
-    }, [dispatch, accessToken, currentPage, order]);
+    }, [dispatch, accessToken, order]);
 
     if (isLoadingBreaks) {
         return <Skeleton />;
