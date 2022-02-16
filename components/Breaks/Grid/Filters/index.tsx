@@ -26,12 +26,12 @@ export const Filters: React.FC = () => {
                     onChange={handleChange}
                     value={order}
                 >
+                    <option value="breakDate_ASC">Break Date ASC</option>
+                    <option value="breakDate_DESC">Break Date DESC</option>
                     <option value="breakNumber_ASC">Break Number ASC</option>
                     <option value="breakNumber_DESC">Break Number DESC</option>
                     <option value="title_ASC">Title ASC</option>
                     <option value="title_DESC">Title DESC</option>
-                    <option value="breakDate_ASC">Break Date ASC</option>
-                    <option value="breakDate_DESC">Break Date DESC</option>
                 </select>
             </div>
         </div>
