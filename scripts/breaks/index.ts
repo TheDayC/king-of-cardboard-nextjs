@@ -9,6 +9,7 @@ import { uefaMerlinTeams } from './data/uefa-merlin';
 import { uefaStadiumTeams } from './data/uefa-stadium';
 import { worldCupTeams } from './data/world-cup';
 import { randomTeams } from './data/random';
+import { scoreTeams } from './data/epl-score';
 import { createAssets } from './create/assets';
 import { createSkus } from './create/skus';
 import { createBreaks } from './create/breaks';
@@ -16,23 +17,24 @@ import { createBreakSlots } from './create/slots';
 
 const assetsOptions = {
     limit: 30,
-    'metadata.tags.sys.id[all]': 'random,logos',
+    'metadata.tags.sys.id[all]': 'epl,logos',
 };
 
-const breakNumber = 6;
+const breakNumber = 11;
 const sku = `BREAK-${breakNumber}-{{CODEANDNAME}}`;
-const title = 'Donruss Elite FOTL Hobby 21/22';
-const slug = 'donruss-elite-fotl-hobby-21-22';
-const cardImage = '6bI0mQMEwH70f3Y8lsYOpi';
-const type = 'basketball';
-const date = '2022-03-05T17:00:00';
-const format = 'Random Teams';
-const breakTags = ['Luxury', 'High Hit Chance'];
-const slotTags = ['basketball', 'nba', 'slot'];
+const title = 'Score Fat Pack Box 21/22';
+const slug = 'score-fat-pack-box-21-22';
+const cardImage = '7EUoxoEKyVxBt5VeuQ0y3I';
+const type = 'soccer';
+const date = '2022-02-20T19:00:00';
+const format = 'Pick Your Team';
+const breakTags = ['Entry', 'High Yield'];
+const slotTags = ['soccer', 'epl', 'slot'];
+const isRandom = false;
 
 async function generateBreaks(): Promise<void> {
     // Create the teams for this break.
-    const teams = await createAssets(sku, assetsOptions, randomTeams, breakNumber, true);
+    const teams = await createAssets(sku, assetsOptions, scoreTeams, breakNumber, isRandom);
 
     if (!teams) return;
 
