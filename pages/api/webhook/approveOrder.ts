@@ -7,7 +7,7 @@ import { runMiddleware } from '../../../middleware/api';
 
 // Initializing the cors middleware
 const cors = Cors({
-    origin: ['/.kingofcardboard.co.uk$/', '/.king-of-cardboard.commercelayer.io$/'],
+    origin: false,
     methods: ['POST', 'HEAD'],
 });
 
