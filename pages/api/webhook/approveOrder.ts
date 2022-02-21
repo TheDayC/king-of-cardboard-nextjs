@@ -7,20 +7,21 @@ import { runMiddleware } from '../../../middleware/api';
 
 // Initializing the cors middleware
 const cors = Cors({
-    origin: false,
+    origin: ['https://king-of-cardboard.commercelayer.io/'],
     methods: ['POST', 'HEAD'],
 });
 
 async function approveOrder(req: NextApiRequest, res: NextApiResponse): Promise<void> {
-    // Run the middleware
-    await runMiddleware(req, res, cors);
-
     if (req.method === 'POST') {
-        try {
-            console.log(req.body);
+        // Run the middleware
+        await runMiddleware(req, res, cors);
 
-            res.status(200);
+        try {
+            console.log('MEMES');
+
+            res.status(200).end();
         } catch (error) {
+            console.log('🚀 ~ file: approveOrder.ts ~ line 25 ~ approveOrder ~ error', error);
             const status = safelyParse(error, 'response.status', parseAsNumber, 500);
 
             res.status(status).json(apiErrorHandler(error, 'Failed to send order confirmation email.'));
