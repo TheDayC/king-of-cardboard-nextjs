@@ -6,7 +6,7 @@ import { MdAdsClick } from 'react-icons/md';
 import { addError } from '../../../store/slices/alerts';
 import { completePayPalOrder } from '../../../utils/checkout';
 import selector from './selector';
-import { confirmOrder, sendOrderConfirmation } from '../../../utils/payment';
+import { confirmOrder } from '../../../utils/payment';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Addresses from './Addresses';
@@ -61,18 +61,6 @@ const Complete: React.FC<CompleteProps> = ({ paymentId, payerId, orderId }) => {
                                 billingAddress,
                                 shippingAddress,
                             })
-                        );
-
-                        // Distribute the confirmation email so the customer has a receipt.
-                        await sendOrderConfirmation(
-                            orderNumber,
-                            subTotal,
-                            shipping,
-                            total,
-                            items,
-                            customerDetails,
-                            billingAddress,
-                            shippingAddress
                         );
                     } else {
                         dispatch(addError('Failed to confirm your order, please contact support.'));

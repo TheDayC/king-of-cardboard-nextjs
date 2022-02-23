@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react';
 
 import { setCurrentStep } from '../../../store/slices/checkout';
 import { createPaymentSource } from '../../../utils/commerce';
-import { confirmOrder, refreshPayment, sendOrderConfirmation } from '../../../utils/payment';
+import { confirmOrder, refreshPayment } from '../../../utils/payment';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import Achievements from '../../../services/achievments';
@@ -189,18 +189,6 @@ export const Payment: React.FC = () => {
                     billingAddress,
                     shippingAddress,
                 })
-            );
-
-            // Distribute the confirmation email so the customer has a receipt.
-            await sendOrderConfirmation(
-                orderNumber,
-                subTotal,
-                shipping,
-                total,
-                items,
-                customerDetails,
-                billingAddress,
-                shippingAddress
             );
 
             // If the user is logged in we need to submit their achievements to the database.
