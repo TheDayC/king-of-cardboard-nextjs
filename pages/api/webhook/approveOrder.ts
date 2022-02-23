@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment */
 import fs from 'fs';
 import path from 'path';
+import imageType from 'image-type';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Cors from 'cors';
 import axios from 'axios';
@@ -8,7 +9,7 @@ import { createTransport } from 'nodemailer';
 // @ts-ignore
 import mandrillTransport from 'nodemailer-mandrill-transport';
 
-import { parseAsArrayOfCommerceResponse, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
+import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 import { apiErrorHandler } from '../../../middleware/errors';
 import { runMiddleware } from '../../../middleware/api';
 
@@ -57,33 +58,33 @@ async function approveOrder(req: NextApiRequest, res: NextApiResponse): Promise<
         await runMiddleware(req, res, cors);
 
         try {
-            const orderNumber = safelyParse(req, 'data.attributes.number', parseAsNumber, 0);
-            const subTotal = safelyParse(req, 'data.attributes.formatted_subtotal_amount', parseAsString, '');
-            const shipping = safelyParse(req, 'data.attributes.formatted_shipping_amount', parseAsString, '');
-            const total = safelyParse(req, 'data.attributes.formatted_total_amount_with_taxes', parseAsString, '');
-            const email = safelyParse(req, 'data.attributes.customer_email', parseAsString, '');
+            const orderNumber = safelyParse(req, 'body.data.attributes.number', parseAsNumber, 0);
+            const subTotal = safelyParse(req, 'body.data.attributes.formatted_subtotal_amount', parseAsString, '');
+            const shipping = safelyParse(req, 'body.data.attributes.formatted_shipping_amount', parseAsString, '');
+            const total = safelyParse(req, 'body.data.attributes.formatted_total_amount_with_taxes', parseAsString, '');
+            const email = safelyParse(req, 'body.data.attributes.customer_email', parseAsString, '');
             const billingAddressId = safelyParse(
                 req,
-                'data.relationships.billing_address.data.id',
+                'body.data.relationships.billing_address.data.id',
                 parseAsString,
                 null
             );
             const shippingAddressId = safelyParse(
                 req,
-                'data.relationships.shipping_address.data.id',
+                'body.data.relationships.shipping_address.data.id',
                 parseAsString,
                 null
             );
 
-            const tempItems = req.body.data.included.filter((item: any) => item.type === 'line_items' && item.sku_code);
-            const items = safelyParse(tempItems, '', parseAsArrayOfCommerceResponse, null);
+            const items: unknown[] | null =
+                req.body.included.filter((item: any) => item.type === 'line_items' && item.attributes.sku_code) || null;
 
-            if (items && billingAddressId && shippingAddressId) {
+            if (items && items.length > 0 && billingAddressId && shippingAddressId) {
                 // Find addresses
-                const billingAddress = req.body.data.included.find(
+                const billingAddress = req.body.included.find(
                     (item: any) => item.type === 'addresses' && item.id === billingAddressId
                 );
-                const shippingAddress = req.body.data.included.find(
+                const shippingAddress = req.body.included.find(
                     (item: any) => item.type === 'addresses' && item.id === shippingAddressId
                 );
 
@@ -107,13 +108,14 @@ async function approveOrder(req: NextApiRequest, res: NextApiResponse): Promise<
                 const shippingCounty = safelyParse(billingAddress, 'attributes.state_code', parseAsString, '');
 
                 const itemsHtml = items.map((item) => {
+                    const id = safelyParse(item, 'id', parseAsString, '');
                     const name = safelyParse(item, 'attributes.name', parseAsString, '');
                     const sku_code = safelyParse(item, 'attributes.sku_code', parseAsString, '');
                     const quantity = safelyParse(item, 'attributes.sku_code', parseAsNumber, 0);
                     const total = safelyParse(item, 'attributes.formatted_total_amount', parseAsString, '');
 
                     return `<tr>
-                            <td align="center"><img src="cid:${item.id}" alt="${name} line item image" title="${name} image" class="productImg" /></td>
+                            <td align="center"><img src="cid:${id}" alt="${name} line item image" title="${name} image" class="productImg" /></td>
                             <td>
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                     <tbody>
@@ -145,13 +147,14 @@ async function approveOrder(req: NextApiRequest, res: NextApiResponse): Promise<
                 const itemsImgData: ImageObject[] = [];
 
                 for (const item of items) {
+                    const id = safelyParse(item, 'id', parseAsString, '');
                     const imgUrl = safelyParse(
                         item,
                         'attributes.image_url',
                         parseAsString,
                         'https://via.placeholder.com/50'
                     );
-                    const imgData = await parseImgData(item.id, imgUrl);
+                    const imgData = await parseImgData(id, imgUrl);
 
                     itemsImgData.push(imgData);
                 }
@@ -250,6 +253,7 @@ async function approveOrder(req: NextApiRequest, res: NextApiResponse): Promise<
                 });
             }
         } catch (error) {
+            console.log('🚀 ~ file: approveOrder.ts ~ line 254 ~ approveOrder ~ error', error);
             const status = safelyParse(error, 'response.status', parseAsNumber, 500);
 
             res.status(status).json(apiErrorHandler(error, 'Failed to send order confirmation email.'));
