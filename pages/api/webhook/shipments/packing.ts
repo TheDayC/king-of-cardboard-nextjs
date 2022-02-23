@@ -49,7 +49,7 @@ async function parseImgData(name: string, url: string): Promise<ImageObject> {
     };
 }
 
-const filePath = path.resolve(process.cwd(), 'html', 'order.html');
+const filePath = path.resolve(process.cwd(), 'html', 'statusChange.html');
 const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.png'));
 
 async function packing(req: NextApiRequest, res: NextApiResponse): Promise<void> {
@@ -180,18 +180,21 @@ async function packing(req: NextApiRequest, res: NextApiResponse): Promise<void>
                     .replace('{{items}}', itemsHtml.join(''))
                     .replace('{{subTotal}}', subTotal)
                     .replace('{{shipping}}', shipping)
-                    .replace('{{total}}', total);
+                    .replace('{{total}}', total)
+                    .replace('{{status}}', 'packing');
 
                 const mailOptions = {
                     from: `No Reply <${process.env.MAILER_ADDRESS}>`,
                     to: `${firstName} ${lastName} <${email}>`,
-                    subject: 'Order Confirmation - King of Cardboard',
+                    subject: `Your King of Cardboard order (#${orderNumber}) has been updated`,
                     html,
                     text: `
                             Hi ${firstName},
 
-                            Thank you for placing your order with King of Cardboard, we hope you enjoy the products you've bought!
-                            Below you'll find a summary of your order, you can also review these details by logging into your account on the website and using the account menu to navigate to your order history.
+                            Your order status has changed!
+
+                            # Order Status Changed
+                            The status of your order #${orderNumber} has changed to Packing.
                         
                             # Order Details
                             ------
