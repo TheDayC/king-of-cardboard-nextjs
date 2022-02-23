@@ -9,9 +9,9 @@ import { createTransport } from 'nodemailer';
 // @ts-ignore
 import mandrillTransport from 'nodemailer-mandrill-transport';
 
-import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
-import { apiErrorHandler } from '../../../middleware/errors';
-import { runMiddleware } from '../../../middleware/api';
+import { parseAsNumber, parseAsString, safelyParse } from '../../../../utils/parsers';
+import { apiErrorHandler } from '../../../../middleware/errors';
+import { runMiddleware } from '../../../../middleware/api';
 
 // Initializing the cors middleware
 const cors = Cors({
@@ -52,7 +52,7 @@ async function parseImgData(name: string, url: string): Promise<ImageObject> {
 const filePath = path.resolve(process.cwd(), 'html', 'order.html');
 const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.png'));
 
-async function approveOrder(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+async function packing(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         // Run the middleware
         await runMiddleware(req, res, cors);
@@ -261,4 +261,4 @@ async function approveOrder(req: NextApiRequest, res: NextApiResponse): Promise<
     }
 }
 
-export default approveOrder;
+export default packing;
