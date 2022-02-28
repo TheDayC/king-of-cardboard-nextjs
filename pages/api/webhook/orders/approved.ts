@@ -101,11 +101,11 @@ async function approved(req: NextApiRequest, res: NextApiResponse): Promise<void
                 const county = safelyParse(billingAddress, 'attributes.state_code', parseAsString, '');
 
                 // Parse shipping address
-                const shippingAddressLineOne = safelyParse(billingAddress, 'attributes.line_1', parseAsString, '');
-                const shippingAddressLineTwo = safelyParse(billingAddress, 'attributes.line_1', parseAsString, '');
-                const shippingCity = safelyParse(billingAddress, 'attributes.city', parseAsString, '');
-                const shippingPostcode = safelyParse(billingAddress, 'attributes.zip_code', parseAsString, '');
-                const shippingCounty = safelyParse(billingAddress, 'attributes.state_code', parseAsString, '');
+                const shippingAddressLineOne = safelyParse(shippingAddress, 'attributes.line_1', parseAsString, '');
+                const shippingAddressLineTwo = safelyParse(shippingAddress, 'attributes.line_1', parseAsString, '');
+                const shippingCity = safelyParse(shippingAddress, 'attributes.city', parseAsString, '');
+                const shippingPostcode = safelyParse(shippingAddress, 'attributes.zip_code', parseAsString, '');
+                const shippingCounty = safelyParse(shippingAddress, 'attributes.state_code', parseAsString, '');
 
                 const itemsHtml = items.map((item) => {
                     const id = safelyParse(item, 'id', parseAsString, '');
