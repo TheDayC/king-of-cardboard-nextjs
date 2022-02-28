@@ -51,9 +51,9 @@ async function parseImgData(name: string, url: string): Promise<ImageObject> {
 
 const filePath = path.resolve(process.cwd(), 'html', 'statusChange.html');
 const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.png'));
-const status = 'packing';
+const status = 'ready';
 
-async function packing(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+async function ready(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         // Run the middleware
         await runMiddleware(req, res, cors);
@@ -204,4 +204,4 @@ async function packing(req: NextApiRequest, res: NextApiResponse): Promise<void>
     }
 }
 
-export default packing;
+export default ready;
