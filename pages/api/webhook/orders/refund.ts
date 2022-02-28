@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment */
 import fs from 'fs';
 import path from 'path';
-import imageType from 'image-type';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Cors from 'cors';
-import axios from 'axios';
 import { createTransport } from 'nodemailer';
 // @ts-ignore
 import mandrillTransport from 'nodemailer-mandrill-transport';
