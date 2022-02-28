@@ -58,17 +58,7 @@ async function packing(req: NextApiRequest, res: NextApiResponse): Promise<void>
         await runMiddleware(req, res, cors);
 
         try {
-            const orderNumber = safelyParse(req, 'body.data.attributes.number', parseAsNumber, 0);
-            const subTotal = safelyParse(req, 'body.data.attributes.formatted_subtotal_amount', parseAsString, '');
-            const shipping = safelyParse(req, 'body.data.attributes.formatted_shipping_amount', parseAsString, '');
-            const total = safelyParse(req, 'body.data.attributes.formatted_total_amount_with_taxes', parseAsString, '');
-            const email = safelyParse(req, 'body.data.attributes.customer_email', parseAsString, '');
-            const billingAddressId = safelyParse(
-                req,
-                'body.data.relationships.billing_address.data.id',
-                parseAsString,
-                null
-            );
+            const orderId = safelyParse(req, 'body.data.relationships.order.data.id', parseAsString, null);
             const shippingAddressId = safelyParse(
                 req,
                 'body.data.relationships.shipping_address.data.id',
@@ -79,11 +69,8 @@ async function packing(req: NextApiRequest, res: NextApiResponse): Promise<void>
             const items: unknown[] | null =
                 req.body.included.filter((item: any) => item.type === 'line_items' && item.attributes.sku_code) || null;
 
-            if (items && items.length > 0 && billingAddressId && shippingAddressId) {
-                // Find addresses
-                const billingAddress = req.body.included.find(
-                    (item: any) => item.type === 'addresses' && item.id === billingAddressId
-                );
+            if (items && items.length > 0 && orderId && shippingAddressId) {
+                const order = req.body.included.find((item: any) => item.type === 'orders' && item.id === orderId);
                 const shippingAddress = req.body.included.find(
                     (item: any) => item.type === 'addresses' && item.id === shippingAddressId
                 );
@@ -92,20 +79,13 @@ async function packing(req: NextApiRequest, res: NextApiResponse): Promise<void>
                 const firstName = safelyParse(shippingAddress, 'attributes.first_name', parseAsString, '');
                 const lastName = safelyParse(shippingAddress, 'attributes.last_name', parseAsString, '');
                 const phone = safelyParse(shippingAddress, 'attributes.phone', parseAsString, '');
+                const email = safelyParse(shippingAddress, 'attributes.customer_email', parseAsString, '');
 
-                // Parse billing address
-                const addressLineOne = safelyParse(billingAddress, 'attributes.line_1', parseAsString, '');
-                const addressLineTwo = safelyParse(billingAddress, 'attributes.line_1', parseAsString, '');
-                const city = safelyParse(billingAddress, 'attributes.city', parseAsString, '');
-                const postcode = safelyParse(billingAddress, 'attributes.zip_code', parseAsString, '');
-                const county = safelyParse(billingAddress, 'attributes.state_code', parseAsString, '');
-
-                // Parse shipping address
-                const shippingAddressLineOne = safelyParse(billingAddress, 'attributes.line_1', parseAsString, '');
-                const shippingAddressLineTwo = safelyParse(billingAddress, 'attributes.line_1', parseAsString, '');
-                const shippingCity = safelyParse(billingAddress, 'attributes.city', parseAsString, '');
-                const shippingPostcode = safelyParse(billingAddress, 'attributes.zip_code', parseAsString, '');
-                const shippingCounty = safelyParse(billingAddress, 'attributes.state_code', parseAsString, '');
+                // Parse order details
+                const orderNumber = safelyParse(order, 'attributes.number', parseAsNumber, 0);
+                const subTotal = safelyParse(order, 'attributes.formatted_subtotal_amount', parseAsString, '');
+                const shipping = safelyParse(order, 'attributes.formatted_shipping_amount', parseAsString, '');
+                const total = safelyParse(order, 'attributes.formatted_total_amount_with_taxes', parseAsString, '');
 
                 const itemsHtml = items.map((item) => {
                     const id = safelyParse(item, 'id', parseAsString, '');
@@ -162,21 +142,6 @@ async function packing(req: NextApiRequest, res: NextApiResponse): Promise<void>
                 const htmlData = fs.readFileSync(filePath, 'utf8');
                 const html = htmlData
                     .replace('{{orderNumber}}', `${orderNumber}`)
-                    .replace('{{name}}', firstName)
-                    .replace('{{email}}', email)
-                    .replace('{{firstName}}', firstName)
-                    .replace('{{lastName}}', lastName)
-                    .replace('{{phone}}', phone)
-                    .replace('{{lineOne}}', addressLineOne)
-                    .replace('{{lineTwo}}', addressLineTwo)
-                    .replace('{{city}}', city)
-                    .replace('{{postcode}}', postcode)
-                    .replace('{{county}}', county)
-                    .replace('{{shippingLineOne}}', shippingAddressLineOne)
-                    .replace('{{shippingLineTwo}}', shippingAddressLineTwo)
-                    .replace('{{shippingCity}}', shippingCity)
-                    .replace('{{shippingPostcode}}', shippingPostcode)
-                    .replace('{{shippingCounty}}', shippingCounty)
                     .replace('{{items}}', itemsHtml.join(''))
                     .replace('{{subTotal}}', subTotal)
                     .replace('{{shipping}}', shipping)
@@ -202,24 +167,6 @@ async function packing(req: NextApiRequest, res: NextApiResponse): Promise<void>
                             Name: ${firstName} ${lastName}
                             Email: ${email}
                             Phone: ${phone}
-
-                            ------
-
-                            ### Billing Details 
-                            ${addressLineOne}
-                            ${addressLineTwo}
-                            ${city}
-                            ${postcode}
-                            ${county}
-
-                            ------
-                            
-                            ### Shipping Details
-                            ${shippingAddressLineOne}
-                            ${shippingAddressLineTwo}
-                            ${shippingCity}
-                            ${shippingPostcode}
-                            ${shippingCounty}
 
                             ------
                             
