@@ -40,10 +40,6 @@ async function refund(req: NextApiRequest, res: NextApiResponse): Promise<void> 
             const email = safelyParse(req, 'body.data.attributes.customer_email', parseAsString, '');
 
             const refundId = req.body.data.relationships.refunds.data[0].id;
-            console.log(
-                '🚀 ~ file: refund.ts ~ line 70 ~ refund ~ refundId',
-                req.body.data.relationships.refunds.data[0].id
-            );
 
             const shippingAddressId = safelyParse(
                 req,
