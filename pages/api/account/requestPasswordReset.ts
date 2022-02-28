@@ -68,7 +68,9 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
             );
 
             if (resetToken && email) {
-                const link = `${process.env.NEXT_PUBLIC_SITE_URL}/resetPassword?token=${resetToken}&id=${resetId}&email=${email}`;
+                const link = `${
+                    process.env.NEXT_PUBLIC_SITE_URL || ''
+                }/resetPassword?token=${resetToken}&id=${resetId}&email=${email}`;
                 const htmlData = fs.readFileSync(filePath, 'utf8');
                 const html = htmlData
                     .replace('{{email}}', email)

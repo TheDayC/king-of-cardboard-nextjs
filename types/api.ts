@@ -1,3 +1,14 @@
+import Cors from 'cors';
+
+interface CorsResponse {
+    statusCode?: number | undefined;
+    setHeader(key: string, value: string): any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    end(): any; // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type corsFunction = (req: Cors.CorsRequest, res: CorsResponse, next: (err?: any) => any) => void;
+
 export interface ErrorResponse {
     status: number;
     message: string;
