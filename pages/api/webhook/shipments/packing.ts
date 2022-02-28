@@ -78,10 +78,9 @@ async function packing(req: NextApiRequest, res: NextApiResponse): Promise<void>
                 // Parse some basic customer details
                 const firstName = safelyParse(shippingAddress, 'attributes.first_name', parseAsString, '');
                 const lastName = safelyParse(shippingAddress, 'attributes.last_name', parseAsString, '');
-                const phone = safelyParse(shippingAddress, 'attributes.phone', parseAsString, '');
-                const email = safelyParse(shippingAddress, 'attributes.customer_email', parseAsString, '');
 
                 // Parse order details
+                const email = safelyParse(order, 'attributes.customer_email', parseAsString, '');
                 const orderNumber = safelyParse(order, 'attributes.number', parseAsNumber, 0);
                 const subTotal = safelyParse(order, 'attributes.formatted_subtotal_amount', parseAsString, '');
                 const shipping = safelyParse(order, 'attributes.formatted_shipping_amount', parseAsString, '');
@@ -141,6 +140,7 @@ async function packing(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
                 const htmlData = fs.readFileSync(filePath, 'utf8');
                 const html = htmlData
+                    .replace('{{name}}', `${firstName}`)
                     .replace('{{orderNumber}}', `${orderNumber}`)
                     .replace('{{items}}', itemsHtml.join(''))
                     .replace('{{subTotal}}', subTotal)
@@ -160,13 +160,6 @@ async function packing(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
                             # Order Status Changed
                             The status of your order #${orderNumber} has changed to Packing.
-                        
-                            # Order Details
-                            ------
-                            ## Personal Details
-                            Name: ${firstName} ${lastName}
-                            Email: ${email}
-                            Phone: ${phone}
 
                             ------
                             
@@ -203,7 +196,6 @@ async function packing(req: NextApiRequest, res: NextApiResponse): Promise<void>
                 });
             }
         } catch (error) {
-            console.log('🚀 ~ file: approveOrder.ts ~ line 254 ~ approveOrder ~ error', error);
             const status = safelyParse(error, 'response.status', parseAsNumber, 500);
 
             res.status(status).json(apiErrorHandler(error, 'Failed to send order confirmation email.'));
