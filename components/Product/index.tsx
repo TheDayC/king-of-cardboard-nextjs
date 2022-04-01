@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
-import Head from 'next/head';
 
 import { setLineItem } from '../../utils/commerce';
 import selector from './selector';
@@ -136,14 +135,6 @@ export const Product: React.FC = () => {
 
         return (
             <div className="flex flex-col relative lg:flex-row lg:space-x-8">
-                <Head>
-                    <title>{currentProduct.name} - Product - King of Cardboard</title>
-                    <meta
-                        property="og:title"
-                        content={`${currentProduct.name} - Product - King of Cardboard`}
-                        key="title"
-                    />
-                </Head>
                 <Images mainImage={currentProduct.cardImage} imageCollection={currentProduct.images.items} />
 
                 <div id="productDetails" className="flex flex-col w-full lg:w-3/4">

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSession } from 'next-auth/react';
-import Head from 'next/head';
 
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import selector from './selector';
@@ -59,11 +58,10 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId }) 
     }
 
     return (
-        <PageWrapper>
-            <Head>
-                <title>Edit Address - Account - King of Cardboard</title>
-                <meta property="og:title" content="Edit Address - Account - King of Cardboard" key="title" />
-            </Head>
+        <PageWrapper
+            title="Edit Address - Account - King of Cardboard"
+            description="A page to add and edit your personal addresses."
+        >
             <div className="flex flex-col md:flex-row w-full justify-start items-start">
                 <div className="flex flex-col md:px-4 w-full relative">
                     <Loading show={isLoading} />

@@ -1,7 +1,6 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
 import { Document } from '@contentful/rich-text-types';
-import Head from 'next/head';
 
 import PageWrapper from '../../components/PageWrapper';
 import { parseAsString, safelyParse } from '../../utils/parsers';
@@ -38,11 +37,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ errorCode, content, slug }
     }
 
     return (
-        <PageWrapper>
-            <Head>
-                <title>{prettySlug} - Legal - King of Cardboard</title>
-                <meta property="og:title" content={`${prettySlug} - Legal - King of Cardboard`} key="title" />
-            </Head>
+        <PageWrapper title={`${prettySlug} - Legal - King of Cardboard`} description={null}>
             <Content content={content} />
         </PageWrapper>
     );

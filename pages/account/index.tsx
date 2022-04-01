@@ -2,7 +2,6 @@ import React from 'react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import { Document } from '@contentful/rich-text-types';
-import Head from 'next/head';
 
 import Content from '../../components/Content';
 import PageWrapper from '../../components/PageWrapper';
@@ -39,11 +38,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ content }) => {
     }
 
     return (
-        <PageWrapper>
-            <Head>
-                <title>Account - King of Cardboard</title>
-                <meta property="og:title" content="Account - King of Cardboard" key="title" />
-            </Head>
+        <PageWrapper title="Account - King of Cardboard" description="Account page">
             <div className="flex flex-col md:flex-row w-full justify-start items-start">
                 <div className="flex flex-col relative w-full px-2 py-0 md:w-3/4 md:px-4 md:px-8" data-testid="content">
                     {content && <Content content={content} />}

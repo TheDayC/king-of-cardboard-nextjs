@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSession } from 'next-auth/react';
-import Head from 'next/head';
 
 import PageWrapper from '../../../components/PageWrapper';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -58,11 +57,10 @@ export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumb
     }
 
     return (
-        <PageWrapper>
-            <Head>
-                <title>#{orderNumber} - Account - King of Cardboard</title>
-                <meta property="og:title" content={`#${orderNumber} - Account - King of Cardboard`} key="title" />
-            </Head>
+        <PageWrapper
+            title={`#${orderNumber} - Account - King of Cardboard`}
+            description={`Your historical order #${orderNumber} details.`}
+        >
             <div className="flex flex-row w-full justify-start items-start">
                 <div className="flex flex-col relative w-full px-2 py-0 md:px-4 md:px-8">
                     {isLoadingOrder ? (

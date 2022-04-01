@@ -5,7 +5,7 @@ import PageWrapper from '../../components/PageWrapper';
 
 export const ProductPage: React.FC = () => {
     return (
-        <PageWrapper>
+        <PageWrapper title="Product - King of Cardboard" description={null}>
             <Product />
         </PageWrapper>
     );

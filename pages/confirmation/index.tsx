@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Head from 'next/head';
 
 import { CommerceAuthProps } from '../../types/commerce';
 import Summary from '../../components/Checkout/Summary';
@@ -34,11 +33,7 @@ export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
     }
 
     return (
-        <PageWrapper>
-            <Head>
-                <title>Confirmation - King of Cardboard</title>
-                <meta property="og:title" content="Confirmation - King of Cardboard" key="title" />
-            </Head>
+        <PageWrapper title="Confirmation - King of Cardboard" description={null}>
             <div className="flex flex-col w-full pt-4 lg:flex-row lg:space-x-4">
                 <div className="flex-1 mb-4">
                     <ConfirmationDetails />

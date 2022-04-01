@@ -54,6 +54,7 @@ export interface Global {
     checkoutLoading: boolean;
     accessToken: string | null;
     userToken: string | null;
+    isFetchingToken: boolean;
     userId: string | null;
     expires: string | null;
     hasRejected: boolean;

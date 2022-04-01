@@ -45,13 +45,19 @@ const globalSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        // Add reducers for additional action types here, and handle loading state as needed
-        builder.addCase(fetchToken.fulfilled, (state, action) => {
-            const { token, expires } = action.payload;
-
-            state.accessToken = token;
-            state.expires = expires;
+        builder.addCase(fetchToken.pending, (state) => {
+            state.isFetchingToken = true;
         }),
+            builder.addCase(fetchToken.rejected, (state) => {
+                state.isFetchingToken = false;
+            }),
+            builder.addCase(fetchToken.fulfilled, (state, action) => {
+                const { token, expires } = action.payload;
+
+                state.accessToken = token;
+                state.expires = expires;
+                state.isFetchingToken = false;
+            }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,
                 ...action.payload[globalSlice.name],

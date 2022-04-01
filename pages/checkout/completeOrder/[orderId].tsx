@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { useDispatch, useSelector } from 'react-redux';
-import Head from 'next/head';
 
 import Steps from '../../../components/Checkout/Steps';
 import Summary from '../../../components/Checkout/Summary';
@@ -64,11 +63,7 @@ export const CompleteOrderPage: React.FC<CompleteOrderPageProps> = ({ orderId, p
     }, [dispatch, accessToken, fetchPaymentData, orderId]);
 
     return (
-        <PageWrapper>
-            <Head>
-                <title>Confirm Order - King of Cardboard</title>
-                <meta property="og:title" content="Confirm Order - King of Cardboard" key="title" />
-            </Head>
+        <PageWrapper title="Confirm Order - King of Cardboard" description={null}>
             <div className="flex flex-col w-full">
                 <Steps currentStep={3} />
                 <div className="container mx-auto max-w-xxl">
