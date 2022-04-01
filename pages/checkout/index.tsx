@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import Head from 'next/head';
 
 import Steps from '../../components/Checkout/Steps';
 import Customer from '../../components/Checkout/Customer';
@@ -15,11 +14,7 @@ export const CheckoutPage: React.FC<CommerceAuthProps> = () => {
     const { currentStep } = useSelector(selector);
 
     return (
-        <PageWrapper>
-            <Head>
-                <title>Checkout - King of Cardboard</title>
-                <meta property="og:title" content="Checkout - King of Cardboard" key="title" />
-            </Head>
+        <PageWrapper title="Checkout - King of Cardboard" description={null}>
             <div className="flex flex-col w-full">
                 <Steps currentStep={currentStep} />
                 <div className="container mx-auto max-w-xxl">

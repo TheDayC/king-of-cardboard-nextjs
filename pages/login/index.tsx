@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { ClientSafeProvider, getProviders, LiteralUnion, getCsrfToken, getSession } from 'next-auth/react';
 import { BuiltInProviderType } from 'next-auth/providers';
 import { GetServerSideProps } from 'next';
-import Head from 'next/head';
 
 import Register from '../../components/Register';
 import ResetPassword from '../../components/ResetPassword';
@@ -59,11 +58,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
     if (!providers || !csrfToken) return null;
 
     return (
-        <PageWrapper>
-            <Head>
-                <title>Login - King of Cardboard</title>
-                <meta property="og:title" content="Login - King of Cardboard" key="title" />
-            </Head>
+        <PageWrapper
+            title="Login - King of Cardboard"
+            description="King of Cardboard login portal. Enter your login details to view your settings and order history."
+        >
             <div className="flex flex-col w-full justify-center items-center">
                 <div className="flex flex-col w-full md:w-1/2 lg:w-1/3 card text-center rounded-md md:shadow-2xl">
                     <div className="card-body p-2 lg:p-6">

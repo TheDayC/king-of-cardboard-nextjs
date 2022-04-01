@@ -1,5 +1,4 @@
 import React from 'react';
-import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 
 import Break from '../../../components/Break';
@@ -49,11 +48,7 @@ export const BreakPage: React.FC<BreakPageProps> = ({ errorCode, slug, isLive, i
     }
 
     return (
-        <PageWrapper>
-            <Head>
-                <title>{prettySlug} - Breaks - King of Cardboard</title>
-                <meta property="og:title" content={`${prettySlug} - Breaks - King of Cardboard`} key="title" />
-            </Head>
+        <PageWrapper title={`${prettySlug} - Breaks - King of Cardboard`} description={null}>
             {slug && <Break slug={slug} />}
         </PageWrapper>
     );

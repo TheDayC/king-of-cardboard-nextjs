@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import React from 'react';
 
 import Breaks from '../../components/Breaks';
@@ -6,11 +5,10 @@ import PageWrapper from '../../components/PageWrapper';
 
 export const BreakPage: React.FC = () => {
     return (
-        <PageWrapper>
-            <Head>
-                <title>Breaks - King of Cardboard</title>
-                <meta property="og:title" content="Breaks - King of Cardboard" key="title" />
-            </Head>
+        <PageWrapper
+            title="Breaks - King of Cardboard"
+            description="Hobby and booster box breaks in a variety of formats. A great way to keep the hobby low cost and accessible."
+        >
             <Breaks />
         </PageWrapper>
     );

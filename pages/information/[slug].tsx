@@ -1,7 +1,6 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
 import { Document } from '@contentful/rich-text-types';
-import Head from 'next/head';
 
 import PageWrapper from '../../components/PageWrapper';
 import { parseAsString, safelyParse } from '../../utils/parsers';
@@ -39,11 +38,10 @@ export const InformationPage: React.FC<InformationPageProps> = ({ errorCode, con
     }
 
     return (
-        <PageWrapper>
-            <Head>
-                <title>{prettySlug} - Information - King of Cardboard</title>
-                <meta property="og:title" content={`${prettySlug} - Information - King of Cardboard`} key="title" />
-            </Head>
+        <PageWrapper
+            title={`${prettySlug} - Information - King of Cardboard`}
+            description="We can't seem to find the page you requested!"
+        >
             <Content content={content} />
         </PageWrapper>
     );

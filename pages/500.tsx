@@ -1,17 +1,12 @@
 import React from 'react';
 import Image from 'next/image';
 import { MdOutlineMailOutline } from 'react-icons/md';
-import Head from 'next/head';
 
 import PageWrapper from '../components/PageWrapper';
 import crown from '../images/large-crown.png';
 
 export const Custom500Page: React.FC = () => (
-    <PageWrapper>
-        <Head>
-            <title>500 - King of Cardboard</title>
-            <meta property="og:title" content="500 - King of Cardboard" key="title" />
-        </Head>
+    <PageWrapper title="500 - King of Cardboard" description="Internal Server Error. Something went wrong...">
         <div className="flex flex-col w-full justify-start items-center">
             <div className="w-1/4 h-auto lg:block" role="img" data-testid="crown">
                 <Image src={crown} alt="King of Cardboard Crown" title="King of Cardboard Crown" />

@@ -34,11 +34,6 @@ const OrderAndTokenProvider: React.FC = ({ children }) => {
         }
     }, [shouldCreateOrder, accessToken, isGuest]);
 
-    // If we need to reset the token then show a loading screen
-    if (shouldResetToken) {
-        return <Loading show={true} />;
-    }
-
     return <React.Fragment>{children}</React.Fragment>;
 };
 
