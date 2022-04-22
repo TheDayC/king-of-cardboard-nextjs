@@ -28,6 +28,7 @@ const productsInitialState: ProductsState = {
             quantity: 0,
             levels: [],
         },
+        skuOptions: [],
     },
 };
 

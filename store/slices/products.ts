@@ -69,6 +69,7 @@ const productsSlice = createSlice({
                     quantity: 0,
                     levels: [],
                 },
+                skuOptions: [],
             };
         },
         setIsLoadingProducts(state, action) {
