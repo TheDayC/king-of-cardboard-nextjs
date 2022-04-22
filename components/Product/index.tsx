@@ -172,27 +172,30 @@ export const Product: React.FC = () => {
                         {currentProduct.inventory.available && (
                             <div className="quantity mb-4 flex flex-col justify-center">
                                 <form onSubmit={handleSubmit(onSubmit)}>
-                                    <h4 className="text-2xl mb-2 font-semibold">Extras</h4>
-                                    {skuOptions.map((option) => (
-                                        <div
-                                            className="flex flex-col justify-start align-center mb-2 lg:space-x-2 lg:flex-row"
-                                            key={`option-${option.id}`}
-                                        >
-                                            <label className="cursor-pointer label">
-                                                <span className="label-text text-lg mr-2">
-                                                    {option.name} - {option.amount}
-                                                </span>
-                                                <input
-                                                    type="checkbox"
-                                                    className="toggle toggle-primary mr-2"
-                                                    onChange={(e) => handleSkuOptionChange(e, option.id)}
-                                                />
-                                                <div className="tooltip mr-2" data-tip={option.description}>
-                                                    <AiFillQuestionCircle className="text-lg text-accent" />
+                                    {skuOptions.length > 0 &&
+                                        skuOptions.map((option) => (
+                                            <React.Fragment>
+                                                <h4 className="text-2xl mb-2 font-semibold">Extras</h4>
+                                                <div
+                                                    className="flex flex-col justify-start align-center mb-2 lg:space-x-2 lg:flex-row"
+                                                    key={`option-${option.id}`}
+                                                >
+                                                    <label className="cursor-pointer label">
+                                                        <span className="label-text text-lg mr-2">
+                                                            {option.name} - {option.amount}
+                                                        </span>
+                                                        <input
+                                                            type="checkbox"
+                                                            className="toggle toggle-primary mr-2"
+                                                            onChange={(e) => handleSkuOptionChange(e, option.id)}
+                                                        />
+                                                        <div className="tooltip mr-2" data-tip={option.description}>
+                                                            <AiFillQuestionCircle className="text-lg text-accent" />
+                                                        </div>
+                                                    </label>
                                                 </div>
-                                            </label>
-                                        </div>
-                                    ))}
+                                            </React.Fragment>
+                                        ))}
                                     <h4 className="text-2xl mt-2 mb-2 font-semibold">Amount</h4>
                                     <div className="flex flex-col lg:flex-row justify-start align-center lg:space-x-2">
                                         {!isQuantityAtMax && (
