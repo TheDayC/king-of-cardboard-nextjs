@@ -3,6 +3,7 @@ import { MdDeleteForever } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
 import Link from 'next/link';
+import { BsFillCheckCircleFill } from 'react-icons/bs';
 
 import {
     clearUpdateQuantities,
@@ -15,6 +16,7 @@ import { ImageItem } from '../../../types/products';
 import selector from './selector';
 import { addError } from '../../../store/slices/alerts';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
+import { LineItemOption } from '@commercelayer/sdk';
 
 interface CartItemProps {
     id: string;
@@ -25,6 +27,7 @@ interface CartItemProps {
     totalAmount: string;
     quantity: number;
     stock: number;
+    lineItemOptions: LineItemOption[];
 }
 
 export const CartItem: React.FC<CartItemProps> = ({
@@ -36,6 +39,7 @@ export const CartItem: React.FC<CartItemProps> = ({
     totalAmount,
     quantity,
     stock,
+    lineItemOptions,
 }) => {
     const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
@@ -98,6 +102,17 @@ export const CartItem: React.FC<CartItemProps> = ({
                         <div className="cursor-pointer">
                             <h4 className="hidden lg:block text-xs mb-2 lg:text-md hover:underline">{name}</h4>
                             <p className="hidden lg:block text-xs text-base-200">{sku || ''}</p>
+
+                            {lineItemOptions.length > 0 && (
+                                <div className="flex flex-col justify-center items-center text-center mt-4 lg:space-x-4">
+                                    {lineItemOptions.map((option) => (
+                                        <div className="flex flex-row justify-center items-center text-centerlg:space-x-4">
+                                            <p className="hidden lg:block text-xs font-bold">{option.name}</p>
+                                            <BsFillCheckCircleFill className="inline-block mx-2 stroke-current text-green-500 text-md" />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </Link>
                 </div>

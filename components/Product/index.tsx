@@ -98,12 +98,13 @@ export const Product: React.FC = () => {
             };
 
             const lineItemId = await setLineItem(accessToken, attributes, relationships);
-            console.log('🚀 ~ file: index.tsx ~ line 101 ~ lineItemId', lineItemId);
 
             if (lineItemId) {
                 // Create line item options
-                for (const savedSkuOptionId of savedSkuOptions) {
-                    await createLineItemOption(accessToken, lineItemId, savedSkuOptionId);
+                if (savedSkuOptions.length) {
+                    for (const savedSkuOptionId of savedSkuOptions) {
+                        const lineItemOptionId = await createLineItemOption(accessToken, lineItemId, savedSkuOptionId);
+                    }
                 }
 
                 dispatch(fetchItemCount({ accessToken, orderId }));
@@ -172,7 +173,10 @@ export const Product: React.FC = () => {
                                 <form onSubmit={handleSubmit(onSubmit)}>
                                     <h4 className="text-2xl mb-2 font-semibold">Extras</h4>
                                     {skuOptions.map((option) => (
-                                        <div className="flex flex-col justify-start align-center mb-2 lg:space-x-2 lg:flex-row">
+                                        <div
+                                            className="flex flex-col justify-start align-center mb-2 lg:space-x-2 lg:flex-row"
+                                            key={`option-${option.id}`}
+                                        >
                                             <label className="cursor-pointer label">
                                                 <span className="label-text text-lg mr-2">
                                                     {option.name} - {option.amount}

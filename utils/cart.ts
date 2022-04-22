@@ -1,4 +1,5 @@
 import { join } from 'lodash';
+import CommerceLayer from '@commercelayer/sdk';
 
 import { errorHandler } from '../middleware/errors';
 import { CartItem, CartTotals } from '../types/cart';
@@ -52,63 +53,80 @@ export async function getCartTotals(accessToken: string, orderId: string): Promi
 
 export async function getCartItems(accessToken: string, orderId: string): Promise<CartItem[]> {
     try {
-        const cl = authClient(accessToken);
-        const orderFields = 'fields[orders]=id';
-        const lineItemFields =
-            'fields[line_items]=id,sku_code,name,quantity,formatted_unit_amount,formatted_total_amount,image_url,metadata';
-        const res = await cl.get(`/api/orders/${orderId}?include=line_items&${lineItemFields}&${orderFields}`);
-        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
-
-        // Here we need to query the skus and stock_items to get a stock quantity.
-        const skus = included.map((include) => safelyParse(include, 'attributes.sku_code', parseAsString, ''));
-        const skusString = join(skus, ',');
-
-        const skuFields = '&fields[skus]=code,image_url&fields[stock_items]=sku_code,quantity';
-        const skuRes = await cl.get(
-            `/api/skus/?filter[q][code_in]=${skusString}&filter[q][stock_items_quantity_gt]=0&include=stock_items${skuFields}`
-        );
-        const skuIncluded = safelyParse(skuRes, 'data.included', parseAsArrayOfCommerceResponse, []);
-
-        const stockWithSkus = skuIncluded.map((include) => ({
-            sku_code: safelyParse(include, 'attributes.sku_code', parseAsString, ''),
-            stock: safelyParse(include, 'attributes.quantity', parseAsNumber, 0),
-        }));
-
-        // Fetch the related cms products by their product link (sku) for their images.
-        const cmsProducts = await fetchProductImagesByProductLink(skus);
-
-        // The filter for sku_code_present doesn't seem to work so manually exclude anything with a null sku here.
-        const filteredIncluded = included.filter((include) => {
-            const sku_code = safelyParse(include, 'attributes.sku_code', parseAsString, null);
-
-            return sku_code !== null;
+        const cl = CommerceLayer({
+            organization: process.env.NEXT_PUBLIC_ECOM_SLUG || '',
+            accessToken,
         });
 
-        return filteredIncluded.map((include) => {
-            const sku_code = safelyParse(include, 'attributes.sku_code', parseAsString, '');
-            const stockBySku = stockWithSkus.find((s) => s.sku_code === sku_code);
-            const stock = safelyParse(stockBySku, 'stock', parseAsNumber, 0);
+        const order = await cl.orders.retrieve(orderId, {
+            fields: {
+                orders: ['id', 'line_items'],
+                line_items: [
+                    'id',
+                    'sku_code',
+                    'name',
+                    'quantity',
+                    'formatted_unit_amount',
+                    'formatted_total_amount',
+                    'image_url',
+                    'metadata',
+                    'line_item_options',
+                ],
+                line_item_options: ['id', 'name', 'formatted_total_amount', 'quantity'],
+            },
+            include: ['line_items', 'line_items.line_item_options'],
+        });
+
+        // Here we need to query the skus and stock_items to get a stock quantity.
+        const lineItems = order.line_items ? order.line_items : [];
+        const skuCodes = order.line_items
+            ? order.line_items.map((item) => safelyParse(item, 'sku_code', parseAsString, ''))
+            : [];
+
+        const skus = await cl.skus.list({
+            filters: {
+                code_in: join(skuCodes, ','),
+                stock_items_quantity_gt: 0,
+            },
+            fields: {
+                skus: ['code', 'image_url', 'stock_items'],
+                stock_items: ['sku_code', 'quantity'],
+            },
+            include: ['stock_items'],
+        });
+
+        // Fetch the related cms products by their product link (sku) for their images.
+        const cmsProducts = await fetchProductImagesByProductLink(skuCodes);
+
+        return lineItems.map((lineItem) => {
+            const sku_code = safelyParse(lineItem, 'sku_code', parseAsString, '');
+            const skuItem = skus.find((skuItem) => skuItem.code === sku_code);
+            const stockItem =
+                skuItem && skuItem.stock_items
+                    ? skuItem.stock_items.find((stockItem) => stockItem.sku_code === sku_code) || null
+                    : null;
             const product = cmsProducts ? cmsProducts.find((p) => p.sku_code === sku_code) : null;
 
             return {
-                id: safelyParse(include, 'id', parseAsString, ''),
+                id: safelyParse(lineItem, 'id', parseAsString, ''),
                 sku_code,
                 name:
                     safelyParse(product, 'name', parseAsString, null) ||
-                    safelyParse(include, 'attributes.name', parseAsString, ''),
-                quantity: safelyParse(include, 'attributes.quantity', parseAsNumber, 0),
-                formatted_unit_amount: safelyParse(include, 'attributes.formatted_unit_amount', parseAsString, ''),
-                formatted_total_amount: safelyParse(include, 'attributes.formatted_total_amount', parseAsString, ''),
+                    safelyParse(lineItem, 'name', parseAsString, ''),
+                quantity: safelyParse(lineItem, 'quantity', parseAsNumber, 0),
+                formatted_unit_amount: safelyParse(lineItem, 'attributes.formatted_unit_amount', parseAsString, ''),
+                formatted_total_amount: safelyParse(lineItem, 'attributes.formatted_total_amount', parseAsString, ''),
                 image: {
                     title: safelyParse(product, 'title', parseAsString, ''),
                     description: safelyParse(product, 'description', parseAsString, ''),
                     url: safelyParse(product, 'url', parseAsString, ''),
                 },
                 metadata: {
-                    categories: safelyParse(include, 'attributes.metadata.categories', parseAsArrayOfStrings, []),
-                    types: safelyParse(include, 'attributes.metadata.types', parseAsArrayOfStrings, []),
+                    categories: safelyParse(lineItem, 'attributes.metadata.categories', parseAsArrayOfStrings, []),
+                    types: safelyParse(lineItem, 'attributes.metadata.types', parseAsArrayOfStrings, []),
                 },
-                stock,
+                stock: safelyParse(stockItem, 'quantity', parseAsNumber, 0),
+                line_item_options: lineItem.line_item_options || [],
             };
         });
     } catch (error: unknown) {

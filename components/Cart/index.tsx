@@ -109,6 +109,7 @@ export const Cart: React.FC = () => {
                                         totalAmount={item.formatted_total_amount}
                                         quantity={item.quantity}
                                         stock={item.stock}
+                                        lineItemOptions={item.line_item_options}
                                         key={item.name}
                                     />
                                 ))}

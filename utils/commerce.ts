@@ -1,3 +1,5 @@
+import CommerceLayer from '@commercelayer/sdk';
+
 import { errorHandler } from '../middleware/errors';
 import { PaymentSourceResponse } from '../types/api';
 import { CreateOrder } from '../types/cart';
@@ -95,36 +97,34 @@ export async function createLineItemOption(
     accessToken: string,
     lineItemId: string,
     skuOptionId: string
-): Promise<boolean> {
+): Promise<string | null> {
     try {
-        const cl = authClient(accessToken);
-        const res = await cl.patch('/api/line_item_options', {
-            data: {
-                type: 'line_item_options',
-                relationships: {
-                    line_item: {
-                        data: {
-                            type: 'line_items',
-                            id: lineItemId,
-                        },
-                    },
-                    sku_option: {
-                        data: {
-                            type: 'sku_options',
-                            id: skuOptionId,
-                        },
-                    },
-                },
+        const cl = CommerceLayer({
+            organization: process.env.NEXT_PUBLIC_ECOM_SLUG || '',
+            accessToken,
+        });
+
+        const res = await cl.line_item_options.create({
+            line_item: {
+                type: 'line_items',
+                id: lineItemId,
+            },
+            sku_option: {
+                type: 'sku_options',
+                id: skuOptionId,
+            },
+            quantity: 1,
+            options: {
+                add_ripnship: true,
             },
         });
-        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        return status === 200;
+        return res.id;
     } catch (error: unknown) {
         errorHandler(error, 'We could not fetch an order.');
     }
 
-    return false;
+    return null;
 }
 
 export async function createPaymentSource(
