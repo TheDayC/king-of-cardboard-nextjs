@@ -181,7 +181,7 @@ export const Product: React.FC = () => {
                                 <form onSubmit={handleSubmit(onSubmit)}>
                                     {skuOptions.length > 0 &&
                                         skuOptions.map((option) => (
-                                            <React.Fragment>
+                                            <React.Fragment key={`option-${option.id}`}>
                                                 <h4 className="text-2xl mb-2 font-semibold">Extras</h4>
                                                 <div
                                                     className="flex flex-col justify-start align-center mb-2 lg:space-x-2 lg:flex-row"

@@ -47,7 +47,7 @@ export const Summary: React.FC<SummaryProps> = ({ isConfirmation = false }) => {
                                     <p className="text-xs text-gray-400 mb-1">Quantity: {item.quantity}</p>
                                     {item.line_item_options.length > 0 &&
                                         item.line_item_options.map((option) => (
-                                            <p className="text-xs text-gray-400 mb-1">
+                                            <p className="text-xs text-gray-400 mb-1" key={`option-${option.id}`}>
                                                 Addon: {option.name} - {option.formatted_total_amount}
                                             </p>
                                         ))}

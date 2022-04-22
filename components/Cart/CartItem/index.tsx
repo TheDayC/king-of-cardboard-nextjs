@@ -3,7 +3,7 @@ import { MdDeleteForever } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
 import Link from 'next/link';
-import { BsFillCheckCircleFill } from 'react-icons/bs';
+import { LineItemOption } from '@commercelayer/sdk';
 
 import {
     clearUpdateQuantities,
@@ -16,7 +16,6 @@ import { ImageItem } from '../../../types/products';
 import selector from './selector';
 import { addError } from '../../../store/slices/alerts';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
-import { LineItemOption } from '@commercelayer/sdk';
 
 interface CartItemProps {
     id: string;
@@ -108,7 +107,10 @@ export const CartItem: React.FC<CartItemProps> = ({
 
                             {lineItemOptions.length > 0 &&
                                 lineItemOptions.map((option) => (
-                                    <p className="hidden lg:block text-xs text-gray-400 mb-1">
+                                    <p
+                                        className="hidden lg:block text-xs text-gray-400 mb-1"
+                                        key={`option-${option.id}`}
+                                    >
                                         Addon: {option.name} - {option.formatted_total_amount}
                                     </p>
                                 ))}
