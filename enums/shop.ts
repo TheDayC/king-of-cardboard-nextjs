@@ -12,7 +12,7 @@ export enum ProductType {
 export enum Categories {
     Sealed = 'sealed',
     Singles = 'singles',
-    Breaks = 'breaks',
+    Packs = 'packs',
     Other = 'other',
 }
 
