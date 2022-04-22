@@ -11,11 +11,11 @@ import Images from './Images';
 import Details from './Details';
 import { addError, addSuccess } from '../../store/slices/alerts';
 import { gaEvent } from '../../utils/ga';
-import { parseAsBoolean, parseAsNumber, parseAsString, safelyParse } from '../../utils/parsers';
+import { parseAsNumber, parseAsString, safelyParse } from '../../utils/parsers';
 import Skeleton from './Skeleton';
 import Error404 from '../404';
 import { getSingleProduct } from '../../utils/products';
-import { SingleProduct } from '../../types/products';
+import { SavedSkuOptions, SingleProduct } from '../../types/products';
 
 const defaultProduct: SingleProduct = {
     id: '',
@@ -41,6 +41,7 @@ const defaultProduct: SingleProduct = {
         quantity: 0,
         levels: [],
     },
+    skuOptions: [],
 };
 
 export const Product: React.FC = () => {
@@ -50,7 +51,7 @@ export const Product: React.FC = () => {
     const [shouldFetch, setShouldFetch] = useState(true);
     const [shouldShow, setShouldShow] = useState(false);
     const [currentProduct, setCurrentProduct] = useState(defaultProduct);
-    const [savedSkuOptions, setSavedSkuOptions] = useState<string[]>([]);
+    const [savedSkuOptions, setSavedSkuOptions] = useState<SavedSkuOptions[]>([]);
     const { handleSubmit, register } = useForm();
     const { inventory, sku_code, description, name, types, categories, cardImage, skuOptions } = currentProduct;
     const stock = inventory.quantity;
@@ -102,8 +103,8 @@ export const Product: React.FC = () => {
             if (lineItemId) {
                 // Create line item options
                 if (savedSkuOptions.length) {
-                    for (const savedSkuOptionId of savedSkuOptions) {
-                        await createLineItemOption(accessToken, lineItemId, savedSkuOptionId);
+                    for (const savedSkuOption of savedSkuOptions) {
+                        await createLineItemOption(accessToken, lineItemId, savedSkuOption);
                     }
                 }
 
@@ -131,13 +132,19 @@ export const Product: React.FC = () => {
         ]
     );
 
-    const handleSkuOptionChange = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
+    const handleSkuOptionChange = (
+        e: React.ChangeEvent<HTMLInputElement>,
+        id: string,
+        amount: string,
+        name: string,
+        quantity: number
+    ) => {
         const checked = e.target.checked;
 
         if (checked) {
-            setSavedSkuOptions([...savedSkuOptions, id]);
+            setSavedSkuOptions([...savedSkuOptions, { id, amount, name, quantity }]);
         } else {
-            setSavedSkuOptions(savedSkuOptions.filter((option) => option !== id));
+            setSavedSkuOptions(savedSkuOptions.filter((option) => option.id !== id));
         }
     };
 
@@ -187,7 +194,15 @@ export const Product: React.FC = () => {
                                                         <input
                                                             type="checkbox"
                                                             className="toggle toggle-primary mr-2"
-                                                            onChange={(e) => handleSkuOptionChange(e, option.id)}
+                                                            onChange={(e) =>
+                                                                handleSkuOptionChange(
+                                                                    e,
+                                                                    option.id,
+                                                                    option.amount,
+                                                                    option.name,
+                                                                    1
+                                                                )
+                                                            }
                                                         />
                                                         <div className="tooltip mr-2" data-tip={option.description}>
                                                             <AiFillQuestionCircle className="text-lg text-accent" />

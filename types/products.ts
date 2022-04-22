@@ -80,3 +80,10 @@ export interface ImageItem {
 export interface CartImage extends ImageItem {
     sku_code: string;
 }
+
+export interface SavedSkuOptions {
+    id: string;
+    name: string;
+    amount: string;
+    quantity: number;
+}

@@ -5,6 +5,7 @@ import { PaymentSourceResponse } from '../types/api';
 import { CreateOrder } from '../types/cart';
 import { PaymentAttributes } from '../types/checkout';
 import { LineItemAttributes, LineItemRelationships } from '../types/commerce';
+import { SavedSkuOptions } from '../types/products';
 import { authClient } from './auth';
 import { parseAsString, safelyParse, parseAsNumber } from './parsers';
 
@@ -96,13 +97,14 @@ export async function updateLineItem(accessToken: string, id: string, quantity: 
 export async function createLineItemOption(
     accessToken: string,
     lineItemId: string,
-    skuOptionId: string
+    savedSkuOptions: SavedSkuOptions
 ): Promise<string | null> {
     try {
         const cl = CommerceLayer({
             organization: process.env.NEXT_PUBLIC_ECOM_SLUG || '',
             accessToken,
         });
+        const { id, quantity, amount, name } = savedSkuOptions;
 
         const res = await cl.line_item_options.create({
             line_item: {
@@ -111,11 +113,11 @@ export async function createLineItemOption(
             },
             sku_option: {
                 type: 'sku_options',
-                id: skuOptionId,
+                id,
             },
-            quantity: 1,
+            quantity,
             options: {
-                add_ripnship: true,
+                Addon: `${name} - ${amount} - x${quantity}`,
             },
         });
 

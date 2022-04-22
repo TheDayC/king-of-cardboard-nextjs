@@ -41,6 +41,7 @@ export const CartItem: React.FC<CartItemProps> = ({
     stock,
     lineItemOptions,
 }) => {
+    console.log('🚀 ~ file: index.tsx ~ line 44 ~ lineItemOptions', lineItemOptions);
     const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
     const isQuantityAtMax = quantity === stock;
@@ -104,9 +105,9 @@ export const CartItem: React.FC<CartItemProps> = ({
                             <p className="hidden lg:block text-xs text-base-200">{sku || ''}</p>
 
                             {lineItemOptions.length > 0 && (
-                                <div className="flex flex-col justify-center items-center text-center mt-4 lg:space-x-4">
+                                <div className="flex flex-col justify-center items-center text-center mt-4">
                                     {lineItemOptions.map((option) => (
-                                        <div className="flex flex-row justify-center items-center text-centerlg:space-x-4">
+                                        <div className="flex flex-row justify-center items-center text-center mb-2">
                                             <p className="hidden lg:block text-xs font-bold">{option.name}</p>
                                             <BsFillCheckCircleFill className="inline-block mx-2 stroke-current text-green-500 text-md" />
                                         </div>
