@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
+import { AiFillQuestionCircle } from 'react-icons/ai';
 
-import { setLineItem } from '../../utils/commerce';
+import { createLineItemOption, setLineItem } from '../../utils/commerce';
 import selector from './selector';
 import { fetchCartItems, fetchItemCount, setUpdatingCart } from '../../store/slices/cart';
 import Images from './Images';
@@ -14,7 +15,7 @@ import { parseAsNumber, parseAsString, safelyParse } from '../../utils/parsers';
 import Skeleton from './Skeleton';
 import Error404 from '../404';
 import { getSingleProduct } from '../../utils/products';
-import { SingleProduct } from '../../types/products';
+import { SavedSkuOptions, SingleProduct } from '../../types/products';
 
 const defaultProduct: SingleProduct = {
     id: '',
@@ -40,6 +41,7 @@ const defaultProduct: SingleProduct = {
         quantity: 0,
         levels: [],
     },
+    skuOptions: [],
 };
 
 export const Product: React.FC = () => {
@@ -49,8 +51,9 @@ export const Product: React.FC = () => {
     const [shouldFetch, setShouldFetch] = useState(true);
     const [shouldShow, setShouldShow] = useState(false);
     const [currentProduct, setCurrentProduct] = useState(defaultProduct);
+    const [savedSkuOptions, setSavedSkuOptions] = useState<SavedSkuOptions[]>([]);
     const { handleSubmit, register } = useForm();
-    const { inventory, sku_code, description, name, types, categories, cardImage } = currentProduct;
+    const { inventory, sku_code, description, name, types, categories, cardImage, skuOptions } = currentProduct;
     const stock = inventory.quantity;
     const item = items.find((c) => c.sku_code === sku_code);
     const quantity = safelyParse(item, 'quantity', parseAsNumber, 0);
@@ -95,9 +98,16 @@ export const Product: React.FC = () => {
                 },
             };
 
-            const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
+            const lineItemId = await setLineItem(accessToken, attributes, relationships);
 
-            if (hasLineItemUpdated) {
+            if (lineItemId) {
+                // Create line item options
+                if (savedSkuOptions.length) {
+                    for (const savedSkuOption of savedSkuOptions) {
+                        await createLineItemOption(accessToken, lineItemId, savedSkuOption);
+                    }
+                }
+
                 dispatch(fetchItemCount({ accessToken, orderId }));
                 dispatch(fetchCartItems({ accessToken, orderId }));
                 gaEvent('addProductToCart', { sku_code });
@@ -118,8 +128,25 @@ export const Product: React.FC = () => {
             name,
             types,
             cardImage.url,
+            savedSkuOptions,
         ]
     );
+
+    const handleSkuOptionChange = (
+        e: React.ChangeEvent<HTMLInputElement>,
+        id: string,
+        amount: string,
+        name: string,
+        quantity: number
+    ) => {
+        const checked = e.target.checked;
+
+        if (checked) {
+            setSavedSkuOptions([...savedSkuOptions, { id, amount, name, quantity }]);
+        } else {
+            setSavedSkuOptions(savedSkuOptions.filter((option) => option.id !== id));
+        }
+    };
 
     useEffect(() => {
         if (shouldFetch && slug && accessToken) {
@@ -148,9 +175,43 @@ export const Product: React.FC = () => {
                             tags={currentProduct.tags}
                             description={description}
                         />
+
                         {currentProduct.inventory.available && (
                             <div className="quantity mb-4 flex flex-col justify-center">
                                 <form onSubmit={handleSubmit(onSubmit)}>
+                                    {skuOptions.length > 0 &&
+                                        skuOptions.map((option) => (
+                                            <React.Fragment key={`option-${option.id}`}>
+                                                <h4 className="text-2xl mb-2 font-semibold">Extras</h4>
+                                                <div
+                                                    className="flex flex-col justify-start align-center mb-2 lg:space-x-2 lg:flex-row"
+                                                    key={`option-${option.id}`}
+                                                >
+                                                    <label className="cursor-pointer label">
+                                                        <span className="label-text text-lg mr-2">
+                                                            {option.name} - {option.amount}
+                                                        </span>
+                                                        <input
+                                                            type="checkbox"
+                                                            className="toggle toggle-primary mr-2"
+                                                            onChange={(e) =>
+                                                                handleSkuOptionChange(
+                                                                    e,
+                                                                    option.id,
+                                                                    option.amount,
+                                                                    option.name,
+                                                                    1
+                                                                )
+                                                            }
+                                                        />
+                                                        <div className="tooltip mr-2" data-tip={option.description}>
+                                                            <AiFillQuestionCircle className="text-lg text-accent" />
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </React.Fragment>
+                                        ))}
+                                    <h4 className="text-2xl mt-2 mb-2 font-semibold">Amount</h4>
                                     <div className="flex flex-col lg:flex-row justify-start align-center lg:space-x-2">
                                         {!isQuantityAtMax && (
                                             <input

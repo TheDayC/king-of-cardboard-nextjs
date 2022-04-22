@@ -253,7 +253,6 @@ async function approved(req: NextApiRequest, res: NextApiResponse): Promise<void
                 });
             }
         } catch (error) {
-            console.log('🚀 ~ file: approveOrder.ts ~ line 254 ~ approveOrder ~ error', error);
             const status = safelyParse(error, 'response.status', parseAsNumber, 500);
 
             res.status(status).json(apiErrorHandler(error, 'Failed to send order confirmation email.'));

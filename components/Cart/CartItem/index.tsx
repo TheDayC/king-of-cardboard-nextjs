@@ -3,6 +3,7 @@ import { MdDeleteForever } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
 import Link from 'next/link';
+import { LineItemOption } from '@commercelayer/sdk';
 
 import {
     clearUpdateQuantities,
@@ -25,6 +26,7 @@ interface CartItemProps {
     totalAmount: string;
     quantity: number;
     stock: number;
+    lineItemOptions: LineItemOption[];
 }
 
 export const CartItem: React.FC<CartItemProps> = ({
@@ -36,7 +38,9 @@ export const CartItem: React.FC<CartItemProps> = ({
     totalAmount,
     quantity,
     stock,
+    lineItemOptions,
 }) => {
+    console.log('🚀 ~ file: index.tsx ~ line 44 ~ lineItemOptions', lineItemOptions);
     const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
     const isQuantityAtMax = quantity === stock;
@@ -96,8 +100,20 @@ export const CartItem: React.FC<CartItemProps> = ({
                 <div className="flex flex-col justify-center items-center text-center lg:space-x-4">
                     <Link href={`/product/${sku.toLowerCase()}`} passHref>
                         <div className="cursor-pointer">
-                            <h4 className="hidden lg:block text-xs mb-2 lg:text-md hover:underline">{name}</h4>
-                            <p className="hidden lg:block text-xs text-base-200">{sku || ''}</p>
+                            <h4 className="hidden lg:block text-xs mb-1 font-bold lg:text-md hover:underline">
+                                {name}
+                            </h4>
+                            <p className="hidden lg:block text-xs text-gray-400 mb-4">{sku || ''}</p>
+
+                            {lineItemOptions.length > 0 &&
+                                lineItemOptions.map((option) => (
+                                    <p
+                                        className="hidden lg:block text-xs text-gray-400 mb-1"
+                                        key={`option-${option.id}`}
+                                    >
+                                        Addon: {option.name} - {option.formatted_total_amount}
+                                    </p>
+                                ))}
                         </div>
                     </Link>
                 </div>

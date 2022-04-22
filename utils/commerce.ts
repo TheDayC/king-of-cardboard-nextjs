@@ -1,8 +1,11 @@
+import CommerceLayer from '@commercelayer/sdk';
+
 import { errorHandler } from '../middleware/errors';
 import { PaymentSourceResponse } from '../types/api';
 import { CreateOrder } from '../types/cart';
 import { PaymentAttributes } from '../types/checkout';
 import { LineItemAttributes, LineItemRelationships } from '../types/commerce';
+import { SavedSkuOptions } from '../types/products';
 import { authClient } from './auth';
 import { parseAsString, safelyParse, parseAsNumber } from './parsers';
 
@@ -36,7 +39,7 @@ export async function setLineItem(
     accessToken: string,
     attributes: LineItemAttributes,
     relationships: LineItemRelationships
-): Promise<boolean> {
+): Promise<string | null> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.post('/api/line_items', {
@@ -46,14 +49,13 @@ export async function setLineItem(
                 relationships,
             },
         });
-        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        return status === 201;
+        return safelyParse(res, 'data.data.id', parseAsString, null);
     } catch (error: unknown) {
         errorHandler(error, 'We could not fetch an order.');
     }
 
-    return false;
+    return null;
 }
 
 export async function removeLineItem(accessToken: string, id: string): Promise<boolean> {
@@ -90,6 +92,41 @@ export async function updateLineItem(accessToken: string, id: string, quantity: 
     }
 
     return false;
+}
+
+export async function createLineItemOption(
+    accessToken: string,
+    lineItemId: string,
+    savedSkuOptions: SavedSkuOptions
+): Promise<string | null> {
+    try {
+        const cl = CommerceLayer({
+            organization: process.env.NEXT_PUBLIC_ECOM_SLUG || '',
+            accessToken,
+        });
+        const { id, quantity, amount, name } = savedSkuOptions;
+
+        const res = await cl.line_item_options.create({
+            line_item: {
+                type: 'line_items',
+                id: lineItemId,
+            },
+            sku_option: {
+                type: 'sku_options',
+                id,
+            },
+            quantity,
+            options: {
+                Addon: `${name} - ${amount} - x${quantity}`,
+            },
+        });
+
+        return res.id;
+    } catch (error: unknown) {
+        errorHandler(error, 'We could not fetch an order.');
+    }
+
+    return null;
 }
 
 export async function createPaymentSource(

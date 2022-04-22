@@ -16,7 +16,6 @@ async function deleteAllLineItems(): Promise<void> {
 
         for (const lineItem of lineItems) {
             const res = await cl.delete(`/api/line_items/${lineItem.id}`);
-            console.log('🚀 ~ file: deleteAll.ts ~ line 19 ~ deleteAllLineItems ~ res', res.status);
         }
     } catch (err: unknown) {
         errorHandler(err, 'An error occurred.');

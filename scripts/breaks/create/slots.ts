@@ -65,7 +65,6 @@ export async function createBreakSlots(teams: Team[], tags: string[]): Promise<s
 
         return entryIds;
     } catch (err: unknown) {
-        console.log('🚀 ~ file: slots.ts ~ line 68 ~ createBreakSlots ~ err', err);
         errorHandler(err, 'An error occurred.');
     }
 

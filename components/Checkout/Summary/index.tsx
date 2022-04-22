@@ -42,10 +42,17 @@ export const Summary: React.FC<SummaryProps> = ({ isConfirmation = false }) => {
                                     )}
                                 </div>
                                 <div className="px-2">
-                                    <h4 className="text-sm lg:text-md">{item.name}</h4>
-                                    <p className="text-xs text-base-200">{item.sku_code}</p>
-                                    <p className="text-xs text-base-200">Quantity: {item.quantity}</p>
+                                    <h4 className="text-sm font-bold lg:text-md">{item.name}</h4>
+                                    <p className="text-xs text-gray-400 mb-1">{item.sku_code}</p>
+                                    <p className="text-xs text-gray-400 mb-1">Quantity: {item.quantity}</p>
+                                    {item.line_item_options.length > 0 &&
+                                        item.line_item_options.map((option) => (
+                                            <p className="text-xs text-gray-400 mb-1" key={`option-${option.id}`}>
+                                                Addon: {option.name} - {option.formatted_total_amount}
+                                            </p>
+                                        ))}
                                 </div>
+
                                 <p className="text-sm lg:text-md">{item.formatted_total_amount}</p>
                             </div>
                             <div className={`divider my-2 lg:my-4${styles.itemDivider}`}></div>

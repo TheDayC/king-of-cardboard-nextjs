@@ -1,3 +1,4 @@
+import { LineItemOption } from '@commercelayer/sdk';
 import { ImageItem } from './products';
 
 export interface CartTotals {
@@ -25,6 +26,7 @@ export interface CartItem {
         types: string[];
     };
     stock: number;
+    line_item_options: LineItemOption[];
 }
 
 export interface UpdateQuantity {
