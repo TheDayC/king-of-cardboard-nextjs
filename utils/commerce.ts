@@ -36,7 +36,7 @@ export async function setLineItem(
     accessToken: string,
     attributes: LineItemAttributes,
     relationships: LineItemRelationships
-): Promise<boolean> {
+): Promise<string | null> {
     try {
         const cl = authClient(accessToken);
         const res = await cl.post('/api/line_items', {
@@ -46,14 +46,13 @@ export async function setLineItem(
                 relationships,
             },
         });
-        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        return status === 201;
+        return safelyParse(res, 'data.data.id', parseAsString, null);
     } catch (error: unknown) {
         errorHandler(error, 'We could not fetch an order.');
     }
 
-    return false;
+    return null;
 }
 
 export async function removeLineItem(accessToken: string, id: string): Promise<boolean> {
@@ -79,6 +78,42 @@ export async function updateLineItem(accessToken: string, id: string, quantity: 
                 id,
                 attributes: {
                     quantity,
+                },
+            },
+        });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
+
+        return status === 200;
+    } catch (error: unknown) {
+        errorHandler(error, 'We could not fetch an order.');
+    }
+
+    return false;
+}
+
+export async function createLineItemOption(
+    accessToken: string,
+    lineItemId: string,
+    skuOptionId: string
+): Promise<boolean> {
+    try {
+        const cl = authClient(accessToken);
+        const res = await cl.patch('/api/line_item_options', {
+            data: {
+                type: 'line_item_options',
+                relationships: {
+                    line_item: {
+                        data: {
+                            type: 'line_items',
+                            id: lineItemId,
+                        },
+                    },
+                    sku_option: {
+                        data: {
+                            type: 'sku_options',
+                            id: skuOptionId,
+                        },
+                    },
                 },
             },
         });

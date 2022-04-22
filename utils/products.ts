@@ -399,11 +399,13 @@ export async function getSingleProduct(accessToken: string, slug: string): Promi
 
     // Next pull it by id so we can fetch inventory information.
     const id = safelyParse(skuByCodeData, 'id', parseAsString, '');
-    const fields = '&fields[skus]=id,inventory&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount';
-    const skuRes = await cl.get(`/api/skus/${id}?include=prices${fields}`);
+    const fields =
+        '&fields[skus]=id,inventory&fields[prices]=sku_code,formatted_amount,formatted_compare_at_amount&fields[sku_options]=id,name,formatted_price_amount,description';
+    const skuRes = await cl.get(`/api/skus/${id}?include=prices,sku_options${fields}`);
     const skuData = safelyParse(skuRes, 'data.data', parseAsCommerceResponse, null);
     const included = safelyParse(skuRes, 'data.included', parseAsArrayOfCommerceResponse, []);
-    const prices = included.find((i) => i.attributes.sku_code === sku_code && i.type === 'prices');
+    const prices = included.find((i) => i.type === 'prices');
+    const skuOptions = included.filter((i) => i.type === 'sku_options');
 
     return {
         id,
@@ -427,5 +429,11 @@ export async function getSingleProduct(accessToken: string, slug: string): Promi
             quantity: 0,
             levels: [],
         }),
+        skuOptions: skuOptions.map((option) => ({
+            id: safelyParse(option, 'id', parseAsString, ''),
+            name: safelyParse(option, 'attributes.name', parseAsString, ''),
+            amount: safelyParse(option, 'attributes.formatted_price_amount', parseAsString, ''),
+            description: safelyParse(option, 'attributes.description', parseAsString, ''),
+        })),
     };
 }

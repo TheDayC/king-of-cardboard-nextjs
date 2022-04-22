@@ -31,6 +31,14 @@ export interface SingleProduct {
     amount: string;
     compare_amount: string;
     inventory: SkuInventory;
+    skuOptions: SkuOptions[];
+}
+
+interface SkuOptions {
+    id: string;
+    name: string;
+    amount: string;
+    description: string;
 }
 
 export interface ProductsWithCount {
