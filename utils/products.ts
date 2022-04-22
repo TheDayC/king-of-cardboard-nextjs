@@ -41,8 +41,8 @@ export function parseProductCategory(type: string): Categories {
             return Categories.Sealed;
         case 'singles':
             return Categories.Singles;
-        case 'breaks':
-            return Categories.Breaks;
+        case 'packs':
+            return Categories.Packs;
         default:
             return Categories.Other;
     }
