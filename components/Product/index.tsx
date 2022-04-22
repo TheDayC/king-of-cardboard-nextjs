@@ -103,7 +103,7 @@ export const Product: React.FC = () => {
                 // Create line item options
                 if (savedSkuOptions.length) {
                     for (const savedSkuOptionId of savedSkuOptions) {
-                        const lineItemOptionId = await createLineItemOption(accessToken, lineItemId, savedSkuOptionId);
+                        await createLineItemOption(accessToken, lineItemId, savedSkuOptionId);
                     }
                 }
 
@@ -127,6 +127,7 @@ export const Product: React.FC = () => {
             name,
             types,
             cardImage.url,
+            savedSkuOptions,
         ]
     );
 
