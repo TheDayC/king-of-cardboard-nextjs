@@ -101,19 +101,17 @@ export const CartItem: React.FC<CartItemProps> = ({
                 <div className="flex flex-col justify-center items-center text-center lg:space-x-4">
                     <Link href={`/product/${sku.toLowerCase()}`} passHref>
                         <div className="cursor-pointer">
-                            <h4 className="hidden lg:block text-xs mb-2 lg:text-md hover:underline">{name}</h4>
-                            <p className="hidden lg:block text-xs text-base-200">{sku || ''}</p>
+                            <h4 className="hidden lg:block text-xs mb-1 font-bold lg:text-md hover:underline">
+                                {name}
+                            </h4>
+                            <p className="hidden lg:block text-xs text-gray-400 mb-4">{sku || ''}</p>
 
-                            {lineItemOptions.length > 0 && (
-                                <div className="flex flex-col justify-center items-center text-center mt-4">
-                                    {lineItemOptions.map((option) => (
-                                        <div className="flex flex-row justify-center items-center text-center mb-2">
-                                            <p className="hidden lg:block text-xs font-bold">{option.name}</p>
-                                            <BsFillCheckCircleFill className="inline-block mx-2 stroke-current text-green-500 text-md" />
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                            {lineItemOptions.length > 0 &&
+                                lineItemOptions.map((option) => (
+                                    <p className="hidden lg:block text-xs text-gray-400 mb-1">
+                                        Addon: {option.name} - {option.formatted_total_amount}
+                                    </p>
+                                ))}
                         </div>
                     </Link>
                 </div>
