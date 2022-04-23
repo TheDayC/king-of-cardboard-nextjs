@@ -13,7 +13,7 @@ export const Images: React.FC<ImageProps> = ({ mainImage, imageCollection }) => 
     const [currentImage, setCurrentImage] = useState(mainImage);
 
     const changeImage = (image: ImageItem) => {
-        if (image !== currentImage) {
+        if (image.url !== currentImage.url) {
             setCurrentImage(image);
         }
     };
