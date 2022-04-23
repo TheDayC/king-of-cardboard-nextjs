@@ -10,11 +10,11 @@ interface ImageProps {
 }
 
 export const Images: React.FC<ImageProps> = ({ mainImage, imageCollection }) => {
-    const [currentImage, setCurrentImage] = useState(mainImage.url);
+    const [currentImage, setCurrentImage] = useState(mainImage);
 
-    const changeImage = (url: string) => {
-        if (url !== currentImage) {
-            setCurrentImage(url);
+    const changeImage = (image: ImageItem) => {
+        if (image !== currentImage) {
+            setCurrentImage(image);
         }
     };
 
@@ -23,12 +23,12 @@ export const Images: React.FC<ImageProps> = ({ mainImage, imageCollection }) => 
             id="productImagesWrapper"
             className="flex flex-col w-full justify-start items-center mb-4 lg:w-1/4 lg:mb-0"
         >
-            {mainImage.url.length > 0 && (
+            {currentImage.url.length > 0 && (
                 <div id="productImages" className="flex flex-row justify-center items-start w-full mb-4">
                     <SideBySideMagnifier
-                        imageSrc={`${mainImage.url}?w=375`}
-                        largeImageSrc={`${mainImage.url}?w=2000`}
-                        imageAlt={mainImage.title}
+                        imageSrc={`${currentImage.url}?w=375`}
+                        largeImageSrc={`${currentImage.url}?w=2000`}
+                        imageAlt={currentImage.title}
                         className="overflow-hidden rounded-md shadow-md"
                         alwaysInPlace={true}
                         inPlaceMinBreakpoint={1024}
@@ -42,7 +42,7 @@ export const Images: React.FC<ImageProps> = ({ mainImage, imageCollection }) => 
                         <div
                             className="w-full h-20 cursor-pointer p-2"
                             key={`line-item-${index}`}
-                            onClick={() => changeImage(image.url)}
+                            onClick={() => changeImage(image)}
                         >
                             <div className="block rounded-md overflow-hidden w-full h-full relative shadow-sm transition duration-300 ease-in-out hover:shadow-lg">
                                 <Image src={`${image.url}?w=65`} alt="shipment image" layout="fill" objectFit="cover" />
