@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { BreakTabs } from '../../enums/breaks';
 
+import { BreakTabs } from '../../enums/breaks';
 import Grid from './Grid';
 import InstagramMessage from './InstagramMessage';
 
