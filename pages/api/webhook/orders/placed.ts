@@ -13,6 +13,7 @@ import sgMail from '@sendgrid/mail';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../../utils/parsers';
 import { apiErrorHandler } from '../../../../middleware/errors';
 import { runMiddleware } from '../../../../middleware/api';
+import { AttachmentData } from '../../../../types/webhooks';
 
 // Initializing the cors middleware
 const cors = Cors({
@@ -23,13 +24,7 @@ const cors = Cors({
 // Setup SendGrid's mailer.
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
-interface ImageObject {
-    type: string;
-    name: string;
-    content: string;
-}
-
-async function parseImgData(name: string, url: string): Promise<ImageObject> {
+async function parseImgData(id: string, url: string): Promise<AttachmentData> {
     const res = await axios.get(url, { responseType: 'arraybuffer' });
 
     // @ts-ignore
@@ -40,8 +35,9 @@ async function parseImgData(name: string, url: string): Promise<ImageObject> {
 
     return {
         type: type ? type.mime : '',
-        name,
+        filename: id,
         content,
+        contentId: id,
     };
 }
 
@@ -140,7 +136,7 @@ async function placed(req: NextApiRequest, res: NextApiResponse): Promise<void> 
                         `;
                 });
 
-                const itemsImgData: ImageObject[] = [];
+                const itemsImgData: AttachmentData[] = [];
 
                 for (const item of items) {
                     const id = safelyParse(item, 'id', parseAsString, '');
@@ -224,6 +220,15 @@ async function placed(req: NextApiRequest, res: NextApiResponse): Promise<void> 
                             Shipping: ${shipping}
                             Total: ${total}
                         `,
+                    attachments: [
+                        ...itemsImgData,
+                        {
+                            type: 'image/png',
+                            filename: 'logo',
+                            content: logo.toString('base64'),
+                            contentId: 'logo',
+                        },
+                    ],
                 };
 
                 await sgMail.send(mailOptions);
