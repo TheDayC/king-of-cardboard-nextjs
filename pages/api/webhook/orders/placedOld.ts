@@ -5,10 +5,9 @@ import imageType from 'image-type';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Cors from 'cors';
 import axios from 'axios';
-//import { createTransport } from 'nodemailer';
+import { createTransport } from 'nodemailer';
 // @ts-ignore
-//import mandrillTransport from 'nodemailer-mandrill-transport';
-import sgMail from '@sendgrid/mail';
+import mandrillTransport from 'nodemailer-mandrill-transport';
 
 import { parseAsNumber, parseAsString, safelyParse } from '../../../../utils/parsers';
 import { apiErrorHandler } from '../../../../middleware/errors';
@@ -20,8 +19,13 @@ const cors = Cors({
     methods: ['POST', 'HEAD'],
 });
 
-// Setup SendGrid's mailer.
-sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
+const mailer = createTransport(
+    mandrillTransport({
+        auth: {
+            apiKey: process.env.MANDRILL_API_KEY,
+        },
+    })
+);
 
 interface ImageObject {
     type: string;
@@ -179,8 +183,8 @@ async function placed(req: NextApiRequest, res: NextApiResponse): Promise<void> 
                     .replace('{{total}}', total);
 
                 const mailOptions = {
-                    to: email,
-                    from: process.env.MAILER_ADDRESS || 'noreply@kingofcardboard.co.uk',
+                    from: `No Reply <${process.env.MAILER_ADDRESS}>`,
+                    to: `Dave Connolly <dayc@kingofcardboard.co.uk>`,
                     subject: 'Order Placed - King of Cardboard',
                     html,
                     text: `
@@ -224,9 +228,21 @@ async function placed(req: NextApiRequest, res: NextApiResponse): Promise<void> 
                             Shipping: ${shipping}
                             Total: ${total}
                         `,
+                    mandrillOptions: {
+                        message: {
+                            images: [
+                                ...itemsImgData,
+                                {
+                                    type: 'image/png',
+                                    name: 'logo',
+                                    content: logo.toString('base64'),
+                                },
+                            ],
+                        },
+                    },
                 };
 
-                await sgMail.send(mailOptions);
+                await mailer.sendMail(mailOptions);
 
                 res.status(200).end();
             } else {
