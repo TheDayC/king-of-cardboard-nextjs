@@ -5,15 +5,13 @@ import imageType from 'image-type';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Cors from 'cors';
 import axios from 'axios';
-//import { createTransport } from 'nodemailer';
+import { createTransport } from 'nodemailer';
 // @ts-ignore
-//import mandrillTransport from 'nodemailer-mandrill-transport';
-import sgMail from '@sendgrid/mail';
+import mandrillTransport from 'nodemailer-mandrill-transport';
 
 import { parseAsNumber, parseAsString, safelyParse } from '../../../../utils/parsers';
 import { apiErrorHandler } from '../../../../middleware/errors';
 import { runMiddleware } from '../../../../middleware/api';
-import { AttachmentData } from '../../../../types/webhooks';
 
 // Initializing the cors middleware
 const cors = Cors({
@@ -21,10 +19,21 @@ const cors = Cors({
     methods: ['POST', 'HEAD'],
 });
 
-// Setup SendGrid's mailer.
-sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
+const mailer = createTransport(
+    mandrillTransport({
+        auth: {
+            apiKey: process.env.MANDRILL_API_KEY,
+        },
+    })
+);
 
-async function parseImgData(id: string, url: string): Promise<AttachmentData> {
+interface ImageObject {
+    type: string;
+    name: string;
+    content: string;
+}
+
+async function parseImgData(name: string, url: string): Promise<ImageObject> {
     const res = await axios.get(url, { responseType: 'arraybuffer' });
 
     // @ts-ignore
@@ -35,9 +44,8 @@ async function parseImgData(id: string, url: string): Promise<AttachmentData> {
 
     return {
         type: type ? type.mime : '',
-        filename: id,
+        name,
         content,
-        contentId: id,
     };
 }
 
@@ -136,7 +144,7 @@ async function placed(req: NextApiRequest, res: NextApiResponse): Promise<void> 
                         `;
                 });
 
-                const itemsImgData: AttachmentData[] = [];
+                const itemsImgData: ImageObject[] = [];
 
                 for (const item of items) {
                     const id = safelyParse(item, 'id', parseAsString, '');
@@ -175,8 +183,8 @@ async function placed(req: NextApiRequest, res: NextApiResponse): Promise<void> 
                     .replace('{{total}}', total);
 
                 const mailOptions = {
-                    to: email,
-                    from: process.env.MAILER_ADDRESS || 'noreply@kingofcardboard.co.uk',
+                    from: `No Reply <${process.env.MAILER_ADDRESS}>`,
+                    to: `Dave Connolly <dayc@kingofcardboard.co.uk>`,
                     subject: 'Order Placed - King of Cardboard',
                     html,
                     text: `
@@ -220,18 +228,21 @@ async function placed(req: NextApiRequest, res: NextApiResponse): Promise<void> 
                             Shipping: ${shipping}
                             Total: ${total}
                         `,
-                    attachments: [
-                        ...itemsImgData,
-                        {
-                            type: 'image/png',
-                            filename: 'logo',
-                            content: logo.toString('base64'),
-                            contentId: 'logo',
+                    mandrillOptions: {
+                        message: {
+                            images: [
+                                ...itemsImgData,
+                                {
+                                    type: 'image/png',
+                                    name: 'logo',
+                                    content: logo.toString('base64'),
+                                },
+                            ],
                         },
-                    ],
+                    },
                 };
 
-                await sgMail.send(mailOptions);
+                await mailer.sendMail(mailOptions);
 
                 res.status(200).end();
             } else {
