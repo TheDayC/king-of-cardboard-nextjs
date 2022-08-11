@@ -1,10 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createTransport } from 'nodemailer';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import mandrillTransport from 'nodemailer-mandrill-transport';
+import sgMail from '@sendgrid/mail';
 import { DateTime } from 'luxon';
 
 import { connectToDatabase } from '../../../middleware/database';
@@ -13,13 +10,8 @@ import { authClient } from '../../../utils/auth';
 import { shouldResetPassword } from '../../../utils/account';
 import { errorHandler } from '../../../middleware/errors';
 
-const mailer = createTransport(
-    mandrillTransport({
-        auth: {
-            apiKey: process.env.MANDRILL_API_KEY || '',
-        },
-    })
-);
+// Setup SendGrid's mailer.
+sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
 const filePath = path.resolve(process.cwd(), 'html', 'resetPassword.html');
 const defaultErr = 'Could not request a password reset.';
@@ -82,20 +74,18 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
                     subject: 'Password Reset - King of Cardboard',
                     html,
                     text: `Hi ${email}, it looks like you've requested a password reset and are looking at the raw version of our email. Please copy and paste the following link into your browser's address bar: ${link}`,
-                    mandrillOptions: {
-                        message: {
-                            images: [
-                                {
-                                    type: 'image/png',
-                                    name: 'logo',
-                                    content: logo.toString('base64'),
-                                },
-                            ],
+                    attachments: [
+                        {
+                            type: 'image/png',
+                            filename: 'logo.png',
+                            content: logo.toString('base64'),
+                            content_id: 'logo',
+                            disposition: 'inline',
                         },
-                    },
+                    ],
                 };
 
-                await mailer.sendMail(mailOptions);
+                await sgMail.send(mailOptions);
 
                 // Choose whether to update or insert depending on if a reset request was found.
                 const lastSent = DateTime.now().setZone('Europe/London').toISO();
