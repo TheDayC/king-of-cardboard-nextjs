@@ -5,13 +5,12 @@ import imageType from 'image-type';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Cors from 'cors';
 import axios from 'axios';
-import { createTransport } from 'nodemailer';
-// @ts-ignore
-import mandrillTransport from 'nodemailer-mandrill-transport';
+import sgMail from '@sendgrid/mail';
 
 import { parseAsNumber, parseAsString, safelyParse } from '../../../../utils/parsers';
 import { apiErrorHandler } from '../../../../middleware/errors';
 import { runMiddleware } from '../../../../middleware/api';
+import { AttachmentData } from '../../../../types/webhooks';
 
 // Initializing the cors middleware
 const cors = Cors({
@@ -19,33 +18,26 @@ const cors = Cors({
     methods: ['POST', 'HEAD'],
 });
 
-const mailer = createTransport(
-    mandrillTransport({
-        auth: {
-            apiKey: process.env.MANDRILL_API_KEY,
-        },
-    })
-);
+// Setup SendGrid's mailer.
+sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
-interface ImageObject {
-    type: string;
-    name: string;
-    content: string;
-}
-
-async function parseImgData(name: string, url: string): Promise<ImageObject> {
+async function parseImgData(id: string, url: string): Promise<AttachmentData> {
     const res = await axios.get(url, { responseType: 'arraybuffer' });
 
     // @ts-ignore
     const content = Buffer.from(res.data, 'binary').toString('base64');
 
     // @ts-ignore
-    const type = imageType(res.data);
+    const imgType = imageType(res.data);
+    const mime = imgType ? imgType.mime : 'image/png';
+    const ext = imgType ? imgType.ext : 'png';
 
     return {
-        type: type ? type.mime : '',
-        name,
+        type: mime,
+        filename: `${id}.${ext}`,
         content,
+        content_id: id,
+        disposition: 'inline',
     };
 }
 
@@ -144,7 +136,7 @@ async function approved(req: NextApiRequest, res: NextApiResponse): Promise<void
                         `;
                 });
 
-                const itemsImgData: ImageObject[] = [];
+                const itemsImgData: AttachmentData[] = [];
 
                 for (const item of items) {
                     const id = safelyParse(item, 'id', parseAsString, '');
@@ -229,21 +221,19 @@ async function approved(req: NextApiRequest, res: NextApiResponse): Promise<void
                             Shipping: ${shipping}
                             Total: ${total}
                         `,
-                    mandrillOptions: {
-                        message: {
-                            images: [
-                                ...itemsImgData,
-                                {
-                                    type: 'image/png',
-                                    name: 'logo',
-                                    content: logo.toString('base64'),
-                                },
-                            ],
+                    attachments: [
+                        ...itemsImgData,
+                        {
+                            type: 'image/png',
+                            filename: 'logo.png',
+                            content: logo.toString('base64'),
+                            content_id: 'logo',
+                            disposition: 'inline',
                         },
-                    },
+                    ],
                 };
 
-                await mailer.sendMail(mailOptions);
+                await sgMail.send(mailOptions);
 
                 res.status(200).end();
             } else {

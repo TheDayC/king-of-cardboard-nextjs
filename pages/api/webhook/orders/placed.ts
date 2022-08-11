@@ -5,9 +5,6 @@ import imageType from 'image-type';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Cors from 'cors';
 import axios from 'axios';
-//import { createTransport } from 'nodemailer';
-// @ts-ignore
-//import mandrillTransport from 'nodemailer-mandrill-transport';
 import sgMail from '@sendgrid/mail';
 
 import { parseAsNumber, parseAsString, safelyParse } from '../../../../utils/parsers';
@@ -31,13 +28,16 @@ async function parseImgData(id: string, url: string): Promise<AttachmentData> {
     const content = Buffer.from(res.data, 'binary').toString('base64');
 
     // @ts-ignore
-    const type = imageType(res.data);
+    const imgType = imageType(res.data);
+    const mime = imgType ? imgType.mime : 'image/png';
+    const ext = imgType ? imgType.ext : 'png';
 
     return {
-        type: type ? type.mime : '',
-        filename: id,
+        type: mime,
+        filename: `${id}.${ext}`,
         content,
-        contentId: id,
+        content_id: id,
+        disposition: 'inline',
     };
 }
 
@@ -224,9 +224,10 @@ async function placed(req: NextApiRequest, res: NextApiResponse): Promise<void> 
                         ...itemsImgData,
                         {
                             type: 'image/png',
-                            filename: 'logo',
+                            filename: 'logo.png',
                             content: logo.toString('base64'),
-                            contentId: 'logo',
+                            content_id: 'logo',
+                            disposition: 'inline',
                         },
                     ],
                 };
