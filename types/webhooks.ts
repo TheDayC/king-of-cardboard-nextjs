@@ -3,5 +3,5 @@ export interface AttachmentData {
     filename: string;
     type?: string;
     disposition?: string;
-    contentId?: string;
+    content_id?: string;
 }

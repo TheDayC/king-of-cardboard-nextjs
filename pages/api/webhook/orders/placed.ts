@@ -1,19 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs';
 import path from 'path';
-import imageType from 'image-type';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Cors from 'cors';
-import axios from 'axios';
-//import { createTransport } from 'nodemailer';
-// @ts-ignore
-//import mandrillTransport from 'nodemailer-mandrill-transport';
 import sgMail from '@sendgrid/mail';
 
 import { parseAsNumber, parseAsString, safelyParse } from '../../../../utils/parsers';
 import { apiErrorHandler } from '../../../../middleware/errors';
 import { runMiddleware } from '../../../../middleware/api';
 import { AttachmentData } from '../../../../types/webhooks';
+import { parseImgData } from '../../../../utils/webhooks';
 
 // Initializing the cors middleware
 const cors = Cors({
@@ -23,23 +19,6 @@ const cors = Cors({
 
 // Setup SendGrid's mailer.
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
-
-async function parseImgData(id: string, url: string): Promise<AttachmentData> {
-    const res = await axios.get(url, { responseType: 'arraybuffer' });
-
-    // @ts-ignore
-    const content = Buffer.from(res.data, 'binary').toString('base64');
-
-    // @ts-ignore
-    const type = imageType(res.data);
-
-    return {
-        type: type ? type.mime : '',
-        filename: id,
-        content,
-        contentId: id,
-    };
-}
 
 const filePath = path.resolve(process.cwd(), 'html', 'orderPlaced.html');
 const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.png'));
@@ -224,9 +203,10 @@ async function placed(req: NextApiRequest, res: NextApiResponse): Promise<void> 
                         ...itemsImgData,
                         {
                             type: 'image/png',
-                            filename: 'logo',
+                            filename: 'logo.png',
                             content: logo.toString('base64'),
-                            contentId: 'logo',
+                            content_id: 'logo',
+                            disposition: 'inline',
                         },
                     ],
                 };
