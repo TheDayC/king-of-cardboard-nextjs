@@ -1,17 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs';
 import path from 'path';
-import imageType from 'image-type';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Cors from 'cors';
-import axios from 'axios';
-import { createTransport } from 'nodemailer';
-// @ts-ignore
-import mandrillTransport from 'nodemailer-mandrill-transport';
+import sgMail from '@sendgrid/mail';
 
 import { parseAsNumber, parseAsString, safelyParse } from '../../../../utils/parsers';
 import { apiErrorHandler } from '../../../../middleware/errors';
 import { runMiddleware } from '../../../../middleware/api';
+import { AttachmentData } from '../../../../types/webhooks';
+import { parseImgData } from '../../../../utils/webhooks';
 
 // Initializing the cors middleware
 const cors = Cors({
@@ -19,35 +17,8 @@ const cors = Cors({
     methods: ['POST', 'HEAD'],
 });
 
-const mailer = createTransport(
-    mandrillTransport({
-        auth: {
-            apiKey: process.env.MANDRILL_API_KEY,
-        },
-    })
-);
-
-interface ImageObject {
-    type: string;
-    name: string;
-    content: string;
-}
-
-async function parseImgData(name: string, url: string): Promise<ImageObject> {
-    const res = await axios.get(url, { responseType: 'arraybuffer' });
-
-    // @ts-ignore
-    const content = Buffer.from(res.data, 'binary').toString('base64');
-
-    // @ts-ignore
-    const type = imageType(res.data);
-
-    return {
-        type: type ? type.mime : '',
-        name,
-        content,
-    };
-}
+// Setup SendGrid's mailer.
+sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
 const filePath = path.resolve(process.cwd(), 'html', 'orderPlaced.html');
 const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.png'));
@@ -144,7 +115,7 @@ async function placed(req: NextApiRequest, res: NextApiResponse): Promise<void> 
                         `;
                 });
 
-                const itemsImgData: ImageObject[] = [];
+                const itemsImgData: AttachmentData[] = [];
 
                 for (const item of items) {
                     const id = safelyParse(item, 'id', parseAsString, '');
@@ -183,8 +154,8 @@ async function placed(req: NextApiRequest, res: NextApiResponse): Promise<void> 
                     .replace('{{total}}', total);
 
                 const mailOptions = {
-                    from: `No Reply <${process.env.MAILER_ADDRESS}>`,
-                    to: `Dave Connolly <dayc@kingofcardboard.co.uk>`,
+                    to: email,
+                    from: process.env.MAILER_ADDRESS || 'noreply@kingofcardboard.co.uk',
                     subject: 'Order Placed - King of Cardboard',
                     html,
                     text: `
@@ -228,21 +199,19 @@ async function placed(req: NextApiRequest, res: NextApiResponse): Promise<void> 
                             Shipping: ${shipping}
                             Total: ${total}
                         `,
-                    mandrillOptions: {
-                        message: {
-                            images: [
-                                ...itemsImgData,
-                                {
-                                    type: 'image/png',
-                                    name: 'logo',
-                                    content: logo.toString('base64'),
-                                },
-                            ],
+                    attachments: [
+                        ...itemsImgData,
+                        {
+                            type: 'image/png',
+                            filename: 'logo.png',
+                            content: logo.toString('base64'),
+                            content_id: 'logo',
+                            disposition: 'inline',
                         },
-                    },
+                    ],
                 };
 
-                await mailer.sendMail(mailOptions);
+                await sgMail.send(mailOptions);
 
                 res.status(200).end();
             } else {
