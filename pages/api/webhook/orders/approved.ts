@@ -1,16 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs';
 import path from 'path';
-import imageType from 'image-type';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Cors from 'cors';
-import axios from 'axios';
 import sgMail from '@sendgrid/mail';
 
 import { parseAsNumber, parseAsString, safelyParse } from '../../../../utils/parsers';
 import { apiErrorHandler } from '../../../../middleware/errors';
 import { runMiddleware } from '../../../../middleware/api';
-import { AttachmentData } from '../../../../types/webhooks';
+import { parseImgData } from '../../../../utils/webhooks';
 
 // Initializing the cors middleware
 const cors = Cors({
@@ -20,26 +18,6 @@ const cors = Cors({
 
 // Setup SendGrid's mailer.
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
-
-async function parseImgData(id: string, url: string): Promise<AttachmentData> {
-    const res = await axios.get(url, { responseType: 'arraybuffer' });
-
-    // @ts-ignore
-    const content = Buffer.from(res.data, 'binary').toString('base64');
-
-    // @ts-ignore
-    const imgType = imageType(res.data);
-    const mime = imgType ? imgType.mime : 'image/png';
-    const ext = imgType ? imgType.ext : 'png';
-
-    return {
-        type: mime,
-        filename: `${id}.${ext}`,
-        content,
-        content_id: id,
-        disposition: 'inline',
-    };
-}
 
 const filePath = path.resolve(process.cwd(), 'html', 'order.html');
 const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.png'));
@@ -136,7 +114,7 @@ async function approved(req: NextApiRequest, res: NextApiResponse): Promise<void
                         `;
                 });
 
-                const itemsImgData: AttachmentData[] = [];
+                const itemsImgData = [];
 
                 for (const item of items) {
                     const id = safelyParse(item, 'id', parseAsString, '');
