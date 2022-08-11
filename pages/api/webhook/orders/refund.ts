@@ -3,9 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Cors from 'cors';
-import { createTransport } from 'nodemailer';
-// @ts-ignore
-import mandrillTransport from 'nodemailer-mandrill-transport';
+import sgMail from '@sendgrid/mail';
 
 import { parseAsNumber, parseAsString, safelyParse } from '../../../../utils/parsers';
 import { apiErrorHandler } from '../../../../middleware/errors';
@@ -17,13 +15,8 @@ const cors = Cors({
     methods: ['POST', 'HEAD'],
 });
 
-const mailer = createTransport(
-    mandrillTransport({
-        auth: {
-            apiKey: process.env.MANDRILL_API_KEY,
-        },
-    })
-);
+// Setup SendGrid's mailer.
+sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
 const filePath = path.resolve(process.cwd(), 'html', 'refund.html');
 const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.png'));
@@ -79,20 +72,18 @@ async function refund(req: NextApiRequest, res: NextApiResponse): Promise<void> 
 
                             Amount refunded: ${refundedAmount}
                         `,
-                    mandrillOptions: {
-                        message: {
-                            images: [
-                                {
-                                    type: 'image/png',
-                                    name: 'logo',
-                                    content: logo.toString('base64'),
-                                },
-                            ],
+                    attachments: [
+                        {
+                            type: 'image/png',
+                            filename: 'logo.png',
+                            content: logo.toString('base64'),
+                            content_id: 'logo',
+                            disposition: 'inline',
                         },
-                    },
+                    ],
                 };
 
-                await mailer.sendMail(mailOptions);
+                await sgMail.send(mailOptions);
 
                 res.status(200).end();
             } else {
