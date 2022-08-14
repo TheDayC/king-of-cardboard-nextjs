@@ -13,7 +13,6 @@ import {
     updateAchievements,
 } from '../../../../services/achievements';
 import { createToken } from '../../../../utils/auth';
-import { authClient } from '../../../../utils/auth';
 import { getLineItems } from '../../../../utils/webhooks';
 
 // Initializing the cors middleware
