@@ -1,8 +1,9 @@
-import CommerceLayer from '@commercelayer/sdk';
+import CommerceLayer, { LineItem } from '@commercelayer/sdk';
+import { get, join } from 'lodash';
 
 import { errorHandler } from '../middleware/errors';
 import { PaymentSourceResponse } from '../types/api';
-import { CreateOrder } from '../types/cart';
+import { CreateOrder, FetchOrder } from '../types/cart';
 import { PaymentAttributes } from '../types/checkout';
 import { LineItemAttributes, LineItemRelationships } from '../types/commerce';
 import { SavedSkuOptions } from '../types/products';
@@ -33,6 +34,91 @@ export async function createOrder(accessToken: string, isGuest: boolean): Promis
         orderId: null,
         orderNumber: null,
     };
+}
+
+export async function getOrder(accessToken: string, orderId: string): Promise<FetchOrder | null> {
+    try {
+        const cl = CommerceLayer({
+            organization: process.env.NEXT_PUBLIC_ECOM_SLUG || '',
+            accessToken,
+        });
+
+        const order = await cl.orders.retrieve(orderId, {
+            fields: {
+                orders: [
+                    'id',
+                    'number',
+                    'formatted_subtotal_amount',
+                    'formatted_shipping_amount',
+                    'formatted_discount_amount',
+                    'formatted_total_amount',
+                    'line_items',
+                ],
+                line_items: [
+                    'id',
+                    'sku_code',
+                    'name',
+                    'quantity',
+                    'formatted_unit_amount',
+                    'formatted_total_amount',
+                    'image_url',
+                ],
+            },
+            include: ['line_items'],
+        });
+        const lineItems = get(order, 'line_items', [] as LineItem[]);
+        const skus = lineItems.map((item) => item.sku_code || '').filter((item) => item.length > 0);
+
+        const skuItems = await cl.skus.list({
+            fields: {
+                skus: ['id', 'code'],
+            },
+            filters: { code_in: join(skus, ',') },
+            pageNumber: 0,
+            pageSize: skus.length,
+        });
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const skuItemsWithStock: any[] = [];
+
+        for (const skuItem of skuItems) {
+            const skuInventory = await cl.skus.retrieve(skuItem.id, {
+                fields: {
+                    skus: ['inventory'],
+                },
+            });
+            const stock = safelyParse(skuInventory, 'inventory.quantity', parseAsNumber, 0);
+
+            skuItemsWithStock.push({ id: skuItem.id, code: skuItem.code, stock });
+        }
+
+        return {
+            ...order,
+            line_items: lineItems.map((item) => {
+                const skuItemWithStock = skuItemsWithStock.find((skWS) => item.sku_code === skWS.code);
+
+                return {
+                    id: safelyParse(item, 'id', parseAsString, ''),
+                    sku_code: safelyParse(item, 'sku_code', parseAsString, ''),
+                    name: safelyParse(item, 'name', parseAsString, ''),
+                    quantity: safelyParse(item, 'quantity', parseAsNumber, 0),
+                    formatted_unit_amount: safelyParse(item, 'formatted_unit_amount', parseAsString, '£0.00'),
+                    formatted_total_amount: safelyParse(item, 'formatted_total_amount', parseAsString, '£0.00'),
+                    image: {
+                        title: '',
+                        description: '',
+                        url: safelyParse(item, 'image_url', parseAsString, ''),
+                    },
+                    stock: safelyParse(skuItemWithStock, 'stock', parseAsNumber, 0),
+                    line_item_options: item.line_item_options || [],
+                };
+            }),
+        };
+    } catch (error: unknown) {
+        errorHandler(error, 'Failed to fetch order by id.');
+    }
+
+    return null;
 }
 
 export async function setLineItem(
