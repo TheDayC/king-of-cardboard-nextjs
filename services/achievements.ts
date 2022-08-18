@@ -1,18 +1,15 @@
 import { LineItem } from '@commercelayer/sdk';
 import axios from 'axios';
-import e from 'cors';
-import { get } from 'lodash';
+
 import {
     Achievement,
     CategoriesAndTypes,
     RecalculateAchievements,
     FetchAchievements,
     FetchObjectives,
-    ObjectId,
     Objective,
 } from '../types/achievements';
 import { authClient } from '../utils/auth';
-
 import {
     parseAsArrayOfAchievements,
     parseAsArrayOfObjectives,
@@ -21,7 +18,6 @@ import {
     parseAsString,
     safelyParse,
 } from '../utils/parsers';
-import { isNotNullOrUndefined, isNumber } from '../utils/typeguards';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
@@ -72,8 +68,8 @@ export async function fetchAchievements(emailAddress: string, accessToken: strin
 }
 
 export async function fetchObjectives(
-    categories: string[],
-    types: string[],
+    categories: string[] | null,
+    types: string[] | null,
     page: number = 0
 ): Promise<FetchObjectives> {
     const response = await axios.post(`${SITE_URL}/api/achievements/getObjectives`, {
