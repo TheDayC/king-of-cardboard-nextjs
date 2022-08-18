@@ -1,4 +1,5 @@
-import { LineItemOption } from '@commercelayer/sdk';
+import { LineItemOption, Order } from '@commercelayer/sdk';
+
 import { ImageItem } from './products';
 
 export interface CartTotals {
@@ -21,7 +22,7 @@ export interface CartItem {
     formatted_unit_amount: string;
     formatted_total_amount: string;
     image: ImageItem;
-    metadata: {
+    metadata?: {
         categories: string[];
         types: string[];
     };
@@ -32,4 +33,8 @@ export interface CartItem {
 export interface UpdateQuantity {
     id: string;
     quantity: number;
+}
+
+export interface FetchOrder extends Omit<Order, 'line_items'> {
+    line_items: CartItem[];
 }
