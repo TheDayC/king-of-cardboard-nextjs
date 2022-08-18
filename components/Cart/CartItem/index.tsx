@@ -40,7 +40,6 @@ export const CartItem: React.FC<CartItemProps> = ({
     stock,
     lineItemOptions,
 }) => {
-    console.log('🚀 ~ file: index.tsx ~ line 44 ~ lineItemOptions', lineItemOptions);
     const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
     const isQuantityAtMax = quantity === stock;

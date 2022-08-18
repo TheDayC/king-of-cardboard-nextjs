@@ -11,8 +11,6 @@ import { createPaymentSource } from '../../../utils/commerce';
 import { confirmOrder, refreshPayment } from '../../../utils/payment';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import { setConfirmationData } from '../../../store/slices/confirmation';
-import Achievements from '../../../services/achievments';
-import { fetchGiftCard } from '../../../store/slices/account';
 import { addError } from '../../../store/slices/alerts';
 import selector from './selector';
 import SelectionWrapper from '../../SelectionWrapper';
@@ -70,37 +68,6 @@ export const Payment: React.FC = () => {
         },
         [dispatch]
     );
-
-    const handleAchievements = useCallback(async () => {
-        // Figure out achievement progress now that the order has been confirmed.
-        if (!session || !items || !accessToken) return;
-        const emailAddress = safelyParse(session, 'user.email', parseAsString, '');
-
-        const achievements = new Achievements(session, accessToken);
-
-        const categories: string[] = [];
-        const types: string[] = [];
-
-        items.forEach((item) => item.metadata.categories.forEach((cat) => categories.push(cat)));
-        items.forEach((item) => item.metadata.types.forEach((type) => types.push(type)));
-
-        const hasFetchedObjectives = await achievements.fetchObjectives(categories, types);
-
-        if (hasFetchedObjectives && achievements.objectives) {
-            achievements.objectives.forEach((objective) => {
-                const { _id, min, max, milestone, reward, milestoneMultiplier: multiplier } = objective;
-
-                // Increment the achievement based on the objective found.
-                achievements.incrementAchievement(_id, min, max, reward, milestone, multiplier);
-            });
-
-            // Update achievements and points once all increments have been achieved.
-            achievements.updateAchievements();
-
-            // Dispatch coin update
-            dispatch(fetchGiftCard({ accessToken, emailAddress }));
-        }
-    }, [dispatch, session, accessToken, items]);
 
     const handleStripePayment = async () => {
         // Ensure we return to avoid multiple executions if criteria is met.
@@ -190,9 +157,6 @@ export const Payment: React.FC = () => {
                     shippingAddress,
                 })
             );
-
-            // If the user is logged in we need to submit their achievements to the database.
-            handleAchievements();
 
             router.push('/confirmation');
         } else {

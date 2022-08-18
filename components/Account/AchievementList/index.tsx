@@ -3,39 +3,35 @@ import { useSelector } from 'react-redux';
 import { useSession } from 'next-auth/react';
 
 import selector from './selector';
-import Achievements from '../../../services/achievments';
+import { fetchAchievements, fetchObjectives } from '../../../services/achievements';
 import { Achievement, Objective as ObjectiveType } from '../../../types/achievements';
 import Loading from '../../Loading';
 import Objective from './Objective';
+import { parseAsString, safelyParse } from '../../../utils/parsers';
 
 export const AchievementList: React.FC = () => {
     const { accessToken } = useSelector(selector);
     const { data: session } = useSession();
+    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
     const [shouldFetchAchievements, setShouldFetchAchievements] = useState(true);
     const [objectives, setObjectives] = useState<ObjectiveType[] | null>(null);
     const [achievements, setAchievements] = useState<Achievement[] | null>(null);
 
-    const fetchObjectives = useCallback(async (service: Achievements) => {
-        const hasFetchedObjectives = await service.fetchObjectives(null, null, 0);
+    const getObjectives = useCallback(async (email: string, token: string) => {
+        const { objectives } = await fetchObjectives(null, null, 0);
+        const { achievements } = await fetchAchievements(email, token);
 
-        if (hasFetchedObjectives) {
-            setObjectives(service.objectives);
-        }
-
-        if (service.achievements) {
-            setAchievements(service.achievements);
-        }
+        setObjectives(objectives);
+        setAchievements(achievements);
     }, []);
 
     // Fetch achievements
     useEffect(() => {
-        if (shouldFetchAchievements && accessToken && session) {
-            const achievementService = new Achievements(session, accessToken);
-
-            fetchObjectives(achievementService);
+        if (shouldFetchAchievements && accessToken && emailAddress) {
+            getObjectives(emailAddress, accessToken);
             setShouldFetchAchievements(false);
         }
-    }, [accessToken, session, shouldFetchAchievements, fetchObjectives]);
+    }, [accessToken, shouldFetchAchievements, getObjectives, emailAddress]);
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative">
