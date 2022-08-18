@@ -131,22 +131,16 @@ export function createInitialAchievements(objectives: Objective[]): RecalculateA
 export function calculateAchievements(objectives: Objective[], achievements: Achievement[]): RecalculateAchievements {
     const points = objectives
         .map((objective) => {
-            const { _id: id, min, max, milestone, reward, milestoneMultiplier: multiplier } = objective;
-            const achievementIndex = achievements.findIndex((a) => a.id === id) || null;
+            const { _id, min, max, milestone, reward, milestoneMultiplier: multiplier } = objective;
+            const achievement = achievements.find((a) => a.id === _id) || null;
 
-            if (achievementIndex && achievementIndex >= 0) {
-                // If the current achievement already exists then increment the count.
-                const currentAchievement = achievements[achievementIndex];
-                const current = currentAchievement.current + 1;
+            if (achievement) {
+                const newAmount = achievement.current + 1;
                 const milestoneReward = reward * multiplier;
 
-                // If we've not exceeded the max on the current increment then dish out points.
-                if (!hasExceededMaxThreshold(current, max)) {
-                    const shouldGetMilestoneReward =
-                        hasReachedMinThreshold(current, min) || hasReachedMilestone(current, milestone);
-
+                if (!hasExceededMaxThreshold(newAmount, max)) {
                     // Check to see if we've hit our min threshold.
-                    if (shouldGetMilestoneReward) {
+                    if (hasReachedMinThreshold(newAmount, min) || hasReachedMilestone(newAmount, milestone)) {
                         return milestoneReward;
                     }
 
@@ -160,23 +154,22 @@ export function calculateAchievements(objectives: Objective[], achievements: Ach
 
     const newAchievements = objectives
         .map((objective) => {
-            const { _id: id, max } = objective;
-            const achievementIndex = achievements.findIndex((a) => a.id === id) || null;
+            const { _id, max } = objective;
+            const achievement = achievements.find((a) => a.id === _id) || null;
 
-            if (achievementIndex && achievementIndex >= 0) {
+            if (achievement) {
                 // If the current achievement already exists then increment the count.
-                const currentAchievement = achievements[achievementIndex];
-                const current = currentAchievement.current + 1;
+                const current = achievement.current + 1;
 
                 // If we've not exceeded the max on the current increment then override the achievement's current value.
                 if (!hasExceededMaxThreshold(current, max)) {
                     return {
-                        ...currentAchievement,
+                        ...achievement,
                         current,
                     };
                 }
 
-                return currentAchievement;
+                return achievement;
             }
 
             return null;
