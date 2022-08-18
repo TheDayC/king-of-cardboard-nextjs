@@ -4,13 +4,7 @@ import CommerceLayer from '@commercelayer/sdk';
 import { errorHandler } from '../middleware/errors';
 import { CartItem, CartTotals } from '../types/cart';
 import { authClient } from './auth';
-import {
-    parseAsArrayOfCommerceResponse,
-    parseAsArrayOfStrings,
-    parseAsNumber,
-    parseAsString,
-    safelyParse,
-} from './parsers';
+import { parseAsArrayOfStrings, parseAsNumber, parseAsString, safelyParse } from './parsers';
 import { fetchProductImagesByProductLink } from './products';
 
 export async function getItemCount(accessToken: string, orderId: string): Promise<number> {
