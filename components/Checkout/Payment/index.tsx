@@ -11,7 +11,6 @@ import { createPaymentSource } from '../../../utils/commerce';
 import { confirmOrder, refreshPayment } from '../../../utils/payment';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import { setConfirmationData } from '../../../store/slices/confirmation';
-import { fetchGiftCard } from '../../../store/slices/account';
 import { addError } from '../../../store/slices/alerts';
 import selector from './selector';
 import SelectionWrapper from '../../SelectionWrapper';
