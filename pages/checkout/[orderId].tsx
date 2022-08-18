@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import PageWrapper from '../../components/PageWrapper';
 import { parseAsString, safelyParse } from '../../utils/parsers';
-import { fetchOrder, resetCart } from '../../store/slices/cart';
+import { fetchOrder } from '../../store/slices/cart';
 import selector from './selector';
 import Steps from '../../components/Checkout/Steps';
 import Customer from '../../components/Checkout/Customer';
