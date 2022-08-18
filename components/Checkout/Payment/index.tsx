@@ -249,13 +249,16 @@ export const Payment: React.FC = () => {
                                         title={title}
                                         name="paymentMethod"
                                         isChecked={sourceType === STRIPE_METHOD}
-                                        defaultChecked={sourceType === 'stripe_payments'}
+                                        defaultChecked={sourceType === STRIPE_METHOD}
                                         titleLogo={logo}
                                         onSelect={handlePaymentMethodSelect}
                                         register={register}
                                         key={`payment-method-${method.id}`}
                                     >
-                                        <Source sourceType={sourceType} />
+                                        <Source
+                                            sourceType={sourceType}
+                                            isCurrentlyDisplayed={paymentMethod === STRIPE_METHOD}
+                                        />
                                     </SelectionWrapper>
                                 );
                             })}

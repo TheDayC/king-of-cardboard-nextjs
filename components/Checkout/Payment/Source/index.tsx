@@ -3,6 +3,7 @@ import { CardElement } from '@stripe/react-stripe-js';
 
 interface SourceProps {
     sourceType: string;
+    isCurrentlyDisplayed: boolean;
 }
 
 const STRIPE_OPTIONS = {
@@ -22,16 +23,16 @@ const STRIPE_OPTIONS = {
     hidePostalCode: true,
 };
 
-export const Source: React.FC<SourceProps> = ({ sourceType }) => {
+export const Source: React.FC<SourceProps> = ({ sourceType, isCurrentlyDisplayed }) => {
     switch (sourceType) {
         case 'stripe_payments':
-            return (
+            return isCurrentlyDisplayed ? (
                 <div className="card bordered rounded-md">
                     <div className="card-body p-2 ">
                         <CardElement options={STRIPE_OPTIONS} />
                     </div>
                 </div>
-            );
+            ) : null;
         case 'paypal_payments':
         default:
             return null;
