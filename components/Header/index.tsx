@@ -16,7 +16,7 @@ import CartIcon from './CartIcon';
 import NewsBanner from './NewsBanner';
 import { setIsDrawerOpen, setUserId, setUserToken } from '../../store/slices/global';
 import { Slugs } from '../../enums/account';
-// import IssueBanner from './IssueBar';
+import IssueBanner from './IssueBanner';
 
 export const Header: React.FC = () => {
     const dispatch = useDispatch();
@@ -173,7 +173,7 @@ export const Header: React.FC = () => {
                 </div>
             </div>
             <NewsBanner />
-            {/* <IssueBanner /> */}
+            <IssueBanner />
         </React.Fragment>
     );
 };
