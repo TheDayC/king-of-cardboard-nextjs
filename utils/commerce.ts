@@ -10,21 +10,17 @@ import { SavedSkuOptions } from '../types/products';
 import { authClient } from './auth';
 import { parseAsString, safelyParse, parseAsNumber } from './parsers';
 
+const organization = process.env.NEXT_PUBLIC_ECOM_SLUG || '';
+
 export async function createOrder(accessToken: string, isGuest: boolean): Promise<CreateOrder> {
     try {
-        const cl = authClient(accessToken);
-        const res = await cl.post('/api/orders?fields[orders]=id,number', {
-            data: {
-                type: 'orders',
-                attributes: {
-                    guest: isGuest,
-                },
-            },
-        });
+        const cl = CommerceLayer({ organization, accessToken });
+        const order = await cl.orders.create({ guest: isGuest });
 
         return {
-            orderId: safelyParse(res, 'data.data.id', parseAsString, null),
-            orderNumber: safelyParse(res, 'data.data.attributes.number', parseAsNumber, null),
+            orderId: order.id,
+            orderNumber: order.number || null,
+            expiry: order.expires_at || null,
         };
     } catch (error: unknown) {
         errorHandler(error, 'Failed to create an order.');
@@ -33,16 +29,13 @@ export async function createOrder(accessToken: string, isGuest: boolean): Promis
     return {
         orderId: null,
         orderNumber: null,
+        expiry: null,
     };
 }
 
 export async function getOrder(accessToken: string, orderId: string): Promise<FetchOrder | null> {
     try {
-        const cl = CommerceLayer({
-            organization: process.env.NEXT_PUBLIC_ECOM_SLUG || '',
-            accessToken,
-        });
-
+        const cl = CommerceLayer({ organization, accessToken });
         const order = await cl.orders.retrieve(orderId, {
             fields: {
                 orders: [

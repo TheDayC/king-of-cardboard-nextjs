@@ -6,7 +6,7 @@ import { createWrapper } from 'next-redux-wrapper';
 
 import rootReducer from './slices';
 
-const persistConfig = {
+export const persistConfig = {
     key: 'root',
     storage,
     whitelist: ['cart', 'checkout', 'global', 'confirmation', 'pages'],

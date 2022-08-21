@@ -1,6 +1,7 @@
 import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { get } from 'lodash';
 import { HYDRATE } from 'next-redux-wrapper';
+import { PURGE } from 'redux-persist';
 
 import { AppState } from '..';
 import { CartItem, CartTotals, CreateOrder, FetchOrder } from '../../types/cart';
@@ -21,6 +22,7 @@ interface FetchOrderInput {
 }
 
 const hydrate = createAction<AppState>(HYDRATE);
+const purge = createAction<AppState>(PURGE);
 
 export const fetchItemCount = createAsyncThunk(
     'cart/fetchItemCount',
@@ -93,6 +95,12 @@ const cartSlice = createSlice({
         clearUpdateQuantities(state) {
             state.updateQuantities = [];
         },
+        setOrderId(state, action) {
+            state.orderId = action.payload;
+        },
+        setOrderExpiry(state, action) {
+            state.orderExpiry = action.payload;
+        },
         resetCart() {
             return cartInitialState;
         },
@@ -103,7 +111,7 @@ const cartSlice = createSlice({
             state.itemCount = action.payload;
         }),
             builder.addCase(createCLOrder.fulfilled, (state, action) => {
-                const { orderId, orderNumber } = action.payload;
+                const { orderId, orderNumber, expiry } = action.payload;
                 const {
                     shouldUpdateCart,
                     itemCount,
@@ -117,9 +125,10 @@ const cartSlice = createSlice({
                     updateQuantities,
                 } = cartInitialState;
 
-                // Set new order id and number.
+                // Set new order id, number expiry.
                 state.orderId = orderId;
                 state.orderNumber = orderNumber;
+                state.orderExpiry = expiry;
                 state.shouldCreateOrder = false;
 
                 // Reset remaining data.
@@ -170,7 +179,10 @@ const cartSlice = createSlice({
             builder.addCase(hydrate, (state, action) => ({
                 ...state,
                 ...action.payload[cartSlice.name],
-            }));
+            })),
+            builder.addCase(purge, () => {
+                return cartInitialState;
+            });
     },
 });
 
@@ -182,5 +194,7 @@ export const {
     setOrderHasGiftCard,
     setUpdateQuantities,
     clearUpdateQuantities,
+    setOrderExpiry,
+    setOrderId,
 } = cartSlice.actions;
 export default cartSlice.reducer;
