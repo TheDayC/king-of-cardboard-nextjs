@@ -3,16 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 import { AiFillQuestionCircle } from 'react-icons/ai';
+import { useSession } from 'next-auth/react';
 
 import { createLineItemOption, setLineItem } from '../../utils/commerce';
 import selector from './selector';
-import {
-    createCLOrder,
-    fetchCartItems,
-    fetchItemCount,
-    setOrderExpiry,
-    setUpdatingCart,
-} from '../../store/slices/cart';
+import { createCLOrder, fetchCartItems, fetchItemCount, setUpdatingCart } from '../../store/slices/cart';
 import Images from './Images';
 import Details from './Details';
 import { addError, addSuccess } from '../../store/slices/alerts';
@@ -23,7 +18,6 @@ import Error404 from '../404';
 import { getSingleProduct } from '../../utils/products';
 import { SavedSkuOptions, SingleProduct } from '../../types/products';
 import { checkIfOrderExists } from '../../utils/order';
-import { useSession } from 'next-auth/react';
 
 const defaultProduct: SingleProduct = {
     id: '',
@@ -157,7 +151,7 @@ export const Product: React.FC = () => {
 
             addItemsToCart(data);
         },
-        [accessToken, orderId, dispatch]
+        [accessToken, orderId, dispatch, addItemsToCart, isGuest]
     );
 
     const handleSkuOptionChange = (
