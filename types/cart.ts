@@ -12,6 +12,7 @@ export interface CartTotals {
 export interface CreateOrder {
     orderId: string | null;
     orderNumber: number | null;
+    expiry: string | null;
 }
 
 export interface CartItem {

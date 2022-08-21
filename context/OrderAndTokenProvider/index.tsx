@@ -2,37 +2,63 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { useSession } from 'next-auth/react';
+import { purgeStoredState } from 'redux-persist';
 
 import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect';
 import selector from './selector';
 import { fetchToken } from '../../store/slices/global';
 import { createCLOrder } from '../../store/slices/cart';
-import Loading from '../../components/Loading';
+import { persistConfig } from '../../store';
 
-const OrderAndTokenProvider: React.FC = ({ children }) => {
-    const { accessToken, expires, shouldCreateOrder } = useSelector(selector);
-    const dispatch = useDispatch();
+function calculateTokenExpiry(expires: string | null): boolean {
     const currentDate = DateTime.now().setZone('Europe/London');
     const expiryDate = DateTime.fromISO(expires || currentDate.toISO(), { zone: 'Europe/London' });
-    const hasExpired = Boolean(expires && expiryDate < currentDate);
+
+    return Boolean(expires && expiryDate < currentDate);
+}
+
+function calculateOrderExpiry(orderExpiry: string | null): boolean {
+    const currentDate = DateTime.now().setZone('Europe/London');
+    const orderExpiryDate = DateTime.fromISO(orderExpiry || currentDate.toISO(), { zone: 'Europe/London' });
+
+    if (!orderExpiry) return true;
+
+    return orderExpiryDate < currentDate;
+}
+
+function purgeReduxPersist(): void {
+    localStorage.setItem('kingofcardboard-401', 'false');
+    purgeStoredState(persistConfig);
+}
+
+const OrderAndTokenProvider: React.FC = ({ children }) => {
+    const { accessToken, expires, shouldCreateOrder, orderExpiry } = useSelector(selector);
+    const dispatch = useDispatch();
     const { status } = useSession();
     const isGuest = status !== 'authenticated';
-    const shouldResetToken = !accessToken || hasExpired || localStorage.getItem('kingofcardboard-401') === 'true';
 
     // If accessToken doesn't exist create one.
     useIsomorphicLayoutEffect(() => {
-        if (shouldResetToken) {
-            dispatch(fetchToken());
-            localStorage.setItem('kingofcardboard-401', 'false');
-        }
-    }, [shouldResetToken]);
+        const hasExpired = calculateTokenExpiry(expires);
+        const shouldResetToken = !accessToken || hasExpired || localStorage.getItem('kingofcardboard-401') === 'true';
 
-    // If the order doesn't exist then create one.
-    useIsomorphicLayoutEffect(() => {
-        if (shouldCreateOrder && accessToken) {
-            dispatch(createCLOrder({ accessToken, isGuest }));
+        if (shouldResetToken) {
+            purgeReduxPersist();
+            dispatch(fetchToken());
         }
-    }, [shouldCreateOrder, accessToken, isGuest]);
+    }, [expires]);
+
+    // If the order doesn't exist or has expired then create one.
+    useIsomorphicLayoutEffect(() => {
+        const hasOrderExpired = calculateOrderExpiry(orderExpiry);
+
+        if (accessToken) {
+            if (shouldCreateOrder || hasOrderExpired) {
+                purgeReduxPersist();
+                dispatch(createCLOrder({ accessToken, isGuest }));
+            }
+        }
+    }, [shouldCreateOrder, orderExpiry, accessToken, isGuest]);
 
     return <React.Fragment>{children}</React.Fragment>;
 };

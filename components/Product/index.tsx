@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 import { AiFillQuestionCircle } from 'react-icons/ai';
+import { useSession } from 'next-auth/react';
 
 import { createLineItemOption, setLineItem } from '../../utils/commerce';
 import selector from './selector';
-import { fetchCartItems, fetchItemCount, setUpdatingCart } from '../../store/slices/cart';
+import { createCLOrder, fetchCartItems, fetchItemCount, setUpdatingCart } from '../../store/slices/cart';
 import Images from './Images';
 import Details from './Details';
 import { addError, addSuccess } from '../../store/slices/alerts';
@@ -16,6 +17,7 @@ import Skeleton from './Skeleton';
 import Error404 from '../404';
 import { getSingleProduct } from '../../utils/products';
 import { SavedSkuOptions, SingleProduct } from '../../types/products';
+import { checkIfOrderExists } from '../../utils/order';
 
 const defaultProduct: SingleProduct = {
     id: '',
@@ -47,6 +49,7 @@ const defaultProduct: SingleProduct = {
 export const Product: React.FC = () => {
     const router = useRouter();
     const dispatch = useDispatch();
+    const { status } = useSession();
     const { accessToken, items, orderId, isUpdatingCart } = useSelector(selector);
     const [shouldFetch, setShouldFetch] = useState(true);
     const [shouldShow, setShouldShow] = useState(false);
@@ -62,6 +65,7 @@ export const Product: React.FC = () => {
     const btnLoading = isUpdatingCart ? ' loading' : '';
     const isQuantityAtMax = quantity === stock;
     const slug = safelyParse(router, 'query.slug', parseAsString, '');
+    const isGuest = status !== 'authenticated';
 
     const fetchSingleProduct = useCallback(async (token: string, slug: string) => {
         const prod = await getSingleProduct(token, slug);
@@ -71,10 +75,9 @@ export const Product: React.FC = () => {
     }, []);
 
     // Handle the form submission.
-    const onSubmit = useCallback(
+    const addItemsToCart = useCallback(
         async (data: unknown) => {
             if (!accessToken || !orderId || isUpdatingCart || hasExceededStock) return;
-            dispatch(setUpdatingCart(true));
 
             const attributes = {
                 quantity: parseInt(safelyParse(data, 'quantity', parseAsString, '1')),
@@ -130,6 +133,25 @@ export const Product: React.FC = () => {
             cardImage.url,
             savedSkuOptions,
         ]
+    );
+
+    // Handle the form submission.
+    const onSubmit = useCallback(
+        async (data: unknown) => {
+            if (!accessToken || !orderId) return;
+            dispatch(setUpdatingCart(true));
+            const doesOrderExist = await checkIfOrderExists(accessToken, orderId);
+
+            if (!doesOrderExist) {
+                dispatch(createCLOrder({ accessToken, isGuest }));
+                dispatch(addError('Order could not be found, please try adding product again.'));
+                dispatch(setUpdatingCart(false));
+                return;
+            }
+
+            addItemsToCart(data);
+        },
+        [accessToken, orderId, dispatch, addItemsToCart, isGuest]
     );
 
     const handleSkuOptionChange = (

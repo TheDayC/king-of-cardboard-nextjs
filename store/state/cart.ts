@@ -5,6 +5,7 @@ const cartInitialState: CartState = {
     shouldUpdateCart: false,
     orderId: null,
     orderNumber: null,
+    orderExpiry: null,
     itemCount: 0,
     items: [],
     isUpdatingCart: false,
