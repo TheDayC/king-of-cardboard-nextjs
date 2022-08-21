@@ -36,8 +36,13 @@ export const ProductCard: React.FC<CardProps> = ({
             {image.length > 0 && (
                 <Link href={linkOptions} passHref>
                     <div className="relative w-full h-40 cursor-pointer flex flex-row justify-center">
-                        <div className="rounded-md overflow-hidden shadow-md">
-                            <img src={`${image}?h=305`} alt={imgDesc} title={imgTitle} className="w-auto h-full" />
+                        <div className="rounded-md overflow-hidden shadow-md w-40 h-40">
+                            <img
+                                src={`${image}?w=160&h=160`}
+                                alt={imgDesc}
+                                title={imgTitle}
+                                className="w-auto h-full"
+                            />
                         </div>
                     </div>
                 </Link>
