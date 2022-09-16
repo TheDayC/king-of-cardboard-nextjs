@@ -16,7 +16,7 @@ import CartIcon from './CartIcon';
 import NewsBanner from './NewsBanner';
 import { setIsDrawerOpen, setUserId, setUserToken } from '../../store/slices/global';
 import { Slugs } from '../../enums/account';
-import IssueBanner from './IssueBanner';
+//import IssueBanner from './IssueBanner';
 
 export const Header: React.FC = () => {
     const dispatch = useDispatch();
