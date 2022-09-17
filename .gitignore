@@ -38,6 +38,7 @@ yarn-error.log*
 # public
 /public/robots.txt
 /public/sitemap.xml
+/public/sitemap-*.xml
 
 # data
 /data

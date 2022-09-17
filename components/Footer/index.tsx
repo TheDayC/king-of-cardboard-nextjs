@@ -121,7 +121,7 @@ export const Footer: React.FC = () => (
                 <a href="https://instagram.com/kocardboard" target="__blank" role="link">
                     <BsInstagram className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary" />
                 </a>
-                <a href="https://www.facebook.com/KoCardboard" target="__blank" role="link">
+                <a href="https://www.facebook.com/groups/kocardboardbreaks" target="__blank" role="link">
                     <BsFacebook className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary" />
                 </a>
             </div>
