@@ -17,7 +17,7 @@ const DEFAULT_IMAGE =
 interface PageWrapperProps {
     title: string;
     description: string;
-    image?: string | null;
+    image?: string;
 }
 
 export const PageWrapper: React.FC<PageWrapperProps> = ({ title, description, image, children }) => {
@@ -50,12 +50,16 @@ export const PageWrapper: React.FC<PageWrapperProps> = ({ title, description, im
             <Head>
                 <title>{title}</title>
                 <meta property="og:title" content={title} />
-                {description && <meta name="description" content={description} />}
-                {description && <meta property="og:description" content={description} />}
+                <meta name="description" content={description} />
+                <meta property="og:description" content={description} />
                 <meta property="og:image" content={imageURL} />
                 <meta property="og:url" content={`https://www.kingofcardboard.co.uk${router.asPath}`} />
                 <meta property="og:type" content="website" />
-                <meta property="twitter:card" content="summary" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:site" content="@kocardboard" />
+                <meta name="twitter:title" content={title} />
+                <meta name="twitter:description" content={description} />
+                <meta name="twitter:image" content={imageURL} />
             </Head>
             {isFetchingToken ? (
                 <Loading show={true} />
