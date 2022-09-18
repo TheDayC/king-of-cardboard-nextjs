@@ -38,7 +38,10 @@ export const CustomerServicePage: React.FC<CustomerServicePageProps> = ({ errorC
     }
 
     return (
-        <PageWrapper title={`${prettySlug} - Customer Service - King of Cardboard`} description={null}>
+        <PageWrapper
+            title={`${prettySlug} - Customer Service - King of Cardboard`}
+            description="Customer service information for King of Cardboard."
+        >
             <Content content={content} />
         </PageWrapper>
     );

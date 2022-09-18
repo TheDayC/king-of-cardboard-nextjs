@@ -37,7 +37,7 @@ export const CheckoutByOrderId: React.FC<CheckoutByOrderIdProps> = ({ orderId })
     }, [dispatch, orderId, accessToken]);
 
     return (
-        <PageWrapper title="Checkout - King of Cardboard" description={null}>
+        <PageWrapper title="Checkout - King of Cardboard" description="Checkout your order with King of Cardboard.">
             <div className="flex flex-col w-full">
                 <Steps currentStep={0} />
                 <div className="container mx-auto max-w-xxl">

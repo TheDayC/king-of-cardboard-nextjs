@@ -48,7 +48,10 @@ export const BreakPage: React.FC<BreakPageProps> = ({ errorCode, slug, isLive, i
     }
 
     return (
-        <PageWrapper title={`${prettySlug} - Breaks - King of Cardboard`} description={null}>
+        <PageWrapper
+            title={`${prettySlug} - Breaks - King of Cardboard`}
+            description="Sports and TCG box breaks from a variety of different products. Join us!"
+        >
             {slug && <Break slug={slug} />}
         </PageWrapper>
     );

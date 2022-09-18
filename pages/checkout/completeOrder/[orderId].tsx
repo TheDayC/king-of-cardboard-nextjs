@@ -63,7 +63,10 @@ export const CompleteOrderPage: React.FC<CompleteOrderPageProps> = ({ orderId, p
     }, [dispatch, accessToken, fetchPaymentData, orderId]);
 
     return (
-        <PageWrapper title="Confirm Order - King of Cardboard" description={null}>
+        <PageWrapper
+            title="Confirm Order - King of Cardboard"
+            description="Your order confirmation from King of Cardboard"
+        >
             <div className="flex flex-col w-full">
                 <Steps currentStep={3} />
                 <div className="container mx-auto max-w-xxl">

@@ -33,7 +33,10 @@ export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
     }
 
     return (
-        <PageWrapper title="Confirmation - King of Cardboard" description={null}>
+        <PageWrapper
+            title="Confirmation - King of Cardboard"
+            description="Your product confirmation from King of Cardboard."
+        >
             <div className="flex flex-col w-full pt-4 lg:flex-row lg:space-x-4">
                 <div className="flex-1 mb-4">
                     <ConfirmationDetails />
