@@ -64,20 +64,18 @@ export const Drawer: React.FC = ({ children }) => {
                         </button>
                     </li>
                     <hr className="my-2" />
-                    {shopSubMenu.map((menuItem, index) => {
-                        return (
-                            <li className="text-neutral-content">
-                                <button
-                                    className="btn gap-1 rounded-sm"
-                                    onClick={() => handleLinkClick(menuItem.href)}
-                                    role="link"
-                                >
-                                    <menuItem.icon className={`w-5 h-5 ${menuItem.css}`} />
-                                    {menuItem.label}
-                                </button>
-                            </li>
-                        );
-                    })}
+                    {shopSubMenu.map((menuItem) => (
+                        <li className="text-neutral-content">
+                            <button
+                                className="btn gap-1 rounded-sm"
+                                onClick={() => handleLinkClick(menuItem.href)}
+                                role="link"
+                            >
+                                <menuItem.icon className={`w-5 h-5 ${menuItem.css}`} />
+                                {menuItem.label}
+                            </button>
+                        </li>
+                    ))}
                     <hr className="my-2" />
                     <li className="text-neutral-content mb-2">
                         <button className="btn rounded-btn px-4 w-full h-12" onClick={() => handleLinkClick('/breaks')}>
