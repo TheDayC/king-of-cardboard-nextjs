@@ -37,7 +37,10 @@ export const LegalPage: React.FC<LegalPageProps> = ({ errorCode, content, slug }
     }
 
     return (
-        <PageWrapper title={`${prettySlug} - Legal - King of Cardboard`} description={null}>
+        <PageWrapper
+            title={`${prettySlug} - Legal - King of Cardboard`}
+            description="Legal information for King of Cardboard."
+        >
             <Content content={content} />
         </PageWrapper>
     );

@@ -14,7 +14,10 @@ export const CheckoutPage: React.FC<CommerceAuthProps> = () => {
     const { currentStep } = useSelector(selector);
 
     return (
-        <PageWrapper title="Checkout - King of Cardboard" description={null}>
+        <PageWrapper
+            title="Checkout - King of Cardboard"
+            description="Checkout your favourite products with King of Cardboard."
+        >
             <div className="flex flex-col w-full">
                 <Steps currentStep={currentStep} />
                 <div className="container mx-auto max-w-xxl">
