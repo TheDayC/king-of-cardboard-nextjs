@@ -11,15 +11,20 @@ import * as ga from '../../lib/ga';
 import selector from './selector';
 import Loading from '../Loading';
 
+const DEFAULT_IMAGE =
+    'https://images.ctfassets.net/qeycwswfx7l5/2kAmPK2bBwIBHOWbylhgPz/8fdb6fd76bc2fb592592f96d7c4d343f/large-crown.png';
+
 interface PageWrapperProps {
     title: string;
-    description: string | null;
+    description: string;
+    image?: string | null;
 }
 
-export const PageWrapper: React.FC<PageWrapperProps> = ({ title, description, children }) => {
+export const PageWrapper: React.FC<PageWrapperProps> = ({ title, description, image, children }) => {
     const router = useRouter();
     const cookieConsent = Boolean(Cookies.get('cookieConsent'));
     const { isFetchingToken } = useSelector(selector);
+    const imageURL = image ? image : DEFAULT_IMAGE;
 
     // Some GA subscribers.
     useEffect(() => {
@@ -47,6 +52,10 @@ export const PageWrapper: React.FC<PageWrapperProps> = ({ title, description, ch
                 <meta property="og:title" content={title} />
                 {description && <meta name="description" content={description} />}
                 {description && <meta property="og:description" content={description} />}
+                <meta property="og:image" content={imageURL} />
+                <meta property="og:url" content={`https://www.kingofcardboard.co.uk${router.asPath}`} />
+                <meta property="og:type" content="website" />
+                <meta property="twitter:card" content="summary" />
             </Head>
             {isFetchingToken ? (
                 <Loading show={true} />
