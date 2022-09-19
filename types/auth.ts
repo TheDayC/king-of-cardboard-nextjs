@@ -8,4 +8,5 @@ export interface SessionReturn {
 export interface UserSession {
     token: string | null;
     id: string | null;
+    expiry: string | null;
 }

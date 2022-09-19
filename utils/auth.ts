@@ -94,10 +94,18 @@ export async function createUserToken(emailAddress: string, password: string): P
             client_id: process.env.NEXT_PUBLIC_ECOM_SALES_ID,
             scope: process.env.NEXT_PUBLIC_MARKET,
         });
+        const createdAt = safelyParse(
+            tokenRes,
+            'data.created_at',
+            parseAsNumber,
+            DateTime.now().setZone('Europe/London').toSeconds()
+        );
+        const expiresIn = safelyParse(tokenRes, 'data.expires_in', parseAsNumber, 0);
 
         return {
             token: safelyParse(tokenRes, 'data.access_token', parseAsString, null),
             id: safelyParse(tokenRes, 'data.owner_id', parseAsString, null),
+            expiry: DateTime.fromSeconds(createdAt + expiresIn, { zone: 'Europe/London' }).toISO(),
         };
     } catch (error: unknown) {
         errorHandler(error, 'Failed to register user at this time.');
@@ -106,5 +114,17 @@ export async function createUserToken(emailAddress: string, password: string): P
     return {
         token: null,
         id: null,
+        expiry: null,
     };
+}
+
+export function calculateTokenExpiry(expires: string | null): boolean {
+    const currentDate = DateTime.now().setZone('Europe/London');
+    const expiryDate = DateTime.fromISO(expires || currentDate.toISO(), { zone: 'Europe/London' });
+
+    if (!expires) {
+        return true;
+    }
+
+    return currentDate > expiryDate;
 }

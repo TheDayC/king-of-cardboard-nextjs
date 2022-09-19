@@ -4,6 +4,7 @@ const globalInitialState: Global = {
     checkoutLoading: false,
     accessToken: null,
     userToken: null,
+    userTokenExpiry: null,
     isFetchingToken: false,
     userId: null,
     expires: null,

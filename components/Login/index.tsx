@@ -13,9 +13,10 @@ import { addSuccess, addWarning } from '../../store/slices/alerts';
 interface LoginProps {
     providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider>;
     showRegistrationSuccess: boolean;
+    shouldRedirect: boolean;
 }
 
-export const Login: React.FC<LoginProps> = ({ providers, showRegistrationSuccess }) => {
+export const Login: React.FC<LoginProps> = ({ providers, showRegistrationSuccess, shouldRedirect }) => {
     const { credentials } = providers;
     const router = useRouter();
     const dispatch = useDispatch();
@@ -35,7 +36,7 @@ export const Login: React.FC<LoginProps> = ({ providers, showRegistrationSuccess
 
     return (
         <React.Fragment>
-            {credentials && <Credentials />}
+            {credentials && <Credentials shouldRedirect={shouldRedirect} />}
             {/* <div className="divider">OR</div>
             <Google />
             <Twitch /> */}

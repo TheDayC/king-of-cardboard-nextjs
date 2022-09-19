@@ -9,14 +9,18 @@ import { useDispatch } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { createUserToken } from '../../utils/auth';
-import { setUserId, setUserToken } from '../../store/slices/global';
+import { setUserId, setUserToken, setUserTokenExpiry } from '../../store/slices/global';
 
 interface Submit {
     emailAddress?: string;
     password?: string;
 }
 
-export const Credentials: React.FC = () => {
+interface CredentialsProps {
+    shouldRedirect: boolean;
+}
+
+export const Credentials: React.FC<CredentialsProps> = ({ shouldRedirect }) => {
     const {
         register,
         handleSubmit,
@@ -41,26 +45,20 @@ export const Credentials: React.FC = () => {
 
         if (!formErr) {
             if (emailAddress && password) {
-                const { token, id } = await createUserToken(emailAddress, password);
+                const { token, id, expiry } = await createUserToken(emailAddress, password);
 
-                if (token) {
-                    dispatch(setUserToken(token));
-                }
-
-                if (id) {
-                    dispatch(setUserId(id));
-                }
+                dispatch(setUserToken(token));
+                dispatch(setUserTokenExpiry(expiry));
+                dispatch(setUserId(id));
             }
-            router.push('/account');
+
+            if (shouldRedirect) {
+                router.push('/account');
+            }
         }
 
         setLoading(false);
     };
-
-    // Pre-fetch the account page for a better transition.
-    useEffect(() => {
-        router.prefetch('/account');
-    }, [router]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
