@@ -28,7 +28,7 @@ const categories = [
     { category: Categories.Packs, icon: <RiRedPacketLine className={iconClassName} /> },
     { category: Categories.Other, icon: <GiPerspectiveDiceSixFacesRandom className={iconClassName} /> },
 ];
-const upperCaseTypes = [ProductType.TCG, ProductType.UFC, ProductType.Wrestling];
+const upperCaseTypes = [ProductType.TCG, ProductType.UFC];
 
 export const TYPE_FILTERS = [
     { type: ProductType.Basketball, icon: <BiBasketball className={iconClassName} /> },
