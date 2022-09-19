@@ -115,7 +115,7 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
             )}
             {wweProducts.length > 0 && (
                 <div className="flex flex-col mb-8">
-                    <h2 className="text-4xl mb-2">{upperFirst(ProductType.WWE)}</h2>
+                    <h2 className="text-4xl mb-2">Wrestling</h2>
                     <p>Officially licensed WWE sports cards, sealed product and packs.</p>
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">

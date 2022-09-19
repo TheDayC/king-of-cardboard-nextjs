@@ -28,14 +28,14 @@ const categories = [
     { category: Categories.Packs, icon: <RiRedPacketLine className={iconClassName} /> },
     { category: Categories.Other, icon: <GiPerspectiveDiceSixFacesRandom className={iconClassName} /> },
 ];
-const upperCaseTypes = [ProductType.TCG, ProductType.UFC, ProductType.WWE];
+const upperCaseTypes = [ProductType.TCG, ProductType.UFC, ProductType.Wrestling];
 
 export const TYPE_FILTERS = [
     { type: ProductType.Basketball, icon: <BiBasketball className={iconClassName} /> },
     { type: ProductType.Football, icon: <BiBall className={iconClassName} /> },
     { type: ProductType.Soccer, icon: <BiFootball className={iconClassName} /> },
     { type: ProductType.UFC, icon: <SiUfc className={iconClassName} /> },
-    { type: ProductType.WWE, icon: <SiWwe className={iconClassName} /> },
+    { type: ProductType.Wrestling, icon: <SiWwe className={iconClassName} /> },
     { type: ProductType.Pokemon, icon: <MdOutlineCatchingPokemon className={iconClassName} /> },
 ];
 
