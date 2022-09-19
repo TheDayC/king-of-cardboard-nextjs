@@ -6,7 +6,7 @@ import { CommerceLayerError, CommerceLayerLineItemRelationship, CommerceLayerRes
 import { BreakSlot, BreakSlotsCollection, BreakTypeItem, ContentfulBreak } from '../types/breaks';
 import { CartItem } from '../types/cart';
 import { SkuInventory, SkuOption } from '../types/commerce';
-import { ContentfulPage, Hero } from '../types/pages';
+import { ContentfulPage, Hero, SliderImage } from '../types/pages';
 import { ITypeGuard } from '../types/parsers';
 import { ContentfulProduct, ImageCollection, ImageItem } from '../types/products';
 import { SocialMedia } from '../types/profile';
@@ -185,4 +185,14 @@ export function isHero(candidate: unknown): candidate is Hero {
 
 export function isArrayOfHeroes(candidate: unknown): candidate is Hero[] {
     return isArray(candidate) && isHero(candidate[0]);
+}
+
+export function isSliderImage(candidate: unknown): candidate is SliderImage {
+    return (
+        isNotNullOrUndefined<object>(candidate) && 'url' in candidate && 'width' in candidate && 'height' in candidate
+    );
+}
+
+export function isArrayOfSliderImages(candidate: unknown): candidate is SliderImage[] {
+    return isArray(candidate) && isSliderImage(candidate[0]);
 }
