@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { BsArrowLeftCircle, BsArrowRightCircle } from 'react-icons/bs';
 
 interface PaginationProps {

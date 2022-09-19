@@ -1,5 +1,4 @@
 import React from 'react';
-import { IconType } from 'react-icons';
 import { useDispatch } from 'react-redux';
 
 import { combinedFilters, FilterTypes } from '../../../../enums/shop';

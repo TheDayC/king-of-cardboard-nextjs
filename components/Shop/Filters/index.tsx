@@ -30,7 +30,7 @@ const categories = [
 ];
 const upperCaseTypes = [ProductType.TCG, ProductType.UFC, ProductType.WWE];
 
-const TYPE_FILTERS = [
+export const TYPE_FILTERS = [
     { type: ProductType.Basketball, icon: <BiBasketball className={iconClassName} /> },
     { type: ProductType.Football, icon: <BiBall className={iconClassName} /> },
     { type: ProductType.Soccer, icon: <BiFootball className={iconClassName} /> },

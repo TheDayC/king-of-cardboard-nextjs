@@ -1,5 +1,4 @@
 import React from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
 import { useSession } from 'next-auth/react';
@@ -65,7 +64,7 @@ export const Drawer: React.FC = ({ children }) => {
                     </li>
                     <hr className="my-2" />
                     {shopSubMenu.map((menuItem) => (
-                        <li className="text-neutral-content">
+                        <li className="text-neutral-content" key={`sub-menu-item-${menuItem.label}`}>
                             <button
                                 className="btn gap-1 rounded-sm"
                                 onClick={() => handleLinkClick(menuItem.href)}

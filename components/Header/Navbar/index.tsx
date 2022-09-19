@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
 import { BsArrowDownCircle } from 'react-icons/bs';
+
 import { shopSubMenu } from '../../../utils/constants';
 
 export const Navbar: React.FC = () => (
@@ -36,7 +37,7 @@ export const Navbar: React.FC = () => (
                         }
 
                         return (
-                            <li>
+                            <li key={`nav-item-${index}`}>
                                 <Link href={menuItem.href} passHref>
                                     <button className={`btn gap-2 p-2 ${radius}`} role="link">
                                         <menuItem.icon className={`w-5 h-5 ${menuItem.css}`} />

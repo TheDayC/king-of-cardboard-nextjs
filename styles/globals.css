@@ -60,3 +60,9 @@
     @apply bg-base-100;
     @apply h-px;
 }
+
+.darkDivider::before,
+.darkDivider::after {
+    @apply bg-neutral;
+    @apply h-px;
+}

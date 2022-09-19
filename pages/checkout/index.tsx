@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { GetServerSideProps } from 'next';
-import { useDispatch } from 'react-redux';
 
 import Steps from '../../components/Checkout/Steps';
 import Customer from '../../components/Checkout/Customer';
-import { CommerceAuthProps, CreateToken } from '../../types/commerce';
+import { CreateToken } from '../../types/commerce';
 import selector from './selector';
 import Delivery from '../../components/Checkout/Delivery';
 import Payment from '../../components/Checkout/Payment';

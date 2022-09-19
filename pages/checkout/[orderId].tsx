@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { GetServerSideProps } from 'next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import PageWrapper from '../../components/PageWrapper';
 import { parseAsString, safelyParse } from '../../utils/parsers';

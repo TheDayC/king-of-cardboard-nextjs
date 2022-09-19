@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { GetServerSideProps } from 'next';
 import * as contentful from 'contentful';
+import { useDispatch } from 'react-redux';
 
 import Product from '../../components/Product';
 import PageWrapper from '../../components/PageWrapper';
@@ -8,7 +9,6 @@ import { parseAsString, safelyParse } from '../../utils/parsers';
 import Custom404Page from '../404';
 import { createToken } from '../../utils/auth';
 import { CreateToken } from '../../types/commerce';
-import { useDispatch } from 'react-redux';
 import { setAccessToken, setExpires } from '../../store/slices/global';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
