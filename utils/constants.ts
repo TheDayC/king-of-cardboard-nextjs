@@ -7,37 +7,37 @@ import { ProductType } from '../enums/shop';
 
 export const shopSubMenu = [
     {
-        href: '/shop/basketball',
+        href: `/shop/${ProductType.Basketball}`,
         icon: BiBasketball,
         label: upperFirst(ProductType.Basketball),
         css: '',
     },
     {
-        href: '/shop/football',
+        href: `/shop/${ProductType.Football}`,
         icon: BiBall,
         label: upperFirst(ProductType.Football),
         css: '',
     },
     {
-        href: '/shop/soccer',
+        href: `/shop/${ProductType.Soccer}`,
         icon: BiFootball,
         label: upperFirst(ProductType.Soccer),
         css: '',
     },
     {
-        href: '/shop/ufc',
+        href: `/shop/${ProductType.UFC}`,
         icon: SiUfc,
         label: upperCase(ProductType.UFC),
         css: '',
     },
     {
-        href: '/shop/wwe',
+        href: `/shop/${ProductType.Wrestling}`,
         icon: SiWwe,
         label: upperFirst(ProductType.Wrestling),
         css: '',
     },
     {
-        href: '/shop/pokemon',
+        href: `/shop/${ProductType.Pokemon}`,
         icon: MdOutlineCatchingPokemon,
         label: upperFirst(ProductType.Pokemon),
         css: 'origin-center rotate-180',
