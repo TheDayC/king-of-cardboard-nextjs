@@ -8,23 +8,29 @@ import { parseAsString, safelyParse } from '../../utils/parsers';
 import Filters from '../../components/Shop/Filters';
 import Grid from '../../components/Shop/Grid';
 import { removeAllProductTypes, setUrlProductType } from '../../store/slices/filters';
+import { createToken } from '../../utils/auth';
+import { CreateToken } from '../../types/commerce';
+import { setAccessToken, setExpires } from '../../store/slices/global';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const shopType = safelyParse(context, 'query.type', parseAsString, null);
+    const accessToken = await createToken();
 
     return {
         props: {
             errorCode: !shopType ? 404 : null,
             shopType,
+            accessToken,
         },
     };
 };
 
 interface ShopTypeProps {
     shopType: string | null;
+    accessToken: CreateToken;
 }
 
-export const ShopType: React.FC<ShopTypeProps> = ({ shopType }) => {
+export const ShopType: React.FC<ShopTypeProps> = ({ shopType, accessToken }) => {
     const dispatch = useDispatch();
     const shouldUpperCase = shopType === 'wwe' || shopType === 'ufc';
     const caseChangedShopType = shouldUpperCase ? upperCase(shopType || '') : startCase(shopType || '');
@@ -36,6 +42,11 @@ export const ShopType: React.FC<ShopTypeProps> = ({ shopType }) => {
             dispatch(removeAllProductTypes());
         }
     }, [dispatch, shopType]);
+
+    useEffect(() => {
+        dispatch(setAccessToken(accessToken.token));
+        dispatch(setExpires(accessToken.expires));
+    }, [dispatch, accessToken]);
 
     return (
         <PageWrapper
