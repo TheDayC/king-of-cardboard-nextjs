@@ -11,7 +11,14 @@ import { GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi';
 
 import selector from './selector';
 import { Categories, combinedFilters, FilterTypes, ProductType } from '../../../enums/shop';
-import { addCategory, addProductType, removeCategory, removeProductType } from '../../../store/slices/filters';
+import {
+    addCategory,
+    addProductType,
+    removeAllCategories,
+    removeAllProductTypes,
+    removeCategory,
+    removeProductType,
+} from '../../../store/slices/filters';
 import Filter from './Filter';
 
 const iconClassName = 'w-6 h-6 inline-block mr-2';
@@ -62,8 +69,16 @@ export const Filters: React.FC = () => {
         }
     };
 
+    const handleClearFilters = () => {
+        dispatch(removeAllProductTypes());
+        dispatch(removeAllCategories());
+    };
+
     return (
         <div className="flex flex-col w-full md:w-1/6 md:mr-4 relative">
+            <button className="btn btn-md mb-4 btn-secondary" onClick={handleClearFilters}>
+                Clear Filters
+            </button>
             <div className="card bordered mb-4 rounded-md">
                 <div className="card-body p-4">
                     <h3 className="card-title text-sm lg:text-lg mb-4">Product Types</h3>
