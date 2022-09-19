@@ -9,13 +9,7 @@ import selector from './selector';
 import { fetchToken } from '../../store/slices/global';
 import { createCLOrder } from '../../store/slices/cart';
 import { persistConfig } from '../../store';
-
-function calculateTokenExpiry(expires: string | null): boolean {
-    const currentDate = DateTime.now().setZone('Europe/London');
-    const expiryDate = DateTime.fromISO(expires || currentDate.toISO(), { zone: 'Europe/London' });
-
-    return Boolean(expires && expiryDate < currentDate);
-}
+import { calculateTokenExpiry } from '../../utils/auth';
 
 function calculateOrderExpiry(orderExpiry: string | null): boolean {
     const currentDate = DateTime.now().setZone('Europe/London');
@@ -36,17 +30,6 @@ const OrderAndTokenProvider: React.FC = ({ children }) => {
     const dispatch = useDispatch();
     const { status } = useSession();
     const isGuest = status !== 'authenticated';
-
-    // If accessToken doesn't exist create one.
-    useIsomorphicLayoutEffect(() => {
-        const hasExpired = calculateTokenExpiry(expires);
-        const shouldResetToken = !accessToken || hasExpired || localStorage.getItem('kingofcardboard-401') === 'true';
-
-        if (shouldResetToken) {
-            purgeReduxPersist();
-            dispatch(fetchToken());
-        }
-    }, [expires]);
 
     // If the order doesn't exist or has expired then create one.
     useIsomorphicLayoutEffect(() => {

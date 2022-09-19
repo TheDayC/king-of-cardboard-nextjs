@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import 'react-slideshow-image/dist/styles.css';
 
 .collapse-open .collapse-title,
 .collapse-open .collapse-content {
@@ -59,4 +60,18 @@
 .whiteDivider::after {
     @apply bg-base-100;
     @apply h-px;
+}
+
+.darkDivider::before,
+.darkDivider::after {
+    @apply bg-neutral;
+    @apply h-px;
+}
+
+.react-slideshow-container .default-nav:first-of-type {
+    margin-left: 20px;
+}
+
+.react-slideshow-container .default-nav:last-of-type {
+    margin-right: 20px;
 }

@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { GetServerSideProps } from 'next';
 import * as contentful from 'contentful';
+import { useDispatch } from 'react-redux';
 
 import Product from '../../components/Product';
 import PageWrapper from '../../components/PageWrapper';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import Custom404Page from '../404';
+import { createToken } from '../../utils/auth';
+import { CreateToken } from '../../types/commerce';
+import { setAccessToken, setExpires } from '../../store/slices/global';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const slug = safelyParse(context, 'query.slug', parseAsString, null);
@@ -21,6 +25,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         'fields.slug': slug,
     });
     const imageUrl = safelyParse(products.items[0], 'fields.cardImage.fields.file.url', parseAsString, null);
+    const accessToken = await createToken();
 
     return {
         props: {
@@ -28,6 +33,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             metaTitle: safelyParse(products.items[0], 'fields.metaTitle', parseAsString, ''),
             metaDescription: safelyParse(products.items[0], 'fields.metaDescription', parseAsString, ''),
             imageUrl: imageUrl ? `https:${imageUrl}` : undefined,
+            accessToken,
         },
     };
 };
@@ -37,9 +43,23 @@ interface ProductPageProps {
     metaTitle: string;
     metaDescription: string;
     imageUrl?: string;
+    accessToken: CreateToken;
 }
 
-export const ProductPage: React.FC<ProductPageProps> = ({ errorCode, metaTitle, metaDescription, imageUrl }) => {
+export const ProductPage: React.FC<ProductPageProps> = ({
+    errorCode,
+    metaTitle,
+    metaDescription,
+    imageUrl,
+    accessToken,
+}) => {
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(setAccessToken(accessToken.token));
+        dispatch(setExpires(accessToken.expires));
+    }, [dispatch, accessToken]);
+
     // Show error page if a code is provided.
     if (errorCode) {
         return <Custom404Page />;

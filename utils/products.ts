@@ -56,14 +56,14 @@ export async function getProducts(
     categories: Categories[],
     productTypes: ProductType[]
 ): Promise<ProductsWithCount> {
+    const typesString = productTypes.length ? `types_contains_some: ${JSON.stringify(productTypes)}` : '';
+    const categoriesString = categories.length ? `categories_contains_some: ${JSON.stringify(categories)}` : '';
     // Chain filters, entire object can't be stringified but arrays can for a quick win.
-    const where = `types_contains_all: ${JSON.stringify(productTypes)}, categories_contains_all: ${JSON.stringify(
-        categories
-    )}`;
+    const where = `${typesString}, ${categoriesString}`;
 
     const query = `
         query {
-            productCollection (limit: ${limit}, skip: ${skip}, where: {${where}}) {
+            productCollection (limit: ${limit}, skip: ${skip}, order: sys_firstPublishedAt_DESC where: {${where}}) {
                 total
                 items {
                     name

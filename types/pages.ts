@@ -12,7 +12,7 @@ interface SliderCollection {
     items: SliderImage[];
 }
 
-interface SliderImage {
+export interface SliderImage {
     title: string;
     description: string;
     contentType: string;
@@ -41,4 +41,5 @@ export interface ServerSideRedirectProps {
 export interface PageWithHero {
     content: Document[] | null;
     heroes: Hero[] | null;
+    sliderImages: SliderImage[];
 }

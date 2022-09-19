@@ -24,6 +24,9 @@ const globalSlice = createSlice({
         setUserToken(state, action) {
             state.userToken = action.payload;
         },
+        setUserTokenExpiry(state, action) {
+            state.userTokenExpiry = action.payload;
+        },
         setUserId(state, action) {
             state.userId = action.payload;
         },
@@ -81,6 +84,7 @@ export const {
     setSessionEmail,
     setShowNewsBanner,
     setUserToken,
+    setUserTokenExpiry,
     setUserId,
     setIsDrawerOpen,
     setTokenExpiry,

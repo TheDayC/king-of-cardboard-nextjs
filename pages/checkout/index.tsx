@@ -1,17 +1,41 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { GetServerSideProps } from 'next';
 
 import Steps from '../../components/Checkout/Steps';
 import Customer from '../../components/Checkout/Customer';
-import { CommerceAuthProps } from '../../types/commerce';
+import { CreateToken } from '../../types/commerce';
 import selector from './selector';
 import Delivery from '../../components/Checkout/Delivery';
 import Payment from '../../components/Checkout/Payment';
 import Summary from '../../components/Checkout/Summary';
 import PageWrapper from '../../components/PageWrapper';
+import { createToken } from '../../utils/auth';
+import { setAccessToken, setExpires } from '../../store/slices/global';
 
-export const CheckoutPage: React.FC<CommerceAuthProps> = () => {
+export const getServerSideProps: GetServerSideProps = async () => {
+    const accessToken = await createToken();
+
+    return {
+        props: {
+            errorCode: !accessToken ? 500 : null,
+            accessToken,
+        },
+    };
+};
+
+interface CheckoutProps {
+    accessToken: CreateToken;
+}
+
+export const CheckoutPage: React.FC<CheckoutProps> = ({ accessToken }) => {
+    const dispatch = useDispatch();
     const { currentStep } = useSelector(selector);
+
+    useEffect(() => {
+        dispatch(setAccessToken(accessToken.token));
+        dispatch(setExpires(accessToken.expires));
+    }, [dispatch, accessToken]);
 
     return (
         <PageWrapper

@@ -1,4 +1,5 @@
 import React from 'react';
+import { BsArrowLeftCircle, BsArrowRightCircle } from 'react-icons/bs';
 
 interface PaginationProps {
     currentPage: number;
@@ -52,23 +53,23 @@ export const Pagination: React.FC<PaginationProps> = ({ currentPage, pageCount, 
     };
 
     return (
-        <div className="flex flex-row justify-between items-center btn-group mt-4 w-full md:mt-8 lg:mt-16">
+        <div className="flex flex-row justify-between items-center mt-4 w-full md:mt-8 lg:mt-16">
             <button
-                className="btn btn-outline btn-md border border-gray-400 rounded-l-sm w-1/2 h-full hover:bg-gray-400 hover:border-gray-400 lg:w-auto"
-                disabled={currentPage <= 0}
+                className="btn btn-md btn-outline text-sm border border-gray-400 rounded-none w-1/2 hover:bg-gray-400 hover:border-gray-400 md:w-auto gap-2"
+                disabled={currentPage === 0}
                 onClick={handlePrevPage}
             >
+                <BsArrowLeftCircle className="w-5 h-5" />
                 Previous
             </button>
-            <div className={`hidden md:inline-block md:grid md:grid-cols-${pageCount < 10 ? pageCount : 10} md:gap-1`}>
-                {getBtns()}
-            </div>
+            <div className={`hidden md:grid md:grid-cols-${pageCount < 10 ? pageCount : 10} md:gap-1`}>{getBtns()}</div>
             <button
-                className="btn btn-md btn-outline text-sm border border-gray-400 rounded-r-sm w-1/2 hover:bg-gray-400 hover:border-gray-400 md:w-auto"
+                className="btn btn-md btn-outline text-sm border border-gray-400 rounded-none w-1/2 hover:bg-gray-400 hover:border-gray-400 md:w-auto gap-2"
                 disabled={currentPage === pageCount - 1}
                 onClick={handleNextPage}
             >
                 Next
+                <BsArrowRightCircle className="w-5 h-5" />
             </button>
         </div>
     );

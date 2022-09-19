@@ -1,9 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectGlobalData } from '../../../store/state/selectors';
+import { selectGlobalData } from '../../store/state/selectors';
 
 const selector = createSelector([selectGlobalData], (global) => ({
-    accessToken: global.accessToken,
+    userTokenExpiry: global.userTokenExpiry,
 }));
 
 export default selector;

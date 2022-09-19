@@ -1,7 +1,6 @@
 import React from 'react';
-import { AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
-import { BsFillRecord2Fill } from 'react-icons/bs';
 import Image from 'next/image';
+import { AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
 import { useSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
@@ -11,6 +10,7 @@ import { parseAsString, safelyParse } from '../../utils/parsers';
 import Rewards from '../Header/Rewards';
 import selector from './selector';
 import { setIsDrawerOpen } from '../../store/slices/global';
+import { shopSubMenu } from '../../utils/constants';
 
 export const Drawer: React.FC = ({ children }) => {
     const { isDrawerOpen } = useSelector(selector);
@@ -39,7 +39,7 @@ export const Drawer: React.FC = ({ children }) => {
             <div className="drawer-side">
                 <label className="drawer-overlay" onClick={handleDrawerClick}></label>
 
-                <ul className="menu p-4 overflow-y-auto w-3/4 sm:w-1/2 md:w-1/4 bg-neutral text-base-content">
+                <ul className="menu menu-compact dropdown-content p-4 overflow-y-auto w-3/4 sm:w-1/2 md:w-1/4 bg-neutral text-base-content">
                     <li className="text-neutral-content mb-2" onClick={() => handleLinkClick('/')}>
                         <div className="w-3/4 xs:w-1/2 sm:w-3/4 md:w-full p-2 mx-auto">
                             <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
@@ -51,39 +51,36 @@ export const Drawer: React.FC = ({ children }) => {
                         </li>
                     )}
                     <li className="text-neutral-content mb-4">
-                        <button
-                            className="btn btn-ghost btn-sm rounded-btn px-4 w-full h-12"
-                            onClick={() => handleLinkClick('/')}
-                        >
+                        <button className="btn gap-1" onClick={() => handleLinkClick('/')}>
                             <AiFillHome className="inline-block w-6 h-6 mr-1.5 stroke-current" />
                             Home
                         </button>
                     </li>
                     <li className="text-neutral-content mb-2">
-                        <button
-                            className="btn btn-ghost btn-sm rounded-btn px-4 w-full h-12"
-                            onClick={() => handleLinkClick('/shop')}
-                        >
+                        <button className="btn gap-1" onClick={() => handleLinkClick('/shop')}>
                             <AiFillShopping className="inline-block w-6 h-6 mr-1.5 stroke-current" />
                             Shop
                         </button>
                     </li>
+                    <hr className="my-2" />
+                    {shopSubMenu.map((menuItem) => (
+                        <li className="text-neutral-content" key={`sub-menu-item-${menuItem.label}`}>
+                            <button
+                                className="btn gap-1 rounded-sm"
+                                onClick={() => handleLinkClick(menuItem.href)}
+                                role="link"
+                            >
+                                <menuItem.icon className={`w-5 h-5 ${menuItem.css}`} />
+                                {menuItem.label}
+                            </button>
+                        </li>
+                    ))}
+                    <hr className="my-2" />
                     <li className="text-neutral-content mb-2">
-                        <button
-                            className="btn btn-ghost btn-sm rounded-btn px-4 w-full h-12"
-                            onClick={() => handleLinkClick('/breaks')}
-                        >
+                        <button className="btn rounded-btn px-4 w-full h-12" onClick={() => handleLinkClick('/breaks')}>
                             <AiTwotoneCrown className="inline-block w-6 h-6 mr-1.5 stroke-current" />
                             Breaks
                         </button>
-                    </li>
-                    <li className="text-neutral-content mb-2">
-                        <a href="https://twitch.tv/dayc" target="_blank" rel="noreferrer">
-                            <button className="btn btn-ghost btn-sm rounded-btn px-4 w-full h-12">
-                                <BsFillRecord2Fill className="inline-block w-6 h-6 mr-1.5 stroke-current" />
-                                Streaming
-                            </button>
-                        </a>
                     </li>
                 </ul>
             </div>

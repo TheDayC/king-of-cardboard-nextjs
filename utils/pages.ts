@@ -2,7 +2,13 @@ import { Document } from '@contentful/rich-text-types';
 
 import { ContentfulPage, PageWithHero } from '../types/pages';
 import { fetchContent } from './content';
-import { parseAsArrayOfContentfulPages, parseAsArrayOfDocuments, parseAsArrayOfHeroes, safelyParse } from './parsers';
+import {
+    parseAsArrayOfContentfulPages,
+    parseAsArrayOfDocuments,
+    parseAsArrayOfHeroes,
+    parseAsArrayOfSliderImages,
+    safelyParse,
+} from './parsers';
 
 export async function pageBySlug(slug: string | null, path: string): Promise<Document[] | null> {
     if (!slug) return null;
@@ -39,6 +45,17 @@ export async function pageWithHeroBySlug(slug: string, path: string): Promise<Pa
                         json
                     }
                     hero
+                    sliderCollection {
+                        items {
+                            title
+                            description
+                            contentType
+                            fileName
+                            url
+                            width
+                            height
+                        }
+                    }
                 }
             }
         }
@@ -55,6 +72,7 @@ export async function pageWithHeroBySlug(slug: string, path: string): Promise<Pa
     return {
         content: safelyParse(contentfulPage, 'content.json.content', parseAsArrayOfDocuments, null),
         heroes: safelyParse(contentfulPage, 'hero', parseAsArrayOfHeroes, null),
+        sliderImages: safelyParse(contentfulPage, 'sliderCollection.items', parseAsArrayOfSliderImages, []),
     };
 }
 

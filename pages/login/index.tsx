@@ -87,7 +87,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
                         </div>
                         <div className="px-0 py-4 lg:py-4">
                             {currentTab === Tabs.Login && (
-                                <Login providers={providers} showRegistrationSuccess={regSuccess} />
+                                <Login
+                                    providers={providers}
+                                    showRegistrationSuccess={regSuccess}
+                                    shouldRedirect={true}
+                                />
                             )}
                             {currentTab === Tabs.Register && (
                                 <Register setCurrentTab={setCurrentTab} setRegSuccess={setRegSuccess} />
