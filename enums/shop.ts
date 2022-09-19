@@ -7,6 +7,12 @@ export enum ProductType {
     Sports = 'sports',
     TCG = 'tcg',
     Other = 'other',
+    Basketball = 'basketball',
+    Football = 'football',
+    Soccer = 'soccer',
+    UFC = 'ufc',
+    WWE = 'wwe',
+    Pokemon = 'pokemon',
 }
 
 export enum Categories {
