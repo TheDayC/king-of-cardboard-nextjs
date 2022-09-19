@@ -78,7 +78,7 @@ export const Filters: React.FC = () => {
         <div className="flex flex-col w-full md:w-1/6 md:mr-4 relative">
             <div className="card bordered mb-4 rounded-md">
                 <div className="card-body p-4">
-                    <h3 className="card-title text-sm lg:text-lg mb-4">Product Types</h3>
+                    <h3 className="card-title text-sm lg:text-lg mb-4">Categories</h3>
                     {TYPE_FILTERS.map(({ type, icon }) => (
                         <Filter
                             value={type}
@@ -95,7 +95,7 @@ export const Filters: React.FC = () => {
             {categories.length > 0 && (
                 <div className="card bordered mb-4 rounded-md">
                     <div className="card-body p-4">
-                        <h3 className="card-title text-sm lg:text-lg mb-4">Categories</h3>
+                        <h3 className="card-title text-sm lg:text-lg mb-4">Product Types</h3>
                         {categories.map(({ category, icon }) => (
                             <Filter
                                 value={category}
