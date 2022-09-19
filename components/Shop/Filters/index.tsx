@@ -76,9 +76,6 @@ export const Filters: React.FC = () => {
 
     return (
         <div className="flex flex-col w-full md:w-1/6 md:mr-4 relative">
-            <button className="btn btn-md mb-4 btn-secondary" onClick={handleClearFilters}>
-                Clear Filters
-            </button>
             <div className="card bordered mb-4 rounded-md">
                 <div className="card-body p-4">
                     <h3 className="card-title text-sm lg:text-lg mb-4">Product Types</h3>
@@ -113,6 +110,9 @@ export const Filters: React.FC = () => {
                     </div>
                 </div>
             )}
+            <button className="btn btn-md mb-4 btn-secondary" onClick={handleClearFilters}>
+                Clear Filters
+            </button>
         </div>
     );
 };
