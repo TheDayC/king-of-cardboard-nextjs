@@ -63,7 +63,7 @@ export async function getProducts(
 
     const query = `
         query {
-            productCollection (limit: ${limit}, skip: ${skip}, where: {${where}}) {
+            productCollection (limit: ${limit}, skip: ${skip}, order: sys_firstPublishedAt_DESC where: {${where}}) {
                 total
                 items {
                     name
