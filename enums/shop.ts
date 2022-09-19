@@ -11,7 +11,7 @@ export enum ProductType {
     Football = 'football',
     Soccer = 'soccer',
     UFC = 'ufc',
-    WWE = 'wwe',
+    Wrestling = 'wrestling',
     Pokemon = 'pokemon',
 }
 

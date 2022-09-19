@@ -53,7 +53,9 @@ export const getServerSideProps: GetServerSideProps = async () => {
         ProductType.Soccer,
     ]);
     const { products: ufcProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.UFC]);
-    const { products: wweProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.WWE]);
+    const { products: wweProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+        ProductType.Wrestling,
+    ]);
     const { products: pokemonProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
         ProductType.Pokemon,
     ]);

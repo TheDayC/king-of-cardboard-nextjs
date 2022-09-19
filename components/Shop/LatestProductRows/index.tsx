@@ -1,4 +1,4 @@
-import { upperFirst } from 'lodash';
+import { upperCase, upperFirst } from 'lodash';
 import React from 'react';
 
 import { ProductType } from '../../../enums/shop';
@@ -93,7 +93,7 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
             )}
             {ufcProducts.length > 0 && (
                 <div className="flex flex-col mb-8">
-                    <h2 className="text-4xl mb-2">{upperFirst(ProductType.UFC)}</h2>
+                    <h2 className="text-4xl mb-2">{upperCase(ProductType.UFC)}</h2>
                     <p>Officially licensed UFC sports cards, sealed product and packs.</p>
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
@@ -115,7 +115,7 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
             )}
             {wweProducts.length > 0 && (
                 <div className="flex flex-col mb-8">
-                    <h2 className="text-4xl mb-2">{upperFirst(ProductType.WWE)}</h2>
+                    <h2 className="text-4xl mb-2">{upperFirst(ProductType.Wrestling)}</h2>
                     <p>Officially licensed WWE sports cards, sealed product and packs.</p>
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
