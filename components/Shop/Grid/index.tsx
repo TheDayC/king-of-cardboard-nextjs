@@ -25,29 +25,14 @@ export const Grid: React.FC = () => {
                 setCurrentPage(pageNumber);
                 dispatch(
                     fetchProducts({
-                        accessToken,
                         limit: PER_PAGE,
                         skip: pageNumber * PER_PAGE,
-                        categories,
-                        productTypes,
                     })
                 );
             }
         },
         [accessToken, categories, productTypes, dispatch]
     );
-
-    // Create the product collection on load.
-    useEffect(() => {
-        if (accessToken) {
-            dispatch(setIsLoadingProducts(true));
-            dispatch(fetchProducts({ accessToken, limit: PER_PAGE, skip: 0, categories, productTypes }));
-        }
-    }, [dispatch, accessToken, categories, productTypes]);
-
-    useEffect(() => {
-        dispatch(clearCurrentProduct());
-    }, [dispatch]);
 
     return (
         <div className="flex flex-col w-full md:w-5/6" data-testid="shop-grid">

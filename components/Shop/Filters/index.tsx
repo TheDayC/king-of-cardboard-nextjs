@@ -20,6 +20,7 @@ import {
     removeProductType,
 } from '../../../store/slices/filters';
 import Filter from './Filter';
+import { fetchProducts } from '../../../store/slices/products';
 
 const iconClassName = 'w-6 h-6 inline-block mr-2';
 const categories = [
@@ -64,9 +65,10 @@ export const Filters: React.FC = () => {
                     dispatch(removeProductType(filter));
                     break;
                 default:
-                    break;
             }
         }
+
+        dispatch(fetchProducts({ limit: 8, skip: 0 }));
     };
 
     const handleClearFilters = () => {
