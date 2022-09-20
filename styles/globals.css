@@ -50,16 +50,28 @@
     @apply rounded-l-md;
 }
 
+.divider.lightDivider {
+    border: unset;
+}
+
 .lightDivider::before,
 .lightDivider::after {
     @apply bg-base-200;
     @apply h-px;
 }
 
+.divider.whiteDivider {
+    border: unset;
+}
+
 .whiteDivider::before,
 .whiteDivider::after {
     @apply bg-base-100;
     @apply h-px;
+}
+
+.divider.darkDivider {
+    border: unset;
 }
 
 .darkDivider::before,

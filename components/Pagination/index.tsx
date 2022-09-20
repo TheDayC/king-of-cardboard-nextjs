@@ -8,6 +8,7 @@ interface PaginationProps {
 }
 
 export const Pagination: React.FC<PaginationProps> = ({ currentPage, pageCount, handlePageNumber }) => {
+    const gridCols = pageCount < 10 ? pageCount : 10;
     const getBtns = () => {
         const btns = [];
 
@@ -62,7 +63,7 @@ export const Pagination: React.FC<PaginationProps> = ({ currentPage, pageCount, 
                 <BsArrowLeftCircle className="w-5 h-5" />
                 Previous
             </button>
-            <div className={`hidden md:grid md:grid-cols-${pageCount < 10 ? pageCount : 10} md:gap-1`}>{getBtns()}</div>
+            <div className={`hidden md:flex md:grid-cols-${gridCols} md:gap-1`}>{getBtns()}</div>
             <button
                 className="btn btn-md btn-outline text-sm border border-gray-400 rounded-none w-1/2 hover:bg-gray-400 hover:border-gray-400 md:w-auto gap-2"
                 disabled={currentPage === pageCount - 1}

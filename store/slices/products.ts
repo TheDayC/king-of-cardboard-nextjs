@@ -6,15 +6,13 @@ import { Categories, ProductType } from '../../enums/shop';
 import { ProductsWithCount, SingleProduct } from '../../types/products';
 import { getProducts, getSingleProduct } from '../../utils/products';
 import productsInitialState from '../state/products';
+import { IAppState } from '../types/state';
 
 const hydrate = createAction<AppState>(HYDRATE);
 
 interface ProductsThunkInput {
-    accessToken: string;
     limit: number;
     skip: number;
-    categories: Categories[];
-    productTypes: ProductType[];
 }
 
 interface SingleProductThunkInput {
@@ -24,8 +22,13 @@ interface SingleProductThunkInput {
 
 export const fetchProducts = createAsyncThunk(
     'products/fetchProducts',
-    async (data: ProductsThunkInput): Promise<ProductsWithCount> => {
-        const { accessToken, limit, skip, categories, productTypes } = data;
+    async (data: ProductsThunkInput, { getState }): Promise<ProductsWithCount | null> => {
+        const { limit, skip } = data;
+        const state = getState() as IAppState;
+        const { accessToken } = state.global;
+        const { categories, productTypes } = state.filters;
+
+        if (!accessToken) return null;
 
         return await getProducts(accessToken, limit, skip, categories, productTypes);
     }
@@ -44,6 +47,13 @@ const productsSlice = createSlice({
     name: 'products',
     initialState: productsInitialState,
     reducers: {
+        setProductsAndCount(state, action) {
+            const { products, count } = action.payload;
+
+            state.products = products;
+            state.productsTotal = count;
+            state.isLoadingProducts = false;
+        },
         clearCurrentProduct(state) {
             state.currentProduct = {
                 id: '',
@@ -78,11 +88,13 @@ const productsSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(fetchProducts.fulfilled, (state, action) => {
-            const { products, count } = action.payload;
+            if (action.payload) {
+                const { products, count } = action.payload;
 
-            state.products = products;
-            state.productsTotal = count;
-            state.isLoadingProducts = false;
+                state.products = products;
+                state.productsTotal = count;
+                state.isLoadingProducts = false;
+            }
         }),
             builder.addCase(fetchSingleProduct.fulfilled, (state, action) => {
                 state.currentProduct = action.payload;
@@ -94,6 +106,6 @@ const productsSlice = createSlice({
     },
 });
 
-export const { clearCurrentProduct, setIsLoadingProducts } = productsSlice.actions;
+export const { clearCurrentProduct, setIsLoadingProducts, setProductsAndCount } = productsSlice.actions;
 
 export default productsSlice.reducer;
