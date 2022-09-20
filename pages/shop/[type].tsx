@@ -14,6 +14,7 @@ import { CreateToken } from '../../types/commerce';
 import { setAccessToken, setExpires } from '../../store/slices/global';
 import { pageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
+import { ProductType } from '../../enums/shop';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const shopType = safelyParse(context, 'query.type', parseAsString, null);
@@ -38,7 +39,7 @@ interface ShopTypeProps {
 
 export const ShopType: React.FC<ShopTypeProps> = ({ shopType, accessToken, content }) => {
     const dispatch = useDispatch();
-    const shouldUpperCase = shopType === 'wwe' || shopType === 'ufc';
+    const shouldUpperCase = shopType === ProductType.UFC;
     const caseChangedShopType = shouldUpperCase ? upperCase(shopType || '') : startCase(shopType || '');
 
     useEffect(() => {
