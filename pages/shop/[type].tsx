@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { Document } from '@contentful/rich-text-types';
 
 import PageWrapper from '../../components/PageWrapper';
-import { parseAsProductType, parseAsString, safelyParse } from '../../utils/parsers';
+import { parseAsProductType, safelyParse } from '../../utils/parsers';
 import Filters from '../../components/Shop/Filters';
 import Grid from '../../components/Shop/Grid';
 import { removeAllProductTypes, setUrlProductType } from '../../store/slices/filters';

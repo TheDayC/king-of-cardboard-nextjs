@@ -1,18 +1,18 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ceil, divide } from 'lodash';
 
 import selector from './selector';
 import Pagination from '../../Pagination';
 import ProductCard from './ProductCard';
-import { clearCurrentProduct, fetchProducts, setIsLoadingProducts } from '../../../store/slices/products';
+import { fetchProducts, setIsLoadingProducts } from '../../../store/slices/products';
 import Skeleton from './skeleton';
 import NoProducts from './NoProducts';
 
 const PER_PAGE = 8;
 
 export const Grid: React.FC = () => {
-    const { accessToken, categories, productTypes, products, productsTotal, isLoadingProducts } = useSelector(selector);
+    const { accessToken, products, productsTotal, isLoadingProducts } = useSelector(selector);
     const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(0);
     const productPageCount = ceil(divide(productsTotal, PER_PAGE));
@@ -31,7 +31,7 @@ export const Grid: React.FC = () => {
                 );
             }
         },
-        [accessToken, categories, productTypes, dispatch]
+        [accessToken, dispatch]
     );
 
     return (
