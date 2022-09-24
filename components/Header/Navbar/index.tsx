@@ -4,6 +4,7 @@ import { AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
 import { BsArrowDownCircle } from 'react-icons/bs';
 
 import { importsSubMenu, shopSubMenu } from '../../../utils/constants';
+import { FaPlaneArrival } from 'react-icons/fa';
 
 export const Navbar: React.FC = () => (
     <div className="navbar-center" role="navigation">
@@ -52,7 +53,7 @@ export const Navbar: React.FC = () => (
             <li>
                 <Link href="/imports" passHref>
                     <button className="btn rounded-md gap-2" role="link">
-                        <AiFillShopping className="w-5 h-5" />
+                        <FaPlaneArrival className="w-5 h-5" />
                         Imports
                         <BsArrowDownCircle className="w-4 h-4" />
                     </button>
