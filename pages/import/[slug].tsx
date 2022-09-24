@@ -39,6 +39,40 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         limit: 1,
         'fields.slug': slug,
     });
+
+    if (imports.items.length === 0) {
+        return {
+            props: {
+                errorCode: 404,
+                metaTitle: '',
+                metaDescription: '',
+                accessToken: {
+                    token: null,
+                    expires: '',
+                },
+                id: '',
+                name: '',
+                slug: '',
+                description: null,
+                sku: '',
+                image: {
+                    title: '',
+                    description: '',
+                    url: '',
+                },
+                galleryImages: [],
+                amount: '',
+                compareAmount: '',
+                isAvailable: false,
+                stock: 0,
+                tags: [],
+                types: [],
+                categories: [],
+                options: [],
+            },
+        };
+    }
+
     const importFields = imports.items[0].fields;
     const sku = safelyParse(importFields, 'productLink', parseAsString, '');
     const skus = await cl.skus.list({
@@ -64,7 +98,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     return {
         props: {
-            errorCode: !slug ? 404 : null,
+            errorCode: null,
             metaTitle: safelyParse(importFields, 'metaTitle', parseAsString, ''),
             metaDescription: safelyParse(importFields, 'metaDescription', parseAsString, ''),
             accessToken,
