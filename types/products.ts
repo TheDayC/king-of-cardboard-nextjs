@@ -43,7 +43,7 @@ interface SkuOptions {
 }
 
 export interface ProductsWithCount {
-    products: Product[];
+    products: ShallowProduct[];
     count: number;
 }
 

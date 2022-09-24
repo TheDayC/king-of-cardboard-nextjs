@@ -64,7 +64,7 @@ export async function getShallowImports(
 
     const skus = await cl.skus.list({
         filters: {
-            code: join(skuCodes, ','),
+            code_in: join(skuCodes, ','),
         },
         fields: {
             skus: ['id', 'code'],
@@ -104,8 +104,8 @@ export async function getShallowImports(
                     url: safelyParse(fields, 'cardImage.fields.file.url', parseAsString, ''),
                 },
                 tags: safelyParse(fields, 'tags', parseAsArrayOfStrings, []),
-                amount: safelyParse(price, 'formatted_amount', parseAsString, '£0.00'),
-                compareAmount: safelyParse(price, 'formatted_compare_at_amount', parseAsString, '£0.00'),
+                amount: safelyParse(price, 'amount', parseAsString, '£0.00'),
+                compareAmount: safelyParse(price, 'compareAmount', parseAsString, '£0.00'),
             };
         }),
         count: safelyParse(importsRes, 'total', parseAsNumber, 0),

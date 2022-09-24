@@ -43,19 +43,27 @@ export const getServerSideProps: GetServerSideProps = async () => {
         };
     }
 
-    const baseballProducts = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+    const { products: baseballProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
         ProductType.Baseball,
     ]);
-    const basketballProducts = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+    const { products: basketballProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
         ProductType.Basketball,
     ]);
-    const footballProducts = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+    const { products: footballProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
         ProductType.Football,
     ]);
-    const soccerProducts = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.Soccer]);
-    const ufcProducts = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.UFC]);
-    const wweProducts = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.Wrestling]);
-    const pokemonProducts = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.Pokemon]);
+    const { products: soccerProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+        ProductType.Soccer,
+    ]);
+    const { products: ufcProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+        ProductType.UFC,
+    ]);
+    const { products: wweProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+        ProductType.Wrestling,
+    ]);
+    const { products: pokemonProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+        ProductType.Pokemon,
+    ]);
 
     return {
         props: {

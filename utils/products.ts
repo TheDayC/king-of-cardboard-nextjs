@@ -167,7 +167,7 @@ export async function getShallowProducts(
     skip: number,
     categories: Categories[],
     productTypes: ProductType[]
-): Promise<ShallowProduct[]> {
+): Promise<ProductsWithCount> {
     // Build where queries.
     const typesWhere = productTypes.length
         ? {
@@ -204,20 +204,24 @@ export async function getShallowProducts(
 
     // Return early if nothing was found.
     if (productsRes.items.length === 0) {
-        return [];
+        return {
+            products: [],
+            count: 0,
+        };
     }
 
     // Setup a blank prices array with skus to find them later on.
     const prices: PricesWithSku[] = [];
 
     // Fetch all sku ids for related sku codes.
-    const skuCodes = productsRes.items.map((i) => safelyParse(i, 'fields.productLink', parseAsString, ''));
+    const skuCodes = productsRes.items.map((p) => safelyParse(p, 'fields.productLink', parseAsString, ''));
+
     const skus = await cl.skus.list({
         filters: {
             code_in: join(skuCodes, ','),
         },
         fields: {
-            skus: ['id'],
+            skus: ['id', 'code'],
         },
     });
 
@@ -240,23 +244,26 @@ export async function getShallowProducts(
     }
 
     // Return custom imports structure.
-    return productsRes.items.map(({ fields }) => {
-        const sku = safelyParse(fields, 'productLink', parseAsString, '');
-        const price = prices.find((p) => p.sku === sku);
+    return {
+        products: productsRes.items.map(({ fields }) => {
+            const sku = safelyParse(fields, 'productLink', parseAsString, '');
+            const price = prices.find((p) => p.sku === sku);
 
-        return {
-            name: safelyParse(fields, 'name', parseAsString, ''),
-            slug: safelyParse(fields, 'slug', parseAsString, ''),
-            image: {
-                title: safelyParse(fields, 'cardImage.fields.title', parseAsString, ''),
-                description: safelyParse(fields, 'cardImage.fields.description', parseAsString, ''),
-                url: safelyParse(fields, 'cardImage.fields.file.url', parseAsString, ''),
-            },
-            tags: safelyParse(fields, 'tags', parseAsArrayOfStrings, []),
-            amount: safelyParse(price, 'formatted_amount', parseAsString, ''),
-            compareAmount: safelyParse(price, 'formatted_compare_at_amount', parseAsString, ''),
-        };
-    });
+            return {
+                name: safelyParse(fields, 'name', parseAsString, ''),
+                slug: safelyParse(fields, 'slug', parseAsString, ''),
+                image: {
+                    title: safelyParse(fields, 'cardImage.fields.title', parseAsString, ''),
+                    description: safelyParse(fields, 'cardImage.fields.description', parseAsString, ''),
+                    url: safelyParse(fields, 'cardImage.fields.file.url', parseAsString, ''),
+                },
+                tags: safelyParse(fields, 'tags', parseAsArrayOfStrings, []),
+                amount: safelyParse(price, 'amount', parseAsString, '£0.00'),
+                compareAmount: safelyParse(price, 'compareAmount', parseAsString, '£0.00'),
+            };
+        }),
+        count: safelyParse(productsRes, 'total', parseAsNumber, 0),
+    };
 }
 
 export async function getProductsTotal(): Promise<number> {
