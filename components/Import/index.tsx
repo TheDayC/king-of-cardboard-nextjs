@@ -17,6 +17,7 @@ import { SavedSkuOptions } from '../../types/products';
 import { checkIfOrderExists } from '../../utils/order';
 import { SkuOption } from '../../types/commerce';
 import { ImageItem } from '../../types/contentful';
+import { PriceHistory } from '../../types/imports';
 
 interface ImportProps {
     id: string;
@@ -34,6 +35,7 @@ interface ImportProps {
     types: string[];
     categories: string[];
     options: SkuOption[];
+    priceHistory: PriceHistory[];
 }
 
 export const Import: React.FC<ImportProps> = ({
@@ -50,6 +52,7 @@ export const Import: React.FC<ImportProps> = ({
     types,
     categories,
     options,
+    priceHistory,
 }) => {
     const dispatch = useDispatch();
     const { status } = useSession();

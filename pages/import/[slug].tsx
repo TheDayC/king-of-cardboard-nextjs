@@ -8,6 +8,7 @@ import CommerceLayer from '@commercelayer/sdk';
 import PageWrapper from '../../components/PageWrapper';
 import {
     parseAsArrayOfDocuments,
+    parseAsArrayOfRepeater,
     parseAsArrayOfStrings,
     parseAsBoolean,
     parseAsNumber,
@@ -19,7 +20,8 @@ import { createToken } from '../../utils/auth';
 import { CreateToken, SkuOption } from '../../types/commerce';
 import { setAccessToken, setExpires } from '../../store/slices/global';
 import Import from '../../components/Import';
-import { ImageItem } from '../../types/contentful';
+import { ImageItem, Repeater } from '../../types/contentful';
+import { PriceHistory } from '../../types/imports';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const slug = safelyParse(context, 'query.slug', parseAsString, null);
@@ -95,6 +97,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const skuOptions = await cl.skus.sku_options(id, {
         fields: ['id', 'name', 'description', 'formatted_price_amount'],
     });
+    const priceRepeater = safelyParse(importFields, 'priceHistory', parseAsArrayOfRepeater, [] as Repeater[]);
 
     return {
         props: {
@@ -126,6 +129,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 description: option.description || '',
                 amount: option.formatted_price_amount || '£0.00',
             })),
+            priceHistory: priceRepeater.map((r) => ({
+                timestamp: safelyParse(r, 'key', parseAsString, ''),
+                amount: safelyParse(r, 'value', parseAsString, ''),
+            })),
         },
     };
 };
@@ -150,6 +157,7 @@ interface ImportPageProps {
     types: string[];
     categories: string[];
     options: SkuOption[];
+    priceHistory: PriceHistory[];
 }
 
 export const ImportPage: React.FC<ImportPageProps> = ({
@@ -172,6 +180,7 @@ export const ImportPage: React.FC<ImportPageProps> = ({
     types,
     categories,
     options,
+    priceHistory,
 }) => {
     const dispatch = useDispatch();
     const imageUrl = image.url.length > 0 ? `https:${image.url}` : undefined;

@@ -4,8 +4,9 @@ import * as contentful from 'contentful';
 
 import { Categories, ProductType } from '../enums/shop';
 import { ImportsWithCount } from '../types/imports';
-import { parseAsArrayOfStrings, parseAsNumber, parseAsString, safelyParse } from './parsers';
+import { parseAsArrayOfRepeater, parseAsArrayOfStrings, parseAsNumber, parseAsString, safelyParse } from './parsers';
 import { PricesWithSku } from '../types/commerce';
+import { Repeater } from '../types/contentful';
 
 export async function getShallowImports(
     accessToken: string,
@@ -94,6 +95,7 @@ export async function getShallowImports(
         imports: importsRes.items.map(({ fields }) => {
             const sku = safelyParse(fields, 'productLink', parseAsString, '');
             const price = prices.find((p) => p.sku === sku);
+            const priceRepeater = safelyParse(fields, 'priceHistory', parseAsArrayOfRepeater, [] as Repeater[]);
 
             return {
                 name: safelyParse(fields, 'name', parseAsString, ''),
@@ -106,6 +108,10 @@ export async function getShallowImports(
                 tags: safelyParse(fields, 'tags', parseAsArrayOfStrings, []),
                 amount: safelyParse(price, 'amount', parseAsString, '£0.00'),
                 compareAmount: safelyParse(price, 'compareAmount', parseAsString, '£0.00'),
+                priceHistory: priceRepeater.map((r) => ({
+                    timestamp: safelyParse(r, 'key', parseAsString, ''),
+                    amount: safelyParse(r, 'value', parseAsString, ''),
+                })),
             };
         }),
         count: safelyParse(importsRes, 'total', parseAsNumber, 0),
