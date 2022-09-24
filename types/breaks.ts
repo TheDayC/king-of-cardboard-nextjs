@@ -1,7 +1,7 @@
 import { Document } from '@contentful/rich-text-types';
 
 import { SkuInventory } from './commerce';
-import { ImageCollection, ImageItem } from './products';
+import { ImageCollection, ImageItem } from './contentful';
 
 export interface ContentfulBreak {
     title: string;

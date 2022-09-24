@@ -8,7 +8,8 @@ import { CartItem } from '../types/cart';
 import { SkuInventory, SkuOption } from '../types/commerce';
 import { ContentfulPage, Hero, SliderImage } from '../types/pages';
 import { ITypeGuard } from '../types/parsers';
-import { ContentfulProduct, ImageCollection, ImageItem } from '../types/products';
+import { ContentfulProduct } from '../types/products';
+import { ImageCollection, ImageItem } from '../types/contentful';
 import { SocialMedia } from '../types/profile';
 
 export function isString(candidate: unknown): candidate is string {

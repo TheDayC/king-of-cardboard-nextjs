@@ -1,6 +1,7 @@
 import { Document } from '@contentful/rich-text-types';
 
 import { SkuInventory } from './commerce';
+import { ImageCollection, ImageItem } from './contentful';
 
 export interface Product {
     id: string;
@@ -65,16 +66,6 @@ export interface ContentfulProductShort {
     types: string[];
     categories: string[];
     cardImage: ImageItem;
-}
-
-export interface ImageCollection {
-    items: ImageItem[];
-}
-
-export interface ImageItem {
-    title: string;
-    description: string;
-    url: string;
 }
 
 export interface CartImage extends ImageItem {

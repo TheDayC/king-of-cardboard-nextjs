@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { upperFirst, upperCase } from 'lodash';
-import { BiFootball, BiBall, BiBasketball } from 'react-icons/bi';
+import { BiFootball, BiBall, BiBasketball, BiBaseball } from 'react-icons/bi';
 import { SiUfc, SiWwe } from 'react-icons/si';
 import { MdOutlineCatchingPokemon } from 'react-icons/md';
 import { BsBoxSeam } from 'react-icons/bs';
@@ -32,6 +32,7 @@ const categories = [
 const upperCaseTypes = [ProductType.TCG, ProductType.UFC];
 
 export const TYPE_FILTERS = [
+    { type: ProductType.Baseball, icon: <BiBaseball className={iconClassName} /> },
     { type: ProductType.Basketball, icon: <BiBasketball className={iconClassName} /> },
     { type: ProductType.Football, icon: <BiBall className={iconClassName} /> },
     { type: ProductType.Soccer, icon: <BiFootball className={iconClassName} /> },

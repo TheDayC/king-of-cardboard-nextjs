@@ -7,6 +7,7 @@ export enum ProductType {
     Sports = 'sports',
     TCG = 'tcg',
     Other = 'other',
+    Baseball = 'baseball',
     Basketball = 'basketball',
     Football = 'football',
     Soccer = 'soccer',

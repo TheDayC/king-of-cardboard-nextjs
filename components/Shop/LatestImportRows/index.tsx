@@ -2,20 +2,20 @@ import { upperCase, upperFirst } from 'lodash';
 import React from 'react';
 
 import { ProductType } from '../../../enums/shop';
-import { Product } from '../../../types/products';
-import ProductCard from '../Grid/ProductCard';
+import { ShallowImport } from '../../../types/imports';
+import ImportCard from '../Grid/ImportCard';
 
-interface LatestProductRowsProps {
-    baseballProducts: Product[];
-    basketballProducts: Product[];
-    footballProducts: Product[];
-    soccerProducts: Product[];
-    ufcProducts: Product[];
-    wweProducts: Product[];
-    pokemonProducts: Product[];
+interface LatestImportRowsProps {
+    baseballProducts: ShallowImport[];
+    basketballProducts: ShallowImport[];
+    footballProducts: ShallowImport[];
+    soccerProducts: ShallowImport[];
+    ufcProducts: ShallowImport[];
+    wweProducts: ShallowImport[];
+    pokemonProducts: ShallowImport[];
 }
 
-export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
+export const LatestImportRows: React.FC<LatestImportRowsProps> = ({
     baseballProducts,
     basketballProducts,
     footballProducts,
@@ -29,18 +29,18 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
             {baseballProducts.length > 0 && (
                 <div className="flex flex-col mb-8">
                     <h2 className="text-4xl mb-2">{upperFirst(ProductType.Basketball)}</h2>
-                    <p>Officially licensed NBA sports cards, sealed product and packs.</p>
+                    <p>Officially licensed and unlicensed MLB sports cards, sealed product and packs.</p>
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                         {baseballProducts.map((product) => (
-                            <ProductCard
+                            <ImportCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -55,14 +55,14 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                         {basketballProducts.map((product) => (
-                            <ProductCard
+                            <ImportCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -77,14 +77,14 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                         {footballProducts.map((product) => (
-                            <ProductCard
+                            <ImportCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -99,14 +99,14 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                         {soccerProducts.map((product) => (
-                            <ProductCard
+                            <ImportCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -121,14 +121,14 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                         {ufcProducts.map((product) => (
-                            <ProductCard
+                            <ImportCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -143,14 +143,14 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                         {wweProducts.map((product) => (
-                            <ProductCard
+                            <ImportCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -165,14 +165,14 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                         {pokemonProducts.map((product) => (
-                            <ProductCard
+                            <ImportCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -184,4 +184,4 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
     );
 };
 
-export default LatestProductRows;
+export default LatestImportRows;

@@ -6,7 +6,7 @@ import { GiCardRandom } from 'react-icons/gi';
 import { removeLineItem, setLineItem } from '../../../../../utils/commerce';
 import selector from './selector';
 import { fetchCartItems, fetchItemCount } from '../../../../../store/slices/cart';
-import { ImageItem } from '../../../../../types/products';
+import { ImageItem } from '../../../../../types/contentful';
 import { addError, addSuccess } from '../../../../../store/slices/alerts';
 import styles from './slot.module.css';
 
