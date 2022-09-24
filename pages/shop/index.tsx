@@ -15,8 +15,8 @@ import Content from '../../components/Content';
 import selector from './selector';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
 import { Categories, ProductType } from '../../enums/shop';
-import { getProducts } from '../../utils/products';
-import { Product } from '../../types/products';
+import { getShallowProducts } from '../../utils/products';
+import { Product, ShallowProduct } from '../../types/products';
 
 const LIMIT = 4;
 const SKIP = 0;
@@ -43,28 +43,26 @@ export const getServerSideProps: GetServerSideProps = async () => {
         };
     }
 
-    const { products: basketballProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+    const baseballProducts = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+        ProductType.Baseball,
+    ]);
+    const basketballProducts = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
         ProductType.Basketball,
     ]);
-    const { products: footballProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+    const footballProducts = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
         ProductType.Football,
     ]);
-    const { products: soccerProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.Soccer,
-    ]);
-    const { products: ufcProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.UFC]);
-    const { products: wweProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.Wrestling,
-    ]);
-    const { products: pokemonProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.Pokemon,
-    ]);
+    const soccerProducts = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.Soccer]);
+    const ufcProducts = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.UFC]);
+    const wweProducts = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.Wrestling]);
+    const pokemonProducts = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.Pokemon]);
 
     return {
         props: {
             errorCode: null,
             accessToken,
             content,
+            baseballProducts,
             basketballProducts,
             footballProducts,
             soccerProducts,
@@ -78,17 +76,19 @@ export const getServerSideProps: GetServerSideProps = async () => {
 interface ShopProps {
     accessToken: CreateToken;
     content: Document[] | null;
-    basketballProducts: Product[];
-    footballProducts: Product[];
-    soccerProducts: Product[];
-    ufcProducts: Product[];
-    wweProducts: Product[];
-    pokemonProducts: Product[];
+    baseballProducts: ShallowProduct[];
+    basketballProducts: ShallowProduct[];
+    footballProducts: ShallowProduct[];
+    soccerProducts: ShallowProduct[];
+    ufcProducts: ShallowProduct[];
+    wweProducts: ShallowProduct[];
+    pokemonProducts: ShallowProduct[];
 }
 
 export const ShopPage: React.FC<ShopProps> = ({
     accessToken,
     content,
+    baseballProducts,
     basketballProducts,
     footballProducts,
     soccerProducts,
@@ -120,6 +120,7 @@ export const ShopPage: React.FC<ShopProps> = ({
                     <Filters />
                     {shouldShowRows ? (
                         <LatestProductRows
+                            baseballProducts={baseballProducts}
                             basketballProducts={basketballProducts}
                             footballProducts={footballProducts}
                             soccerProducts={soccerProducts}

@@ -2,17 +2,17 @@ import { upperCase, upperFirst } from 'lodash';
 import React from 'react';
 
 import { ProductType } from '../../../enums/shop';
-import { Product } from '../../../types/products';
+import { ShallowProduct } from '../../../types/products';
 import ProductCard from '../Grid/ProductCard';
 
 interface LatestProductRowsProps {
-    baseballProducts: Product[];
-    basketballProducts: Product[];
-    footballProducts: Product[];
-    soccerProducts: Product[];
-    ufcProducts: Product[];
-    wweProducts: Product[];
-    pokemonProducts: Product[];
+    baseballProducts: ShallowProduct[];
+    basketballProducts: ShallowProduct[];
+    footballProducts: ShallowProduct[];
+    soccerProducts: ShallowProduct[];
+    ufcProducts: ShallowProduct[];
+    wweProducts: ShallowProduct[];
+    pokemonProducts: ShallowProduct[];
 }
 
 export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
@@ -35,12 +35,12 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                         {baseballProducts.map((product) => (
                             <ProductCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -57,12 +57,12 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                         {basketballProducts.map((product) => (
                             <ProductCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -79,12 +79,12 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                         {footballProducts.map((product) => (
                             <ProductCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -101,12 +101,12 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                         {soccerProducts.map((product) => (
                             <ProductCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -123,12 +123,12 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                         {ufcProducts.map((product) => (
                             <ProductCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -145,12 +145,12 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                         {wweProducts.map((product) => (
                             <ProductCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -167,12 +167,12 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                         {pokemonProducts.map((product) => (
                             <ProductCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />

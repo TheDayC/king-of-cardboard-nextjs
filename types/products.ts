@@ -78,3 +78,12 @@ export interface SavedSkuOptions {
     amount: string;
     quantity: number;
 }
+
+export interface ShallowProduct {
+    name: string;
+    image: ImageItem;
+    tags: string[];
+    amount: string;
+    compareAmount: string;
+    slug: string;
+}
