@@ -96,7 +96,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
 };
 
-interface ProductPageProps {
+interface ImportPageProps {
     errorCode: number | null;
     metaTitle: string;
     metaDescription: string;
@@ -118,7 +118,7 @@ interface ProductPageProps {
     options: SkuOption[];
 }
 
-export const ProductPage: React.FC<ProductPageProps> = ({
+export const ImportPage: React.FC<ImportPageProps> = ({
     errorCode,
     metaTitle,
     metaDescription,
@@ -175,4 +175,4 @@ export const ProductPage: React.FC<ProductPageProps> = ({
     );
 };
 
-export default ProductPage;
+export default ImportPage;
