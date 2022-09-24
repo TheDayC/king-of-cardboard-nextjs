@@ -48,17 +48,23 @@ export async function getShallowImports(
         order: 'sys.createdAt',
     });
 
+    // Return early if nothing was found.
+    if (importsRes.items.length === 0) {
+        return [];
+    }
+
     // Setup a blank prices array with skus to find them later on.
     const prices: PricesWithSku[] = [];
 
     // Fetch all sku ids for related sku codes.
     const skuCodes = importsRes.items.map((i) => safelyParse(i, 'fields.productLink', parseAsString, ''));
+
     const skus = await cl.skus.list({
         filters: {
-            code_in: join(skuCodes, ','),
+            code: join(skuCodes, ','),
         },
         fields: {
-            skus: ['id'],
+            skus: ['id', 'code'],
         },
     });
 
@@ -94,8 +100,8 @@ export async function getShallowImports(
                 url: safelyParse(fields, 'cardImage.fields.file.url', parseAsString, ''),
             },
             tags: safelyParse(fields, 'tags', parseAsArrayOfStrings, []),
-            amount: safelyParse(price, 'formatted_amount', parseAsString, ''),
-            compareAmount: safelyParse(price, 'formatted_compare_at_amount', parseAsString, ''),
+            amount: safelyParse(price, 'formatted_amount', parseAsString, '£0.00'),
+            compareAmount: safelyParse(price, 'formatted_compare_at_amount', parseAsString, '£0.00'),
         };
     });
 }

@@ -193,20 +193,25 @@ export async function getShallowProducts(
     });
 
     // Fetch the contentful products.
-    const importsRes = await client.getEntries({
+    const productsRes = await client.getEntries({
         ...typesWhere,
         ...categoriesWhere,
-        content_type: 'import',
+        content_type: 'product',
         limit,
         skip,
         order: 'sys.createdAt',
     });
 
+    // Return early if nothing was found.
+    if (productsRes.items.length === 0) {
+        return [];
+    }
+
     // Setup a blank prices array with skus to find them later on.
     const prices: PricesWithSku[] = [];
 
     // Fetch all sku ids for related sku codes.
-    const skuCodes = importsRes.items.map((i) => safelyParse(i, 'fields.productLink', parseAsString, ''));
+    const skuCodes = productsRes.items.map((i) => safelyParse(i, 'fields.productLink', parseAsString, ''));
     const skus = await cl.skus.list({
         filters: {
             code_in: join(skuCodes, ','),
@@ -235,7 +240,7 @@ export async function getShallowProducts(
     }
 
     // Return custom imports structure.
-    return importsRes.items.map(({ fields }) => {
+    return productsRes.items.map(({ fields }) => {
         const sku = safelyParse(fields, 'productLink', parseAsString, '');
         const price = prices.find((p) => p.sku === sku);
 
