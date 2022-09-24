@@ -3,8 +3,8 @@ import { join } from 'lodash';
 import * as contentful from 'contentful';
 
 import { Categories, ProductType } from '../enums/shop';
-import { ShallowImport } from '../types/imports';
-import { parseAsArrayOfStrings, parseAsString, safelyParse } from './parsers';
+import { ImportsWithCount } from '../types/imports';
+import { parseAsArrayOfStrings, parseAsNumber, parseAsString, safelyParse } from './parsers';
 import { PricesWithSku } from '../types/commerce';
 
 export async function getShallowImports(
@@ -13,7 +13,7 @@ export async function getShallowImports(
     skip: number,
     categories: Categories[],
     productTypes: ProductType[]
-): Promise<ShallowImport[]> {
+): Promise<ImportsWithCount> {
     // Build where queries.
     const typesWhere = productTypes.length
         ? {
@@ -33,9 +33,9 @@ export async function getShallowImports(
     });
 
     const client = contentful.createClient({
-        space: process.env.CONTENTFUL_SPACE_ID || '',
-        accessToken: process.env.CONTENTFUL_TOKEN || '',
-        environment: process.env.CONTENTFUL_ENV || '',
+        space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || '',
+        accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_TOKEN || '',
+        environment: process.env.NEXT_PUBLIC_CONTENTFUL_ENV || '',
     });
 
     // Fetch the contentful products.
@@ -50,7 +50,10 @@ export async function getShallowImports(
 
     // Return early if nothing was found.
     if (importsRes.items.length === 0) {
-        return [];
+        return {
+            imports: [],
+            count: 0,
+        };
     }
 
     // Setup a blank prices array with skus to find them later on.
@@ -87,21 +90,24 @@ export async function getShallowImports(
     }
 
     // Return custom imports structure.
-    return importsRes.items.map(({ fields }) => {
-        const sku = safelyParse(fields, 'productLink', parseAsString, '');
-        const price = prices.find((p) => p.sku === sku);
+    return {
+        imports: importsRes.items.map(({ fields }) => {
+            const sku = safelyParse(fields, 'productLink', parseAsString, '');
+            const price = prices.find((p) => p.sku === sku);
 
-        return {
-            name: safelyParse(fields, 'name', parseAsString, ''),
-            slug: safelyParse(fields, 'slug', parseAsString, ''),
-            image: {
-                title: safelyParse(fields, 'cardImage.fields.title', parseAsString, ''),
-                description: safelyParse(fields, 'cardImage.fields.description', parseAsString, ''),
-                url: safelyParse(fields, 'cardImage.fields.file.url', parseAsString, ''),
-            },
-            tags: safelyParse(fields, 'tags', parseAsArrayOfStrings, []),
-            amount: safelyParse(price, 'formatted_amount', parseAsString, '£0.00'),
-            compareAmount: safelyParse(price, 'formatted_compare_at_amount', parseAsString, '£0.00'),
-        };
-    });
+            return {
+                name: safelyParse(fields, 'name', parseAsString, ''),
+                slug: safelyParse(fields, 'slug', parseAsString, ''),
+                image: {
+                    title: safelyParse(fields, 'cardImage.fields.title', parseAsString, ''),
+                    description: safelyParse(fields, 'cardImage.fields.description', parseAsString, ''),
+                    url: safelyParse(fields, 'cardImage.fields.file.url', parseAsString, ''),
+                },
+                tags: safelyParse(fields, 'tags', parseAsArrayOfStrings, []),
+                amount: safelyParse(price, 'formatted_amount', parseAsString, '£0.00'),
+                compareAmount: safelyParse(price, 'formatted_compare_at_amount', parseAsString, '£0.00'),
+            };
+        }),
+        count: safelyParse(importsRes, 'total', parseAsNumber, 0),
+    };
 }

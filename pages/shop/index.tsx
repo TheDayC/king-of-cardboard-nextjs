@@ -14,7 +14,7 @@ import { pageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import selector from './selector';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
-import { Categories, ProductType } from '../../enums/shop';
+import { Categories, FilterMode, ProductType } from '../../enums/shop';
 import { getShallowProducts } from '../../utils/products';
 import { Product, ShallowProduct } from '../../types/products';
 
@@ -117,7 +117,7 @@ export const ShopPage: React.FC<ShopProps> = ({
             <div className="flex flex-col w-full relative">
                 {content && <Content content={content} />}
                 <div className="flex flex-col w-full relative md:flex-row">
-                    <Filters />
+                    <Filters mode={FilterMode.Products} />
                     {shouldShowRows ? (
                         <LatestProductRows
                             baseballProducts={baseballProducts}
@@ -129,7 +129,7 @@ export const ShopPage: React.FC<ShopProps> = ({
                             pokemonProducts={pokemonProducts}
                         />
                     ) : (
-                        <Grid />
+                        <Grid mode={FilterMode.Products} />
                     )}
                 </div>
             </div>

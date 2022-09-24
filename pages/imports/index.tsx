@@ -13,7 +13,7 @@ import { createToken } from '../../utils/auth';
 import { pageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import selector from './selector';
-import { Categories, ProductType } from '../../enums/shop';
+import { Categories, FilterMode, ProductType } from '../../enums/shop';
 import { Product } from '../../types/products';
 import { getShallowImports } from '../../utils/imports';
 import LatestImportRows from '../../components/Shop/LatestImportRows';
@@ -26,7 +26,7 @@ const DEFAULT_PRODUCTS: Product[] = [];
 
 export const getServerSideProps: GetServerSideProps = async () => {
     const accessToken = await createToken();
-    const content = await pageBySlug('shop', '');
+    const content = await pageBySlug('imports', '');
 
     if (!accessToken.token) {
         return {
@@ -44,19 +44,27 @@ export const getServerSideProps: GetServerSideProps = async () => {
         };
     }
 
-    const baseballProducts = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+    const { imports: baseballProducts } = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [
         ProductType.Baseball,
     ]);
-    const basketballProducts = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+    const { imports: basketballProducts } = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [
         ProductType.Basketball,
     ]);
-    const footballProducts = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+    const { imports: footballProducts } = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [
         ProductType.Football,
     ]);
-    const soccerProducts = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.Soccer]);
-    const ufcProducts = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.UFC]);
-    const wweProducts = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.Wrestling]);
-    const pokemonProducts = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.Pokemon]);
+    const { imports: soccerProducts } = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+        ProductType.Soccer,
+    ]);
+    const { imports: ufcProducts } = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+        ProductType.UFC,
+    ]);
+    const { imports: wweProducts } = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+        ProductType.Wrestling,
+    ]);
+    const { imports: pokemonProducts } = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+        ProductType.Pokemon,
+    ]);
 
     return {
         props: {
@@ -118,7 +126,7 @@ export const ImportsPage: React.FC<ImportPageProps> = ({
             <div className="flex flex-col w-full relative">
                 {content && <Content content={content} />}
                 <div className="flex flex-col w-full relative md:flex-row">
-                    <Filters />
+                    <Filters mode={FilterMode.Imports} />
                     {shouldShowRows ? (
                         <LatestImportRows
                             baseballProducts={baseballProducts}
@@ -130,7 +138,7 @@ export const ImportsPage: React.FC<ImportPageProps> = ({
                             pokemonProducts={pokemonProducts}
                         />
                     ) : (
-                        <Grid />
+                        <Grid mode={FilterMode.Imports} />
                     )}
                 </div>
             </div>

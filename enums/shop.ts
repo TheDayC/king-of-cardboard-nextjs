@@ -24,3 +24,8 @@ export enum Categories {
 }
 
 export type combinedFilters = ProductType | Categories;
+
+export enum FilterMode {
+    Products = 'products',
+    Imports = 'imports',
+}

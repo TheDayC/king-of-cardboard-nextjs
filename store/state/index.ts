@@ -9,6 +9,7 @@ import confirmationInitialState from './confirmation';
 import pagesInitialState from './pages';
 import breaksInitialState from './breaks';
 import accountInitialState from './account';
+import importsInitialState from './imports';
 
 // Function to set our default state.
 export function createInitialState(): IAppState {
@@ -23,5 +24,6 @@ export function createInitialState(): IAppState {
         pages: pagesInitialState,
         breaks: breaksInitialState,
         account: accountInitialState,
+        imports: importsInitialState,
     };
 }

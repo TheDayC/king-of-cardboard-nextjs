@@ -32,17 +32,17 @@ export const LatestImportRows: React.FC<LatestImportRowsProps> = ({
                     <p>Officially licensed and unlicensed MLB sports cards, sealed product and packs.</p>
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                        {baseballProducts.map((product) => (
+                        {baseballProducts.map((i) => (
                             <ImportCard
-                                name={product.name}
-                                image={product.image.url}
-                                imgDesc={product.image.description}
-                                imgTitle={product.image.title}
-                                tags={product.tags}
-                                amount={product.amount}
-                                compareAmount={product.compareAmount}
-                                slug={product.slug}
-                                key={`product-card-${product.name}`}
+                                name={i.name}
+                                image={i.image.url}
+                                imgDesc={i.image.description}
+                                imgTitle={i.image.title}
+                                tags={i.tags}
+                                amount={i.amount}
+                                compareAmount={i.compareAmount}
+                                slug={i.slug}
+                                key={`import-card-${i.name}`}
                             />
                         ))}
                     </div>
@@ -54,17 +54,17 @@ export const LatestImportRows: React.FC<LatestImportRowsProps> = ({
                     <p>Officially licensed NBA sports cards, sealed product and packs.</p>
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                        {basketballProducts.map((product) => (
+                        {basketballProducts.map((i) => (
                             <ImportCard
-                                name={product.name}
-                                image={product.image.url}
-                                imgDesc={product.image.description}
-                                imgTitle={product.image.title}
-                                tags={product.tags}
-                                amount={product.amount}
-                                compareAmount={product.compareAmount}
-                                slug={product.slug}
-                                key={`product-card-${product.name}`}
+                                name={i.name}
+                                image={i.image.url}
+                                imgDesc={i.image.description}
+                                imgTitle={i.image.title}
+                                tags={i.tags}
+                                amount={i.amount}
+                                compareAmount={i.compareAmount}
+                                slug={i.slug}
+                                key={`import-card-${i.name}`}
                             />
                         ))}
                     </div>
@@ -76,17 +76,17 @@ export const LatestImportRows: React.FC<LatestImportRowsProps> = ({
                     <p>Officially licensed NFL sports cards, sealed product and packs.</p>
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                        {footballProducts.map((product) => (
+                        {footballProducts.map((i) => (
                             <ImportCard
-                                name={product.name}
-                                image={product.image.url}
-                                imgDesc={product.image.description}
-                                imgTitle={product.image.title}
-                                tags={product.tags}
-                                amount={product.amount}
-                                compareAmount={product.compareAmount}
-                                slug={product.slug}
-                                key={`product-card-${product.name}`}
+                                name={i.name}
+                                image={i.image.url}
+                                imgDesc={i.image.description}
+                                imgTitle={i.image.title}
+                                tags={i.tags}
+                                amount={i.amount}
+                                compareAmount={i.compareAmount}
+                                slug={i.slug}
+                                key={`import-card-${i.name}`}
                             />
                         ))}
                     </div>
@@ -98,17 +98,17 @@ export const LatestImportRows: React.FC<LatestImportRowsProps> = ({
                     <p>Officially licensed Premier League, UEFA and FIFA sports cards, sealed product and packs.</p>
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                        {soccerProducts.map((product) => (
+                        {soccerProducts.map((i) => (
                             <ImportCard
-                                name={product.name}
-                                image={product.image.url}
-                                imgDesc={product.image.description}
-                                imgTitle={product.image.title}
-                                tags={product.tags}
-                                amount={product.amount}
-                                compareAmount={product.compareAmount}
-                                slug={product.slug}
-                                key={`product-card-${product.name}`}
+                                name={i.name}
+                                image={i.image.url}
+                                imgDesc={i.image.description}
+                                imgTitle={i.image.title}
+                                tags={i.tags}
+                                amount={i.amount}
+                                compareAmount={i.compareAmount}
+                                slug={i.slug}
+                                key={`import-card-${i.name}`}
                             />
                         ))}
                     </div>
@@ -120,17 +120,17 @@ export const LatestImportRows: React.FC<LatestImportRowsProps> = ({
                     <p>Officially licensed UFC sports cards, sealed product and packs.</p>
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                        {ufcProducts.map((product) => (
+                        {ufcProducts.map((i) => (
                             <ImportCard
-                                name={product.name}
-                                image={product.image.url}
-                                imgDesc={product.image.description}
-                                imgTitle={product.image.title}
-                                tags={product.tags}
-                                amount={product.amount}
-                                compareAmount={product.compareAmount}
-                                slug={product.slug}
-                                key={`product-card-${product.name}`}
+                                name={i.name}
+                                image={i.image.url}
+                                imgDesc={i.image.description}
+                                imgTitle={i.image.title}
+                                tags={i.tags}
+                                amount={i.amount}
+                                compareAmount={i.compareAmount}
+                                slug={i.slug}
+                                key={`import-card-${i.name}`}
                             />
                         ))}
                     </div>
@@ -142,17 +142,17 @@ export const LatestImportRows: React.FC<LatestImportRowsProps> = ({
                     <p>Officially licensed WWE and AEW sports cards, sealed product and packs.</p>
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                        {wweProducts.map((product) => (
+                        {wweProducts.map((i) => (
                             <ImportCard
-                                name={product.name}
-                                image={product.image.url}
-                                imgDesc={product.image.description}
-                                imgTitle={product.image.title}
-                                tags={product.tags}
-                                amount={product.amount}
-                                compareAmount={product.compareAmount}
-                                slug={product.slug}
-                                key={`product-card-${product.name}`}
+                                name={i.name}
+                                image={i.image.url}
+                                imgDesc={i.image.description}
+                                imgTitle={i.image.title}
+                                tags={i.tags}
+                                amount={i.amount}
+                                compareAmount={i.compareAmount}
+                                slug={i.slug}
+                                key={`import-card-${i.name}`}
                             />
                         ))}
                     </div>
@@ -164,17 +164,17 @@ export const LatestImportRows: React.FC<LatestImportRowsProps> = ({
                     <p>Officially licensed Pokemon trading cards, sealed product and packs.</p>
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                        {pokemonProducts.map((product) => (
+                        {pokemonProducts.map((i) => (
                             <ImportCard
-                                name={product.name}
-                                image={product.image.url}
-                                imgDesc={product.image.description}
-                                imgTitle={product.image.title}
-                                tags={product.tags}
-                                amount={product.amount}
-                                compareAmount={product.compareAmount}
-                                slug={product.slug}
-                                key={`product-card-${product.name}`}
+                                name={i.name}
+                                image={i.image.url}
+                                imgDesc={i.image.description}
+                                imgTitle={i.image.title}
+                                tags={i.tags}
+                                amount={i.amount}
+                                compareAmount={i.compareAmount}
+                                slug={i.slug}
+                                key={`import-card-${i.name}`}
                             />
                         ))}
                     </div>
