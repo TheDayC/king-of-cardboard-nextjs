@@ -92,12 +92,15 @@ const defaultShippingAddress: CustomerAddress = {
     zip_code: null,
 };
 
-const Customer: React.FC = () => {
+interface CustomerProps {
+    accessToken: string | null;
+}
+
+const Customer: React.FC<CustomerProps> = ({ accessToken }) => {
     const { data: session } = useSession();
     const {
         currentStep,
         orderId,
-        accessToken,
         checkoutLoading,
         isShippingSameAsBilling,
         cloneBillingAddressId,
@@ -181,6 +184,7 @@ const Customer: React.FC = () => {
 
     const handleNewShippingAddress = useCallback(
         async (data: unknown, customerDetails: CustomerDetails) => {
+            console.log('🚀 ~ file: index.tsx ~ line 184 ~ customerDetails', customerDetails);
             if (!accessToken || !orderId) return;
 
             // Parse the shipping address into a customer address partial.

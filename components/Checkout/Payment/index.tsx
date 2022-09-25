@@ -23,7 +23,11 @@ import { gaEvent } from '../../../utils/ga';
 const STRIPE_METHOD = 'stripe_payments';
 const PAYPAL_METHOD = 'paypal_payments';
 
-export const Payment: React.FC = () => {
+interface PaymentProps {
+    accessToken: string | null;
+}
+
+export const Payment: React.FC<PaymentProps> = ({ accessToken }) => {
     const dispatch = useDispatch();
     const stripe = useStripe();
     const elements = useElements();
@@ -31,7 +35,6 @@ export const Payment: React.FC = () => {
     const {
         currentStep,
         paymentMethods,
-        accessToken,
         orderId,
         customerDetails,
         checkoutLoading,

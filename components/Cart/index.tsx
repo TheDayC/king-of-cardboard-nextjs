@@ -21,8 +21,12 @@ import UseCoins from '../UseCoins';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { updateLineItem } from '../../utils/commerce';
 
-export const Cart: React.FC = () => {
-    const { itemCount, items, isUpdatingCart, accessToken, orderId, shouldUpdateCart, balance, updateQuantities } =
+interface CartProps {
+    accessToken: string | null;
+}
+
+export const Cart: React.FC<CartProps> = ({ accessToken }) => {
+    const { itemCount, items, isUpdatingCart, orderId, shouldUpdateCart, balance, updateQuantities } =
         useSelector(selector);
     const dispatch = useDispatch();
     const { data: session } = useSession();

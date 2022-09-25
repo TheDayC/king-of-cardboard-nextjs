@@ -10,9 +10,13 @@ import { fetchCartTotals } from '../../../store/slices/cart';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Loading from '../../Loading';
 
-export const Delivery: React.FC = () => {
+interface DeliveryProps {
+    accessToken: string | null;
+}
+
+export const Delivery: React.FC<DeliveryProps> = ({ accessToken }) => {
     const dispatch = useDispatch();
-    const { accessToken, currentStep, orderId, checkoutLoading, hasBothAddresses, shipments } = useSelector(selector);
+    const { currentStep, orderId, checkoutLoading, hasBothAddresses, shipments } = useSelector(selector);
     const {
         register,
         handleSubmit,
