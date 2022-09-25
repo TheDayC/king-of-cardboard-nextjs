@@ -14,7 +14,7 @@ import { CreateToken } from '../../types/commerce';
 import { setAccessToken, setExpires } from '../../store/slices/global';
 import { pageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
-import { Categories, ProductType } from '../../enums/shop';
+import { Categories, FilterMode, ProductType } from '../../enums/shop';
 import { getProducts } from '../../utils/products';
 import { Product } from '../../types/products';
 import { setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
@@ -101,8 +101,8 @@ export const ShopType: React.FC<ShopTypeProps> = ({ shopType, accessToken, conte
             <div className="flex flex-col w-full relative">
                 {content && <Content content={content} />}
                 <div className="flex flex-col w-full relative md:flex-row">
-                    <Filters />
-                    <Grid />
+                    <Filters mode={FilterMode.Products} />
+                    <Grid mode={FilterMode.Products} />
                 </div>
             </div>
         </PageWrapper>

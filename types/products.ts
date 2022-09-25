@@ -1,6 +1,7 @@
 import { Document } from '@contentful/rich-text-types';
 
 import { SkuInventory } from './commerce';
+import { ImageCollection, ImageItem } from './contentful';
 
 export interface Product {
     id: string;
@@ -42,7 +43,7 @@ interface SkuOptions {
 }
 
 export interface ProductsWithCount {
-    products: Product[];
+    products: ShallowProduct[];
     count: number;
 }
 
@@ -67,16 +68,6 @@ export interface ContentfulProductShort {
     cardImage: ImageItem;
 }
 
-export interface ImageCollection {
-    items: ImageItem[];
-}
-
-export interface ImageItem {
-    title: string;
-    description: string;
-    url: string;
-}
-
 export interface CartImage extends ImageItem {
     sku_code: string;
 }
@@ -86,4 +77,13 @@ export interface SavedSkuOptions {
     name: string;
     amount: string;
     quantity: number;
+}
+
+export interface ShallowProduct {
+    name: string;
+    image: ImageItem;
+    tags: string[];
+    amount: string;
+    compareAmount: string;
+    slug: string;
 }

@@ -26,16 +26,26 @@ export const Details: React.FC<DetailsProps> = ({
 
     return (
         <div className="block relative w-full">
-            <h1 className="card-title text-xl lg:text-4xl">{name}</h1>
-            <div className="flex flex-row">
+            <h1 className="card-title text-xl lg:text-4xl mb-4">{name}</h1>
+            <div className="flex flex-row mb-2">
                 {shouldShowCompare && (
-                    <span className="text-xs line-through text-base-200 mr-2 mt-1">{compareAmount}</span>
+                    <span className="text-xs line-through text-base-200 mr-2 mt-2">{compareAmount}</span>
                 )}
-                <p className="text-xl font-semibold">{amount}</p>
+                <p className="text-3xl font-semibold">{amount}</p>
             </div>
-            <div className="flex flex-col mb-2">
-                <p className="text-base-200 text-sm text-mb-2">
-                    {isAvailable ? `In Stock - Quantity ${quantity}` : 'Out of Stock'}
+            <div className="flex flex-col mb-4">
+                <p className="text-base-400 text-mb-2">
+                    {isAvailable ? (
+                        <React.Fragment>
+                            <span className="font-semibold">Status:</span>{' '}
+                            <span className="text-green-600">In Stock</span>
+                            <br />
+                            <span className="font-semibold">Quantity:</span>{' '}
+                            <span className="text-base-400">{quantity}</span>
+                        </React.Fragment>
+                    ) : (
+                        <span className="text-red-600">Out of stock</span>
+                    )}
                 </p>
             </div>
             <div className="flex flex-row flex-wrap justify-start items-center mb-4 space-x-2">

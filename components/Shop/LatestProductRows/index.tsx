@@ -2,19 +2,21 @@ import { upperCase, upperFirst } from 'lodash';
 import React from 'react';
 
 import { ProductType } from '../../../enums/shop';
-import { Product } from '../../../types/products';
+import { ShallowProduct } from '../../../types/products';
 import ProductCard from '../Grid/ProductCard';
 
 interface LatestProductRowsProps {
-    basketballProducts: Product[];
-    footballProducts: Product[];
-    soccerProducts: Product[];
-    ufcProducts: Product[];
-    wweProducts: Product[];
-    pokemonProducts: Product[];
+    baseballProducts: ShallowProduct[];
+    basketballProducts: ShallowProduct[];
+    footballProducts: ShallowProduct[];
+    soccerProducts: ShallowProduct[];
+    ufcProducts: ShallowProduct[];
+    wweProducts: ShallowProduct[];
+    pokemonProducts: ShallowProduct[];
 }
 
 export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
+    baseballProducts,
     basketballProducts,
     footballProducts,
     soccerProducts,
@@ -24,7 +26,28 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
 }) => {
     return (
         <div className="flex flex-col w-full md:w-5/6" data-testid="shop-grid">
-            {/* isLoadingProducts && <Skeleton /> */}
+            {baseballProducts.length > 0 && (
+                <div className="flex flex-col mb-8">
+                    <h2 className="text-4xl mb-2">{upperFirst(ProductType.Basketball)}</h2>
+                    <p>Officially licensed NBA sports cards, sealed product and packs.</p>
+                    <hr className="divider lightDivider" />
+                    <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+                        {baseballProducts.map((product) => (
+                            <ProductCard
+                                name={product.name}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
+                                tags={product.tags}
+                                amount={product.amount}
+                                compareAmount={product.compareAmount}
+                                slug={product.slug}
+                                key={`product-card-${product.name}`}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
             {basketballProducts.length > 0 && (
                 <div className="flex flex-col mb-8">
                     <h2 className="text-4xl mb-2">{upperFirst(ProductType.Basketball)}</h2>
@@ -34,12 +57,12 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                         {basketballProducts.map((product) => (
                             <ProductCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -56,12 +79,12 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                         {footballProducts.map((product) => (
                             <ProductCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -78,12 +101,12 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                         {soccerProducts.map((product) => (
                             <ProductCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -100,12 +123,12 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                         {ufcProducts.map((product) => (
                             <ProductCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -122,12 +145,12 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                         {wweProducts.map((product) => (
                             <ProductCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />
@@ -144,12 +167,12 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                         {pokemonProducts.map((product) => (
                             <ProductCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />

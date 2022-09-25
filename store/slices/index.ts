@@ -11,6 +11,7 @@ import confirmationReducer from './confirmation';
 import pagesReducer from './pages';
 import breaksReducer from './breaks';
 import accountReducer from './account';
+import importsReducer from './imports';
 
 const rootReducer = combineReducers<IAppState>({
     global: globalReducer,
@@ -23,6 +24,7 @@ const rootReducer = combineReducers<IAppState>({
     pages: pagesReducer,
     breaks: breaksReducer,
     account: accountReducer,
+    imports: importsReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

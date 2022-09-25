@@ -14,9 +14,9 @@ import { pageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import selector from './selector';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
-import { Categories, ProductType } from '../../enums/shop';
-import { getProducts } from '../../utils/products';
-import { Product } from '../../types/products';
+import { Categories, FilterMode, ProductType } from '../../enums/shop';
+import { getShallowProducts } from '../../utils/products';
+import { Product, ShallowProduct } from '../../types/products';
 
 const LIMIT = 4;
 const SKIP = 0;
@@ -43,20 +43,25 @@ export const getServerSideProps: GetServerSideProps = async () => {
         };
     }
 
-    const { products: basketballProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+    const { products: baseballProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+        ProductType.Baseball,
+    ]);
+    const { products: basketballProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
         ProductType.Basketball,
     ]);
-    const { products: footballProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+    const { products: footballProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
         ProductType.Football,
     ]);
-    const { products: soccerProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+    const { products: soccerProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
         ProductType.Soccer,
     ]);
-    const { products: ufcProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [ProductType.UFC]);
-    const { products: wweProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+    const { products: ufcProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+        ProductType.UFC,
+    ]);
+    const { products: wweProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
         ProductType.Wrestling,
     ]);
-    const { products: pokemonProducts } = await getProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
+    const { products: pokemonProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
         ProductType.Pokemon,
     ]);
 
@@ -65,6 +70,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
             errorCode: null,
             accessToken,
             content,
+            baseballProducts,
             basketballProducts,
             footballProducts,
             soccerProducts,
@@ -78,17 +84,19 @@ export const getServerSideProps: GetServerSideProps = async () => {
 interface ShopProps {
     accessToken: CreateToken;
     content: Document[] | null;
-    basketballProducts: Product[];
-    footballProducts: Product[];
-    soccerProducts: Product[];
-    ufcProducts: Product[];
-    wweProducts: Product[];
-    pokemonProducts: Product[];
+    baseballProducts: ShallowProduct[];
+    basketballProducts: ShallowProduct[];
+    footballProducts: ShallowProduct[];
+    soccerProducts: ShallowProduct[];
+    ufcProducts: ShallowProduct[];
+    wweProducts: ShallowProduct[];
+    pokemonProducts: ShallowProduct[];
 }
 
 export const ShopPage: React.FC<ShopProps> = ({
     accessToken,
     content,
+    baseballProducts,
     basketballProducts,
     footballProducts,
     soccerProducts,
@@ -112,14 +120,15 @@ export const ShopPage: React.FC<ShopProps> = ({
     return (
         <PageWrapper
             title="Shop - King of Cardboard"
-            description="A broad selection of sports cards sealed, single and pack products."
+            description="A broad selection of sports cards products for the UK."
         >
             <div className="flex flex-col w-full relative">
                 {content && <Content content={content} />}
                 <div className="flex flex-col w-full relative md:flex-row">
-                    <Filters />
+                    <Filters mode={FilterMode.Products} />
                     {shouldShowRows ? (
                         <LatestProductRows
+                            baseballProducts={baseballProducts}
                             basketballProducts={basketballProducts}
                             footballProducts={footballProducts}
                             soccerProducts={soccerProducts}
@@ -128,7 +137,7 @@ export const ShopPage: React.FC<ShopProps> = ({
                             pokemonProducts={pokemonProducts}
                         />
                     ) : (
-                        <Grid />
+                        <Grid mode={FilterMode.Products} />
                     )}
                 </div>
             </div>

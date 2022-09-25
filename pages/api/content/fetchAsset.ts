@@ -11,9 +11,9 @@ async function fetchAsset(req: NextApiRequest, res: NextApiResponse): Promise<vo
         try {
             const assetId = safelyParse(req, 'body.assetId', parseAsString, '');
             const client = contentful.createClient({
-                space: process.env.CONTENTFUL_SPACE_ID || '',
-                accessToken: process.env.CONTENTFUL_TOKEN || '',
-                environment: process.env.CONTENTFUL_ENV || '',
+                space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || '',
+                accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_TOKEN || '',
+                environment: process.env.NEXT_PUBLIC_CONTENTFUL_ENV || '',
             });
             const asset = await client.getAsset(assetId);
 

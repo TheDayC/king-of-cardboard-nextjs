@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 import { AiFillStar, AiTwotoneCalendar } from 'react-icons/ai';
 import { BsTwitch, BsYoutube } from 'react-icons/bs';
 
-import { ImageItem } from '../../../../types/products';
+import { ImageItem } from '../../../../types/contentful';
 import Countdown from './Countdown';
 
 interface BreakProps {

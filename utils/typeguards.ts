@@ -8,8 +8,10 @@ import { CartItem } from '../types/cart';
 import { SkuInventory, SkuOption } from '../types/commerce';
 import { ContentfulPage, Hero, SliderImage } from '../types/pages';
 import { ITypeGuard } from '../types/parsers';
-import { ContentfulProduct, ImageCollection, ImageItem } from '../types/products';
+import { ContentfulProduct } from '../types/products';
+import { ImageCollection, ImageItem, Repeater } from '../types/contentful';
 import { SocialMedia } from '../types/profile';
+import { PriceHistory } from '../types/imports';
 
 export function isString(candidate: unknown): candidate is string {
     return typeof candidate === 'string';
@@ -195,4 +197,12 @@ export function isSliderImage(candidate: unknown): candidate is SliderImage {
 
 export function isArrayOfSliderImages(candidate: unknown): candidate is SliderImage[] {
     return isArray(candidate) && isSliderImage(candidate[0]);
+}
+
+export function isRepeater(candidate: unknown): candidate is Repeater {
+    return isNotNullOrUndefined<object>(candidate) && 'key' in candidate && 'value' in candidate;
+}
+
+export function isArrayOfRepeater(candidate: unknown): candidate is Repeater[] {
+    return isArray(candidate) && isRepeater(candidate[0]);
 }

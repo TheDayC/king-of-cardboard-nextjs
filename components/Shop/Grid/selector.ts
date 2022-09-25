@@ -1,14 +1,16 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectFiltersData, selectProductData, selectGlobalData } from '../../../store/state/selectors';
+import { selectProductData, selectGlobalData, selectImportsData } from '../../../store/state/selectors';
 
 const selector = createSelector(
-    [selectProductData, selectFiltersData, selectGlobalData],
-    (products, filters, global) => ({
+    [selectProductData, selectGlobalData, selectImportsData],
+    (products, global, importData) => ({
         products: products.products,
         productsTotal: products.productsTotal,
         accessToken: global.accessToken,
         isLoadingProducts: products.isLoadingProducts,
+        imports: importData.imports,
+        isLoadingImports: importData.isLoadingImports,
     })
 );
 

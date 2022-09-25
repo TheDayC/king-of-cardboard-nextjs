@@ -6,8 +6,9 @@ import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../../type
 import { Break, SingleBreak } from '../../types/breaks';
 import { CartItem, UpdateQuantity } from '../../types/cart';
 import { Shipment } from '../../types/checkout';
+import { ShallowImport } from '../../types/imports';
 import { ContentfulPage } from '../../types/pages';
-import { Product, SingleProduct } from '../../types/products';
+import { Product, ShallowProduct, SingleProduct } from '../../types/products';
 import { SocialMedia } from '../../types/profile';
 
 export interface IAppState {
@@ -21,6 +22,7 @@ export interface IAppState {
     pages: PagesState;
     breaks: BreaksState;
     account: AccountState;
+    imports: ImportsState;
 }
 
 export interface CartState {
@@ -212,8 +214,14 @@ export interface CommonThunkInput {
 }
 
 export interface ProductsState {
-    products: Product[];
+    products: ShallowProduct[];
     productsTotal: number;
     isLoadingProducts: boolean;
     currentProduct: SingleProduct;
+}
+
+export interface ImportsState {
+    imports: ShallowImport[];
+    importsTotal: number;
+    isLoadingImports: boolean;
 }

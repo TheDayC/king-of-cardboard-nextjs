@@ -52,9 +52,9 @@ export const CheckoutByOrderId: React.FC<CheckoutByOrderIdProps> = ({ orderId, a
                 <div className="container mx-auto max-w-xxl">
                     <div className="flex flex-col-reverse lg:flex-row lg:space-x-8">
                         <div className="flex flex-col w-full lg:w-3/5">
-                            <Customer />
-                            <Delivery />
-                            <Payment />
+                            <Customer accessToken={accessToken.token} />
+                            <Delivery accessToken={accessToken.token} />
+                            <Payment accessToken={accessToken.token} />
                         </div>
                         <div className="flex-1 my-4 lg:my-0">
                             <Summary isConfirmation={false} />

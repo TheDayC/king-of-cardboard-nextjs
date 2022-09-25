@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
 
 import selector from './selector';
 import CartItem from './CartItem';
@@ -21,12 +20,15 @@ import UseCoins from '../UseCoins';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { updateLineItem } from '../../utils/commerce';
 
-export const Cart: React.FC = () => {
-    const { itemCount, items, isUpdatingCart, accessToken, orderId, shouldUpdateCart, balance, updateQuantities } =
+interface CartProps {
+    accessToken: string | null;
+}
+
+export const Cart: React.FC<CartProps> = ({ accessToken }) => {
+    const { itemCount, items, isUpdatingCart, orderId, shouldUpdateCart, balance, updateQuantities } =
         useSelector(selector);
     const dispatch = useDispatch();
     const { data: session } = useSession();
-    const router = useRouter();
     const [shouldFetch, setShouldFetch] = useState(true);
     const itemPlural = itemCount === 1 ? 'item' : 'items';
     const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
@@ -76,11 +78,6 @@ export const Cart: React.FC = () => {
             dispatch(clearUpdateQuantities());
         }
     }, [dispatch, itemCount]);
-
-    // Pre-fetch the checkout page for a better transition.
-    useEffect(() => {
-        router.prefetch('/checkout');
-    }, [router]);
 
     return (
         <div className="flex flex-col">

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { upperFirst, upperCase } from 'lodash';
-import { BiFootball, BiBall, BiBasketball } from 'react-icons/bi';
+import { BiFootball, BiBall, BiBasketball, BiBaseball } from 'react-icons/bi';
 import { SiUfc, SiWwe } from 'react-icons/si';
 import { MdOutlineCatchingPokemon } from 'react-icons/md';
 import { BsBoxSeam } from 'react-icons/bs';
@@ -10,7 +10,7 @@ import { RiRedPacketLine } from 'react-icons/ri';
 import { GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi';
 
 import selector from './selector';
-import { Categories, combinedFilters, FilterTypes, ProductType } from '../../../enums/shop';
+import { Categories, combinedFilters, FilterMode, FilterTypes, ProductType } from '../../../enums/shop';
 import {
     addCategory,
     addProductType,
@@ -21,6 +21,7 @@ import {
 } from '../../../store/slices/filters';
 import Filter from './Filter';
 import { fetchProducts } from '../../../store/slices/products';
+import { fetchImports } from '../../../store/slices/imports';
 
 const iconClassName = 'w-6 h-6 inline-block mr-2';
 const categories = [
@@ -32,6 +33,7 @@ const categories = [
 const upperCaseTypes = [ProductType.TCG, ProductType.UFC];
 
 export const TYPE_FILTERS = [
+    { type: ProductType.Baseball, icon: <BiBaseball className={iconClassName} /> },
     { type: ProductType.Basketball, icon: <BiBasketball className={iconClassName} /> },
     { type: ProductType.Football, icon: <BiBall className={iconClassName} /> },
     { type: ProductType.Soccer, icon: <BiFootball className={iconClassName} /> },
@@ -40,7 +42,11 @@ export const TYPE_FILTERS = [
     { type: ProductType.Pokemon, icon: <MdOutlineCatchingPokemon className={iconClassName} /> },
 ];
 
-export const Filters: React.FC = () => {
+interface FiltersProps {
+    mode: FilterMode;
+}
+
+export const Filters: React.FC<FiltersProps> = ({ mode }) => {
     const { filters } = useSelector(selector);
     const dispatch = useDispatch();
 
@@ -68,7 +74,15 @@ export const Filters: React.FC = () => {
             }
         }
 
-        dispatch(fetchProducts({ limit: 8, skip: 0 }));
+        switch (mode) {
+            case FilterMode.Imports:
+                dispatch(fetchImports({ limit: 8, skip: 0 }));
+                break;
+            case FilterMode.Products:
+            default:
+                dispatch(fetchProducts({ limit: 8, skip: 0 }));
+                break;
+        }
     };
 
     const handleClearFilters = () => {

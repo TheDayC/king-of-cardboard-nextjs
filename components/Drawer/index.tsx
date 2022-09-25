@@ -1,16 +1,17 @@
 import React from 'react';
 import Image from 'next/image';
-import { AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
 import { useSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
+import { AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
+import { FaPlaneArrival } from 'react-icons/fa';
 
 import logo from '../../images/logo-full.png';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import Rewards from '../Header/Rewards';
 import selector from './selector';
 import { setIsDrawerOpen } from '../../store/slices/global';
-import { shopSubMenu } from '../../utils/constants';
+import { importsSubMenu, shopSubMenu } from '../../utils/constants';
 
 export const Drawer: React.FC = ({ children }) => {
     const { isDrawerOpen } = useSelector(selector);
@@ -64,6 +65,26 @@ export const Drawer: React.FC = ({ children }) => {
                     </li>
                     <hr className="my-2" />
                     {shopSubMenu.map((menuItem) => (
+                        <li className="text-neutral-content" key={`sub-menu-item-${menuItem.label}`}>
+                            <button
+                                className="btn gap-1 rounded-sm"
+                                onClick={() => handleLinkClick(menuItem.href)}
+                                role="link"
+                            >
+                                <menuItem.icon className={`w-5 h-5 ${menuItem.css}`} />
+                                {menuItem.label}
+                            </button>
+                        </li>
+                    ))}
+                    <hr className="my-2" />
+                    <li className="text-neutral-content mb-2">
+                        <button className="btn gap-1" onClick={() => handleLinkClick('/shop')}>
+                            <FaPlaneArrival className="inline-block w-6 h-6 mr-1.5 stroke-current" />
+                            Imports
+                        </button>
+                    </li>
+                    <hr className="my-2" />
+                    {importsSubMenu.map((menuItem) => (
                         <li className="text-neutral-content" key={`sub-menu-item-${menuItem.label}`}>
                             <button
                                 className="btn gap-1 rounded-sm"

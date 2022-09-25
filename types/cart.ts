@@ -1,6 +1,6 @@
 import { LineItemOption, Order } from '@commercelayer/sdk';
 
-import { ImageItem } from './products';
+import { ImageItem } from './contentful';
 
 export interface CartTotals {
     subTotal: string;

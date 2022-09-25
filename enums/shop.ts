@@ -7,6 +7,7 @@ export enum ProductType {
     Sports = 'sports',
     TCG = 'tcg',
     Other = 'other',
+    Baseball = 'baseball',
     Basketball = 'basketball',
     Football = 'football',
     Soccer = 'soccer',
@@ -23,3 +24,8 @@ export enum Categories {
 }
 
 export type combinedFilters = ProductType | Categories;
+
+export enum FilterMode {
+    Products = 'products',
+    Imports = 'imports',
+}

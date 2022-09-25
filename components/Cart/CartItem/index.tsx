@@ -12,7 +12,7 @@ import {
     setUpdatingCart,
 } from '../../../store/slices/cart';
 import { removeLineItem } from '../../../utils/commerce';
-import { ImageItem } from '../../../types/products';
+import { ImageItem } from '../../../types/contentful';
 import selector from './selector';
 import { addError } from '../../../store/slices/alerts';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
