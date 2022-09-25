@@ -92,10 +92,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             skus: ['inventory'],
         },
     });
-    console.log(
-        '🚀 ~ file: [slug].tsx ~ line 95 ~ constgetServerSideProps:GetServerSideProps= ~ skuInventory',
-        skuInventory
-    );
     const prices = await cl.skus.prices(id, {
         fields: ['formatted_amount', 'formatted_compare_at_amount'],
     });

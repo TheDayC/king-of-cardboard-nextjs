@@ -104,6 +104,39 @@ const cartSlice = createSlice({
         resetCart() {
             return cartInitialState;
         },
+        setOrder(state, action) {
+            const { orderId, orderNumber, expiry } = action.payload;
+            const {
+                shouldUpdateCart,
+                itemCount,
+                items,
+                isUpdatingCart,
+                subTotal,
+                shipping,
+                discount,
+                total,
+                orderHasGiftCard,
+                updateQuantities,
+            } = cartInitialState;
+
+            // Set new order id, number expiry.
+            state.orderId = orderId;
+            state.orderNumber = orderNumber;
+            state.orderExpiry = expiry;
+            state.shouldCreateOrder = false;
+
+            // Reset remaining data.
+            state.shouldUpdateCart = shouldUpdateCart;
+            state.itemCount = itemCount;
+            state.items = items;
+            state.isUpdatingCart = isUpdatingCart;
+            state.subTotal = subTotal;
+            state.shipping = shipping;
+            state.discount = discount;
+            state.total = total;
+            state.orderHasGiftCard = orderHasGiftCard;
+            state.updateQuantities = updateQuantities;
+        },
     },
     extraReducers: (builder) => {
         // Add reducers for additional action types here, and handle loading state as needed
@@ -196,5 +229,6 @@ export const {
     clearUpdateQuantities,
     setOrderExpiry,
     setOrderId,
+    setOrder,
 } = cartSlice.actions;
 export default cartSlice.reducer;

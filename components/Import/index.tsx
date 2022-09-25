@@ -1,13 +1,13 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { AiFillQuestionCircle } from 'react-icons/ai';
 import { useSession } from 'next-auth/react';
 import { Document } from '@contentful/rich-text-types';
 
-import { createLineItemOption, setLineItem } from '../../utils/commerce';
+import { createLineItemOption, createOrder, setLineItem } from '../../utils/commerce';
 import selector from './selector';
-import { createCLOrder, fetchCartItems, fetchItemCount, setUpdatingCart } from '../../store/slices/cart';
+import { setOrder, fetchCartItems, fetchItemCount, setUpdatingCart } from '../../store/slices/cart';
 import Images from './Images';
 import Details from './Details';
 import { addError, addSuccess } from '../../store/slices/alerts';
@@ -138,14 +138,14 @@ export const Import: React.FC<ImportProps> = ({
             dispatch(setUpdatingCart(true));
             const doesOrderExist = await checkIfOrderExists(accessToken, orderId);
 
-            if (!doesOrderExist) {
-                dispatch(createCLOrder({ accessToken, isGuest }));
-                dispatch(addError('Order could not be found, please try adding product again.'));
-                dispatch(setUpdatingCart(false));
-                return;
+            if (!doesOrderExist || items.length === 0) {
+                const order = await createOrder(accessToken, isGuest);
+
+                dispatch(setOrder(order));
             }
 
             addItemsToCart(data);
+            dispatch(setUpdatingCart(false));
         },
         [accessToken, orderId, dispatch, addItemsToCart, isGuest]
     );
