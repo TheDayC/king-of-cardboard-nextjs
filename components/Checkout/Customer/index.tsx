@@ -184,7 +184,6 @@ const Customer: React.FC<CustomerProps> = ({ accessToken }) => {
 
     const handleNewShippingAddress = useCallback(
         async (data: unknown, customerDetails: CustomerDetails) => {
-            console.log('🚀 ~ file: index.tsx ~ line 184 ~ customerDetails', customerDetails);
             if (!accessToken || !orderId) return;
 
             // Parse the shipping address into a customer address partial.

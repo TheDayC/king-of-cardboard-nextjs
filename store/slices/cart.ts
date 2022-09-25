@@ -63,9 +63,9 @@ export const fetchCartTotals = createAsyncThunk(
 export const fetchCartItems = createAsyncThunk(
     'cart/fetchCartItems',
     async (data: CommonThunkInput): Promise<CartItem[]> => {
-        const { accessToken, orderId } = data;
+        const { accessToken, orderId, isImport } = data;
 
-        return await getCartItems(accessToken, orderId);
+        return await getCartItems(accessToken, orderId, isImport);
     }
 );
 

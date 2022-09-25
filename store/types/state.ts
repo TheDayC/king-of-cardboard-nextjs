@@ -211,6 +211,7 @@ export interface CustomAlert {
 export interface CommonThunkInput {
     accessToken: string;
     orderId: string;
+    isImport?: boolean;
 }
 
 export interface ProductsState {

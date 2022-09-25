@@ -6,6 +6,7 @@ import { CartItem, CartTotals } from '../types/cart';
 import { authClient } from './auth';
 import { parseAsArrayOfStrings, parseAsNumber, parseAsString, safelyParse } from './parsers';
 import { fetchProductImagesByProductLink } from './products';
+import { fetchImportImagesWithProductLink } from './imports';
 
 export async function getItemCount(accessToken: string, orderId: string): Promise<number> {
     try {
@@ -45,7 +46,11 @@ export async function getCartTotals(accessToken: string, orderId: string): Promi
     };
 }
 
-export async function getCartItems(accessToken: string, orderId: string): Promise<CartItem[]> {
+export async function getCartItems(
+    accessToken: string,
+    orderId: string,
+    isImport: boolean = false
+): Promise<CartItem[]> {
     try {
         const cl = CommerceLayer({
             organization: process.env.NEXT_PUBLIC_ECOM_SLUG || '',
@@ -91,6 +96,7 @@ export async function getCartItems(accessToken: string, orderId: string): Promis
 
         // Fetch the related cms products by their product link (sku) for their images.
         const cmsProducts = await fetchProductImagesByProductLink(skuCodes);
+        const cmsImports = await fetchImportImagesWithProductLink(skuCodes);
 
         return lineItems.map((lineItem) => {
             const sku_code = safelyParse(lineItem, 'sku_code', parseAsString, '');
@@ -100,20 +106,22 @@ export async function getCartItems(accessToken: string, orderId: string): Promis
                     ? skuItem.stock_items.find((stockItem) => stockItem.sku_code === sku_code) || null
                     : null;
             const product = cmsProducts ? cmsProducts.find((p) => p.sku_code === sku_code) : null;
+            const singleImport = cmsImports ? cmsImports.find((p) => p.sku_code === sku_code) : null;
+            const chosenCmsItem = product || singleImport;
 
             return {
                 id: safelyParse(lineItem, 'id', parseAsString, ''),
                 sku_code,
                 name:
-                    safelyParse(product, 'name', parseAsString, null) ||
+                    safelyParse(chosenCmsItem, 'name', parseAsString, null) ||
                     safelyParse(lineItem, 'name', parseAsString, ''),
                 quantity: safelyParse(lineItem, 'quantity', parseAsNumber, 0),
-                formatted_unit_amount: safelyParse(lineItem, 'attributes.formatted_unit_amount', parseAsString, ''),
-                formatted_total_amount: safelyParse(lineItem, 'attributes.formatted_total_amount', parseAsString, ''),
+                formatted_unit_amount: safelyParse(lineItem, 'formatted_unit_amount', parseAsString, ''),
+                formatted_total_amount: safelyParse(lineItem, 'formatted_total_amount', parseAsString, ''),
                 image: {
-                    title: safelyParse(product, 'title', parseAsString, ''),
-                    description: safelyParse(product, 'description', parseAsString, ''),
-                    url: safelyParse(product, 'url', parseAsString, ''),
+                    title: safelyParse(chosenCmsItem, 'title', parseAsString, ''),
+                    description: safelyParse(chosenCmsItem, 'description', parseAsString, ''),
+                    url: safelyParse(chosenCmsItem, 'url', parseAsString, ''),
                 },
                 metadata: {
                     categories: safelyParse(lineItem, 'attributes.metadata.categories', parseAsArrayOfStrings, []),
