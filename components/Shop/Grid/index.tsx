@@ -105,12 +105,12 @@ export const Grid: React.FC<GridProps> = ({ mode }) => {
                         {products.map((product) => (
                             <ProductCard
                                 name={product.name}
-                                image={product.cardImage.url}
-                                imgDesc={product.cardImage.description}
-                                imgTitle={product.cardImage.title}
+                                image={product.image.url}
+                                imgDesc={product.image.description}
+                                imgTitle={product.image.title}
                                 tags={product.tags}
                                 amount={product.amount}
-                                compareAmount={product.compare_amount}
+                                compareAmount={product.compareAmount}
                                 slug={product.slug}
                                 key={`product-card-${product.name}`}
                             />

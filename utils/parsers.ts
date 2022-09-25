@@ -33,8 +33,6 @@ import {
     isContentfulBreak,
     isSliderImage,
     isArrayOfSliderImages,
-    isPriceHistory,
-    isArrayOfPriceHistory,
     isRepeater,
     isArrayOfRepeater,
 } from './typeguards';

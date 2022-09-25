@@ -147,14 +147,14 @@ export async function getProducts(
                         description: safelyParse(image, 'description', parseAsString, ''),
                         url: safelyParse(image, 'url', parseAsString, ''),
                     })),
-                    cardImage: {
+                    image: {
                         title: safelyParse(pC, 'cardImage.title', parseAsString, ''),
                         description: safelyParse(pC, 'cardImage.description', parseAsString, ''),
                         url: safelyParse(pC, 'cardImage.url', parseAsString, ''),
                     },
                     tags: safelyParse(pC, 'tags', parseAsArrayOfStrings, []),
                     amount: safelyParse(prices, 'attributes.formatted_amount', parseAsString, ''),
-                    compare_amount: safelyParse(prices, 'attributes.formatted_compare_at_amount', parseAsString, ''),
+                    compareAmount: safelyParse(prices, 'attributes.formatted_compare_at_amount', parseAsString, ''),
                 };
             }),
         count: safelyParse(productResponse, 'data.content.productCollection.total', parseAsNumber, 0),

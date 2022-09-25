@@ -75,14 +75,9 @@ export const Cart: React.FC<CartProps> = ({ accessToken }) => {
 
     useEffect(() => {
         if (itemCount <= 0) {
-            //dispatch(clearUpdateQuantities());
+            dispatch(clearUpdateQuantities());
         }
     }, [dispatch, itemCount]);
-
-    // Pre-fetch the checkout page for a better transition.
-    /*     useEffect(() => {
-        router.prefetch('/checkout');
-    }, [router]); */
 
     return (
         <div className="flex flex-col">
