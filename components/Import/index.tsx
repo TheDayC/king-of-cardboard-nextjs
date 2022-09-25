@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { AiFillQuestionCircle } from 'react-icons/ai';
@@ -151,7 +151,7 @@ export const Import: React.FC<ImportProps> = ({
 
             dispatch(setUpdatingCart(false));
         },
-        [accessToken, orderId, dispatch, addItemsToCart, isGuest]
+        [accessToken, orderId, dispatch, addItemsToCart, isGuest, items.length]
     );
 
     const handleSkuOptionChange = (

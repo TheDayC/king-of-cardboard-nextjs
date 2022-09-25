@@ -4,6 +4,7 @@ import * as contentful from 'contentful';
 import { useDispatch } from 'react-redux';
 import { Document } from '@contentful/rich-text-types';
 import CommerceLayer from '@commercelayer/sdk';
+import { has } from 'lodash';
 
 import PageWrapper from '../../components/PageWrapper';
 import {
@@ -22,7 +23,6 @@ import { setAccessToken, setExpires } from '../../store/slices/global';
 import Import from '../../components/Import';
 import { ImageItem, Repeater } from '../../types/contentful';
 import { PriceHistory } from '../../types/imports';
-import { has } from 'lodash';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const slug = safelyParse(context, 'query.slug', parseAsString, null);

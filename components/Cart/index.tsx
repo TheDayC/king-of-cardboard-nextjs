@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
 
 import selector from './selector';
 import CartItem from './CartItem';
@@ -30,7 +29,6 @@ export const Cart: React.FC<CartProps> = ({ accessToken }) => {
         useSelector(selector);
     const dispatch = useDispatch();
     const { data: session } = useSession();
-    const router = useRouter();
     const [shouldFetch, setShouldFetch] = useState(true);
     const itemPlural = itemCount === 1 ? 'item' : 'items';
     const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');

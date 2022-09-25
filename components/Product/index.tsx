@@ -145,7 +145,7 @@ export const Product: React.FC<ImportProps> = ({
 
             dispatch(setUpdatingCart(false));
         },
-        [accessToken, orderId, dispatch, addItemsToCart, isGuest]
+        [accessToken, orderId, dispatch, addItemsToCart, isGuest, items.length]
     );
 
     const handleSkuOptionChange = (

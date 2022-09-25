@@ -11,12 +11,10 @@ import {
     Legend,
 } from 'chart.js';
 import { toNumber } from 'lodash';
-import { AiOutlineStock } from 'react-icons/ai';
-import { BiTrendingDown, BiTrendingUp } from 'react-icons/bi';
+import { MdOutlineTrendingUp, MdTrendingDown, MdTrendingFlat } from 'react-icons/md';
 
 import { PriceHistory } from '../../../types/imports';
 import { getPercentageChange } from '../../../utils/imports';
-import { MdOutlineTrendingUp, MdTrendingDown, MdTrendingFlat } from 'react-icons/md';
 
 const CONFIG = {
     responsive: true,
@@ -57,7 +55,6 @@ export const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ priceHisto
               toNumber(priceHistory[priceHistory.length - 1].amount)
           )
         : 0;
-    const isIncrease = percentageChange > 0;
 
     const data = {
         labels: priceHistory.map(({ timestamp }) => timestamp),

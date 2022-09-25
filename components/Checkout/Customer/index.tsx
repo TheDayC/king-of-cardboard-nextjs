@@ -405,7 +405,7 @@ const Customer: React.FC<CustomerProps> = ({ accessToken }) => {
                             )}
                         </div>
                     </div>
-                    <div className="flex justify-end px-4">
+                    <div className="flex justify-end px-4 mb-4">
                         <button
                             type="submit"
                             className={`btn w-full lg:w-auto${

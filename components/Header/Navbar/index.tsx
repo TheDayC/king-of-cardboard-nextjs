@@ -2,9 +2,9 @@ import React from 'react';
 import Link from 'next/link';
 import { AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
 import { BsArrowDownCircle } from 'react-icons/bs';
+import { FaPlaneArrival } from 'react-icons/fa';
 
 import { importsSubMenu, shopSubMenu } from '../../../utils/constants';
-import { FaPlaneArrival } from 'react-icons/fa';
 
 export const Navbar: React.FC = () => (
     <div className="navbar-center" role="navigation">
