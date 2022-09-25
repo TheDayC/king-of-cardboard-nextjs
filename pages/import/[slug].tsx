@@ -213,6 +213,7 @@ export const ImportPage: React.FC<ImportPageProps> = ({
                 types={types}
                 categories={categories}
                 options={options}
+                priceHistory={priceHistory}
             />
         </PageWrapper>
     );

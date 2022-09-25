@@ -1,7 +1,9 @@
 import { Document } from '@contentful/rich-text-types';
 import React from 'react';
 
+import { PriceHistory } from '../../../types/imports';
 import Content from '../../Content';
+import PriceHistoryChart from '../PriceHistoryChart';
 
 interface DetailsProps {
     name: string;
@@ -11,6 +13,7 @@ interface DetailsProps {
     quantity: number;
     tags: string[];
     description: Document[] | null;
+    priceHistory: PriceHistory[];
 }
 
 export const Details: React.FC<DetailsProps> = ({
@@ -21,6 +24,7 @@ export const Details: React.FC<DetailsProps> = ({
     quantity,
     tags,
     description,
+    priceHistory,
 }) => {
     const shouldShowCompare = amount !== compareAmount && compareAmount.length > 0;
 
@@ -49,6 +53,7 @@ export const Details: React.FC<DetailsProps> = ({
             {description && description.length > 0 && (
                 <div className="description">{description && <Content content={description} />}</div>
             )}
+            <PriceHistoryChart priceHistory={priceHistory} />
         </div>
     );
 };

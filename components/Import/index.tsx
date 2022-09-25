@@ -177,6 +177,7 @@ export const Import: React.FC<ImportProps> = ({
                         quantity={stock}
                         tags={tags}
                         description={description}
+                        priceHistory={priceHistory}
                     />
 
                     {isAvailable && (
