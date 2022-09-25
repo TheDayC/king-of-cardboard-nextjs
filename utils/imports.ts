@@ -46,7 +46,7 @@ export async function getShallowImports(
         content_type: 'import',
         limit,
         skip,
-        order: 'sys.createdAt',
+        order: '-sys.createdAt',
     });
 
     // Return early if nothing was found.

@@ -199,7 +199,7 @@ export async function getShallowProducts(
         content_type: 'product',
         limit,
         skip,
-        order: 'sys.createdAt',
+        order: '-sys.createdAt',
     });
 
     // Return early if nothing was found.

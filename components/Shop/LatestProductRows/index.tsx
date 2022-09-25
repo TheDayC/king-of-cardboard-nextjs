@@ -28,8 +28,8 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
         <div className="flex flex-col w-full md:w-5/6" data-testid="shop-grid">
             {baseballProducts.length > 0 && (
                 <div className="flex flex-col mb-8">
-                    <h2 className="text-4xl mb-2">{upperFirst(ProductType.Basketball)}</h2>
-                    <p>Officially licensed NBA sports cards, sealed product and packs.</p>
+                    <h2 className="text-4xl mb-2">{upperFirst(ProductType.Baseball)}</h2>
+                    <p>Officially licensed and unlicensed MLB sports cards, sealed product and packs.</p>
                     <hr className="divider lightDivider" />
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                         {baseballProducts.map((product) => (
