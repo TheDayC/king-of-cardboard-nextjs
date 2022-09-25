@@ -204,6 +204,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({
                 types={types}
                 categories={categories}
                 options={options}
+                accessToken={accessToken.token}
             />
         </PageWrapper>
     );

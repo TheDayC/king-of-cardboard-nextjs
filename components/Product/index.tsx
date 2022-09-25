@@ -34,6 +34,7 @@ interface ImportProps {
     types: string[];
     categories: string[];
     options: SkuOption[];
+    accessToken: string | null;
 }
 
 export const Product: React.FC<ImportProps> = ({
@@ -50,10 +51,11 @@ export const Product: React.FC<ImportProps> = ({
     types,
     categories,
     options,
+    accessToken,
 }) => {
     const dispatch = useDispatch();
     const { status } = useSession();
-    const { accessToken, items, orderId, isUpdatingCart } = useSelector(selector);
+    const { items, orderId, isUpdatingCart } = useSelector(selector);
     const [savedSkuOptions, setSavedSkuOptions] = useState<SavedSkuOptions[]>([]);
     const { handleSubmit, register } = useForm();
     const item = items.find((c) => c.sku_code === sku);
