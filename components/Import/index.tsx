@@ -58,6 +58,7 @@ export const Import: React.FC<ImportProps> = ({
     const { status } = useSession();
     const { accessToken, items, orderId, isUpdatingCart } = useSelector(selector);
     const [savedSkuOptions, setSavedSkuOptions] = useState<SavedSkuOptions[]>([]);
+    const [hasAgreedToTerms, setHasAgreedToTerms] = useState(false);
     const { handleSubmit, register } = useForm();
     const item = items.find((c) => c.sku_code === sku);
     const quantity = safelyParse(item, 'quantity', parseAsNumber, 0);
@@ -163,6 +164,10 @@ export const Import: React.FC<ImportProps> = ({
         }
     };
 
+    const handleAgreement = () => {
+        setHasAgreedToTerms(!hasAgreedToTerms);
+    };
+
     return (
         <div className="flex flex-col relative lg:flex-row lg:space-x-8">
             <Images mainImage={image} imageCollection={galleryImages} />
@@ -215,7 +220,32 @@ export const Import: React.FC<ImportProps> = ({
                                             </div>
                                         </React.Fragment>
                                     ))}
-                                <h4 className="text-2xl mt-2 mb-2 font-semibold">Amount</h4>
+                                <h4 className="text-3xl my-4">Add import to cart</h4>
+                                <p className="my-4 text-lg">
+                                    To place an order for an import you must first agree to the additional terms of
+                                    service. Please read the below terms carefully and check the box to enable the add
+                                    to cart button if you agree.
+                                </p>
+                                <div className="flex flex-row justify-start align-center my-4">
+                                    <div className="form-control">
+                                        <label className="label cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={hasAgreedToTerms}
+                                                className="checkbox"
+                                                onChange={handleAgreement}
+                                            />
+                                            <span className="label-text ml-4 italic">
+                                                By checking this box you understand and agree that the market value of a
+                                                product can and likely will fluctuate. You agree to and abide by the
+                                                usual terms and conditions of the King of Cardboard service. In addition
+                                                you understand that refunds are not applicable to imports or pre-orders,
+                                                and that King of Cardboard have the right to cancel an order should the
+                                                value fluctuate significantly during the order process.
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
                                 <div className="flex flex-col lg:flex-row justify-start align-center lg:space-x-2">
                                     {!isQuantityAtMax && (
                                         <input
@@ -230,7 +260,7 @@ export const Import: React.FC<ImportProps> = ({
                                     <button
                                         aria-label="add to cart"
                                         className={`btn btn-lg w-full lg:w-auto rounded-md${btnDisabled}${btnLoading}`}
-                                        disabled={hasExceededStock}
+                                        disabled={hasExceededStock || !hasAgreedToTerms}
                                     >
                                         {isUpdatingCart ? '' : 'Add to cart'}
                                     </button>
