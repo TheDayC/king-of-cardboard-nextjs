@@ -1,5 +1,5 @@
 import CommerceLayer from '@commercelayer/sdk';
-import { join } from 'lodash';
+import { join, round } from 'lodash';
 import * as contentful from 'contentful';
 
 import { Categories, ProductType } from '../enums/shop';
@@ -116,4 +116,10 @@ export async function getShallowImports(
         }),
         count: safelyParse(importsRes, 'total', parseAsNumber, 0),
     };
+}
+
+export function getPercentageChange(previous: number, current: number): number {
+    const decreaseValue = current - previous;
+
+    return round((decreaseValue / previous) * 100, 2);
 }
