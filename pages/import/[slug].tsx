@@ -22,6 +22,7 @@ import { setAccessToken, setExpires } from '../../store/slices/global';
 import Import from '../../components/Import';
 import { ImageItem, Repeater } from '../../types/contentful';
 import { PriceHistory } from '../../types/imports';
+import { has } from 'lodash';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const slug = safelyParse(context, 'query.slug', parseAsString, null);
@@ -91,6 +92,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             skus: ['inventory'],
         },
     });
+    console.log(
+        '🚀 ~ file: [slug].tsx ~ line 95 ~ constgetServerSideProps:GetServerSideProps= ~ skuInventory',
+        skuInventory
+    );
     const prices = await cl.skus.prices(id, {
         fields: ['formatted_amount', 'formatted_compare_at_amount'],
     });
@@ -120,6 +125,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             compareAmount: safelyParse(prices[0], 'formatted_compare_at_amount', parseAsString, ''),
             isAvailable: safelyParse(skuInventory, 'inventory.available', parseAsBoolean, false),
             stock: safelyParse(skuInventory, 'inventory.quantity', parseAsNumber, 0),
+            hasUnlimitedStock: !has(skuInventory, 'inventory.quantity'),
             tags: safelyParse(importFields, 'tags', parseAsArrayOfStrings, []),
             types: safelyParse(importFields, 'types', parseAsArrayOfStrings, []),
             categories: safelyParse(importFields, 'categories', parseAsArrayOfStrings, []),
@@ -153,6 +159,7 @@ interface ImportPageProps {
     compareAmount: string;
     isAvailable: boolean;
     stock: number;
+    hasUnlimitedStock: boolean;
     tags: string[];
     types: string[];
     categories: string[];
@@ -176,6 +183,7 @@ export const ImportPage: React.FC<ImportPageProps> = ({
     compareAmount,
     isAvailable,
     stock,
+    hasUnlimitedStock,
     tags,
     types,
     categories,
@@ -209,6 +217,7 @@ export const ImportPage: React.FC<ImportPageProps> = ({
                 compareAmount={compareAmount}
                 isAvailable={isAvailable}
                 stock={stock}
+                hasUnlimitedStock={hasUnlimitedStock}
                 tags={tags}
                 types={types}
                 categories={categories}

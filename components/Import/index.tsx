@@ -31,6 +31,7 @@ interface ImportProps {
     compareAmount: string;
     isAvailable: boolean;
     stock: number;
+    hasUnlimitedStock: boolean;
     tags: string[];
     types: string[];
     categories: string[];
@@ -48,6 +49,7 @@ export const Import: React.FC<ImportProps> = ({
     compareAmount,
     isAvailable,
     stock,
+    hasUnlimitedStock,
     tags,
     types,
     categories,
@@ -62,10 +64,10 @@ export const Import: React.FC<ImportProps> = ({
     const { handleSubmit, register } = useForm();
     const item = items.find((c) => c.sku_code === sku);
     const quantity = safelyParse(item, 'quantity', parseAsNumber, 0);
-    const hasExceededStock = quantity >= stock;
+    const hasExceededStock = hasUnlimitedStock ? false : quantity >= stock;
     const btnDisabled = hasExceededStock ? ' btn-disabled' : ' btn-primary';
     const btnLoading = isUpdatingCart ? ' loading' : '';
-    const isQuantityAtMax = quantity === stock;
+    const isQuantityAtMax = hasUnlimitedStock ? false : quantity === stock;
     const isGuest = status !== 'authenticated';
 
     // Handle the form submission.
@@ -183,6 +185,7 @@ export const Import: React.FC<ImportProps> = ({
                         tags={tags}
                         description={description}
                         priceHistory={priceHistory}
+                        hasUnlimitedStock={hasUnlimitedStock}
                     />
 
                     {isAvailable && (
@@ -236,12 +239,13 @@ export const Import: React.FC<ImportProps> = ({
                                                 onChange={handleAgreement}
                                             />
                                             <span className="label-text ml-4 italic">
-                                                By checking this box you understand and agree that the market value of a
-                                                product can and likely will fluctuate. You agree to and abide by the
-                                                usual terms and conditions of the King of Cardboard service. In addition
-                                                you understand that refunds are not applicable to imports or pre-orders,
-                                                and that King of Cardboard have the right to cancel an order should the
-                                                value fluctuate significantly during the order process.
+                                                By checking this box you commit to, understand and agree that the market
+                                                value of a product can and likely will fluctuate, that you agree to
+                                                abide by the usual terms and conditions of the King of Cardboard service
+                                                and, in addition you understand that refunds are not applicable to
+                                                imports or pre-orders, and that King of Cardboard have the right to
+                                                cancel an order should the value fluctuate significantly during the
+                                                order process.
                                             </span>
                                         </label>
                                     </div>
