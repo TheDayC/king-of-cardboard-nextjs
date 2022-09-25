@@ -74,8 +74,8 @@ export const Import: React.FC<ImportProps> = ({
 
     // Handle the form submission.
     const addItemsToCart = useCallback(
-        async (data: unknown) => {
-            if (!accessToken || !orderId || isUpdatingCart || hasExceededStock) return;
+        async (data: unknown, newOrderId: string | null = orderId) => {
+            if (!accessToken || !newOrderId || isUpdatingCart || hasExceededStock) return;
 
             const attributes = {
                 quantity: parseInt(safelyParse(data, 'quantity', parseAsString, '1')),
@@ -93,7 +93,7 @@ export const Import: React.FC<ImportProps> = ({
             const relationships = {
                 order: {
                     data: {
-                        id: orderId,
+                        id: newOrderId,
                         type: 'orders',
                     },
                 },
@@ -109,8 +109,8 @@ export const Import: React.FC<ImportProps> = ({
                     }
                 }
 
-                dispatch(fetchItemCount({ accessToken, orderId }));
-                dispatch(fetchCartItems({ accessToken, orderId }));
+                dispatch(fetchItemCount({ accessToken, orderId: newOrderId }));
+                dispatch(fetchCartItems({ accessToken, orderId: newOrderId }));
                 gaEvent('addProductToCart', { sku_code: sku });
                 dispatch(addSuccess(`${name} added to cart.`));
             } else {
@@ -144,9 +144,11 @@ export const Import: React.FC<ImportProps> = ({
                 const order = await createOrder(accessToken, isGuest);
 
                 dispatch(setOrder(order));
+                addItemsToCart(data, order.orderId);
+            } else {
+                addItemsToCart(data);
             }
 
-            addItemsToCart(data);
             dispatch(setUpdatingCart(false));
         },
         [accessToken, orderId, dispatch, addItemsToCart, isGuest]

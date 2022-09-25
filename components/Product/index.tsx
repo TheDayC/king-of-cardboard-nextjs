@@ -5,9 +5,9 @@ import { AiFillQuestionCircle } from 'react-icons/ai';
 import { useSession } from 'next-auth/react';
 import { Document } from '@contentful/rich-text-types';
 
-import { createLineItemOption, setLineItem } from '../../utils/commerce';
+import { createLineItemOption, createOrder, setLineItem } from '../../utils/commerce';
 import selector from './selector';
-import { createCLOrder, fetchCartItems, fetchItemCount, setUpdatingCart } from '../../store/slices/cart';
+import { fetchCartItems, fetchItemCount, setOrder, setUpdatingCart } from '../../store/slices/cart';
 import Images from './Images';
 import Details from './Details';
 import { addError, addSuccess } from '../../store/slices/alerts';
@@ -68,8 +68,8 @@ export const Product: React.FC<ImportProps> = ({
 
     // Handle the form submission.
     const addItemsToCart = useCallback(
-        async (data: unknown) => {
-            if (!accessToken || !orderId || isUpdatingCart || hasExceededStock) return;
+        async (data: unknown, newOrderId: string | null = orderId) => {
+            if (!accessToken || !newOrderId || isUpdatingCart || hasExceededStock) return;
 
             const attributes = {
                 quantity: parseInt(safelyParse(data, 'quantity', parseAsString, '1')),
@@ -87,7 +87,7 @@ export const Product: React.FC<ImportProps> = ({
             const relationships = {
                 order: {
                     data: {
-                        id: orderId,
+                        id: newOrderId,
                         type: 'orders',
                     },
                 },
@@ -103,8 +103,8 @@ export const Product: React.FC<ImportProps> = ({
                     }
                 }
 
-                dispatch(fetchItemCount({ accessToken, orderId }));
-                dispatch(fetchCartItems({ accessToken, orderId }));
+                dispatch(fetchItemCount({ accessToken, orderId: newOrderId }));
+                dispatch(fetchCartItems({ accessToken, orderId: newOrderId }));
                 gaEvent('addProductToCart', { sku_code: sku });
                 dispatch(addSuccess(`${name} added to cart.`));
             } else {
@@ -134,14 +134,16 @@ export const Product: React.FC<ImportProps> = ({
             dispatch(setUpdatingCart(true));
             const doesOrderExist = await checkIfOrderExists(accessToken, orderId);
 
-            if (!doesOrderExist) {
-                dispatch(createCLOrder({ accessToken, isGuest }));
-                dispatch(addError('Order could not be found, please try adding product again.'));
-                dispatch(setUpdatingCart(false));
-                return;
+            if (!doesOrderExist || items.length === 0) {
+                const order = await createOrder(accessToken, isGuest);
+
+                dispatch(setOrder(order));
+                addItemsToCart(data, order.orderId);
+            } else {
+                addItemsToCart(data);
             }
 
-            addItemsToCart(data);
+            dispatch(setUpdatingCart(false));
         },
         [accessToken, orderId, dispatch, addItemsToCart, isGuest]
     );
