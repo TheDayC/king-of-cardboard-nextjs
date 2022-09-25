@@ -7,6 +7,7 @@ import { ImportsWithCount } from '../types/imports';
 import { parseAsArrayOfRepeater, parseAsArrayOfStrings, parseAsNumber, parseAsString, safelyParse } from './parsers';
 import { PricesWithSku } from '../types/commerce';
 import { Repeater } from '../types/contentful';
+import { CartImage } from '../types/products';
 
 export async function getShallowImports(
     accessToken: string,
@@ -122,4 +123,27 @@ export function getPercentageChange(previous: number, current: number): number {
     const decreaseValue = current - previous;
 
     return round((decreaseValue / previous) * 100, 2);
+}
+
+export async function fetchImportImagesWithProductLink(skuCodes: string[]): Promise<CartImage[]> {
+    const client = contentful.createClient({
+        space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || '',
+        accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_TOKEN || '',
+        environment: process.env.NEXT_PUBLIC_CONTENTFUL_ENV || '',
+    });
+
+    const importsRes = await client.getEntries({
+        'fields.productLink[in]': join(skuCodes, ','),
+        content_type: 'import',
+        limit: 1,
+        skip: 0,
+        order: '-sys.createdAt',
+    });
+
+    return importsRes.items.map(({ fields }) => ({
+        sku_code: safelyParse(fields, 'productLink', parseAsString, ''),
+        title: safelyParse(fields, 'cardImage.fields.title', parseAsString, ''),
+        description: safelyParse(fields, 'cardImage.fields.description', parseAsString, ''),
+        url: `https:${safelyParse(fields, 'cardImage.fields.file.url', parseAsString, '')}`,
+    }));
 }
