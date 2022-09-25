@@ -87,7 +87,7 @@ export const Delivery: React.FC<DeliveryProps> = ({ accessToken }) => {
                     <div className="flex justify-end items-center px-4">
                         <button
                             type="submit"
-                            className={`btn w-full lg:w-auto${
+                            className={`btn w-full lg:w-auto mb-4${
                                 hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'
                             }${checkoutLoading ? ' loading' : ''}`}
                         >
