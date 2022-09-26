@@ -78,7 +78,7 @@ export async function getShallowImports(
         const code = safelyParse(sku, 'code', parseAsString, null);
 
         if (code) {
-            const id = safelyParse(skus[0], 'id', parseAsString, '');
+            const id = safelyParse(sku, 'id', parseAsString, '');
             const clPrices = await cl.skus.prices(id, {
                 fields: ['formatted_amount', 'formatted_compare_at_amount'],
             });
