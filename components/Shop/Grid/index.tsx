@@ -19,11 +19,12 @@ interface GridProps {
 }
 
 export const Grid: React.FC<GridProps> = ({ mode }) => {
-    const { accessToken, products, productsTotal, isLoadingProducts, imports, isLoadingImports } =
+    const { accessToken, products, productsTotal, isLoadingProducts, imports, importsTotal, isLoadingImports } =
         useSelector(selector);
     const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(0);
     const productPageCount = ceil(divide(productsTotal, PER_PAGE));
+    const importsPageCount = ceil(divide(importsTotal, PER_PAGE));
     const isImports = mode === FilterMode.Imports;
 
     // Handle the page number and set it in local state.
@@ -79,10 +80,10 @@ export const Grid: React.FC<GridProps> = ({ mode }) => {
                     <NoProducts />
                 )}
                 <div className="flex justify-center">
-                    {productPageCount > 1 && (
+                    {importsPageCount > 1 && (
                         <Pagination
                             currentPage={currentPage}
-                            pageCount={productPageCount}
+                            pageCount={importsPageCount}
                             handlePageNumber={handlePageNumber}
                         />
                     )}

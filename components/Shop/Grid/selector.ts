@@ -10,6 +10,7 @@ const selector = createSelector(
         accessToken: global.accessToken,
         isLoadingProducts: products.isLoadingProducts,
         imports: importData.imports,
+        importsTotal: importData.importsTotal,
         isLoadingImports: importData.isLoadingImports,
     })
 );
