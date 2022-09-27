@@ -20,8 +20,8 @@ import {
     removeProductType,
 } from '../../../store/slices/filters';
 import Filter from './Filter';
-import { fetchProducts } from '../../../store/slices/products';
-import { fetchImports } from '../../../store/slices/imports';
+import { fetchProducts, setIsLoadingProducts } from '../../../store/slices/products';
+import { fetchImports, setIsLoadingImports } from '../../../store/slices/imports';
 
 const iconClassName = 'w-6 h-6 inline-block mr-2';
 const categories = [
@@ -76,10 +76,12 @@ export const Filters: React.FC<FiltersProps> = ({ mode }) => {
 
         switch (mode) {
             case FilterMode.Imports:
+                dispatch(setIsLoadingImports(true));
                 dispatch(fetchImports({ limit: 8, skip: 0 }));
                 break;
             case FilterMode.Products:
             default:
+                dispatch(setIsLoadingProducts(true));
                 dispatch(fetchProducts({ limit: 8, skip: 0 }));
                 break;
         }
