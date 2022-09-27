@@ -7,6 +7,12 @@ import { ProductType } from '../enums/shop';
 
 export const shopSubMenu = [
     {
+        href: `/shop/${ProductType.Baseball}`,
+        icon: BiBaseball,
+        label: upperFirst(ProductType.Baseball),
+        css: '',
+    },
+    {
         href: `/shop/${ProductType.Basketball}`,
         icon: BiBasketball,
         label: upperFirst(ProductType.Basketball),
