@@ -15,26 +15,27 @@ import { setAccessToken, setExpires } from '../../store/slices/global';
 import { pageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import { Categories, FilterMode, ProductType } from '../../enums/shop';
-import { getProducts } from '../../utils/products';
-import { Product } from '../../types/products';
-import { setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
+import { setImportsAndCount, setIsLoadingImports } from '../../store/slices/imports';
+import { ShallowImport } from '../../types/imports';
+import { getShallowImports } from '../../utils/imports';
 
 const LIMIT = 8;
 const SKIP = 0;
 const CATEGORIES: Categories[] = [];
-const DEFAULT_PRODUCTS: Product[] = [];
+const DEFAULT_IMPORTS: ShallowImport[] = [];
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const accessToken = await createToken();
+    const slug = safelyParse(context, 'query.type', parseAsProductType, null);
 
-    if (!accessToken.token) {
+    if (!accessToken.token || !slug) {
         return {
             props: {
                 errorCode: 500,
                 shopType: null,
                 accessToken,
                 content: null,
-                products: DEFAULT_PRODUCTS,
+                imports: DEFAULT_IMPORTS,
                 count: 0,
             },
         };
@@ -42,13 +43,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     const shopType = safelyParse(context, 'query.type', parseAsProductType, null);
     const content = await pageBySlug(shopType, 'shop/');
-    const { products, count } = await getProducts(
-        accessToken.token,
-        LIMIT,
-        SKIP,
-        CATEGORIES,
-        shopType ? [shopType] : []
-    );
+    const { imports, count } = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [slug]);
 
     return {
         props: {
@@ -56,7 +51,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             shopType,
             accessToken,
             content,
-            products,
+            imports,
             count,
         },
     };
@@ -66,11 +61,11 @@ interface ShopTypeProps {
     shopType: ProductType | null;
     accessToken: CreateToken;
     content: Document[] | null;
-    products: Product[] | null;
+    imports: ShallowImport[] | null;
     count: number;
 }
 
-export const ShopType: React.FC<ShopTypeProps> = ({ shopType, accessToken, content, products, count }) => {
+export const ShopType: React.FC<ShopTypeProps> = ({ shopType, accessToken, content, imports, count }) => {
     const dispatch = useDispatch();
     const shouldUpperCase = shopType === ProductType.UFC;
     const caseChangedShopType = shouldUpperCase ? upperCase(shopType || '') : startCase(shopType || '');
@@ -89,9 +84,9 @@ export const ShopType: React.FC<ShopTypeProps> = ({ shopType, accessToken, conte
     }, [dispatch, accessToken]);
 
     useEffect(() => {
-        dispatch(setIsLoadingProducts(true));
-        dispatch(setProductsAndCount({ products, count }));
-    }, [dispatch, products, count]);
+        dispatch(setIsLoadingImports(true));
+        dispatch(setImportsAndCount({ imports, count }));
+    }, [dispatch, imports, count]);
 
     return (
         <PageWrapper

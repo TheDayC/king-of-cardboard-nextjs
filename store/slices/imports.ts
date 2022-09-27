@@ -31,6 +31,13 @@ const importsSlice = createSlice({
         setIsLoadingImports(state, action) {
             state.isLoadingImports = action.payload;
         },
+        setImportsAndCount(state, action) {
+            const { imports, count } = action.payload;
+
+            state.imports = imports;
+            state.importsTotal = count;
+            state.isLoadingImports = false;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(fetchImports.fulfilled, (state, action) => {
@@ -45,6 +52,6 @@ const importsSlice = createSlice({
     },
 });
 
-export const { setIsLoadingImports } = importsSlice.actions;
+export const { setIsLoadingImports, setImportsAndCount } = importsSlice.actions;
 
 export default importsSlice.reducer;
