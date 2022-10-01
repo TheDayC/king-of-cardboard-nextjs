@@ -161,7 +161,8 @@ export async function getShipments(accessToken: string, orderId: string): Promis
             const methods = included
                 .filter((i) => i.type === 'shipping_methods' && methodIds.includes(i.id))
                 .map((i) => {
-                    const leadTime = deliveryLeadTimes.find((dLT) => dLT.relationships.shipping_method.data.id) || null;
+                    const leadTime =
+                        deliveryLeadTimes.find((dLT) => dLT.relationships.shipping_method.data.id === i.id) || null;
 
                     return {
                         id: safelyParse(i, 'id', parseAsString, ''),
