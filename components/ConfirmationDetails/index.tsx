@@ -3,7 +3,6 @@ import { BsCheck2Circle } from 'react-icons/bs';
 import { IoLocationSharp } from 'react-icons/io5';
 import { useSelector } from 'react-redux';
 
-import styles from './confirmation.module.css';
 import selector from './selector';
 
 export const ConfirmationDetails: React.FC = () => {
@@ -12,7 +11,7 @@ export const ConfirmationDetails: React.FC = () => {
     return (
         <div className="card shadow-md rounded-md p-2 lg:p-8">
             <div className="flex justify-center items-center">
-                <BsCheck2Circle className={styles.check} />
+                <BsCheck2Circle className="text-success w-full h-full" />
             </div>
             <div className="card-body justify-center p-2">
                 <h1 className="card-tite text-center text-3xl mb-4">Thank you {customerDetails.first_name || ''}!</h1>
