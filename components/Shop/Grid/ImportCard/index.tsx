@@ -69,7 +69,7 @@ export const ImportCard: React.FC<CardProps> = ({
                         )}
                         <span className="text-2xl font-bold">{amount}</span>
                     </div>
-                    <Link href={linkOptions} passHref>
+                    <Link href={linkOptions} passHref className="w-full">
                         <button className="btn btn-primary btn-sm rounded-md shadow-md w-full">View Product</button>
                     </Link>
                 </div>
