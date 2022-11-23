@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
 import { BsArrowDownCircle } from 'react-icons/bs';
 import { FaPlaneArrival } from 'react-icons/fa';
-import styles from './navbar.module.css';
 
 import { importsSubMenu, shopSubMenu } from '../../../utils/constants';
 
