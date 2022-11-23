@@ -11,7 +11,7 @@ export const Navbar: React.FC = () => (
     <div className="navbar-center" role="navigation">
         <ul className="menu menu-horizontal hidden lg:inline-flex">
             <li>
-                <Link href="/" passHref className="p-0">
+                <Link href="/" passHref className="p-0 bg-neutral">
                     <button className="btn rounded-md gap-2" role="link">
                         <AiFillHome className="w-5 h-5" />
                         Home
@@ -19,7 +19,7 @@ export const Navbar: React.FC = () => (
                 </Link>
             </li>
             <li>
-                <Link href="/shop" passHref className="p-0">
+                <Link href="/shop" passHref className="p-0 bg-neutral">
                     <button className="btn rounded-md gap-2" role="link">
                         <AiFillShopping className="w-5 h-5" />
                         Shop
@@ -40,7 +40,7 @@ export const Navbar: React.FC = () => (
 
                         return (
                             <li key={`nav-item-${index}`}>
-                                <Link href={menuItem.href} passHref className="p-0">
+                                <Link href={menuItem.href} passHref className="p-0 bg-neutral">
                                     <button className={`btn gap-2 p-2 w-full ${radius}`} role="link">
                                         <menuItem.icon className={`w-5 h-5 ${menuItem.css}`} />
                                         {menuItem.label}
@@ -52,7 +52,7 @@ export const Navbar: React.FC = () => (
                 </ul>
             </li>
             <li>
-                <Link href="/imports" passHref className="p-0">
+                <Link href="/imports" passHref className="p-0 bg-neutral">
                     <button className="btn rounded-md gap-2" role="link">
                         <FaPlaneArrival className="w-5 h-5" />
                         Imports
@@ -73,7 +73,7 @@ export const Navbar: React.FC = () => (
 
                         return (
                             <li key={`nav-item-${index}`}>
-                                <Link href={menuItem.href} passHref className="p-0">
+                                <Link href={menuItem.href} passHref className="p-0 bg-neutral">
                                     <button className={`btn gap-2 p-2 w-full ${radius}`} role="link">
                                         <menuItem.icon className={`w-5 h-5 ${menuItem.css}`} />
                                         {menuItem.label}
@@ -85,7 +85,7 @@ export const Navbar: React.FC = () => (
                 </ul>
             </li>
             <li>
-                <Link href="/breaks" passHref className="p-0">
+                <Link href="/breaks" passHref className="p-0 bg-neutral">
                     <button className="btn rounded-md gap-2" role="link">
                         <AiTwotoneCrown className="w-5 h-5" />
                         Breaks
