@@ -4,7 +4,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import TwitchProvider from 'next-auth/providers/twitch';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { NextApiRequest, NextApiResponse } from 'next';
-import axios from 'axios';
+import { isAxiosError } from 'axios';
 
 import { connectToDatabase } from '../../../middleware/database';
 import {
@@ -15,8 +15,8 @@ import {
     safelyParse,
 } from '../../../utils/parsers';
 import { authClient, userClient } from '../../../utils/auth';
-import clientPromise from '../../../lib/mongodb';
-import { MongoDBAdapter } from '../../../lib/mongoAdapter';
+//import clientPromise from '../../../lib/mongodb';
+//import { MongoDBAdapter } from '../../../lib/mongoAdapter';
 import { gaEvent } from '../../../utils/ga';
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse): Promise<void> {
@@ -89,7 +89,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
 
                         return null;
                     } catch (error) {
-                        if (axios.isAxiosError(error)) {
+                        if (isAxiosError(error)) {
                             throw new Error(error.message);
                         } else {
                             throw new Error('Error');
@@ -314,7 +314,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                 return token;
             },
         },
-        adapter: MongoDBAdapter(clientPromise),
+        //adapter: MongoDBAdapter(clientPromise),
         debug: false,
     });
 }

@@ -13,7 +13,7 @@ export async function parseImgData(id: string, url: string): Promise<AttachmentD
     const content = Buffer.from(res.data, 'binary').toString('base64');
 
     // @ts-ignore
-    const imgType = imageType(res.data);
+    const imgType = await imageType(res.data);
     const mime = imgType ? imgType.mime : 'image/png';
     const ext = imgType ? imgType.ext : 'png';
 

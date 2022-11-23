@@ -1,6 +1,6 @@
 import React from 'react';
-import { SideBySideMagnifier } from 'react-image-magnifiers';
 import Image from 'next/image';
+import { SideBySideMagnifier } from 'react-image-magnifiers';
 
 import { ImageItem } from '../../../types/contentful';
 import styles from './images.module.css';

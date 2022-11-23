@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,7 +13,11 @@ import selector from './selector';
 import { setIsDrawerOpen } from '../../store/slices/global';
 import { importsSubMenu, shopSubMenu } from '../../utils/constants';
 
-export const Drawer: React.FC = ({ children }) => {
+interface DrawerProps {
+    children: ReactNode;
+}
+
+export const Drawer: React.FC<DrawerProps> = ({ children }) => {
     const { isDrawerOpen } = useSelector(selector);
     const { data: session, status } = useSession();
     const dispatch = useDispatch();

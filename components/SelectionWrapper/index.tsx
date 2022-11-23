@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { FieldValues, UseFormRegister } from 'react-hook-form';
 
 interface SelectionWrapperProps {
@@ -7,8 +7,9 @@ interface SelectionWrapperProps {
     name: string;
     isChecked: boolean;
     defaultChecked: boolean;
-    titleLogo?: React.ReactNode;
+    titleLogo?: ReactNode;
     register?: UseFormRegister<FieldValues>;
+    children: ReactNode;
     onSelect(id: string): void;
 }
 

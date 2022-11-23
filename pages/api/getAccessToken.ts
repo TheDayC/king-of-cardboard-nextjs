@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import axios from 'axios';
+import { isAxiosError } from 'axios';
 
 import { authClient } from '../../utils/auth';
 import { parseAsNumber, parseAsString, safelyParse } from '../../utils/parsers';
@@ -32,7 +32,7 @@ async function getAccessToken(req: NextApiRequest, res: NextApiResponse): Promis
                 res.status(status).json({ status, message, description });
             }
         } catch (error) {
-            if (axios.isAxiosError(error)) {
+            if (isAxiosError(error)) {
                 const status = safelyParse(error, 'response.status', parseAsNumber, 500);
 
                 res.status(status).json(errorHandler(error, defaultError));
