@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { useSession } from 'next-auth/react';
@@ -25,7 +25,11 @@ function purgeReduxPersist(): void {
     purgeStoredState(persistConfig);
 }
 
-const OrderAndTokenProvider: React.FC = ({ children }) => {
+interface OrderAndTokenProviderProps {
+    children: ReactNode;
+}
+
+const OrderAndTokenProvider: React.FC<OrderAndTokenProviderProps> = ({ children }) => {
     const { accessToken, expires, shouldCreateOrder, orderExpiry } = useSelector(selector);
     const dispatch = useDispatch();
     const { status } = useSession();

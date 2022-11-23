@@ -18,6 +18,7 @@ interface PageWrapperProps {
     title: string;
     description: string;
     image?: string;
+    children: React.ReactNode;
 }
 
 export const PageWrapper: React.FC<PageWrapperProps> = ({ title, description, image, children }) => {
