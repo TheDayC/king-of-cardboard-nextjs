@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';
@@ -7,7 +6,7 @@ import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parser
 
 const defaultErr = 'Product type could not be added.';
 
-async function addProductTypes(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+async function addProductType(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         try {
             const { db } = await connectToDatabase();
@@ -15,7 +14,6 @@ async function addProductTypes(req: NextApiRequest, res: NextApiResponse): Promi
 
             const slug = safelyParse(req, 'body.slug', parseAsString, null);
             const existingProductType = await productTypesCollection.findOne({ slug });
-            const currentDate = DateTime.now().setZone('Europe/London');
 
             if (existingProductType) {
                 res.status(400).json({ message: 'Product type already exists.' });
@@ -38,4 +36,4 @@ async function addProductTypes(req: NextApiRequest, res: NextApiResponse): Promi
     }
 }
 
-export default addProductTypes;
+export default addProductType;
