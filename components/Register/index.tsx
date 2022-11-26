@@ -177,7 +177,7 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
 
                     <input
                         type="checkbox"
-                        className={`checkbox rounded-sm w-10 ml-2`}
+                        className="checkbox rounded-sm w-6 h-6 ml-2"
                         {...register('agreed', {
                             required: {
                                 value: true,
