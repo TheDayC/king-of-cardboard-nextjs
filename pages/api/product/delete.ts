@@ -22,7 +22,7 @@ async function deleteProduct(req: NextApiRequest, res: NextApiResponse): Promise
 
             await productsCollection.deleteOne({ sku });
 
-            res.status(201).end();
+            res.status(204).end();
         } catch (err: unknown) {
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);
 
