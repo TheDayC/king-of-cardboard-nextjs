@@ -35,6 +35,7 @@ import {
     isArrayOfSliderImages,
     isRepeater,
     isArrayOfRepeater,
+    isDocument,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
@@ -234,6 +235,7 @@ export const parseAsArrayOfContentfulBreaks = parseAsType(isArrayOfContentfulBre
 export const parseAsArrayOfContentfulPages = parseAsType(isArrayOfContentfulPages);
 export const parseAsArrayOfContentfulProducts = parseAsType(isArrayOfContentfulProducts);
 export const parseAsArrayOfBreakSlots = parseAsType(isArrayOfBreakSlots);
+export const parseAsDocument = parseAsType(isDocument);
 export const parseAsArrayOfDocuments = parseAsType(isArrayOfDocuments);
 export const parseAsHero = parseAsType(isHero);
 export const parseAsArrayOfHeroes = parseAsType(isArrayOfHeroes);

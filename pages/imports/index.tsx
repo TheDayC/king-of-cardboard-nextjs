@@ -10,7 +10,7 @@ import { removeAllCategories, removeAllProductTypes } from '../../store/slices/f
 import { setAccessToken, setExpires } from '../../store/slices/global';
 import { CreateToken } from '../../types/commerce';
 import { createToken } from '../../utils/auth';
-import { pageBySlug } from '../../utils/pages';
+import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import selector from './selector';
 import { Categories, FilterMode, ProductType } from '../../enums/shop';
@@ -26,7 +26,7 @@ const DEFAULT_PRODUCTS: Product[] = [];
 
 export const getServerSideProps: GetServerSideProps = async () => {
     const accessToken = await createToken();
-    const content = await pageBySlug('imports', '');
+    const { content } = await getPageBySlug('imports', '');
 
     if (!accessToken.token) {
         return {
@@ -84,7 +84,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 interface ImportPageProps {
     accessToken: CreateToken;
-    content: Document[] | null;
+    content: Document | null;
     baseballProducts: ShallowImport[];
     basketballProducts: ShallowImport[];
     footballProducts: ShallowImport[];
@@ -124,7 +124,7 @@ export const ImportsPage: React.FC<ImportPageProps> = ({
             description="Imported sports cards at competitive market rates for the UK."
         >
             <div className="flex flex-col w-full relative">
-                {content && <Content content={content} />}
+                {content && <Content content={[content]} />}
                 <div className="flex flex-col w-full relative md:flex-row">
                     <Filters mode={FilterMode.Imports} />
                     {shouldShowRows ? (

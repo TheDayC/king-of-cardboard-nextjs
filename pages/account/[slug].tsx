@@ -9,7 +9,7 @@ import Account from '../../components/Account';
 import Content from '../../components/Content';
 import { parseAsSlug, safelyParse } from '../../utils/parsers';
 import PageWrapper from '../../components/PageWrapper';
-import { pageBySlug } from '../../utils/pages';
+import { getPageBySlug } from '../../utils/pages';
 import Custom404Page from '../404';
 import { toTitleCase } from '../../utils';
 import { calculateTokenExpiry, createToken } from '../../utils/auth';
@@ -23,7 +23,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const slug = safelyParse(context, 'query.slug', parseAsSlug, null);
     const accessToken = await createToken();
     const providers = await getProviders();
-    const content = await pageBySlug(slug, 'account/');
+    const { content } = await getPageBySlug(slug, 'account/');
+    const should404 = !slug || !content;
 
     // If session hasn't been established redirect to the login page.
     if (!session) {
@@ -38,7 +39,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     // If we're signed in then decide whether we should show the page or 404.
     return {
         props: {
-            errorCode: !slug || !content ? 404 : null,
+            errorCode: should404 ? 404 : null,
             slug,
             content,
             accessToken,
@@ -50,7 +51,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 interface AccountSubPageProps {
     errorCode: number | null;
     slug: string | null;
-    content: Document[] | null;
+    content: Document | null;
     accessToken: CreateToken;
     providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null;
 }
@@ -94,7 +95,7 @@ export const AccountSubPage: React.FC<AccountSubPageProps> = ({ errorCode, slug,
                         </React.Fragment>
                     ) : (
                         <React.Fragment>
-                            <Content content={content} />
+                            <Content content={[content]} />
                             <Account slug={slug} />
                         </React.Fragment>
                     )}

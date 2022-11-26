@@ -12,7 +12,7 @@ import { removeAllProductTypes, setUrlProductType } from '../../store/slices/fil
 import { createToken } from '../../utils/auth';
 import { CreateToken } from '../../types/commerce';
 import { setAccessToken, setExpires } from '../../store/slices/global';
-import { pageBySlug } from '../../utils/pages';
+import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import { Categories, FilterMode, ProductType } from '../../enums/shop';
 import { getProducts } from '../../utils/products';
@@ -41,7 +41,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     const shopType = safelyParse(context, 'query.type', parseAsProductType, null);
-    const content = await pageBySlug(shopType, 'shop/');
+    const { content } = await getPageBySlug(shopType, 'shop/');
     const { products, count } = await getProducts(
         accessToken.token,
         LIMIT,
@@ -65,7 +65,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 interface ShopTypeProps {
     shopType: ProductType | null;
     accessToken: CreateToken;
-    content: Document[] | null;
+    content: Document | null;
     products: Product[] | null;
     count: number;
 }
@@ -99,7 +99,7 @@ export const ShopType: React.FC<ShopTypeProps> = ({ shopType, accessToken, conte
             description={`${caseChangedShopType} cards, sealed product and memorabilia.`}
         >
             <div className="flex flex-col w-full relative">
-                {content && <Content content={content} />}
+                {content && <Content content={[content]} />}
                 <div className="flex flex-col w-full relative md:flex-row">
                     <Filters mode={FilterMode.Products} />
                     <Grid mode={FilterMode.Products} />
