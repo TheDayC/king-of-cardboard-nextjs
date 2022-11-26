@@ -42,9 +42,6 @@ const globalSlice = createSlice({
         setSessionEmail(state, action) {
             state.sessionEmail = action.payload;
         },
-        setShowNewsBanner(state, action) {
-            state.showNewsBanner = action.payload;
-        },
         setIsDrawerOpen(state, action) {
             state.isDrawerOpen = action.payload;
         },

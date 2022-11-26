@@ -13,7 +13,6 @@ import Rewards from './Rewards';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import NavBar from './Navbar';
 import CartIcon from './CartIcon';
-import NewsBanner from './NewsBanner';
 import { setIsDrawerOpen, setUserId, setUserToken } from '../../store/slices/global';
 import { Slugs } from '../../enums/account';
 //import IssueBanner from './IssueBanner';
@@ -172,7 +171,6 @@ export const Header: React.FC = () => {
                     )}
                 </div>
             </div>
-            <NewsBanner />
             {/* <IssueBanner /> */}
         </React.Fragment>
     );
