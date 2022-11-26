@@ -79,7 +79,6 @@ export const {
     setCheckoutLoading,
     setHasRejected,
     setSessionEmail,
-    setShowNewsBanner,
     setUserToken,
     setUserTokenExpiry,
     setUserId,

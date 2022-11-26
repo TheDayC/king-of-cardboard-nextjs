@@ -41,7 +41,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ errorCode, content, slug }
             title={`${prettySlug} - Legal - King of Cardboard`}
             description="Legal information for King of Cardboard."
         >
-            <Content content={content} />
+            <Content content={[content]} />
         </PageWrapper>
     );
 };
