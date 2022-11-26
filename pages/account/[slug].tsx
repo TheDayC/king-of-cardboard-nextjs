@@ -58,9 +58,7 @@ interface AccountSubPageProps {
 
 export const AccountSubPage: React.FC<AccountSubPageProps> = ({ errorCode, slug, content, accessToken, providers }) => {
     const dispatch = useDispatch();
-    const { userTokenExpiry } = useSelector(selector);
     const prettySlug = slug ? toTitleCase(slug.replaceAll('-', ' ')) : '';
-    const hasUserExpired = calculateTokenExpiry(userTokenExpiry);
 
     useEffect(() => {
         dispatch(setAccessToken(accessToken.token));
@@ -75,30 +73,8 @@ export const AccountSubPage: React.FC<AccountSubPageProps> = ({ errorCode, slug,
         <PageWrapper title={`${prettySlug} - Account - King of Cardboard`} description="Account page">
             <div className="flex flex-col md:flex-row w-full justify-start items-start">
                 <div className="flex flex-col relative w-full px-2 py-0 md:px-4 md md:px-8">
-                    {hasUserExpired ? (
-                        <React.Fragment>
-                            <h1 className="text-3xl mb-4">Session Expired</h1>
-                            <p>
-                                Your user session has expired, please login with your account details again to continue.
-                            </p>
-                            <div className="flex flex-col w-full justify-center items-center">
-                                <div className="flex flex-col w-full md:w-1/2 lg:w-1/3 card text-center rounded-md md:shadow-2xl">
-                                    <div className="card-body p-2 lg:p-6">
-                                        <Login
-                                            providers={providers}
-                                            showRegistrationSuccess={false}
-                                            shouldRedirect={false}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </React.Fragment>
-                    ) : (
-                        <React.Fragment>
-                            <Content content={[content]} />
-                            <Account slug={slug} />
-                        </React.Fragment>
-                    )}
+                    <Content content={[content]} />
+                    <Account slug={slug} />
                 </div>
             </div>
         </PageWrapper>

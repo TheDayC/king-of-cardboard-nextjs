@@ -117,14 +117,3 @@ export async function createUserToken(emailAddress: string, password: string): P
         expiry: null,
     };
 }
-
-export function calculateTokenExpiry(expires: string | null): boolean {
-    const currentDate = DateTime.now().setZone('Europe/London');
-    const expiryDate = DateTime.fromISO(expires || currentDate.toISO(), { zone: 'Europe/London' });
-
-    if (!expires) {
-        return true;
-    }
-
-    return currentDate > expiryDate;
-}
