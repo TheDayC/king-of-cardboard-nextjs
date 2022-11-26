@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
-import TwitchProvider from 'next-auth/providers/twitch';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { isAxiosError } from 'axios';
@@ -21,6 +20,8 @@ import { gaEvent } from '../../../utils/ga';
 
 const isDev = process.env.NODE_ENV === 'development';
 const databaseName = isDev ? 'kingofcardboard' : 'kingofcardboard_live';
+const publicURL = process.env.NEXT_PUBLIC_SITE_URL || '';
+const secret = process.env.JWT_SECRET || '';
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     return await NextAuth(req, res, {
@@ -104,12 +105,8 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                 clientId: process.env.GOOGLE_ID || '',
                 clientSecret: process.env.GOOGLE_SECRET || '',
             }),
-            /* TwitchProvider({
-                clientId: process.env.TWITCH_CLIENT_ID || '',
-                clientSecret: process.env.TWITCH_CLIENT_SECRET || '',
-            }), */
         ],
-        secret: process.env.JWT_SECRET,
+        secret,
         session: {
             // Choose how you want to save the user session.
             // The default is `"jwt"`, an encrypted JWT (JWE) in the session cookie.
@@ -129,16 +126,16 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
         },
         jwt: {
             // A secret to use for key generation. Defaults to the top-level `secret`.
-            secret: process.env.JWT_SECRET,
+            secret,
             // The maximum age of the NextAuth.js issued JWT in seconds.
             // Defaults to `session.maxAge`.
             maxAge: 60 * 60 * 24 * 30,
         },
         pages: {
-            signIn: `${process.env.NEXT_PUBLIC_SITE_URL || ''}/account`,
-            signOut: `${process.env.NEXT_PUBLIC_SITE_URL || ''}/login?signedOut=true`,
-            error: `${process.env.NEXT_PUBLIC_SITE_URL || ''}/login`, // Error code passed in query string as ?error=
-            newUser: `${process.env.NEXT_PUBLIC_SITE_URL || ''}/account`,
+            signIn: `${publicURL}/account`,
+            signOut: `${publicURL}/login?signedOut=true`,
+            error: `${publicURL}/login`, // Error code passed in query string as ?error=
+            newUser: `${publicURL}/account`,
         },
         callbacks: {
             async signIn({ user, email, credentials }) {
