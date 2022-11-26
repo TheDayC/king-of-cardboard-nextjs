@@ -10,7 +10,7 @@ export const Google: React.FC = () => {
     return (
         <button
             type="submit"
-            className="btn btn-block btn-ghost rounded-md text-base-content shadow-sm shadow-neutral hover:shadow-md hover:shadow-neutral"
+            className="btn btn-block btn-ghost rounded-md text-base-content shadow-sm shadow-neutral"
             onClick={handleGoogleLogin}
         >
             <FcGoogle className="inline-block w-6 h-6 mr-2" />
