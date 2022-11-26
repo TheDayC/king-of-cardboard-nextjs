@@ -1,17 +1,10 @@
-import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
-import {
-    parseAsArrayOfStrings,
-    parseAsBoolean,
-    parseAsNumber,
-    parseAsString,
-    safelyParse,
-} from '../../../utils/parsers';
+import { parseAsNumber, safelyParse } from '../../../utils/parsers';
 
-const defaultErr = 'Product could not be added.';
+const defaultErr = 'Could not find any products.';
 
 async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'GET') {
@@ -26,7 +19,7 @@ async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<
             const productList = await productsCollection.find().skip(page).limit(count).toArray();
 
             if (productList.length === 0) {
-                res.status(400).json({ message: 'Could not find any products.' });
+                res.status(400).json({ message: defaultErr });
                 return;
             }
 
