@@ -101,10 +101,10 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                 clientId: process.env.GOOGLE_ID || '',
                 clientSecret: process.env.GOOGLE_SECRET || '',
             }),
-            TwitchProvider({
+            /* TwitchProvider({
                 clientId: process.env.TWITCH_CLIENT_ID || '',
                 clientSecret: process.env.TWITCH_CLIENT_SECRET || '',
-            }),
+            }), */
         ],
         secret: process.env.JWT_SECRET,
         session: {
