@@ -5,7 +5,9 @@ import TwitchProvider from 'next-auth/providers/twitch';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { isAxiosError } from 'axios';
+import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 
+import clientPromise from '../../../lib/mongodb';
 import { connectToDatabase } from '../../../middleware/database';
 import {
     parseAsArrayOfCommerceLayerErrors,
@@ -15,9 +17,10 @@ import {
     safelyParse,
 } from '../../../utils/parsers';
 import { authClient, userClient } from '../../../utils/auth';
-//import clientPromise from '../../../lib/mongodb';
-//import { MongoDBAdapter } from '../../../lib/mongoAdapter';
 import { gaEvent } from '../../../utils/ga';
+
+const isDev = process.env.NODE_ENV === 'development';
+const databaseName = isDev ? 'kingofcardboard' : 'kingofcardboard_live';
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     return await NextAuth(req, res, {
@@ -314,7 +317,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                 return token;
             },
         },
-        //adapter: MongoDBAdapter(clientPromise),
+        adapter: MongoDBAdapter(clientPromise, { databaseName }),
         debug: false,
     });
 }
