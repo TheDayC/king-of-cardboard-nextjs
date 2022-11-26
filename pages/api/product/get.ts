@@ -4,10 +4,10 @@ import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 
-const defaultErr = 'Product could not be updated.';
+const defaultErr = 'Could not find product.';
 
-async function deleteProduct(req: NextApiRequest, res: NextApiResponse): Promise<void> {
-    if (req.method === 'DELETE') {
+async function getProduct(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+    if (req.method === 'GET') {
         try {
             const { db } = await connectToDatabase();
 
@@ -20,9 +20,7 @@ async function deleteProduct(req: NextApiRequest, res: NextApiResponse): Promise
                 return;
             }
 
-            await productsCollection.deleteOne({ sku });
-
-            res.status(204).end();
+            res.status(200).json(existingProduct);
         } catch (err: unknown) {
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);
 
@@ -33,4 +31,4 @@ async function deleteProduct(req: NextApiRequest, res: NextApiResponse): Promise
     }
 }
 
-export default deleteProduct;
+export default getProduct;

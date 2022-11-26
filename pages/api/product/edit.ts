@@ -55,7 +55,7 @@ async function editProduct(req: NextApiRequest, res: NextApiResponse): Promise<v
                 }
             );
 
-            res.status(201).end();
+            res.status(204).end();
         } catch (err: unknown) {
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);
 
