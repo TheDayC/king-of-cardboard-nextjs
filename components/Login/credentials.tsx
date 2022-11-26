@@ -33,6 +33,8 @@ export const Credentials: React.FC<CredentialsProps> = ({ shouldRedirect }) => {
     const emailErr = safelyParse(errors, 'emailAddress.message', parseAsString, null);
     const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
     const dispatch = useDispatch();
+    const btnErrClass = hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary';
+    const btnLoadingClass = loading ? ' loading btn-square' : '';
 
     const onSubmit = async (data: Submit) => {
         const { emailAddress, password } = data;
@@ -104,12 +106,7 @@ export const Credentials: React.FC<CredentialsProps> = ({ shouldRedirect }) => {
                 </label>
             </div>
             <div className="form-control mt-6">
-                <button
-                    type="submit"
-                    className={`btn btn-block rounded-md${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'}${
-                        loading ? ' loading btn-square' : ''
-                    }`}
-                >
+                <button type="submit" className={`btn btn-block rounded-md${btnErrClass}${btnLoadingClass}`}>
                     {loading ? '' : 'Log In'}
                 </button>
             </div>
