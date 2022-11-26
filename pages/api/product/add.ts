@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
@@ -21,6 +22,7 @@ async function addProduct(req: NextApiRequest, res: NextApiResponse): Promise<vo
             const productsCollection = db.collection('products');
             const sku = safelyParse(req, 'body.sku', parseAsString, null);
             const existingProduct = await productsCollection.findOne({ sku });
+            const currentDate = DateTime.now().setZone('Europe/London');
 
             if (existingProduct) {
                 res.status(400).json({ message: 'Product already exists.' });
@@ -29,8 +31,8 @@ async function addProduct(req: NextApiRequest, res: NextApiResponse): Promise<vo
 
             await productsCollection.insertOne({
                 sku: safelyParse(req, 'body.sku', parseAsString, null),
-                created: safelyParse(req, 'body.created', parseAsString, null),
-                lastUpdated: safelyParse(req, 'body.lastUpdated', parseAsString, null),
+                created: currentDate.toISO(),
+                lastUpdated: currentDate.toISO(),
                 userId: new ObjectId(safelyParse(req, 'body.userId', parseAsString, '')),
                 title: safelyParse(req, 'body.title', parseAsString, null),
                 slug: safelyParse(req, 'body.slug', parseAsString, null),
