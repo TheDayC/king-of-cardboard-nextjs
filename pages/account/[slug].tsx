@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { GetServerSideProps } from 'next';
 import { getSession, getProviders, LiteralUnion, ClientSafeProvider } from 'next-auth/react';
 import { Document } from '@contentful/rich-text-types';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { BuiltInProviderType } from 'next-auth/providers';
 
 import Account from '../../components/Account';
@@ -12,11 +12,9 @@ import PageWrapper from '../../components/PageWrapper';
 import { getPageBySlug } from '../../utils/pages';
 import Custom404Page from '../404';
 import { toTitleCase } from '../../utils';
-import { calculateTokenExpiry, createToken } from '../../utils/auth';
+import { createToken } from '../../utils/auth';
 import { CreateToken } from '../../types/commerce';
 import { setAccessToken, setExpires } from '../../store/slices/global';
-import Login from '../../components/Login';
-import selector from './selector';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
