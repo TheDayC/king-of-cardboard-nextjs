@@ -5,14 +5,14 @@ import { Document } from '@contentful/rich-text-types';
 import PageWrapper from '../../components/PageWrapper';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import Custom404Page from '../404';
-import { pageBySlug } from '../../utils/pages';
+import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import { toTitleCase } from '../../utils';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const slug = safelyParse(context, 'query.slug', parseAsString, null);
 
-    const content = await pageBySlug(slug, 'legal/');
+    const { content } = await getPageBySlug(slug, 'legal/');
 
     return {
         props: {
@@ -25,7 +25,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 interface LegalPageProps {
     errorCode: number | null;
-    content: Document[] | null;
+    content: Document | null;
     slug: string | null;
 }
 
@@ -41,7 +41,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ errorCode, content, slug }
             title={`${prettySlug} - Legal - King of Cardboard`}
             description="Legal information for King of Cardboard."
         >
-            <Content content={content} />
+            <Content content={[content]} />
         </PageWrapper>
     );
 };

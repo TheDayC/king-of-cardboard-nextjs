@@ -87,3 +87,7 @@
 .react-slideshow-container .default-nav:last-of-type {
     margin-right: 20px;
 }
+
+.input:focus {
+    outline-offset: 0px;
+}

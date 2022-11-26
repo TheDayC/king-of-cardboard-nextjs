@@ -13,7 +13,6 @@ import Rewards from './Rewards';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import NavBar from './Navbar';
 import CartIcon from './CartIcon';
-import NewsBanner from './NewsBanner';
 import { setIsDrawerOpen, setUserId, setUserToken } from '../../store/slices/global';
 import { Slugs } from '../../enums/account';
 //import IssueBanner from './IssueBanner';
@@ -39,7 +38,7 @@ export const Header: React.FC = () => {
 
     return (
         <React.Fragment>
-            <div className="navbar shadow-md bg-neutral text-neutral-content">
+            <div className="navbar bg-neutral text-neutral-content border-b-4 border-primary">
                 <div className="navbar-start">
                     <label className="text-2xl px-2 lg:hidden" onClick={handleDrawerClick}>
                         <AiOutlineMenu />
@@ -172,7 +171,6 @@ export const Header: React.FC = () => {
                     )}
                 </div>
             </div>
-            <NewsBanner />
             {/* <IssueBanner /> */}
         </React.Fragment>
     );

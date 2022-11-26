@@ -6,10 +6,8 @@ import { purgeStoredState } from 'redux-persist';
 
 import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect';
 import selector from './selector';
-import { fetchToken } from '../../store/slices/global';
 import { createCLOrder } from '../../store/slices/cart';
 import { persistConfig } from '../../store';
-import { calculateTokenExpiry } from '../../utils/auth';
 
 function calculateOrderExpiry(orderExpiry: string | null): boolean {
     const currentDate = DateTime.now().setZone('Europe/London');

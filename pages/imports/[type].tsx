@@ -12,7 +12,7 @@ import { removeAllProductTypes, setUrlProductType } from '../../store/slices/fil
 import { createToken } from '../../utils/auth';
 import { CreateToken } from '../../types/commerce';
 import { setAccessToken, setExpires } from '../../store/slices/global';
-import { pageBySlug } from '../../utils/pages';
+import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import { Categories, FilterMode, ProductType } from '../../enums/shop';
 import { setImportsAndCount, setIsLoadingImports } from '../../store/slices/imports';
@@ -42,7 +42,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     const shopType = safelyParse(context, 'query.type', parseAsProductType, null);
-    const content = await pageBySlug(shopType, 'shop/');
+    const { content } = await getPageBySlug(slug, 'shop/');
     const { imports, count } = await getShallowImports(accessToken.token, LIMIT, SKIP, CATEGORIES, [slug]);
 
     return {

@@ -2,8 +2,9 @@ import { Document } from '@contentful/rich-text-types';
 
 export interface ContentfulPage {
     title: string;
-    content: Document;
-    sliderCollection: SliderCollection;
+    slug: string;
+    content: Document | null;
+    sliderCollection: SliderCollection | null;
     hero: Hero[];
 }
 

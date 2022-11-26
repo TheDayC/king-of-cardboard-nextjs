@@ -10,7 +10,7 @@ import { removeAllCategories, removeAllProductTypes } from '../../store/slices/f
 import { setAccessToken, setExpires } from '../../store/slices/global';
 import { CreateToken } from '../../types/commerce';
 import { createToken } from '../../utils/auth';
-import { pageBySlug } from '../../utils/pages';
+import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import selector from './selector';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
@@ -25,7 +25,7 @@ const DEFAULT_PRODUCTS: Product[] = [];
 
 export const getServerSideProps: GetServerSideProps = async () => {
     const accessToken = await createToken();
-    const content = await pageBySlug('shop', '');
+    const { content } = await getPageBySlug('shop', '');
 
     if (!accessToken.token) {
         return {
@@ -83,7 +83,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 interface ShopProps {
     accessToken: CreateToken;
-    content: Document[] | null;
+    content: Document | null;
     baseballProducts: ShallowProduct[];
     basketballProducts: ShallowProduct[];
     footballProducts: ShallowProduct[];
@@ -123,7 +123,7 @@ export const ShopPage: React.FC<ShopProps> = ({
             description="A broad selection of sports cards products for the UK."
         >
             <div className="flex flex-col w-full relative">
-                {content && <Content content={content} />}
+                {content && <Content content={[content]} />}
                 <div className="flex flex-col w-full relative md:flex-row">
                     <Filters mode={FilterMode.Products} />
                     {shouldShowRows ? (

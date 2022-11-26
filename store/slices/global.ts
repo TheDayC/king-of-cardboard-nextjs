@@ -42,9 +42,6 @@ const globalSlice = createSlice({
         setSessionEmail(state, action) {
             state.sessionEmail = action.payload;
         },
-        setShowNewsBanner(state, action) {
-            state.showNewsBanner = action.payload;
-        },
         setIsDrawerOpen(state, action) {
             state.isDrawerOpen = action.payload;
         },
@@ -82,7 +79,6 @@ export const {
     setCheckoutLoading,
     setHasRejected,
     setSessionEmail,
-    setShowNewsBanner,
     setUserToken,
     setUserTokenExpiry,
     setUserId,
