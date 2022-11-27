@@ -86,3 +86,9 @@ export interface BreakStatuses {
     isLive: boolean;
     isComplete: boolean;
 }
+
+/* Admin Panel */
+/* export interface Slot {
+    title: string;
+    image: string;
+} */
