@@ -5,7 +5,7 @@ import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 
-const defaultErr = 'Shipping could not be added.';
+const defaultErr = 'Shipping method could not be added.';
 
 async function addShipping(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
@@ -18,7 +18,7 @@ async function addShipping(req: NextApiRequest, res: NextApiResponse): Promise<v
             const currentDate = DateTime.now().setZone('Europe/London');
 
             if (existingShipping) {
-                res.status(400).json({ message: 'Shipping already exists.' });
+                res.status(400).json({ message: 'Shipping method already exists.' });
                 return;
             }
 
