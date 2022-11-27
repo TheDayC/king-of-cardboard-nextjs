@@ -4,13 +4,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
-import {
-    parseAsArrayOfStrings,
-    parseAsBoolean,
-    parseAsNumber,
-    parseAsString,
-    safelyParse,
-} from '../../../utils/parsers';
+import { parseAsBoolean, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 
 const defaultErr = 'Order could not be updated.';
 
