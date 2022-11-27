@@ -64,6 +64,10 @@ export function isArrayOfStrings(candidate: unknown): candidate is string[] {
     return isArray(candidate) && typeof candidate[0] === 'string';
 }
 
+export function isArrayOfNumbers(candidate: unknown): candidate is number[] {
+    return isArray(candidate) && typeof candidate[0] === 'number';
+}
+
 export function isLineItemRelationship(candidate: unknown): candidate is CommerceLayerLineItemRelationship {
     return isNotNullOrUndefined<object>(candidate) && 'id' in candidate;
 }
