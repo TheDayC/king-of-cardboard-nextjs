@@ -27,8 +27,8 @@ async function editProductType(req: NextApiRequest, res: NextApiResponse): Promi
                 { _id: new ObjectId(id) },
                 {
                     $set: {
-                        title: safelyParse(req, 'body.title', parseAsString, null),
-                        slug: safelyParse(req, 'body.slug', parseAsString, null),
+                        title: safelyParse(req, 'body.title', parseAsString, existingProductType.title),
+                        slug: safelyParse(req, 'body.slug', parseAsString, existingProductType.slug),
                         created: existingProductType.created,
                         lastUpdated: currentDate.toISO(),
                     },
