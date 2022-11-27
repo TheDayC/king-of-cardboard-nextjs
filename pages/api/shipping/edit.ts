@@ -6,7 +6,7 @@ import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 
-const defaultErr = 'Shipping could not be updated.';
+const defaultErr = 'Shipping method could not be updated.';
 
 async function editShipping(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'PUT') {
@@ -19,7 +19,7 @@ async function editShipping(req: NextApiRequest, res: NextApiResponse): Promise<
             const currentDate = DateTime.now().setZone('Europe/London');
 
             if (!existingProductType) {
-                res.status(400).json({ message: 'Shipping does not exist.' });
+                res.status(400).json({ message: 'Shipping method does not exist.' });
                 return;
             }
 
