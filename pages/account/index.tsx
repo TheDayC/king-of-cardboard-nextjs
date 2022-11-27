@@ -7,6 +7,7 @@ import Content from '../../components/Content';
 import PageWrapper from '../../components/PageWrapper';
 import { getPageBySlug } from '../../utils/pages';
 import Custom404Page from '../404';
+import AccountWrapper from '../../components/AccountWrapper';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
@@ -38,13 +39,13 @@ export const AccountPage: React.FC<AccountPageProps> = ({ content }) => {
     }
 
     return (
-        <PageWrapper title="Account - King of Cardboard" description="Account page">
+        <AccountWrapper title="Account - King of Cardboard" description="Account page">
             <div className="flex flex-col md:flex-row w-full justify-start items-start">
                 <div className="flex flex-col relative w-full px-2 py-0 md:w-3/4 md:px-4 md:px-8" data-testid="content">
                     {content && <Content content={[content]} />}
                 </div>
             </div>
-        </PageWrapper>
+        </AccountWrapper>
     );
 };
 
