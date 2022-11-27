@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { connectToDatabase } from '../../../middleware/database';
-import { errorHandler } from '../../../middleware/errors';
-import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
+import { connectToDatabase } from '../../../../middleware/database';
+import { errorHandler } from '../../../../middleware/errors';
+import { parseAsNumber, parseAsString, safelyParse } from '../../../../utils/parsers';
 
 const defaultErr = 'Sport could not be deleted.';
 

@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { connectToDatabase } from '../../../middleware/database';
-import { errorHandler } from '../../../middleware/errors';
-import { parseAsNumber, safelyParse } from '../../../utils/parsers';
+import { connectToDatabase } from '../../../../middleware/database';
+import { errorHandler } from '../../../../middleware/errors';
+import { parseAsNumber, safelyParse } from '../../../../utils/parsers';
 
 const defaultErr = 'Could not find any sports.';
 
