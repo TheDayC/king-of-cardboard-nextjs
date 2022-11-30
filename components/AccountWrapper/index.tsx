@@ -4,9 +4,6 @@ import Cookies from 'js-cookie';
 import Head from 'next/head';
 import { useSelector } from 'react-redux';
 
-import Header from '../Header';
-import Footer from '../Footer';
-import GDPR from '../GDPR';
 import * as ga from '../../lib/ga';
 import selector from './selector';
 import Loading from '../Loading';
