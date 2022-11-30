@@ -66,8 +66,8 @@ export const AccountWrapper: React.FC<AccountWrapperProps> = ({ title, descripti
             {isFetchingToken ? (
                 <Loading show={true} />
             ) : (
-                <div className="flex flex-row justify-start items-start bg-primary-content">
-                    <div className="w-1/6 bg-neutral py-2">
+                <div className="flex flex-row justify-start items-start bg-primary-content h-full">
+                    <div className="w-1/6 bg-neutral py-2 h-full">
                         <Sidebar />
                     </div>
                     <div className="grow">{children}</div>
