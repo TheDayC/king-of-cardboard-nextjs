@@ -41,7 +41,7 @@ export const Credentials: React.FC<CredentialsProps> = ({ shouldRedirect }) => {
 
         setLoading(true);
 
-        const hasSignedIn = await signIn('credentials', { emailAddress, password, redirect: true });
+        const hasSignedIn = await signIn('credentials', { emailAddress, password, redirect: false });
         const formErr = safelyParse(hasSignedIn, 'error', parseAsString, null);
         setError(formErr ? 'Log in details incorrect.' : null);
 

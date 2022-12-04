@@ -57,7 +57,7 @@ async function getUserDetails(email: string): Promise<User | null> {
             name: user.name,
             email: user.email,
             image: user.image,
-            emailVerified: user.email_verified,
+            emailVerified: user.emailVerified,
             role: user.role,
             instagram: user.instagram,
             twitter: user.twitter,
@@ -98,7 +98,7 @@ export const authOptions: NextAuthOptions = {
             async authorize(credentials) {
                 // Connect to MongoDB.
                 const { db } = await connectToDatabase();
-                const collection = db.collection('users');
+                const userCollection = db.collection('users');
 
                 // Parse credentials.
                 const name = safelyParse(credentials, 'displayName', parseAsString, '');
@@ -112,10 +112,21 @@ export const authOptions: NextAuthOptions = {
 
                 try {
                     // Try and find the user.
-                    const user = await collection.findOne({ email });
+                    const existingUser = await userCollection.findOne({ email });
 
                     // If the user email doesn't exist then add them to the database.
-                    if (user) {
+                    if (existingUser) {
+                        // Check passwords match
+                        const doesPasswordMatch = await bcrypt.compare(password, existingUser.password);
+
+                        if (!doesPasswordMatch) throw new Error('Password incorrect.');
+
+                        return {
+                            id: existingUser._id.toString(),
+                            email,
+                            role: existingUser.role,
+                        };
+                    } else {
                         // Encrypt the user's password.
                         const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -126,29 +137,23 @@ export const authOptions: NextAuthOptions = {
                             ...defaultUserDetails,
                         };
 
-                        const user = await collection.insertOne(userDocument);
+                        const newUser = await userCollection.insertOne(userDocument);
 
-                        if (user) {
-                            // Build other user related items in the DB on register.
-                            await setUpUserExtras(email);
+                        // Build other user related items in the DB on register.
+                        await setUpUserExtras(email);
 
-                            gaEvent('registration', { email });
+                        gaEvent('registration', { email });
 
-                            return {
-                                id: user.insertedId.toString(),
-                                email,
-                                password,
-                                ...defaultUserDetails,
-                            };
-                        } else {
-                            gaEvent('failedRegistration', { email });
-                        }
+                        return {
+                            id: newUser.insertedId.toString(),
+                            email,
+                            password,
+                            ...defaultUserDetails,
+                        };
                     }
-
-                    return null;
                 } catch (error) {
                     gaEvent('failedRegistration', { email });
-                    throw new Error('Unable to register user.');
+                    throw new Error(error as string);
                 }
             },
         }),
@@ -187,6 +192,8 @@ export const authOptions: NextAuthOptions = {
     ],
     secret,
     session: {
+        strategy: 'jwt',
+
         // Seconds - How long until an idle session expires and is no longer valid.
         maxAge: 30 * 24 * 60 * 60, // 30 days
 
@@ -209,29 +216,8 @@ export const authOptions: NextAuthOptions = {
         newUser: `${publicURL}/account`,
     },
     callbacks: {
-        async signIn({ user, credentials }) {
-            const { db } = await connectToDatabase();
-            const userCollection = db.collection('users');
+        async signIn({ user }) {
             const email = safelyParse(user, 'email', parseAsString, '');
-            const password = safelyParse(user, 'password', parseAsString, null);
-
-            // If the user provides credentials then we have a manual login to perform.
-            if (credentials) {
-                try {
-                    // Ensure the user submits valid email and password.
-                    if (!email || !password) throw new Error('Email or password missing.');
-
-                    // Reject user if their credentials don't exist.
-                    const user = await userCollection.findOne({ email });
-                    if (!user) throw new Error('User does not exist, please register first.');
-
-                    // Check passwords match
-                    const doesPasswordMatch = await bcrypt.compare(password, user.password);
-                    if (!doesPasswordMatch) throw new Error('Password incorrect.');
-                } catch (error) {
-                    throw new Error(error as string);
-                }
-            }
 
             // Set the user lastLoggedIn value
             await setUserLoginDate(email);

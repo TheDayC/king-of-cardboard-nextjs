@@ -1,15 +1,16 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/react';
 import { Document } from '@contentful/rich-text-types';
+import { unstable_getServerSession } from 'next-auth';
 
 import Content from '../../components/Content';
 import { getPageBySlug } from '../../utils/pages';
 import Custom404Page from '../404';
 import AccountWrapper from '../../components/AccountWrapper';
+import { authOptions } from '../api/auth/[...nextauth]';
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await getSession(context);
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+    const session = await unstable_getServerSession(req, res, authOptions);
     const { content } = await getPageBySlug('account', '');
 
     if (!session) {
