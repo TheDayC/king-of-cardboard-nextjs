@@ -64,10 +64,10 @@ export const AccountWrapper: React.FC<AccountWrapperProps> = ({ title, descripti
                 <Loading show={true} />
             ) : (
                 <div className="flex flex-row justify-start items-start bg-primary-content h-full">
-                    <div className="w-1/6 bg-neutral py-2 h-full">
+                    <div className="w-80 bg-neutral py-2 h-full">
                         <Sidebar />
                     </div>
-                    <div className="grow">{children}</div>
+                    <div className="w-full">{children}</div>
                 </div>
             )}
         </React.Fragment>
