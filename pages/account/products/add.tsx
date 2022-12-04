@@ -28,11 +28,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     };
 };
 
-interface ProductsPageProps {
-    products: ProductType[];
-    count: number;
-}
-
 export const AddProductsPage: React.FC = () => {
     return (
         <AccountWrapper title="Products - Account - King of Cardboard" description="Account page">
