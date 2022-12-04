@@ -6,6 +6,7 @@ interface InputFieldProps {
     instruction: string;
     placeholder: string;
     fieldName: string;
+    fieldType?: string;
     error: string | null;
     register: UseFormRegister<FieldValues>;
     Icon: IconType;
@@ -15,6 +16,7 @@ export const InputField: React.FC<InputFieldProps> = ({
     instruction,
     placeholder,
     fieldName,
+    fieldType = 'text',
     error,
     register,
     Icon,
@@ -26,7 +28,7 @@ export const InputField: React.FC<InputFieldProps> = ({
                     <Icon className="w-5 h-5" />
                 </span>
                 <input
-                    type="text"
+                    type={fieldType}
                     placeholder={placeholder}
                     {...register(fieldName, {
                         required: { value: true, message: instruction },
