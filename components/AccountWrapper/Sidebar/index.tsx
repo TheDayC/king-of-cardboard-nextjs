@@ -5,14 +5,17 @@ import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { BiArrowBack } from 'react-icons/bi';
 import { MdOutlineAccountCircle } from 'react-icons/md';
+import { toSvg } from 'jdenticon';
+import md5 from 'md5';
+import { useDispatch } from 'react-redux';
 
 import logo from '../../../images/logo-full.png';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
-import { toSvg } from 'jdenticon';
-import md5 from 'md5';
 import { Slugs } from '../../../enums/account';
+import { setUserId, setUserToken } from '../../../store/slices/global';
 
 export const Sidebar: React.FC = () => {
+    const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
     const { data: session } = useSession();
     const router = useRouter();
@@ -24,6 +27,12 @@ export const Sidebar: React.FC = () => {
 
     const handleAccountClick = () => {
         setIsOpen(!isOpen);
+    };
+
+    const handleLogout = () => {
+        dispatch(setUserToken(null));
+        dispatch(setUserId(null));
+        signOut();
     };
 
     return (
@@ -44,7 +53,7 @@ export const Sidebar: React.FC = () => {
                 </li>
             </ul>
             <div className="flex flex-col">
-                <div className={`${isOpen ? 'h-72' : 'h-0'} overflow-hidden transition-all duration-500`}>
+                <div className={`${isOpen ? 'accountMenuHeight' : 'h-0'} overflow-hidden transition-all duration-500`}>
                     <ul className="menu menu-vertical">
                         <li
                             className={`${
@@ -128,6 +137,16 @@ export const Sidebar: React.FC = () => {
                             >
                                 Achievements
                             </Link>
+                        </li>
+                        <li
+                            className={`${
+                                slug === Slugs.Achievements ? 'bordered' : 'hover-bordered'
+                            } text-white hover:bg-neutral-focus`}
+                            role="menuitem"
+                        >
+                            <a onClick={handleLogout} data-testid="logout">
+                                Log Out
+                            </a>
                         </li>
                     </ul>
                 </div>

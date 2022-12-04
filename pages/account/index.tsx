@@ -4,7 +4,6 @@ import { getSession } from 'next-auth/react';
 import { Document } from '@contentful/rich-text-types';
 
 import Content from '../../components/Content';
-import PageWrapper from '../../components/PageWrapper';
 import { getPageBySlug } from '../../utils/pages';
 import Custom404Page from '../404';
 import AccountWrapper from '../../components/AccountWrapper';

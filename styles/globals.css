@@ -91,3 +91,7 @@
 .input:focus {
     outline-offset: 0px;
 }
+
+.accountMenuHeight {
+    height: 21rem;
+}
