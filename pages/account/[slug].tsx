@@ -8,7 +8,7 @@ import { BuiltInProviderType } from 'next-auth/providers';
 import Account from '../../components/Account';
 import Content from '../../components/Content';
 import { parseAsSlug, safelyParse } from '../../utils/parsers';
-import PageWrapper from '../../components/PageWrapper';
+import AccountWrapper from '../../components/AccountWrapper';
 import { getPageBySlug } from '../../utils/pages';
 import Custom404Page from '../404';
 import { toTitleCase } from '../../utils';
@@ -68,14 +68,14 @@ export const AccountSubPage: React.FC<AccountSubPageProps> = ({ errorCode, slug,
     }
 
     return (
-        <PageWrapper title={`${prettySlug} - Account - King of Cardboard`} description="Account page">
-            <div className="flex flex-col md:flex-row w-full justify-start items-start">
-                <div className="flex flex-col relative w-full px-2 py-0 md:px-4 md md:px-8">
+        <AccountWrapper title={`${prettySlug} - Account - King of Cardboard`} description="Account page">
+            <div className="flex flex-col md:flex-row w-full justify-start items-start p-2 md:p-4 md:p-8">
+                <div className="flex flex-col relative">
                     <Content content={[content]} />
                     <Account slug={slug} />
                 </div>
             </div>
-        </PageWrapper>
+        </AccountWrapper>
     );
 };
 
