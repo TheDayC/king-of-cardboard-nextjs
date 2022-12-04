@@ -1,15 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useSession } from 'next-auth/react';
+import React from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import { useRouter } from 'next/router';
-import ProductField from './Field';
+import InputField from './Input';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
-import { BsFillCartCheckFill } from 'react-icons/bs';
-import { MdOutlineTitle, MdOutlineHttp } from 'react-icons/md';
+import { BsFillCartCheckFill, BsBoxSeam } from 'react-icons/bs';
+import { MdOutlineTitle } from 'react-icons/md';
 import { ImFontSize } from 'react-icons/im';
 import { AiOutlineBarcode } from 'react-icons/ai';
 import RichTextEditor from '../../RichTextEditor';
+import SelectField from './Select';
+import { ProductType } from '../../../enums/products';
+
+const productTypes = [
+    { key: 'Sealed', value: ProductType.Sealed },
+    { key: 'Singles', value: ProductType.Singles },
+    { key: 'Packs', value: ProductType.Packs },
+    { key: 'Other', value: ProductType.Other },
+];
 
 export const AddProduct: React.FC = () => {
     const {
@@ -23,6 +29,7 @@ export const AddProduct: React.FC = () => {
     const titleErr = safelyParse(errors, 'title.message', parseAsString, null);
     const slugErr = safelyParse(errors, 'slug.message', parseAsString, null);
     const skuErr = safelyParse(errors, 'sku.message', parseAsString, null);
+    const typeErr = safelyParse(errors, 'productType.message', parseAsString, null);
 
     const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         if (hasErrors) {
@@ -34,7 +41,7 @@ export const AddProduct: React.FC = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col space-y-4">
                 <div className="flex flex-row space-x-4 items-start justify-start">
-                    <ProductField
+                    <InputField
                         placeholder="Title"
                         fieldName="title"
                         instruction="Title is required."
@@ -42,7 +49,7 @@ export const AddProduct: React.FC = () => {
                         register={register}
                         Icon={MdOutlineTitle}
                     />
-                    <ProductField
+                    <InputField
                         placeholder="Slug"
                         fieldName="slug"
                         instruction="Slug is required."
@@ -50,13 +57,22 @@ export const AddProduct: React.FC = () => {
                         register={register}
                         Icon={ImFontSize}
                     />
-                    <ProductField
+                    <InputField
                         placeholder="SKU"
                         fieldName="sku"
                         instruction="SKU is required."
                         error={skuErr}
                         register={register}
                         Icon={AiOutlineBarcode}
+                    />
+                    <SelectField
+                        placeholder="Product type"
+                        fieldName="productType"
+                        instruction="Product type is required."
+                        options={productTypes}
+                        error={typeErr}
+                        register={register}
+                        Icon={BsBoxSeam}
                     />
                 </div>
                 <div className="flex flex-col">

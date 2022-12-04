@@ -2,7 +2,7 @@ import React from 'react';
 import { FieldValues, UseFormRegister } from 'react-hook-form';
 import { IconType } from 'react-icons/lib';
 
-interface ProductFieldProps {
+interface InputFieldProps {
     instruction: string;
     placeholder: string;
     fieldName: string;
@@ -11,7 +11,7 @@ interface ProductFieldProps {
     Icon: IconType;
 }
 
-export const ProductField: React.FC<ProductFieldProps> = ({
+export const InputField: React.FC<InputFieldProps> = ({
     instruction,
     placeholder,
     fieldName,
@@ -43,4 +43,4 @@ export const ProductField: React.FC<ProductFieldProps> = ({
     );
 };
 
-export default ProductField;
+export default InputField;
