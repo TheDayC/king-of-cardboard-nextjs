@@ -13,6 +13,7 @@ import logo from '../../../images/logo-full.png';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { Slugs } from '../../../enums/account';
 import { setUserId, setUserToken } from '../../../store/slices/global';
+import AdminMenu from './AdminMenu';
 
 export const Sidebar: React.FC = () => {
     const dispatch = useDispatch();
@@ -52,6 +53,7 @@ export const Sidebar: React.FC = () => {
                     </Link>
                 </li>
             </ul>
+            <AdminMenu />
             <div className="flex flex-col">
                 <div className={`${isOpen ? 'accountMenuHeight' : 'h-0'} overflow-hidden transition-all duration-500`}>
                     <ul className="menu menu-vertical">

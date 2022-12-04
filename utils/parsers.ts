@@ -41,6 +41,7 @@ import {
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
 import { ProductType } from '../enums/shop';
+import { Roles } from '../enums/auth';
 
 export function parseAddress(data: unknown): CustomerAddress {
     return {
@@ -246,3 +247,4 @@ export const parseAsArrayOfSliderImages = parseAsType(isArrayOfSliderImages);
 export const parseAsProductType = parseAsType(isEnumMember(ProductType));
 export const parseAsRepeater = parseAsType(isRepeater);
 export const parseAsArrayOfRepeater = parseAsType(isArrayOfRepeater);
+export const parseAsRole = parseAsType(isEnumMember(Roles));
