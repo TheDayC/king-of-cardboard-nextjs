@@ -19,8 +19,10 @@ const secret = process.env.JWT_SECRET || '';
 const salt = process.env.SALT || 10;
 const currentDate = DateTime.now().setZone('Europe/London').toISO();
 const defaultUserDetails = {
-    emailVerified: false,
     image: null,
+    emailVerified: false,
+    registrationDate: currentDate,
+    lastLoggedIn: currentDate,
     role: Roles.User,
     instagram: null,
     twitter: null,
@@ -28,8 +30,6 @@ const defaultUserDetails = {
     youtube: null,
     ebay: null,
     coins: 0,
-    registrationDate: currentDate,
-    lastLoggedIn: currentDate,
 };
 
 async function setUpUserExtras(email: string): Promise<void> {
@@ -115,15 +115,15 @@ export const authOptions: NextAuthOptions = {
                     const user = await collection.findOne({ email });
 
                     // If the user email doesn't exist then add them to the database.
-                    if (!user) {
+                    if (user) {
                         // Encrypt the user's password.
                         const hashedPassword = await bcrypt.hash(password, salt);
 
                         const userDocument = {
-                            ...defaultUserDetails,
                             name,
                             email,
                             password: hashedPassword,
+                            ...defaultUserDetails,
                         };
 
                         const user = await collection.insertOne(userDocument);
@@ -137,6 +137,7 @@ export const authOptions: NextAuthOptions = {
                             return {
                                 id: user.insertedId.toString(),
                                 email,
+                                password,
                                 ...defaultUserDetails,
                             };
                         } else {
@@ -169,6 +170,8 @@ export const authOptions: NextAuthOptions = {
                     password: null,
                     image: profile.picture,
                     emailVerified: profile.email_verified,
+                    registrationDate,
+                    lastLoggedIn,
                     role,
                     instagram,
                     twitter,
@@ -176,8 +179,6 @@ export const authOptions: NextAuthOptions = {
                     youtube,
                     ebay,
                     coins,
-                    registrationDate,
-                    lastLoggedIn,
                 };
             },
             // Link all OAuth accounts by email.
@@ -210,7 +211,7 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         async signIn({ user, credentials }) {
             const { db } = await connectToDatabase();
-            const credsCollection = db.collection('user');
+            const userCollection = db.collection('users');
             const email = safelyParse(user, 'email', parseAsString, '');
             const password = safelyParse(user, 'password', parseAsString, null);
 
@@ -221,14 +222,14 @@ export const authOptions: NextAuthOptions = {
                     if (!email || !password) throw new Error('Email or password missing.');
 
                     // Reject user if their credentials don't exist.
-                    const creds = await credsCollection.findOne({ email });
-                    if (!creds) throw new Error('User does not exist, please register first.');
+                    const user = await userCollection.findOne({ email });
+                    if (!user) throw new Error('User does not exist, please register first.');
 
                     // Check passwords match
-                    const doesPasswordMatch = await bcrypt.compare(password, creds.password);
+                    const doesPasswordMatch = await bcrypt.compare(password, user.password);
                     if (!doesPasswordMatch) throw new Error('Password incorrect.');
                 } catch (error) {
-                    throw new Error('Unable to sign in user.');
+                    throw new Error(error as string);
                 }
             }
 
