@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { BiArrowBack } from 'react-icons/bi';
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import { BiArrowBack } from 'react-icons/bi';
+import { MdOutlineAccountCircle } from 'react-icons/md';
 
 import logo from '../../../images/logo-full.png';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -131,7 +132,7 @@ export const Sidebar: React.FC = () => {
                     </ul>
                 </div>
                 <div
-                    className="avatar cursor-pointer relative text-white p-2 border-l-4 border-transparent hover:bg-neutral-focus hover:border-l-4 hover:border-primary w-full flex flex-row items-center"
+                    className="avatar cursor-pointer relative text-white p-2 pr-3 border-l-4 border-transparent w-full flex flex-row items-center justify-between hover:bg-neutral-focus hover:border-l-4 hover:border-primary"
                     onClick={handleAccountClick}
                 >
                     <div
@@ -142,6 +143,7 @@ export const Sidebar: React.FC = () => {
                         {icon && <img src={icon || ''} alt="user icon" title="User Icon" />}
                     </div>
                     {name || email}
+                    <MdOutlineAccountCircle className="w-6 h-6" />
                 </div>
             </div>
         </div>
