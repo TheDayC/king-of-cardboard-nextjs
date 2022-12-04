@@ -9,7 +9,6 @@ const defaultErr = 'Product could not be updated.';
 
 async function deleteProduct(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'DELETE') {
-        console.log('🚀 ~ file: delete.ts:12 ~ deleteProduct ~ req', req.body);
         try {
             const { db } = await connectToDatabase();
 

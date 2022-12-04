@@ -15,7 +15,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const role = safelyParse(session, 'user.role', parseAsRole, Roles.User);
     const isAdmin = role === Roles.Admin;
     const { products, count } = await listProducts(10, 1);
-    console.log('🚀 ~ file: index.tsx:21 ~ constgetServerSideProps:GetServerSideProps= ~ products', products);
 
     if (!session || !isAdmin) {
         return {
@@ -40,8 +39,6 @@ interface ProductsPageProps {
 }
 
 export const ProductsPage: React.FC<ProductsPageProps> = ({ products, count }) => {
-    console.log('🚀 ~ file: index.tsx:43 ~ products', products);
-
     return (
         <AccountWrapper title="Products - Account - King of Cardboard" description="Account page">
             <div className="flex flex-col w-full justify-start items-start p-2 md:p-4 md:p-8 md:flex-row">
