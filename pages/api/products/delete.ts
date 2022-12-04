@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';
@@ -8,19 +9,27 @@ const defaultErr = 'Product could not be updated.';
 
 async function deleteProduct(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'DELETE') {
+        console.log('🚀 ~ file: delete.ts:12 ~ deleteProduct ~ req', req.body);
         try {
             const { db } = await connectToDatabase();
 
             const productsCollection = db.collection('products');
-            const sku = safelyParse(req, 'body.sku', parseAsString, null);
-            const existingProduct = await productsCollection.findOne({ sku });
+            const id = safelyParse(req, 'body.id', parseAsString, null);
+
+            if (!id) {
+                res.status(400).json({ message: 'Must supply an id.' });
+                return;
+            }
+
+            const objectId = new ObjectId(id);
+            const existingProduct = await productsCollection.findOne({ _id: objectId });
 
             if (!existingProduct) {
                 res.status(400).json({ message: 'Product does not exist.' });
                 return;
             }
 
-            await productsCollection.deleteOne({ sku });
+            await productsCollection.deleteOne({ _id: objectId });
 
             res.status(204).end();
         } catch (err: unknown) {

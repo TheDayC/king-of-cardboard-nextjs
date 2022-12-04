@@ -1,0 +1,58 @@
+import React from 'react';
+import { GetServerSideProps } from 'next';
+import { unstable_getServerSession } from 'next-auth';
+
+import AccountWrapper from '../../../components/AccountWrapper';
+import { authOptions } from '../../api/auth/[...nextauth]';
+import { listProducts } from '../../../utils/account/products';
+import { parseAsRole, safelyParse } from '../../../utils/parsers';
+import { Roles } from '../../../enums/auth';
+import { Product as ProductType } from '../../../types/productsNew';
+import Product from '../../../components/Account/Product';
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+    const session = await unstable_getServerSession(req, res, authOptions);
+    const role = safelyParse(session, 'user.role', parseAsRole, Roles.User);
+    const isAdmin = role === Roles.Admin;
+    const { products, count } = await listProducts(10, 1);
+    console.log('🚀 ~ file: index.tsx:21 ~ constgetServerSideProps:GetServerSideProps= ~ products', products);
+
+    if (!session || !isAdmin) {
+        return {
+            redirect: {
+                permanent: false,
+                destination: '/login',
+            },
+        };
+    }
+
+    return {
+        props: {
+            products,
+            count,
+        },
+    };
+};
+
+interface ProductsPageProps {
+    products: ProductType[];
+    count: number;
+}
+
+export const ProductsPage: React.FC<ProductsPageProps> = ({ products, count }) => {
+    console.log('🚀 ~ file: index.tsx:43 ~ products', products);
+
+    return (
+        <AccountWrapper title="Products - Account - King of Cardboard" description="Account page">
+            <div className="flex flex-col w-full justify-start items-start p-2 md:p-4 md:p-8 md:flex-row">
+                <div className="flex flex-col relative w-full space-y-4" data-testid="content">
+                    <h1 className="text-3xl mb-4">Products</h1>
+                    {products.length > 0 &&
+                        products.map((product) => <Product product={product} key={`product-${product._id}`} />)}
+                </div>
+            </div>
+        </AccountWrapper>
+    );
+};
+
+export default ProductsPage;
