@@ -192,6 +192,7 @@ export const authOptions: NextAuthOptions = {
     ],
     secret,
     session: {
+        // Must be set to JWT for credentials to work.
         strategy: 'jwt',
 
         // Seconds - How long until an idle session expires and is no longer valid.
