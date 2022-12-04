@@ -18,7 +18,9 @@ declare module 'next-auth' {
         youtube: string | null;
         ebay: string | null;
         coins: number;
-        emailVerified?: boolean | null;
+        emailVerified: boolean;
+        registrationDate: string;
+        lastLoggedIn: string;
     }
 
     interface Profile extends DefaultProfile {
