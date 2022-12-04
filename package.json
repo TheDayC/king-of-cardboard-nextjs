@@ -36,6 +36,7 @@
         "@stripe/react-stripe-js": "^1.15.0",
         "@stripe/stripe-js": "^1.44.1",
         "axios": "^1.2.0",
+        "bcrypt": "^5.1.0",
         "chart.js": "^4.0.1",
         "contentful": "^9.2.13",
         "cors": "^2.8.5",
@@ -62,6 +63,7 @@
     },
     "devDependencies": {
         "@contentful/rich-text-types": "^15.14.1",
+        "@types/bcrypt": "^5.0.0",
         "@types/cors": "^2.8.12",
         "@types/gtag.js": "^0.0.12",
         "@types/js-cookie": "^3.0.2",

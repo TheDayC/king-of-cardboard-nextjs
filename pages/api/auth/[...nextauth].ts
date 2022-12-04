@@ -3,25 +3,53 @@ import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { isAxiosError } from 'axios';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
+import bcrypt from 'bcrypt';
 
 import clientPromise from '../../../lib/mongodb';
 import { connectToDatabase } from '../../../middleware/database';
-import {
-    parseAsArrayOfCommerceLayerErrors,
-    parseAsArrayOfCommerceResponse,
-    parseAsNumber,
-    parseAsString,
-    safelyParse,
-} from '../../../utils/parsers';
-import { authClient, userClient } from '../../../utils/auth';
+import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { gaEvent } from '../../../utils/ga';
+import { Roles } from '../../../enums/auth';
 
 const isDev = process.env.NODE_ENV === 'development';
 const databaseName = isDev ? 'kingofcardboard' : 'kingofcardboard_live';
 const publicURL = process.env.NEXT_PUBLIC_SITE_URL || '';
 const secret = process.env.JWT_SECRET || '';
+const salt = process.env.SALT || 10;
+const defaultUserDetails = {
+    emailVerified: null,
+    image: null,
+    role: Roles.User,
+    instagram: null,
+    twitter: null,
+    twitch: null,
+    youtube: null,
+    ebay: null,
+    coins: 0,
+};
+
+async function setUpUserExtras(email: string): Promise<void> {
+    const { db } = await connectToDatabase();
+    const achievementsCollection = db.collection('achievements');
+
+    // Set up achievements document if the user hasn't logged in before.
+    const achievements = await achievementsCollection.findOne({ email });
+    if (!achievements) {
+        await achievementsCollection.insertOne({
+            email,
+            achievements: [],
+        });
+    }
+}
+
+async function getUserRole(email: string): Promise<Roles> {
+    const { db } = await connectToDatabase();
+    const usersCollection = db.collection('users');
+    const user = await usersCollection.findOne({ email });
+
+    return user ? user.role : Roles.User;
+}
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     return await NextAuth(req, res, {
@@ -31,7 +59,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
             // @ts-ignore
             CredentialsProvider({
                 // The name to display on the sign in form (e.g. 'Sign in with...')
-                name: 'credentials',
+                name: 'users',
                 // The credentials is used to generate a suitable form on the sign in page.
                 // You can specify whatever fields you are expecting to be submitted.
                 // e.g. domain, username, password, 2FA token, etc.
@@ -41,69 +69,86 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
                     password: { label: 'Password', type: 'password' },
                 },
                 async authorize(credentials) {
-                    // You need to provide your own logic here that takes the credentials
-                    // submitted and returns either a object representing a user or value
-                    // that is false/null if the credentials are invalid.
-                    // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
-                    // You can also use the `req` object to obtain additional parameters
-                    // (i.e., the request IP address)
+                    // Connect to MongoDB.
                     const { db } = await connectToDatabase();
-                    const collection = db.collection('credentials');
+                    const collection = db.collection('users');
 
-                    const emailAddress = safelyParse(credentials, 'emailAddress', parseAsString, null);
+                    // Parse credentials.
+                    const name = safelyParse(credentials, 'displayName', parseAsString, '');
+                    const email = safelyParse(credentials, 'emailAddress', parseAsString, null);
                     const password = safelyParse(credentials, 'password', parseAsString, null);
 
-                    if (!emailAddress || !password) {
-                        throw new Error('Must provider an email and password');
+                    // If credentials don't exist then throw an error.
+                    if (!email || !password) {
+                        throw new Error('Must provide an email and password');
                     }
 
                     try {
-                        const tokenRes = await userClient().post('/oauth/token', {
-                            grant_type: 'password',
-                            username: emailAddress,
-                            password,
-                            client_id: process.env.NEXT_PUBLIC_ECOM_SALES_ID,
-                            scope: process.env.NEXT_PUBLIC_MARKET,
-                        });
-                        const token = safelyParse(tokenRes, 'data.access_token', parseAsString, null);
-                        const owner_id = safelyParse(tokenRes, 'data.owner_id', parseAsString, null);
-                        const user = await collection.findOne({ emailAddress });
+                        // Try and find the user.
+                        const user = await collection.findOne({ email });
 
+                        // If the user email doesn't exist then add them to the database.
                         if (!user) {
+                            // Encrypt the user's password.
+                            const hashedPassword = await bcrypt.hash(password, salt);
+
                             const userDocument = {
-                                username: '',
-                                emailAddress,
-                                commerceId: owner_id,
+                                ...defaultUserDetails,
+                                name,
+                                email,
+                                password: hashedPassword,
                             };
 
-                            await collection.insertOne(userDocument);
-                        }
+                            const user = await collection.insertOne(userDocument);
 
-                        if (token && owner_id && emailAddress) {
-                            const values = {
-                                $set: {
-                                    commerceId: owner_id,
-                                },
-                            };
+                            if (user) {
+                                // Build other user related items in the DB on register.
+                                await setUpUserExtras(email);
 
-                            await collection.updateOne({ emailAddress }, values);
+                                gaEvent('registration', { email });
 
-                            return { id: owner_id, email: emailAddress };
+                                return {
+                                    id: user.insertedId.toString(),
+                                    email,
+                                    ...defaultUserDetails,
+                                };
+                            } else {
+                                gaEvent('failedRegistration', { email });
+                            }
                         }
 
                         return null;
                     } catch (error) {
-                        if (isAxiosError(error)) {
-                            throw new Error(error.message);
-                        } else {
-                            throw new Error('Error');
-                        }
+                        gaEvent('failedRegistration', { email });
+                        throw new Error('Unable to register user.');
                     }
                 },
             }),
             GoogleProvider({
                 clientId: process.env.GOOGLE_ID || '',
                 clientSecret: process.env.GOOGLE_SECRET || '',
+                async profile(profile) {
+                    const { role, instagram, twitter, twitch, youtube, ebay, coins } = defaultUserDetails;
+                    const email = safelyParse(profile, 'email', parseAsString, '');
+
+                    // Build other user related items in the DB on register.
+                    await setUpUserExtras(email);
+
+                    return {
+                        id: profile.sub,
+                        name: profile.name,
+                        email,
+                        image: profile.image,
+                        emailVerified: profile.emailVerified,
+                        role,
+                        instagram,
+                        twitter,
+                        twitch,
+                        youtube,
+                        ebay,
+                        coins,
+                    };
+                },
             }),
         ],
         secret,
@@ -138,176 +183,44 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse): P
             newUser: `${publicURL}/account`,
         },
         callbacks: {
-            async signIn({ user, email, credentials }) {
-                if (!credentials) {
-                    const { db } = await connectToDatabase();
+            async signIn({ user, credentials }) {
+                const { db } = await connectToDatabase();
+                const credsCollection = db.collection('user');
+                const email = safelyParse(user, 'emailAddress', parseAsString, null);
+                const password = safelyParse(user, 'password', parseAsString, null);
 
+                // If the user provides credentials then we have a manual login to perform.
+                if (credentials) {
                     try {
-                        const credsCollection = db.collection('credentials');
-                        const profileCollection = db.collection('profile');
-                        const achievementsCollection = db.collection('achievements');
-                        const clientTokenRes = await authClient().post('/oauth/token', {
-                            grant_type: 'client_credentials',
-                            client_id: process.env.ECOM_CLIENT_ID,
-                            client_secret: process.env.ECOM_CLIENT_SECRET,
-                            scope: process.env.NEXT_PUBLIC_MARKET,
-                        });
-                        const token = safelyParse(clientTokenRes, 'data.access_token', parseAsString, null);
-                        const cl = authClient(token);
-                        const emailAddress = safelyParse(user, 'email', parseAsString, null);
+                        // Ensure the user submits valid email and password.
+                        if (!email || !password) return false;
 
-                        if (emailAddress) {
-                            const creds = await credsCollection.findOne({ emailAddress });
-                            const profile = await profileCollection.findOne({ emailAddress });
-                            const achievements = await achievementsCollection.findOne({ emailAddress });
-                            const hasAchievements = Boolean(achievements);
+                        // Reject user if their credentials don't exist.
+                        const creds = await credsCollection.findOne({ email });
+                        if (!creds) return false;
 
-                            gaEvent('login', { email: emailAddress });
-
-                            // Reserve credentials when a user signs in if they don't exist.
-                            if (!creds) {
-                                const userDocument = {
-                                    username: user.name,
-                                    emailAddress,
-                                };
-
-                                await credsCollection.insertOne(userDocument);
-                            }
-
-                            // Setup a blank profile if the user is signing in for the first time.
-                            if (!profile) {
-                                const profileDocument = {
-                                    emailAddress,
-                                    instagram: '',
-                                    twitter: '',
-                                    twitch: '',
-                                    youtube: '',
-                                    ebay: '',
-                                };
-
-                                await profileCollection.insertOne(profileDocument);
-                            }
-
-                            // Set up achievements document if the user hasn't logged in before.
-                            if (!hasAchievements && token) {
-                                // Send a post requet to setup a draft gift card.
-                                const draftGiftCard = await cl.post('/api/gift_cards', {
-                                    data: {
-                                        type: 'gift_cards',
-                                        attributes: {
-                                            currency_code: 'GBP',
-                                            balance_cents: 0,
-                                            single_use: false,
-                                            rechargeable: true,
-                                            recipient_email: email,
-                                            reference: `${email}-reward-card`,
-                                        },
-                                    },
-                                });
-
-                                // Find the gift card id.
-                                const giftCardId = safelyParse(draftGiftCard, 'data.data.id', parseAsString, null);
-
-                                if (giftCardId) {
-                                    // If the gift card id exists then purchase it.
-                                    const purchasedGiftCard = await cl.patch(`/api/gift_cards/${giftCardId}`, {
-                                        data: {
-                                            type: 'gift_cards',
-                                            id: giftCardId,
-                                            attributes: {
-                                                _purchase: true,
-                                            },
-                                        },
-                                    });
-
-                                    if (purchasedGiftCard) {
-                                        // If the gift card has been purchased then activate it.
-                                        const activatedGiftCard = await cl.patch(`/api/gift_cards/${giftCardId}`, {
-                                            data: {
-                                                type: 'gift_cards',
-                                                id: giftCardId,
-                                                attributes: {
-                                                    _activate: true,
-                                                },
-                                            },
-                                        });
-
-                                        if (activatedGiftCard) {
-                                            await achievementsCollection.insertOne({
-                                                emailAddress: email,
-                                                giftCardId,
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Perform some further actions with our token.
-                            if (token) {
-                                // See if the customer already exists in commerce layer.
-                                const customerData = await cl.get(`/api/customers?filter[q][email_eq]=${user.email}`);
-                                const customerCount = safelyParse(
-                                    customerData,
-                                    'data.meta.record_count',
-                                    parseAsNumber,
-                                    0
-                                );
-
-                                // If the customer doesn't exist in Commerce Layer, create them.
-                                if (customerCount <= 0) {
-                                    const customer = await cl.post(`/api/customers`, {
-                                        data: {
-                                            type: 'customers',
-                                            attributes: {
-                                                email: user.email,
-                                            },
-                                        },
-                                    });
-
-                                    await credsCollection.updateOne(
-                                        { emailAddress: user.email },
-                                        {
-                                            $set: {
-                                                commerceId: safelyParse(customer, 'data.data.id', parseAsString, null),
-                                            },
-                                        }
-                                    );
-                                } else {
-                                    const customer = safelyParse(
-                                        customerData,
-                                        'data.data',
-                                        parseAsArrayOfCommerceResponse,
-                                        null
-                                    );
-
-                                    if (customer) {
-                                        await credsCollection.updateOne(
-                                            { emailAddress: user.email },
-                                            {
-                                                $set: {
-                                                    commerceId: safelyParse(customer[0], 'id', parseAsString, null),
-                                                },
-                                            }
-                                        );
-                                    }
-                                }
-                            }
-                        }
+                        // Check passwords match
+                        const doesPasswordMatch = await bcrypt.compare(password, creds.password);
+                        if (!doesPasswordMatch) return false;
                     } catch (error) {
-                        const message = safelyParse(
-                            error,
-                            'response.data.errors',
-                            parseAsArrayOfCommerceLayerErrors,
-                            null
-                        );
-
-                        throw new Error(message ? message[0].detail : 'Error');
+                        throw new Error('Unable to sign in user.');
                     }
                 }
 
+                // Log the sign in as a gaEvent
+                gaEvent('login', { email });
+
+                // Allow the user in.
                 return true;
             },
             async session({ session }) {
+                const email = session.user.email;
+
+                if (email) {
+                    const role = await getUserRole(email);
+                    session.user.role = role;
+                }
+
                 return session;
             },
             async jwt({ token }) {

@@ -38,7 +38,6 @@ interface LoginPageProps {
 
 export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) => {
     const [currentTab, setCurrentTab] = useState(Tabs.Login);
-    const [regSuccess, setRegSuccess] = useState(false);
     const isLogin = currentTab === Tabs.Login;
     const isRegister = currentTab === Tabs.Register;
     const isReset = currentTab === Tabs.Reset;
@@ -86,16 +85,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
                             </a>
                         </div>
                         <div className="px-0 py-4 lg:py-4">
-                            {currentTab === Tabs.Login && (
-                                <Login
-                                    providers={providers}
-                                    showRegistrationSuccess={regSuccess}
-                                    shouldRedirect={true}
-                                />
-                            )}
-                            {currentTab === Tabs.Register && (
-                                <Register setCurrentTab={setCurrentTab} setRegSuccess={setRegSuccess} />
-                            )}
+                            {currentTab === Tabs.Login && <Login providers={providers} shouldRedirect={true} />}
+                            {currentTab === Tabs.Register && <Register />}
                             {currentTab === Tabs.Reset && <ResetPassword />}
                         </div>
                     </div>
