@@ -4,13 +4,13 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import bcrypt from 'bcrypt';
+import { DateTime } from 'luxon';
 
 import clientPromise from '../../../lib/mongodb';
 import { connectToDatabase } from '../../../middleware/database';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { gaEvent } from '../../../utils/ga';
 import { Roles } from '../../../enums/auth';
-import { DateTime } from 'luxon';
 
 const isDev = process.env.NODE_ENV === 'development';
 const databaseName = isDev ? 'kingofcardboard' : 'kingofcardboard_live';
