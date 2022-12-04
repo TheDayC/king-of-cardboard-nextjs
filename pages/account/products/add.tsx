@@ -6,7 +6,6 @@ import AccountWrapper from '../../../components/AccountWrapper';
 import { authOptions } from '../../api/auth/[...nextauth]';
 import { parseAsRole, safelyParse } from '../../../utils/parsers';
 import { Roles } from '../../../enums/auth';
-import { Product as ProductType } from '../../../types/productsNew';
 import AddProduct from '../../../components/Account/Product/add';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {

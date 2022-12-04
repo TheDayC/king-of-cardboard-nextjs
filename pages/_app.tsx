@@ -8,8 +8,10 @@ import { SessionProvider } from 'next-auth/react';
 import Script from 'next/script';
 import Cookies from 'js-cookie';
 
-import { wrapper } from '../store';
+import 'react-quill/dist/quill.snow.css';
 import '../styles/globals.css';
+
+import { wrapper } from '../store';
 import OrderAndTokenProvider from '../context/OrderAndTokenProvider';
 import Drawer from '../components/Drawer';
 import Alert from '../components/Alert';

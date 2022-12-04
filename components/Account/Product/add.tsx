@@ -9,6 +9,7 @@ import { BsFillCartCheckFill } from 'react-icons/bs';
 import { MdOutlineTitle, MdOutlineHttp } from 'react-icons/md';
 import { ImFontSize } from 'react-icons/im';
 import { AiOutlineBarcode } from 'react-icons/ai';
+import RichTextEditor from '../../RichTextEditor';
 
 export const AddProduct: React.FC = () => {
     const {
@@ -31,7 +32,7 @@ export const AddProduct: React.FC = () => {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col">
+            <div className="flex flex-col space-y-4">
                 <div className="flex flex-row space-x-4 items-start justify-start">
                     <ProductField
                         placeholder="Title"
@@ -58,8 +59,11 @@ export const AddProduct: React.FC = () => {
                         Icon={AiOutlineBarcode}
                     />
                 </div>
+                <div className="flex flex-col">
+                    <RichTextEditor placeholder="Content" />
+                </div>
 
-                <div className="form-control mt-6">
+                <div className="form-control">
                     <button type="submit" className="btn btn-block btn-primary rounded-md">
                         <BsFillCartCheckFill className="inline-block text-xl mr-2" />
                         Add product
