@@ -42,10 +42,23 @@ const formats = [
 
 interface RichTextEditorProps {
     placeholder: string;
+    onChange(content: string): void;
 }
 
-export const RichTextEditor: React.FC<RichTextEditorProps> = ({ placeholder }) => (
-    <QuillNoSSRWrapper modules={modules} formats={formats} theme="snow" placeholder={placeholder} />
-);
+export const RichTextEditor: React.FC<RichTextEditorProps> = ({ placeholder, onChange }) => {
+    const handleChange = (content: string) => {
+        onChange(content);
+    };
+
+    return (
+        <QuillNoSSRWrapper
+            modules={modules}
+            formats={formats}
+            theme="snow"
+            placeholder={placeholder}
+            onChange={handleChange}
+        />
+    );
+};
 
 export default RichTextEditor;

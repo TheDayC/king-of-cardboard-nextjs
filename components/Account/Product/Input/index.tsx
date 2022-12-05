@@ -10,6 +10,7 @@ interface InputFieldProps {
     error: string | null;
     register: UseFormRegister<FieldValues>;
     Icon: IconType;
+    isRequired: boolean;
 }
 
 export const InputField: React.FC<InputFieldProps> = ({
@@ -20,6 +21,7 @@ export const InputField: React.FC<InputFieldProps> = ({
     error,
     register,
     Icon,
+    isRequired,
 }) => {
     return (
         <div className="form-control inline-block">
@@ -31,7 +33,7 @@ export const InputField: React.FC<InputFieldProps> = ({
                     type={fieldType}
                     placeholder={placeholder}
                     {...register(fieldName, {
-                        required: { value: true, message: instruction },
+                        required: { value: isRequired, message: instruction },
                     })}
                     className={`input input-md input-bordered w-full${error ? ' input-error' : ''}`}
                 />

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { BsFillCartCheckFill, BsBoxSeam, BsCurrencyPound } from 'react-icons/bs';
 import { MdOutlineTitle } from 'react-icons/md';
@@ -24,7 +24,6 @@ export const AddProduct: React.FC = () => {
         register,
         handleSubmit,
         formState: { errors },
-        reset,
         setValue,
     } = useForm();
     const hasErrors = Object.keys(errors).length > 0;
@@ -37,10 +36,19 @@ export const AddProduct: React.FC = () => {
     const salePriceErr = safelyParse(errors, 'salePrice.message', parseAsString, null);
 
     const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
+        console.log('🚀 ~ file: add.tsx:40 ~ constonSubmit:SubmitHandler<FieldValues>= ~ data', data);
         if (hasErrors) {
             return;
         }
     };
+
+    const handleRichContent = (content: string) => {
+        setValue('content', content);
+    };
+
+    useEffect(() => {
+        register('content');
+    }, []);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -53,6 +61,7 @@ export const AddProduct: React.FC = () => {
                         error={titleErr}
                         register={register}
                         Icon={MdOutlineTitle}
+                        isRequired
                     />
                     <InputField
                         placeholder="Slug"
@@ -61,6 +70,7 @@ export const AddProduct: React.FC = () => {
                         error={slugErr}
                         register={register}
                         Icon={ImFontSize}
+                        isRequired
                     />
                     <InputField
                         placeholder="SKU"
@@ -69,6 +79,7 @@ export const AddProduct: React.FC = () => {
                         error={skuErr}
                         register={register}
                         Icon={AiOutlineBarcode}
+                        isRequired
                     />
                     <SelectField
                         placeholder="Product type"
@@ -89,6 +100,7 @@ export const AddProduct: React.FC = () => {
                         error={qtyErr}
                         register={register}
                         Icon={FaBoxes}
+                        isRequired
                     />
                     <InputField
                         placeholder="Price in pennies"
@@ -98,6 +110,7 @@ export const AddProduct: React.FC = () => {
                         error={priceErr}
                         register={register}
                         Icon={BsCurrencyPound}
+                        isRequired
                     />
                     <InputField
                         placeholder="Sale price in pennies"
@@ -107,10 +120,11 @@ export const AddProduct: React.FC = () => {
                         error={salePriceErr}
                         register={register}
                         Icon={AiOutlinePoundCircle}
+                        isRequired={false}
                     />
                 </div>
                 <div className="flex flex-col">
-                    <RichTextEditor placeholder="Content" />
+                    <RichTextEditor placeholder="Content" onChange={handleRichContent} />
                 </div>
 
                 <div className="form-control">

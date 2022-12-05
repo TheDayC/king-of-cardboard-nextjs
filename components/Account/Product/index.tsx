@@ -3,8 +3,8 @@ import Link from 'next/link';
 import React from 'react';
 import { BiEdit, BiTrash } from 'react-icons/bi';
 import { useDispatch } from 'react-redux';
-import { addError, addSuccess } from '../../../store/slices/alerts';
 
+import { addError, addSuccess } from '../../../store/slices/alerts';
 import { Product as ProductType } from '../../../types/productsNew';
 import { convertCost, deleteProduct } from '../../../utils/account/products';
 

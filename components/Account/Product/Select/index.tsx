@@ -36,11 +36,17 @@ export const SelectField: React.FC<SelectFieldProps> = ({
                 <select
                     className="select select-bordered"
                     {...register(fieldName, { required: { value: true, message: instruction } })}
+                    defaultValue="default"
                 >
-                    <option disabled selected>
+                    <option disabled value="default">
                         {placeholder}
                     </option>
-                    {options.length && options.map(({ key, value }) => <option value={value}>{key}</option>)}
+                    {options.length &&
+                        options.map(({ key, value }) => (
+                            <option value={value} key={`type-${key}`}>
+                                {key}
+                            </option>
+                        ))}
                 </select>
             </div>
             {error && (
