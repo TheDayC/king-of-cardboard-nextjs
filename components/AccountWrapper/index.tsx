@@ -63,7 +63,7 @@ export const AccountWrapper: React.FC<AccountWrapperProps> = ({ title, descripti
             {isFetchingToken ? (
                 <Loading show={true} />
             ) : (
-                <div className="flex flex-row justify-start items-start bg-primary-content h-full">
+                <div className="flex flex-row justify-start items-stretch bg-primary-content h-screen overflow-y-auto">
                     <div className="w-80 bg-neutral py-2 h-full">
                         <Sidebar />
                     </div>

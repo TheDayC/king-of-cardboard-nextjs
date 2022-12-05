@@ -20,7 +20,7 @@ export const Sidebar: React.FC = () => {
     const email = safelyParse(session, 'user.email', parseAsString, '');
 
     return (
-        <div className="flex flex-col justify-between h-full space-y-4">
+        <div className="flex flex-col justify-between space-y-4">
             <ul className="menu menu-vertical">
                 <li>
                     <Link href="/" passHref>

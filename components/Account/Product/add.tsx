@@ -11,6 +11,7 @@ import { parseAsString, safelyParse } from '../../../utils/parsers';
 import RichTextEditor from '../../RichTextEditor';
 import SelectField from './Select';
 import { ProductType } from '../../../enums/products';
+import File from './File';
 
 const productTypes = [
     { key: 'Sealed', value: ProductType.Sealed },
@@ -34,6 +35,7 @@ export const AddProduct: React.FC = () => {
     const qtyErr = safelyParse(errors, 'quantity.message', parseAsString, null);
     const priceErr = safelyParse(errors, 'price.message', parseAsString, null);
     const salePriceErr = safelyParse(errors, 'salePrice.message', parseAsString, null);
+    const mainImageErr = safelyParse(errors, 'mainImage.message', parseAsString, null);
 
     const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         console.log('🚀 ~ file: add.tsx:40 ~ constonSubmit:SubmitHandler<FieldValues>= ~ data', data);
@@ -44,6 +46,10 @@ export const AddProduct: React.FC = () => {
 
     const handleRichContent = (content: string) => {
         setValue('content', content);
+    };
+
+    const handleFileChange = (files: File[]) => {
+        console.log(files);
     };
 
     useEffect(() => {
@@ -122,6 +128,38 @@ export const AddProduct: React.FC = () => {
                         Icon={AiOutlinePoundCircle}
                         isRequired={false}
                     />
+                </div>
+                <div className="flex flex-row space-x-4">
+                    <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">Select main image</span>
+                        </label>
+                        <input
+                            type="file"
+                            className="file-input file-input-bordered w-full max-w-xs"
+                            {...register('mainImage', {
+                                required: { value: true, message: 'Main image is required' },
+                            })}
+                        />
+                        {mainImageErr && (
+                            <label className="label">
+                                <span className="label-text-alt">{mainImageErr}</span>
+                            </label>
+                        )}
+                    </div>
+                    <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">Select gallery images</span>
+                        </label>
+                        <input
+                            type="file"
+                            className="file-input file-input-bordered w-full max-w-xs"
+                            multiple
+                            {...register('galleryImages', {
+                                required: false,
+                            })}
+                        />
+                    </div>
                 </div>
                 <div className="flex flex-col">
                     <RichTextEditor placeholder="Content" onChange={handleRichContent} />
