@@ -6,7 +6,7 @@ import AccountWrapper from '../../../../components/AccountWrapper';
 import { authOptions } from '../../../api/auth/[...nextauth]';
 import { parseAsRole, parseAsString, safelyParse } from '../../../../utils/parsers';
 import { Roles } from '../../../../enums/auth';
-import ProductBody from '../../../../components/Account/Product/add';
+import ProductBody from '../../../../components/Account/Product/body';
 import { getProduct } from '../../../../utils/account/products';
 import { Product } from '../../../../types/productsNew';
 
