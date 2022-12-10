@@ -38,19 +38,15 @@ interface EditProductPageProps {
     product: Product;
 }
 
-export const EditProductPage: React.FC<EditProductPageProps> = ({ product }) => {
-    const { title } = product;
-
-    return (
-        <AccountWrapper title="Products - Account - King of Cardboard" description="Account page">
-            <div className="flex flex-col w-full justify-start items-start p-2 md:p-4 md:p-8 md:flex-row">
-                <div className="flex flex-col relative w-full space-y-4" data-testid="content">
-                    <h1 className="text-3xl mb-4">Edit Product</h1>
-                    <ProductBody {...product} isNew={false} />
-                </div>
+export const EditProductPage: React.FC<EditProductPageProps> = ({ product }) => (
+    <AccountWrapper title="Edit Product - Account - King of Cardboard" description="Edit product page">
+        <div className="flex flex-col w-full justify-start items-start p-2 md:p-4 md:p-8 md:flex-row">
+            <div className="flex flex-col relative w-full space-y-4" data-testid="content">
+                <h1 className="text-3xl mb-4">Edit Product</h1>
+                <ProductBody {...product} isNew={false} />
             </div>
-        </AccountWrapper>
-    );
-};
+        </div>
+    </AccountWrapper>
+);
 
 export default EditProductPage;

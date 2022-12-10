@@ -17,6 +17,7 @@ import { useSession } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
 import { addError, addSuccess } from '../../../store/slices/alerts';
 import ImageUpload from './ImageUpload';
+import { BiEdit, BiSave } from 'react-icons/bi';
 
 const productTypes = [
     { key: 'Sealed', value: ProductType.Sealed },
@@ -26,7 +27,7 @@ const productTypes = [
 ];
 
 interface ProductBodyProps {
-    _id: string;
+    _id?: string;
     sku?: string;
     created?: string;
     lastUpdated?: string;
@@ -271,8 +272,17 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                     >
                         {!isLoading && (
                             <React.Fragment>
-                                <BsFillCartCheckFill className="inline-block text-xl mr-2" />
-                                Add product
+                                {isNew ? (
+                                    <React.Fragment>
+                                        <BsFillCartCheckFill className="inline-block text-xl mr-2" />
+                                        Add Product
+                                    </React.Fragment>
+                                ) : (
+                                    <React.Fragment>
+                                        <BiSave className="inline-block text-xl mr-2" />
+                                        Save Product
+                                    </React.Fragment>
+                                )}
                             </React.Fragment>
                         )}
                     </button>
