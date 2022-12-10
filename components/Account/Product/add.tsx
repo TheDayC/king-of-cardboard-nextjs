@@ -53,7 +53,6 @@ export const AddProduct: React.FC = () => {
 
     // Variables
     const userId = session ? session.user.id : null;
-    const errorMessage = hasAddedProduct ? 'Product added!' : 'Could not add product...';
 
     const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         if (hasErrors || isLoading) {

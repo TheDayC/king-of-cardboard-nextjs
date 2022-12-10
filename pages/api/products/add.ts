@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { ProductType } from '../../../enums/products';
 
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
@@ -39,10 +40,10 @@ async function addProduct(req: NextApiRequest, res: NextApiResponse): Promise<vo
                 content: safelyParse(req, 'body.content', parseAsString, null),
                 mainImage: safelyParse(req, 'body.mainImage', parseAsString, null),
                 gallery: safelyParse(req, 'body.gallery', parseAsArrayOfStrings, null),
-                productType: safelyParse(req, 'body.productType', parseAsString, null),
-                quantity: safelyParse(req, 'body.quantity', parseAsString, null),
-                price: safelyParse(req, 'body.price', parseAsNumber, null),
-                salePrice: safelyParse(req, 'body.salePrice', parseAsNumber, null),
+                productType: safelyParse(req, 'body.productType', parseAsNumber, ProductType.Other),
+                quantity: safelyParse(req, 'body.quantity', parseAsNumber, 0),
+                price: safelyParse(req, 'body.price', parseAsNumber, 0),
+                salePrice: safelyParse(req, 'body.salePrice', parseAsNumber, 0),
                 isInfinite: safelyParse(req, 'body.isInfinite', parseAsBoolean, false),
             });
 
