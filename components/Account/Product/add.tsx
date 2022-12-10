@@ -1,17 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { BsFillCartCheckFill, BsBoxSeam, BsCurrencyPound } from 'react-icons/bs';
 import { MdOutlineTitle } from 'react-icons/md';
 import { ImFontSize } from 'react-icons/im';
 import { AiOutlineBarcode, AiOutlinePoundCircle } from 'react-icons/ai';
 import { FaBoxes } from 'react-icons/fa';
+import { toNumber, uniq } from 'lodash';
 
 import InputField from './Input';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import RichTextEditor from '../../RichTextEditor';
 import SelectField from './Select';
 import { ProductType } from '../../../enums/products';
-import File from './File';
+import { addGalleryToBucket, addImageToBucket, addProduct } from '../../../utils/account/products';
+import { useSession } from 'next-auth/react';
+import { useDispatch } from 'react-redux';
+import { addError, addSuccess } from '../../../store/slices/alerts';
 
 const productTypes = [
     { key: 'Sealed', value: ProductType.Sealed },
@@ -21,12 +25,21 @@ const productTypes = [
 ];
 
 export const AddProduct: React.FC = () => {
+    const { data: session } = useSession();
     const {
         register,
         handleSubmit,
         formState: { errors },
         setValue,
+        setError,
     } = useForm();
+    const dispatch = useDispatch();
+    const [mainImage, setMainImage] = useState<string | null>(null);
+    const [gallery, setGallery] = useState<string[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [hasAddedProduct, setHasAddedProduct] = useState<boolean | null>(null);
+
+    // Errors
     const hasErrors = Object.keys(errors).length > 0;
     const titleErr = safelyParse(errors, 'title.message', parseAsString, null);
     const slugErr = safelyParse(errors, 'slug.message', parseAsString, null);
@@ -36,20 +49,79 @@ export const AddProduct: React.FC = () => {
     const priceErr = safelyParse(errors, 'price.message', parseAsString, null);
     const salePriceErr = safelyParse(errors, 'salePrice.message', parseAsString, null);
     const mainImageErr = safelyParse(errors, 'mainImage.message', parseAsString, null);
+    const galleryErr = safelyParse(errors, 'gallery.message', parseAsString, null);
+
+    // Variables
+    const userId = session ? session.user.id : null;
+    const errorMessage = hasAddedProduct ? 'Product added!' : 'Could not add product...';
 
     const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
-        console.log('🚀 ~ file: add.tsx:40 ~ constonSubmit:SubmitHandler<FieldValues>= ~ data', data);
-        if (hasErrors) {
+        if (hasErrors || isLoading) {
             return;
         }
+        setIsLoading(true);
+        setHasAddedProduct(null);
+        const { sku, slug, title, content, productType, quantity, price, salePrice } = data;
+        const file = data.mainImage[0] as File; // Don't conflict with gallery mainImage.
+        const galleryFileList = data.gallery as FileList; // Don't conflict with gallery state.
+
+        // Upload the main image.
+        const fileName = await addImageToBucket(file, slug);
+
+        if (fileName) {
+            setMainImage(fileName);
+        } else {
+            setError('mainImage', {
+                type: 'custom',
+                message: 'Could not upload main image.',
+            });
+
+            setIsLoading(false);
+            return;
+        }
+
+        // Upload gallery images
+        const galleryFileNames = await addGalleryToBucket(galleryFileList, slug);
+
+        if (galleryFileNames) {
+            setGallery(uniq([...gallery, ...galleryFileNames]));
+        } else {
+            setError('gallery', {
+                type: 'custom',
+                message: 'Could not upload gallery images.',
+            });
+
+            setIsLoading(false);
+            return;
+        }
+
+        // Add product to the database.
+        const hasAddedProduct = await addProduct(
+            sku,
+            userId,
+            title,
+            slug,
+            content,
+            mainImage,
+            gallery,
+            productType,
+            toNumber(quantity),
+            toNumber(price),
+            toNumber(salePrice),
+            false
+        );
+
+        if (hasAddedProduct) {
+            dispatch(addSuccess('Product added!'));
+        } else {
+            dispatch(addError('Product already exists.'));
+        }
+
+        setIsLoading(false);
     };
 
     const handleRichContent = (content: string) => {
         setValue('content', content);
-    };
-
-    const handleFileChange = (files: File[]) => {
-        console.log(files);
     };
 
     useEffect(() => {
@@ -155,10 +227,15 @@ export const AddProduct: React.FC = () => {
                             type="file"
                             className="file-input file-input-bordered w-full max-w-xs"
                             multiple
-                            {...register('galleryImages', {
+                            {...register('gallery', {
                                 required: false,
                             })}
                         />
+                        {galleryErr && (
+                            <label className="label">
+                                <span className="label-text-alt">{galleryErr}</span>
+                            </label>
+                        )}
                     </div>
                 </div>
                 <div className="flex flex-col">
@@ -166,9 +243,16 @@ export const AddProduct: React.FC = () => {
                 </div>
 
                 <div className="form-control">
-                    <button type="submit" className="btn btn-block btn-primary rounded-md">
-                        <BsFillCartCheckFill className="inline-block text-xl mr-2" />
-                        Add product
+                    <button
+                        type="submit"
+                        className={`btn btn-block btn-primary rounded-md${isLoading ? ' loading' : ''}`}
+                    >
+                        {!isLoading && (
+                            <React.Fragment>
+                                <BsFillCartCheckFill className="inline-block text-xl mr-2" />
+                                Add product
+                            </React.Fragment>
+                        )}
                     </button>
                 </div>
             </div>

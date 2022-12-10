@@ -30,18 +30,19 @@ async function addProduct(req: NextApiRequest, res: NextApiResponse): Promise<vo
             }
 
             await productsCollection.insertOne({
-                sku: safelyParse(req, 'body.sku', parseAsString, null),
+                sku,
                 created: currentDate.toISO(),
                 lastUpdated: currentDate.toISO(),
                 userId: new ObjectId(safelyParse(req, 'body.userId', parseAsString, '')),
                 title: safelyParse(req, 'body.title', parseAsString, null),
                 slug: safelyParse(req, 'body.slug', parseAsString, null),
                 content: safelyParse(req, 'body.content', parseAsString, null),
-                imageId: safelyParse(req, 'body.imageId', parseAsString, null),
-                galleryIds: safelyParse(req, 'body.galleryIds', parseAsArrayOfStrings, null),
+                mainImage: safelyParse(req, 'body.mainImage', parseAsString, null),
+                gallery: safelyParse(req, 'body.gallery', parseAsArrayOfStrings, null),
                 productType: safelyParse(req, 'body.productType', parseAsString, null),
                 quantity: safelyParse(req, 'body.quantity', parseAsString, null),
-                cost: safelyParse(req, 'body.cost', parseAsNumber, null),
+                price: safelyParse(req, 'body.price', parseAsNumber, null),
+                salePrice: safelyParse(req, 'body.salePrice', parseAsNumber, null),
                 isInfinite: safelyParse(req, 'body.isInfinite', parseAsBoolean, false),
             });
 

@@ -3,13 +3,6 @@ import NextAuth, { DefaultSession, DefaultUser, Profile as DefaultProfile } from
 import { Roles } from '../enums/auth';
 
 declare module 'next-auth' {
-    // Update session interface for next auth.
-    interface Session {
-        user: {
-            role: Roles;
-        } & DefaultSession['user'];
-    }
-
     interface User extends DefaultUser {
         role: Roles; // Add roles to the user object.
         instagram?: string | null;
@@ -32,5 +25,10 @@ declare module 'next-auth' {
         youtube: string | null;
         ebay: string | null;
         coins: number;
+    }
+
+    // Update session interface for next auth.
+    interface Session {
+        user: User & DefaultSession['user'];
     }
 }
