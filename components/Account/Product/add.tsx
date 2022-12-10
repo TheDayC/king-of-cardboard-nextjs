@@ -26,11 +26,34 @@ const productTypes = [
 ];
 
 interface ProductBodyProps {
+    _id: string;
+    sku?: string;
+    created?: string;
+    lastUpdated?: string;
     title?: string;
+    slug?: string;
+    content?: string;
+    mainImage?: string;
+    gallery?: string[] | null;
+    productType?: ProductType;
+    quantity?: number | null;
+    price?: number;
+    salePrice?: number;
+    isInfinite?: boolean;
     isNew: boolean;
 }
 
-export const ProductBody: React.FC<ProductBodyProps> = ({ title, isNew }) => {
+export const ProductBody: React.FC<ProductBodyProps> = ({
+    title,
+    slug,
+    sku,
+    productType,
+    quantity,
+    price,
+    salePrice,
+    content: existingContent,
+    isNew,
+}) => {
     const { data: session } = useSession();
     const {
         register,
@@ -131,6 +154,10 @@ export const ProductBody: React.FC<ProductBodyProps> = ({ title, isNew }) => {
         register('content');
     }, []);
 
+    useEffect(() => {
+        setValue('content', existingContent);
+    }, [existingContent]);
+
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col space-y-4">
@@ -142,6 +169,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({ title, isNew }) => {
                         error={titleErr}
                         register={register}
                         Icon={MdOutlineTitle}
+                        defaultValue={title}
                         isRequired
                     />
                     <InputField
@@ -151,6 +179,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({ title, isNew }) => {
                         error={slugErr}
                         register={register}
                         Icon={ImFontSize}
+                        defaultValue={slug}
                         isRequired
                     />
                     <InputField
@@ -160,6 +189,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({ title, isNew }) => {
                         error={skuErr}
                         register={register}
                         Icon={AiOutlineBarcode}
+                        defaultValue={sku}
                         isRequired
                     />
                     <SelectField
@@ -169,6 +199,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({ title, isNew }) => {
                         options={productTypes}
                         error={typeErr}
                         register={register}
+                        defaultValue={productType}
                         Icon={BsBoxSeam}
                     />
                 </div>
@@ -181,6 +212,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({ title, isNew }) => {
                         error={qtyErr}
                         register={register}
                         Icon={FaBoxes}
+                        defaultValue={quantity || undefined}
                         isRequired
                     />
                     <InputField
@@ -191,6 +223,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({ title, isNew }) => {
                         error={priceErr}
                         register={register}
                         Icon={BsCurrencyPound}
+                        defaultValue={price || undefined}
                         isRequired
                     />
                     <InputField
@@ -201,6 +234,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({ title, isNew }) => {
                         error={salePriceErr}
                         register={register}
                         Icon={AiOutlinePoundCircle}
+                        defaultValue={salePrice || undefined}
                         isRequired={false}
                     />
                 </div>

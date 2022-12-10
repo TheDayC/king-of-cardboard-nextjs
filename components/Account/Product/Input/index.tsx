@@ -11,7 +11,7 @@ interface InputFieldProps {
     register: UseFormRegister<FieldValues>;
     Icon: IconType;
     isRequired: boolean;
-    defaultValue?: string;
+    defaultValue?: string | number;
 }
 
 export const InputField: React.FC<InputFieldProps> = ({

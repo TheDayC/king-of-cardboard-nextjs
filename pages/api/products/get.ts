@@ -13,7 +13,7 @@ async function getProduct(req: NextApiRequest, res: NextApiResponse): Promise<vo
             const { db } = await connectToDatabase();
 
             const productsCollection = db.collection('products');
-            const id = safelyParse(req, 'body.id', parseAsString, '');
+            const id = safelyParse(req, 'query.id', parseAsString, '');
             const existingProduct = await productsCollection.findOne({ _id: new ObjectId(id) });
 
             if (!existingProduct) {

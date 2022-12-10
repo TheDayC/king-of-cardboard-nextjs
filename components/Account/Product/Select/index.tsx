@@ -16,6 +16,7 @@ interface SelectFieldProps {
     options: Options[];
     register: UseFormRegister<FieldValues>;
     Icon: IconType;
+    defaultValue?: number;
 }
 
 export const SelectField: React.FC<SelectFieldProps> = ({
@@ -26,6 +27,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
     options,
     register,
     Icon,
+    defaultValue,
 }) => {
     return (
         <div className="form-control inline-block">
@@ -36,7 +38,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
                 <select
                     className="select select-bordered"
                     {...register(fieldName, { required: { value: true, message: instruction } })}
-                    defaultValue="default"
+                    defaultValue={defaultValue ? `${defaultValue}` : 'default'}
                 >
                     <option disabled value="default">
                         {placeholder}

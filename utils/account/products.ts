@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { errorHandler } from '../../middleware/errors';
-import { ListProducts } from '../../types/productsNew';
+import { ListProducts, Product } from '../../types/productsNew';
 import { parseAsNumber, safelyParse } from '../parsers';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
 export function getPrettyPrice(cost: number): string {
-    return `£${cost / 10}`;
+    return `£${cost / 100}`;
 }
 
 export async function addProduct(
@@ -96,6 +96,22 @@ export async function editProduct(id: string, options: any): Promise<boolean> {
     }
 
     return false;
+}
+
+export async function getProduct(id: string): Promise<Product | null> {
+    try {
+        const res = await axios.get(`${URL}/api/products/get`, {
+            params: {
+                id,
+            },
+        });
+
+        return res.data as Product;
+    } catch (error: unknown) {
+        errorHandler(error, 'Could not get product.');
+    }
+
+    return null;
 }
 
 export async function addImageToBucket(file: File, slug: string): Promise<string | null> {
