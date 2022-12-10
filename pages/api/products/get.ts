@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';
@@ -12,8 +13,8 @@ async function getProduct(req: NextApiRequest, res: NextApiResponse): Promise<vo
             const { db } = await connectToDatabase();
 
             const productsCollection = db.collection('products');
-            const sku = safelyParse(req, 'body.sku', parseAsString, null);
-            const existingProduct = await productsCollection.findOne({ sku });
+            const id = safelyParse(req, 'body.id', parseAsString, '');
+            const existingProduct = await productsCollection.findOne({ _id: new ObjectId(id) });
 
             if (!existingProduct) {
                 res.status(400).json({ message: 'Product does not exist.' });

@@ -9,11 +9,12 @@ export interface Product {
     title: string;
     slug: string;
     content: string;
-    imageId: string;
-    galleryIds: string[] | null;
+    mainImage: string;
+    gallery: string[] | null;
     productType: ProductType;
     quantity: number | null;
-    cost: number;
+    price: number;
+    salePrice: number;
     isInfinite: boolean;
 }
 

@@ -1,12 +1,16 @@
 import { DateTime } from 'luxon';
 import Link from 'next/link';
-import React from 'react';
-import { BiEdit, BiTrash } from 'react-icons/bi';
+import Image from 'next/image';
+import React, { useState } from 'react';
+import { BiEdit, BiEditAlt, BiTrash } from 'react-icons/bi';
 import { useDispatch } from 'react-redux';
 
 import { addError, addSuccess } from '../../../store/slices/alerts';
 import { Product as ProductType } from '../../../types/productsNew';
-import { convertCost, deleteProduct } from '../../../utils/account/products';
+import { getPrettyPrice, deleteProduct, editProduct } from '../../../utils/account/products';
+import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
+import { parseAsString, safelyParse } from '../../../utils/parsers';
+import { toNumber } from 'lodash';
 
 interface ProductProps {
     product: ProductType;
@@ -14,9 +18,14 @@ interface ProductProps {
 
 export const Product: React.FC<ProductProps> = ({ product }) => {
     const dispatch = useDispatch();
-    const { _id: id, title, sku, cost, quantity, lastUpdated } = product;
-    const prettyCost = convertCost(cost);
+    const { _id: id, title, sku, price, salePrice, quantity, lastUpdated, mainImage } = product;
+    const [shouldEditPrice, setShouldEditPrice] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [newPrice, setNewPrice] = useState(price);
+    const prettyPrice = getPrettyPrice(price);
+    const prettySalePrice = getPrettyPrice(price);
     const lastUpdatedDate = DateTime.fromISO(lastUpdated, { zone: 'Europe/London' });
+    const isOnSale = salePrice !== 0 && salePrice !== price;
 
     const handleDelete = async () => {
         if (id) {
@@ -32,10 +41,44 @@ export const Product: React.FC<ProductProps> = ({ product }) => {
         }
     };
 
+    const handleEditPrice = () => {
+        setShouldEditPrice(true);
+    };
+
+    const handleCancelEditPrice = () => {
+        setShouldEditPrice(false);
+    };
+
+    const handleNewPrice = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = safelyParse(e, 'target.value', parseAsString, `${price}`);
+
+        setNewPrice(toNumber(value));
+    };
+
+    const handleSubmitPrice = async () => {
+        setIsLoading(true);
+        const hasEditedProduct = await editProduct(id, { price: newPrice });
+
+        if (hasEditedProduct) {
+            dispatch(addSuccess('Price updated!'));
+        } else {
+            dispatch(addError('Price could not be updated.'));
+        }
+
+        setIsLoading(false);
+        setShouldEditPrice(false);
+    };
+
     return (
         <div className="card card-side bg-base-100 shadow-xl">
-            <figure>
-                <img src="https://placeimg.com/200/280/arch" alt="Movie" />
+            <figure className="w-48 relative">
+                <Image
+                    src={`https://kocardboard-images.s3.eu-west-1.amazonaws.com/${mainImage}`}
+                    layout="fill"
+                    objectFit="cover"
+                    alt={`${title} image`}
+                    title={`${title} image`}
+                />
             </figure>
             <div className="card-body justify-between">
                 <div className="flex flex-row justify-between">
@@ -47,8 +90,38 @@ export const Product: React.FC<ProductProps> = ({ product }) => {
                             Last updated: {lastUpdatedDate.toFormat('hh:ss')} - {lastUpdatedDate.toFormat('dd/MM/yyyy')}
                         </p>
                     </div>
-                    <div className="flex flex-col">
-                        <p className="text-5xl">{prettyCost}</p>
+                    <div className="flex flex-col justify-start">
+                        <div className="flex flex-row space-x-4 items-end">
+                            {isOnSale && <p className="text-lg text-error line-through">{prettySalePrice}</p>}
+                            {shouldEditPrice ? (
+                                <div className="flex flex-row space-x-2 items-center">
+                                    <div className="form-control">
+                                        <input
+                                            type="number"
+                                            placeholder="Price"
+                                            className="input input-sm input-bordered"
+                                            defaultValue={price}
+                                            onChange={handleNewPrice}
+                                            id="newPrice"
+                                            autoFocus
+                                        />
+                                    </div>
+                                    <AiOutlineCheck
+                                        className="inline-block text-xl text-success cursor-pointer"
+                                        onClick={handleSubmitPrice}
+                                    />
+                                    <AiOutlineClose
+                                        className="inline-block text-xl text-error cursor-pointer"
+                                        onClick={handleCancelEditPrice}
+                                    />
+                                </div>
+                            ) : (
+                                <div className="flex flex-row space-x-4 items-center" onClick={handleEditPrice}>
+                                    <p className="text-5xl">{prettyPrice}</p>
+                                    <BiEditAlt className="inline-block text-2xl text-gray-400 cursor-pointer mt-1" />
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
                 <div className="card-actions justify-start">

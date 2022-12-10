@@ -5,7 +5,7 @@ import { parseAsNumber, safelyParse } from '../parsers';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
-export function convertCost(cost: number): string {
+export function getPrettyPrice(cost: number): string {
     return `£${cost / 10}`;
 }
 
@@ -71,6 +71,22 @@ export async function deleteProduct(id: string): Promise<boolean> {
             data: {
                 id,
             },
+        });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
+
+        return status === 204;
+    } catch (error: unknown) {
+        errorHandler(error, 'Could not delete product.');
+    }
+
+    return false;
+}
+
+export async function editProduct(id: string, options: any): Promise<boolean> {
+    try {
+        const res = await axios.put(`${URL}/api/products/edit`, {
+            ...options,
+            id,
         });
         const status = safelyParse(res, 'status', parseAsNumber, 500);
 

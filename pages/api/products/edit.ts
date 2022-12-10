@@ -20,8 +20,8 @@ async function editProduct(req: NextApiRequest, res: NextApiResponse): Promise<v
             const { db } = await connectToDatabase();
 
             const productsCollection = db.collection('products');
-            const sku = safelyParse(req, 'body.sku', parseAsString, null);
-            const existingProduct = await productsCollection.findOne({ sku });
+            const id = safelyParse(req, 'body.id', parseAsString, '');
+            const existingProduct = await productsCollection.findOne({ _id: new ObjectId(id) });
             const currentDate = DateTime.now().setZone('Europe/London');
 
             if (!existingProduct) {
@@ -30,7 +30,7 @@ async function editProduct(req: NextApiRequest, res: NextApiResponse): Promise<v
             }
 
             await productsCollection.updateOne(
-                { sku },
+                { _id: new ObjectId(id) },
                 {
                     $set: {
                         sku: safelyParse(req, 'body.sku', parseAsString, existingProduct.sku),
@@ -40,16 +40,11 @@ async function editProduct(req: NextApiRequest, res: NextApiResponse): Promise<v
                         title: safelyParse(req, 'body.title', parseAsString, existingProduct.title),
                         slug: safelyParse(req, 'body.slug', parseAsString, existingProduct.slug),
                         content: safelyParse(req, 'body.content', parseAsString, existingProduct.content),
-                        imageId: safelyParse(req, 'body.imageId', parseAsString, existingProduct.imageId),
-                        galleryIds: safelyParse(
-                            req,
-                            'body.galleryIds',
-                            parseAsArrayOfStrings,
-                            existingProduct.galleryIds
-                        ),
+                        mainImage: safelyParse(req, 'body.mainImage', parseAsString, existingProduct.mainImage),
+                        gallery: safelyParse(req, 'body.gallery', parseAsArrayOfStrings, existingProduct.gallery),
                         productType: safelyParse(req, 'body.productType', parseAsString, existingProduct.productType),
                         quantity: safelyParse(req, 'body.quantity', parseAsString, existingProduct.quantity),
-                        cost: safelyParse(req, 'body.cost', parseAsNumber, existingProduct.cost),
+                        price: safelyParse(req, 'body.price', parseAsNumber, existingProduct.price),
                         isInfinite: safelyParse(req, 'body.isInfinite', parseAsBoolean, existingProduct.isInfinite),
                     },
                 }

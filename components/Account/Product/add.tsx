@@ -25,7 +25,12 @@ const productTypes = [
     { key: 'Other', value: ProductType.Other },
 ];
 
-export const AddProduct: React.FC = () => {
+interface ProductBodyProps {
+    title?: string;
+    isNew: boolean;
+}
+
+export const ProductBody: React.FC<ProductBodyProps> = ({ title, isNew }) => {
     const { data: session } = useSession();
     const {
         register,
@@ -243,4 +248,4 @@ export const AddProduct: React.FC = () => {
     );
 };
 
-export default AddProduct;
+export default ProductBody;
