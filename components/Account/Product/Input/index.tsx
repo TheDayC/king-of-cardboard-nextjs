@@ -40,7 +40,7 @@ export const InputField: React.FC<InputFieldProps> = ({
             </label>
             {error && (
                 <label className="label">
-                    <span className="label-text-alt">{error}</span>
+                    <span className={`label-text-alt${error ? ' text-error' : ''}`}>{error}</span>
                 </label>
             )}
         </div>

@@ -24,19 +24,19 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
     return (
         <div className="flex flex-row space-x-4">
-            <div className="form-control">
+            <div className="form-control rounded-md">
                 <label className="label">
                     <span className="label-text">{label}</span>
                 </label>
                 <input
                     type="file"
-                    className="file-input file-input-bordered w-full max-w-xs"
+                    className={`file-input file-input-bordered w-full max-w-xs${error ? ' input-error' : ''}`}
                     multiple={isMultiple}
                     {...register(fieldName, { required })}
                 />
                 {error && (
                     <label className="label">
-                        <span className="label-text-alt">{error}</span>
+                        <span className={`label-text-alt${error ? ' text-error' : ''}`}>{error}</span>
                     </label>
                 )}
             </div>

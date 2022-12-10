@@ -42,10 +42,12 @@ const formats = [
 
 interface RichTextEditorProps {
     placeholder: string;
+    value: string;
     onChange(content: string): void;
 }
 
-export const RichTextEditor: React.FC<RichTextEditorProps> = ({ placeholder, onChange }) => {
+export const RichTextEditor: React.FC<RichTextEditorProps> = ({ placeholder, value, onChange }) => {
+    console.log('🚀 ~ file: index.tsx:50 ~ value', value);
     const handleChange = (content: string) => {
         onChange(content);
     };
@@ -57,6 +59,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({ placeholder, onC
             theme="snow"
             placeholder={placeholder}
             onChange={handleChange}
+            value={value}
         />
     );
 };

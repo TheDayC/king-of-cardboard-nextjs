@@ -33,12 +33,12 @@ export const AddProduct: React.FC = () => {
         formState: { errors },
         setValue,
         setError,
+        reset,
+        getValues,
     } = useForm();
+    const { content } = getValues();
     const dispatch = useDispatch();
-    const [mainImage, setMainImage] = useState<string | null>(null);
-    const [gallery, setGallery] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [hasAddedProduct, setHasAddedProduct] = useState<boolean | null>(null);
 
     // Errors
     const hasErrors = Object.keys(errors).length > 0;
@@ -60,17 +60,15 @@ export const AddProduct: React.FC = () => {
             return;
         }
         setIsLoading(true);
-        setHasAddedProduct(null);
-        const { sku, slug, title, content, productType, quantity, price, salePrice } = data;
-        const file = data.mainImage[0] as File; // Don't conflict with gallery mainImage.
-        const galleryFileList = data.gallery as FileList; // Don't conflict with gallery state.
+
+        const { sku, slug, title, content, productType, quantity, price, salePrice, mainImage, gallery } = data;
+        const file = mainImage[0] as File;
+        const galleryFileList = gallery as FileList;
 
         // Upload the main image.
         const fileName = await addImageToBucket(file, slug);
 
-        if (fileName) {
-            setMainImage(fileName);
-        } else {
+        if (!fileName) {
             setError('mainImage', {
                 type: 'custom',
                 message: 'Could not upload main image.',
@@ -83,9 +81,7 @@ export const AddProduct: React.FC = () => {
         // Upload gallery images
         const galleryFileNames = await addGalleryToBucket(galleryFileList, slug);
 
-        if (galleryFileNames) {
-            setGallery(uniq([...gallery, ...galleryFileNames]));
-        } else {
+        if (!galleryFileNames) {
             setError('gallery', {
                 type: 'custom',
                 message: 'Could not upload gallery images.',
@@ -102,8 +98,8 @@ export const AddProduct: React.FC = () => {
             title,
             slug,
             content,
-            mainImage,
-            gallery,
+            fileName,
+            galleryFileNames,
             productType,
             toNumber(quantity),
             toNumber(price),
@@ -117,10 +113,12 @@ export const AddProduct: React.FC = () => {
             dispatch(addError('Product already exists.'));
         }
 
+        reset();
+        handleRichContent(undefined);
         setIsLoading(false);
     };
 
-    const handleRichContent = (content: string) => {
+    const handleRichContent = (content?: string) => {
         setValue('content', content);
     };
 
@@ -201,7 +199,7 @@ export const AddProduct: React.FC = () => {
                         isRequired={false}
                     />
                 </div>
-                <div className="flex flex-row space-x-4">
+                <div className="flex flex-col space-x-4">
                     <ImageUpload
                         fieldName="mainImage"
                         title="Main image"
@@ -211,6 +209,8 @@ export const AddProduct: React.FC = () => {
                         error={mainImageErr}
                         register={register}
                     />
+                </div>
+                <div className="flex flex-row space-x-4">
                     <ImageUpload
                         fieldName="gallery"
                         title="Gallery images"
@@ -222,7 +222,7 @@ export const AddProduct: React.FC = () => {
                     />
                 </div>
                 <div className="flex flex-col">
-                    <RichTextEditor placeholder="Content" onChange={handleRichContent} />
+                    <RichTextEditor placeholder="Content" onChange={handleRichContent} value={content as string} />
                 </div>
 
                 <div className="form-control">
