@@ -16,6 +16,7 @@ import { addGalleryToBucket, addImageToBucket, addProduct } from '../../../utils
 import { useSession } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
 import { addError, addSuccess } from '../../../store/slices/alerts';
+import ImageUpload from './ImageUpload';
 
 const productTypes = [
     { key: 'Sealed', value: ProductType.Sealed },
@@ -201,41 +202,24 @@ export const AddProduct: React.FC = () => {
                     />
                 </div>
                 <div className="flex flex-row space-x-4">
-                    <div className="form-control">
-                        <label className="label">
-                            <span className="label-text">Select main image</span>
-                        </label>
-                        <input
-                            type="file"
-                            className="file-input file-input-bordered w-full max-w-xs"
-                            {...register('mainImage', {
-                                required: { value: true, message: 'Main image is required' },
-                            })}
-                        />
-                        {mainImageErr && (
-                            <label className="label">
-                                <span className="label-text-alt">{mainImageErr}</span>
-                            </label>
-                        )}
-                    </div>
-                    <div className="form-control">
-                        <label className="label">
-                            <span className="label-text">Select gallery images</span>
-                        </label>
-                        <input
-                            type="file"
-                            className="file-input file-input-bordered w-full max-w-xs"
-                            multiple
-                            {...register('gallery', {
-                                required: false,
-                            })}
-                        />
-                        {galleryErr && (
-                            <label className="label">
-                                <span className="label-text-alt">{galleryErr}</span>
-                            </label>
-                        )}
-                    </div>
+                    <ImageUpload
+                        fieldName="mainImage"
+                        title="Main image"
+                        label="Select main image"
+                        isRequired
+                        isMultiple={false}
+                        error={mainImageErr}
+                        register={register}
+                    />
+                    <ImageUpload
+                        fieldName="gallery"
+                        title="Gallery images"
+                        label="Select gallery images"
+                        isRequired={false}
+                        isMultiple
+                        error={galleryErr}
+                        register={register}
+                    />
                 </div>
                 <div className="flex flex-col">
                     <RichTextEditor placeholder="Content" onChange={handleRichContent} />
