@@ -45,6 +45,7 @@ async function editProduct(req: NextApiRequest, res: NextApiResponse): Promise<v
                         productType: safelyParse(req, 'body.productType', parseAsNumber, existingProduct.productType),
                         quantity: safelyParse(req, 'body.quantity', parseAsNumber, existingProduct.quantity),
                         price: safelyParse(req, 'body.price', parseAsNumber, existingProduct.price),
+                        salePrice: safelyParse(req, 'body.salePrice', parseAsNumber, existingProduct.salePrice),
                         isInfinite: safelyParse(req, 'body.isInfinite', parseAsBoolean, existingProduct.isInfinite),
                     },
                 }
