@@ -86,6 +86,7 @@ export async function deleteProduct(key: string): Promise<boolean> {
 }
 
 export async function editProduct(id: string, options: any): Promise<boolean> {
+    console.log('🚀 ~ file: products.ts:89 ~ editProduct ~ options', options);
     try {
         const res = await axios.put(`${URL}/api/products/edit`, {
             ...options,

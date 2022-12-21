@@ -92,14 +92,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     const userId = session ? session.user.id : null;
 
     const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
-        if (!mainImageFileList) {
-            setError('mainImage', {
-                type: 'custom',
-                message: 'Must select a main image',
-            });
-        }
-
-        if (hasErrors || isLoading || !mainImageFileList) {
+        if (hasErrors || isLoading) {
             return;
         }
 
@@ -174,7 +167,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                 content,
                 mainImage: fileName,
                 gallery: galleryFileNames,
-                productType,
+                productType: toNumber(productType),
                 quantity: toNumber(quantity),
                 price: toNumber(price),
                 salePrice: toNumber(salePrice),
@@ -289,7 +282,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                             fieldName="mainImage"
                             title="Main image"
                             label="Select main image"
-                            isRequired
+                            isRequired={false}
                             isMultiple={false}
                             error={mainImageErr}
                             register={register}
