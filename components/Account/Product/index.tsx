@@ -23,7 +23,7 @@ export const Product: React.FC<ProductProps> = ({ product }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [newPrice, setNewPrice] = useState(price);
     const prettyPrice = getPrettyPrice(price);
-    const prettySalePrice = getPrettyPrice(price);
+    const prettySalePrice = getPrettyPrice(salePrice);
     const lastUpdatedDate = DateTime.fromISO(lastUpdated, { zone: 'Europe/London' });
     const isOnSale = salePrice !== 0 && salePrice !== price;
 
@@ -92,7 +92,7 @@ export const Product: React.FC<ProductProps> = ({ product }) => {
                     </div>
                     <div className="flex flex-col justify-start">
                         <div className="flex flex-row space-x-4 items-end">
-                            {isOnSale && <p className="text-lg text-error line-through">{prettySalePrice}</p>}
+                            {isOnSale && <p className="text-lg text-error line-through">{prettyPrice}</p>}
                             {shouldEditPrice ? (
                                 <div className="flex flex-row space-x-2 items-center">
                                     <div className="form-control">
@@ -100,7 +100,7 @@ export const Product: React.FC<ProductProps> = ({ product }) => {
                                             type="number"
                                             placeholder="Price"
                                             className="input input-sm input-bordered"
-                                            defaultValue={price}
+                                            defaultValue={isOnSale ? salePrice : price}
                                             onChange={handleNewPrice}
                                             id="newPrice"
                                             autoFocus
@@ -117,7 +117,7 @@ export const Product: React.FC<ProductProps> = ({ product }) => {
                                 </div>
                             ) : (
                                 <div className="flex flex-row space-x-4 items-center" onClick={handleEditPrice}>
-                                    <p className="text-5xl">{prettyPrice}</p>
+                                    <p className="text-5xl">{isOnSale ? prettySalePrice : prettyPrice}</p>
                                     <BiEditAlt className="inline-block text-2xl text-gray-400 cursor-pointer mt-1" />
                                 </div>
                             )}
