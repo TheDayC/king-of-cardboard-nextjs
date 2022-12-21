@@ -15,9 +15,10 @@ import Loading from '../../Loading';
 
 interface ProductProps {
     product: ProductType;
+    updateProducts: () => void;
 }
 
-export const Product: React.FC<ProductProps> = ({ product }) => {
+export const Product: React.FC<ProductProps> = ({ product, updateProducts }) => {
     const dispatch = useDispatch();
     const { _id: id, title, sku, price, salePrice, quantity, lastUpdated, mainImage } = product;
     const [shouldEditPrice, setShouldEditPrice] = useState(false);
@@ -71,6 +72,7 @@ export const Product: React.FC<ProductProps> = ({ product }) => {
 
         setShouldEditPrice(false);
         setIsLoading(false);
+        updateProducts();
     };
 
     return (
