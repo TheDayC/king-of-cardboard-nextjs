@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { GetServerSideProps } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 import Link from 'next/link';
@@ -12,6 +12,7 @@ import { Roles } from '../../../enums/auth';
 import { Product as ProductType } from '../../../types/productsNew';
 import Product from '../../../components/Account/Product';
 import Loading from '../../../components/Loading';
+import Pagination from '../../../components/Pagination';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const session = await unstable_getServerSession(req, res, authOptions);
@@ -31,7 +32,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     return {
         props: {
             initialProducts: products,
-            totalProducts: count,
+            initialTotalProducts: count,
         },
     };
 };
@@ -43,12 +44,14 @@ interface ProductsPageProps {
 
 export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, initialTotalProducts }) => {
     const [products, setProducts] = useState<ProductType[]>(initialProducts);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [count, setCount] = useState(10);
     const [page, setPage] = useState(1);
     const [totalProducts, setTotalProducts] = useState(initialTotalProducts);
     const [isLoading, setIsLoading] = useState(false);
+    const pageCount = totalProducts % 10;
 
-    const handleUpdateProducts = async () => {
+    const handleUpdateProducts = useCallback(async () => {
         setIsLoading(true);
         const { products: newProducts, count: newTotalProducts } = await listProducts(count, page);
 
@@ -56,6 +59,11 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
         setTotalProducts(newTotalProducts);
 
         setIsLoading(false);
+    }, [count, page, setIsLoading]);
+
+    const handlePageNumber = (nextPage: number) => {
+        setPage(nextPage);
+        handleUpdateProducts();
     };
 
     return (
@@ -80,6 +88,9 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
                                 updateProducts={handleUpdateProducts}
                             />
                         ))}
+                    {pageCount > 1 && (
+                        <Pagination currentPage={page - 1} pageCount={pageCount} handlePageNumber={handlePageNumber} />
+                    )}
                 </div>
             </div>
         </AccountWrapper>
