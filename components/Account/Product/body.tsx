@@ -5,19 +5,20 @@ import { MdOutlineTitle } from 'react-icons/md';
 import { ImFontSize } from 'react-icons/im';
 import { AiOutlineBarcode, AiOutlinePoundCircle } from 'react-icons/ai';
 import { FaBoxes } from 'react-icons/fa';
-import { toNumber, uniq } from 'lodash';
+import { toNumber } from 'lodash';
+import { BiSave } from 'react-icons/bi';
+import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
+import { useDispatch } from 'react-redux';
 
 import InputField from './Input';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import RichTextEditor from '../../RichTextEditor';
 import SelectField from './Select';
 import { ProductType } from '../../../enums/products';
-import { addGalleryToBucket, addImageToBucket, addProduct } from '../../../utils/account/products';
-import { useSession } from 'next-auth/react';
-import { useDispatch } from 'react-redux';
+import { addGalleryToBucket, addImageToBucket, addProduct, editProduct } from '../../../utils/account/products';
 import { addError, addSuccess } from '../../../store/slices/alerts';
 import ImageUpload from './ImageUpload';
-import { BiEdit, BiSave } from 'react-icons/bi';
 
 const productTypes = [
     { key: 'Sealed', value: ProductType.Sealed },
@@ -45,14 +46,17 @@ interface ProductBodyProps {
 }
 
 export const ProductBody: React.FC<ProductBodyProps> = ({
+    _id,
+    sku,
     title,
     slug,
-    sku,
+    content: existingContent,
+    mainImage,
+    gallery,
     productType,
     quantity,
     price,
     salePrice,
-    content: existingContent,
     isNew,
 }) => {
     const { data: session } = useSession();
@@ -65,9 +69,12 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
         reset,
         getValues,
     } = useForm();
+    const router = useRouter();
     const { content } = getValues();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
+    const [mainImageFileList, setMainImageFileList] = useState<FileList | null>(null);
+    const [galleryFileList, setGalleryFileList] = useState<FileList | null>(null);
 
     // Errors
     const hasErrors = Object.keys(errors).length > 0;
@@ -85,65 +92,102 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     const userId = session ? session.user.id : null;
 
     const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
-        if (hasErrors || isLoading) {
-            return;
-        }
-        setIsLoading(true);
-
-        const { sku, slug, title, content, productType, quantity, price, salePrice, mainImage, gallery } = data;
-        const file = mainImage[0] as File;
-        const galleryFileList = gallery as FileList;
-
-        // Upload the main image.
-        const fileName = await addImageToBucket(file, slug);
-
-        if (!fileName) {
+        if (!mainImageFileList) {
             setError('mainImage', {
                 type: 'custom',
-                message: 'Could not upload main image.',
+                message: 'Must select a main image',
             });
+        }
 
-            setIsLoading(false);
+        if (hasErrors || isLoading || !mainImageFileList) {
             return;
+        }
+
+        setIsLoading(true);
+
+        const { sku, slug, title, content, productType, quantity, price, salePrice } = data;
+        let fileName: string | null = mainImage ?? null;
+        let galleryFileNames: string[] | null = gallery ?? null;
+
+        // Upload the main image.
+        if (mainImageFileList) {
+            const file = mainImageFileList[0];
+
+            fileName = await addImageToBucket(file, slug);
+
+            if (!fileName) {
+                setError('mainImage', {
+                    type: 'custom',
+                    message: 'Could not upload main image.',
+                });
+
+                setIsLoading(false);
+                return;
+            }
         }
 
         // Upload gallery images
-        const galleryFileNames = await addGalleryToBucket(galleryFileList, slug);
+        if (galleryFileList) {
+            galleryFileNames = await addGalleryToBucket(galleryFileList, slug);
 
-        if (!galleryFileNames) {
-            setError('gallery', {
-                type: 'custom',
-                message: 'Could not upload gallery images.',
+            if (!galleryFileNames) {
+                setError('gallery', {
+                    type: 'custom',
+                    message: 'Could not upload gallery images.',
+                });
+
+                setIsLoading(false);
+                return;
+            }
+        }
+
+        if (isNew) {
+            const hasAddedProduct = await addProduct(
+                sku,
+                userId,
+                title,
+                slug,
+                content,
+                fileName,
+                galleryFileNames,
+                productType,
+                toNumber(quantity),
+                toNumber(price),
+                toNumber(salePrice),
+                false
+            );
+
+            if (hasAddedProduct) {
+                dispatch(addSuccess('Product added!'));
+            } else {
+                dispatch(addError('Product already exists.'));
+            }
+            reset();
+            handleRichContent(undefined);
+            router.push('/account/products');
+        } else {
+            const hasEditedProduct = await editProduct(_id || '', {
+                sku,
+                userId,
+                title,
+                slug,
+                content,
+                mainImage: fileName,
+                gallery: galleryFileNames,
+                productType,
+                quantity: toNumber(quantity),
+                price: toNumber(price),
+                salePrice: toNumber(salePrice),
+                isInfinite: false,
             });
 
-            setIsLoading(false);
-            return;
+            if (hasEditedProduct) {
+                dispatch(addSuccess('Product saved!'));
+            } else {
+                dispatch(addError('Product could not be saved.'));
+            }
         }
 
-        // Add product to the database.
-        const hasAddedProduct = await addProduct(
-            sku,
-            userId,
-            title,
-            slug,
-            content,
-            fileName,
-            galleryFileNames,
-            productType,
-            toNumber(quantity),
-            toNumber(price),
-            toNumber(salePrice),
-            false
-        );
-
-        if (hasAddedProduct) {
-            dispatch(addSuccess('Product added!'));
-        } else {
-            dispatch(addError('Product already exists.'));
-        }
-
-        reset();
-        handleRichContent(undefined);
         setIsLoading(false);
     };
 
@@ -239,27 +283,33 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         isRequired={false}
                     />
                 </div>
-                <div className="flex flex-col space-x-4">
-                    <ImageUpload
-                        fieldName="mainImage"
-                        title="Main image"
-                        label="Select main image"
-                        isRequired
-                        isMultiple={false}
-                        error={mainImageErr}
-                        register={register}
-                    />
-                </div>
-                <div className="flex flex-row space-x-4">
-                    <ImageUpload
-                        fieldName="gallery"
-                        title="Gallery images"
-                        label="Select gallery images"
-                        isRequired={false}
-                        isMultiple
-                        error={galleryErr}
-                        register={register}
-                    />
+                <div className="flex flex-row space-x-4 w-full">
+                    <div className="w-1/2">
+                        <ImageUpload
+                            fieldName="mainImage"
+                            title="Main image"
+                            label="Select main image"
+                            isRequired
+                            isMultiple={false}
+                            error={mainImageErr}
+                            register={register}
+                            currentImages={mainImage}
+                            setFileList={setMainImageFileList}
+                        />
+                    </div>
+                    <div className="w-1/2">
+                        <ImageUpload
+                            fieldName="gallery"
+                            title="Gallery images"
+                            label="Select gallery images"
+                            isRequired={false}
+                            isMultiple
+                            error={galleryErr}
+                            register={register}
+                            currentImages={gallery || undefined}
+                            setFileList={setGalleryFileList}
+                        />
+                    </div>
                 </div>
                 <div className="flex flex-col">
                     <RichTextEditor placeholder="Content" onChange={handleRichContent} value={content as string} />

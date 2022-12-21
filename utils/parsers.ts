@@ -37,6 +37,7 @@ import {
     isArrayOfRepeater,
     isDocument,
     isArrayOfNumbers,
+    isFile,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
@@ -215,6 +216,7 @@ export const parseAsNumber = parseAsType(isNumber);
 export const parseAsBoolean = parseAsType(isBoolean);
 export const parseAsArray = parseAsType(isArray);
 export const parseAsUnknown = parseAsType(isUnknown);
+export const parseAsFile = parseAsType(isFile);
 export const parseAsArrayOfStrings = parseAsType(isArrayOfStrings);
 export const parseAsArrayOfNumbers = parseAsType(isArrayOfNumbers);
 export const parseAsSocialMedia = parseAsType(isSocialMedia);

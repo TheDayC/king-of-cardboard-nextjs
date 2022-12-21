@@ -45,7 +45,7 @@ export const Header: React.FC = () => {
                     </label>
                     <Link href="/" passHref>
                         <div className="h-auto w-44 cursor-pointer lg:block" role="link" data-testid="logo">
-                            <Image src={logo} alt="King of Cardboard Logo Header" title="King of Cardboard" />
+                            <Image src={logo} alt="King of Cardboard Logo Header" title="King of Cardboard" priority />
                         </div>
                     </Link>
                 </div>

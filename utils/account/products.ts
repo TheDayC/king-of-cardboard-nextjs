@@ -1,4 +1,7 @@
 import axios from 'axios';
+import { Upload } from '@aws-sdk/lib-storage';
+
+import { s3Client } from '../../lib/aws';
 import { errorHandler } from '../../middleware/errors';
 import { ListProducts, Product } from '../../types/productsNew';
 import { parseAsNumber, safelyParse } from '../parsers';
@@ -65,11 +68,11 @@ export async function listProducts(count: number, page: number): Promise<ListPro
     return { products: [], count: 0 };
 }
 
-export async function deleteProduct(id: string): Promise<boolean> {
+export async function deleteProduct(key: string): Promise<boolean> {
     try {
         const res = await axios.delete(`${URL}/api/products/delete`, {
             data: {
-                id,
+                key,
             },
         });
         const status = safelyParse(res, 'status', parseAsNumber, 500);
@@ -117,21 +120,25 @@ export async function getProduct(id: string): Promise<Product | null> {
 export async function addImageToBucket(file: File, slug: string): Promise<string | null> {
     try {
         const fileName = `products/${slug}/${file.name}`;
-        const imageUrlRes = await axios.get('/api/images/upload', {
+
+        const parallelUploads3 = new Upload({
+            client: s3Client,
             params: {
-                file: fileName,
-                fileType: file.type,
+                Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
+                Key: fileName,
+                Body: file,
+                ContentType: file.type,
             },
+            queueSize: 4, // optional concurrency configuration
+            partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
+            leavePartsOnError: false, // optional manually handle dropped parts
         });
 
-        const { url, fields } = await imageUrlRes.data;
-        const formData = new FormData();
-
-        Object.entries({ ...fields, file }).forEach(([key, value]) => {
-            formData.append(key, value as string);
+        parallelUploads3.on('httpUploadProgress', (progress) => {
+            console.log(progress);
         });
 
-        await axios.post(url, formData);
+        await parallelUploads3.done();
 
         return fileName;
     } catch (err) {
@@ -153,5 +160,20 @@ export async function addGalleryToBucket(imageFiles: FileList, slug: string): Pr
         return fileNames;
     } catch (err) {
         return null;
+    }
+}
+
+export async function deleteImageFromBucket(key: string): Promise<boolean> {
+    try {
+        const res = await axios.delete('/api/images/delete', {
+            params: {
+                key,
+            },
+        });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
+
+        return status === 204;
+    } catch (err) {
+        return false;
     }
 }

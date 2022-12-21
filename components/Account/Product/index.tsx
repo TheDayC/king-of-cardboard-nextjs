@@ -71,11 +71,11 @@ export const Product: React.FC<ProductProps> = ({ product }) => {
 
     return (
         <div className="card card-side bg-base-100 shadow-xl">
-            <figure className="w-48 relative">
+            <figure className="w-48 overflow-hidden relative">
                 <Image
                     src={`https://kocardboard-images.s3.eu-west-1.amazonaws.com/${mainImage}`}
-                    layout="fill"
-                    objectFit="cover"
+                    fill
+                    sizes="(max-width: 192px) 100vw"
                     alt={`${title} image`}
                     title={`${title} image`}
                 />
