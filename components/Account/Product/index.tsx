@@ -4,13 +4,14 @@ import Image from 'next/image';
 import React, { useState } from 'react';
 import { BiEdit, BiEditAlt, BiTrash } from 'react-icons/bi';
 import { useDispatch } from 'react-redux';
+import { toNumber } from 'lodash';
+import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
 
 import { addError, addSuccess } from '../../../store/slices/alerts';
 import { Product as ProductType } from '../../../types/productsNew';
 import { getPrettyPrice, deleteProduct, editProduct } from '../../../utils/account/products';
-import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
-import { toNumber } from 'lodash';
+import Loading from '../../Loading';
 
 interface ProductProps {
     product: ProductType;
@@ -65,8 +66,8 @@ export const Product: React.FC<ProductProps> = ({ product }) => {
             dispatch(addError('Price could not be updated.'));
         }
 
-        setIsLoading(false);
         setShouldEditPrice(false);
+        setIsLoading(false);
     };
 
     return (
@@ -94,7 +95,8 @@ export const Product: React.FC<ProductProps> = ({ product }) => {
                         <div className="flex flex-row space-x-4 items-end">
                             {isOnSale && <p className="text-lg text-error line-through">{prettyPrice}</p>}
                             {shouldEditPrice ? (
-                                <div className="flex flex-row space-x-2 items-center">
+                                <div className="flex flex-row space-x-2 items-center relative">
+                                    {isLoading && <Loading show width={5} height={5} />}
                                     <div className="form-control">
                                         <input
                                             type="number"

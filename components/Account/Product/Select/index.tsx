@@ -1,7 +1,6 @@
 import React from 'react';
 import { FieldValues, UseFormRegister } from 'react-hook-form';
 import { IconType } from 'react-icons/lib';
-import { ProductType } from '../../../../enums/products';
 
 interface Options {
     key: string;

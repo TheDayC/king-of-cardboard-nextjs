@@ -2,6 +2,7 @@ import React from 'react';
 import { GetServerSideProps } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 import Link from 'next/link';
+import { MdAddCircleOutline } from 'react-icons/md';
 
 import AccountWrapper from '../../../components/AccountWrapper';
 import { authOptions } from '../../api/auth/[...nextauth]';
@@ -10,7 +11,6 @@ import { parseAsRole, safelyParse } from '../../../utils/parsers';
 import { Roles } from '../../../enums/auth';
 import { Product as ProductType } from '../../../types/productsNew';
 import Product from '../../../components/Account/Product';
-import { MdAddCircleOutline } from 'react-icons/md';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const session = await unstable_getServerSession(req, res, authOptions);
@@ -40,7 +40,7 @@ interface ProductsPageProps {
     count: number;
 }
 
-export const ProductsPage: React.FC<ProductsPageProps> = ({ products, count }) => {
+export const ProductsPage: React.FC<ProductsPageProps> = ({ products }) => {
     return (
         <AccountWrapper title="Products - Account - King of Cardboard" description="Account page">
             <div className="flex flex-col w-full justify-start items-start p-2 md:p-4 md:p-8 md:flex-row">

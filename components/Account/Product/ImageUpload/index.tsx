@@ -1,14 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
 import { FieldValues, UseFormRegister } from 'react-hook-form';
-import { FiEdit2, FiTrash2 } from 'react-icons/fi';
-
-import { isArray, isArrayOfStrings, isString } from '../../../../utils/typeguards';
-import { deleteImageFromBucket, deleteProduct } from '../../../../utils/account/products';
-import { forEach } from 'lodash';
-import Previews from './Previews';
 import { BiEditAlt } from 'react-icons/bi';
-import { AiFillFolderAdd, AiOutlineFileAdd } from 'react-icons/ai';
+import { AiOutlineFileAdd } from 'react-icons/ai';
+
+import { isArray } from '../../../../utils/typeguards';
+import Previews from './Previews';
 
 interface ImageUploadProps {
     fieldName: string;
@@ -34,7 +30,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     setFileList,
 }) => {
     const required = isRequired ? { value: true, message: `${title} is required` } : false;
-    const { ref, onChange, ...fields } = register(fieldName, { required });
+    const { ref, ...fields } = register(fieldName, { required });
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [previews, setPreviews] = useState<string[]>([]);
     const hasPreviews = previews.length > 0;
@@ -115,8 +111,8 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                         ref(instance); // RHF wants a reference to this input
                         inputRef.current = instance; // We also need it to manipulate the element
                     }}
-                    onChange={handleOnChange}
                     {...fields}
+                    onChange={handleOnChange}
                 />
                 {error && (
                     <label className="label">

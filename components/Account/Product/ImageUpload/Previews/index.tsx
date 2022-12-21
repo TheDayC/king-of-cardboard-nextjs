@@ -3,10 +3,9 @@ import Image from 'next/image';
 
 interface PreviewsProps {
     previews: string[];
-    currentImages?: string | string[];
 }
 
-export const Previews: React.FC<PreviewsProps> = ({ previews, currentImages }) => {
+export const Previews: React.FC<PreviewsProps> = ({ previews }) => {
     const [currentPreview, setCurrentPreview] = useState<string | null>(null);
 
     const changeImage = (preview: string) => {

@@ -190,11 +190,11 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
 
     useEffect(() => {
         register('content');
-    }, []);
+    }, [register]);
 
     useEffect(() => {
         setValue('content', existingContent);
-    }, [existingContent]);
+    }, [existingContent, setValue]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
