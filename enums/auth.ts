@@ -3,3 +3,10 @@ export enum Tabs {
     Register = 'register',
     Reset = 'reset',
 }
+
+export enum Roles {
+    Admin,
+    Breaker,
+    Collector,
+    User,
+}

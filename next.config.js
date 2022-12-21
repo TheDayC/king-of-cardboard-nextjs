@@ -2,7 +2,13 @@
 module.exports = {
     reactStrictMode: true,
     images: {
-        domains: ['images.ctfassets.net', 'www.gravatar.com', 'picsum.photos', 'placeimg.com'],
+        domains: [
+            'images.ctfassets.net',
+            'www.gravatar.com',
+            'picsum.photos',
+            'placeimg.com',
+            'kocardboard-images.s3.eu-west-1.amazonaws.com',
+        ],
     },
     async headers() {
         return [

@@ -28,6 +28,8 @@
         ]
     },
     "dependencies": {
+        "@aws-sdk/client-s3": "^3.235.0",
+        "@aws-sdk/lib-storage": "^3.235.0",
         "@commercelayer/sdk": "^4.19.0",
         "@contentful/rich-text-react-renderer": "^15.12.1",
         "@next-auth/mongodb-adapter": "1.1.0",
@@ -35,8 +37,11 @@
         "@sendgrid/mail": "^7.7.0",
         "@stripe/react-stripe-js": "^1.15.0",
         "@stripe/stripe-js": "^1.44.1",
+        "aws-cdk-lib": "^2.53.0",
         "axios": "^1.2.0",
+        "bcrypt": "^5.1.0",
         "chart.js": "^4.0.1",
+        "constructs": "^10.1.180",
         "contentful": "^9.2.13",
         "cors": "^2.8.5",
         "daisyui": "^2.41.0",
@@ -56,12 +61,14 @@
         "react-hook-form": "^7.39.5",
         "react-icons": "^4.6.0",
         "react-image-magnifiers": "^1.4.0",
+        "react-quill": "^2.0.0",
         "react-redux": "^8.0.5",
         "react-slideshow-image": "^4.0.5",
         "redux-persist": "^6.0.0"
     },
     "devDependencies": {
         "@contentful/rich-text-types": "^15.14.1",
+        "@types/bcrypt": "^5.0.0",
         "@types/cors": "^2.8.12",
         "@types/gtag.js": "^0.0.12",
         "@types/js-cookie": "^3.0.2",
@@ -75,6 +82,7 @@
         "@typescript-eslint/eslint-plugin": "^5.44.0",
         "@typescript-eslint/parser": "^5.44.0",
         "autoprefixer": "^10.4.13",
+        "aws-cdk": "^2.53.0",
         "dotenv": "^16.0.3",
         "eslint": "^8.28.0",
         "eslint-config-next": "^13.0.4",

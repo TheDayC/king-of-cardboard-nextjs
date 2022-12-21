@@ -61,9 +61,9 @@ export const AccountWrapper: React.FC<AccountWrapperProps> = ({ title, descripti
                 <meta name="twitter:image" content={imageURL} />
             </Head>
             {isFetchingToken ? (
-                <Loading show={true} />
+                <Loading show />
             ) : (
-                <div className="flex flex-row justify-start items-start bg-primary-content h-full">
+                <div className="flex flex-row justify-start items-stretch bg-primary-content h-screen overflow-y-auto">
                     <div className="w-80 bg-neutral py-2 h-full">
                         <Sidebar />
                     </div>

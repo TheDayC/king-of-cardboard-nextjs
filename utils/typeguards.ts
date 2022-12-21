@@ -32,6 +32,10 @@ export function isUnknown(candidate: unknown): candidate is unknown {
     return true;
 }
 
+export function isFile(candidate: unknown): candidate is File {
+    return isNotNullOrUndefined<object>(candidate) && 'name' in candidate && 'type' in candidate;
+}
+
 export function isObject(candidate: unknown): candidate is object {
     return typeof candidate === 'object';
 }

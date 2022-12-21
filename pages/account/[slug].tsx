@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { GetServerSideProps } from 'next';
-import { getSession, getProviders, LiteralUnion, ClientSafeProvider } from 'next-auth/react';
+import { getProviders, LiteralUnion, ClientSafeProvider } from 'next-auth/react';
 import { Document } from '@contentful/rich-text-types';
 import { useDispatch } from 'react-redux';
 import { BuiltInProviderType } from 'next-auth/providers';
+import { unstable_getServerSession } from 'next-auth';
 
 import Account from '../../components/Account';
 import Content from '../../components/Content';
@@ -15,10 +16,11 @@ import { toTitleCase } from '../../utils';
 import { createToken } from '../../utils/auth';
 import { CreateToken } from '../../types/commerce';
 import { setAccessToken, setExpires } from '../../store/slices/global';
+import { authOptions } from '../api/auth/[...nextauth]';
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await getSession(context);
-    const slug = safelyParse(context, 'query.slug', parseAsSlug, null);
+export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+    const session = await unstable_getServerSession(req, res, authOptions);
+    const slug = safelyParse(query, 'slug', parseAsSlug, null);
     const accessToken = await createToken();
     const providers = await getProviders();
     const { content } = await getPageBySlug(slug, 'account/');
