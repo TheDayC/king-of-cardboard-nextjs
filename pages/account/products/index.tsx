@@ -49,7 +49,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
     const [page, setPage] = useState(1);
     const [totalProducts, setTotalProducts] = useState(initialTotalProducts);
     const [isLoading, setIsLoading] = useState(false);
-    const pageCount = totalProducts % 10;
+    const pageCount = totalProducts / 10;
 
     const handleUpdateProducts = useCallback(async () => {
         setIsLoading(true);
