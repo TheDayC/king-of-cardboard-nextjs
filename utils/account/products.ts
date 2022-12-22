@@ -5,6 +5,7 @@ import { s3Client } from '../../lib/aws';
 import { errorHandler } from '../../middleware/errors';
 import { ListProducts, Product } from '../../types/productsNew';
 import { parseAsNumber, safelyParse } from '../parsers';
+import { Category, Configuration, Interest } from '../../enums/products';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
@@ -20,7 +21,9 @@ export async function addProduct(
     content: string,
     mainImage: string | null,
     gallery: string[] | null,
-    productType: string,
+    category: number,
+    configuration: number,
+    interest: number,
     quantity: number,
     price: number,
     salePrice: number,
@@ -35,7 +38,9 @@ export async function addProduct(
             content,
             mainImage,
             gallery,
-            productType,
+            category,
+            configuration,
+            interest,
             quantity,
             price,
             salePrice,
@@ -51,12 +56,21 @@ export async function addProduct(
     return false;
 }
 
-export async function listProducts(count: number, page: number): Promise<ListProducts> {
+export async function listProducts(
+    count: number,
+    page: number,
+    categories?: Category[],
+    configurations?: Configuration[],
+    interests?: Interest[]
+): Promise<ListProducts> {
     try {
         const res = await axios.get(`${URL}/api/products/list`, {
             params: {
                 count,
                 page,
+                categories,
+                configurations,
+                interests,
             },
         });
 
@@ -86,7 +100,6 @@ export async function deleteProduct(key: string): Promise<boolean> {
 }
 
 export async function editProduct(id: string, options: any): Promise<boolean> {
-    console.log('🚀 ~ file: products.ts:89 ~ editProduct ~ options', options);
     try {
         const res = await axios.put(`${URL}/api/products/edit`, {
             ...options,

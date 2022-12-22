@@ -14,13 +14,15 @@ import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import selector from './selector';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
-import { Categories, FilterMode, ProductType } from '../../enums/shop';
-import { getShallowProducts } from '../../utils/products';
-import { Product, ShallowProduct } from '../../types/products';
+import { Category, Configuration, Interest } from '../../enums/products';
+import { Product } from '../../types/productsNew';
+import { listProducts } from '../../utils/account/products';
+import { FilterMode } from '../../enums/shop';
 
 const LIMIT = 4;
 const SKIP = 0;
-const CATEGORIES: Categories[] = [];
+const CATEGORIES: Category[] = [];
+const CONFIGURATIONS: Configuration[] = [];
 const DEFAULT_PRODUCTS: Product[] = [];
 
 export const getServerSideProps: GetServerSideProps = async () => {
@@ -43,26 +45,20 @@ export const getServerSideProps: GetServerSideProps = async () => {
         };
     }
 
-    const { products: baseballProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.Baseball,
+    const { products: baseballProducts } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [
+        Interest.Baseball,
     ]);
-    const { products: basketballProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.Basketball,
+    const { products: basketballProducts } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [
+        Interest.Basketball,
     ]);
-    const { products: footballProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.Football,
+    const { products: footballProducts } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [
+        Interest.Football,
     ]);
-    const { products: soccerProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.Soccer,
-    ]);
-    const { products: ufcProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.UFC,
-    ]);
-    const { products: wweProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.Wrestling,
-    ]);
-    const { products: pokemonProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.Pokemon,
+    const { products: soccerProducts } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [Interest.Soccer]);
+    const { products: ufcProducts } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [Interest.UFC]);
+    const { products: wweProducts } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [Interest.Wrestling]);
+    const { products: pokemonProducts } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [
+        Interest.Pokemon,
     ]);
 
     return {
@@ -84,13 +80,13 @@ export const getServerSideProps: GetServerSideProps = async () => {
 interface ShopProps {
     accessToken: CreateToken;
     content: Document | null;
-    baseballProducts: ShallowProduct[];
-    basketballProducts: ShallowProduct[];
-    footballProducts: ShallowProduct[];
-    soccerProducts: ShallowProduct[];
-    ufcProducts: ShallowProduct[];
-    wweProducts: ShallowProduct[];
-    pokemonProducts: ShallowProduct[];
+    baseballProducts: Product[];
+    basketballProducts: Product[];
+    footballProducts: Product[];
+    soccerProducts: Product[];
+    ufcProducts: Product[];
+    wweProducts: Product[];
+    pokemonProducts: Product[];
 }
 
 export const ShopPage: React.FC<ShopProps> = ({
@@ -133,7 +129,7 @@ export const ShopPage: React.FC<ShopProps> = ({
                             footballProducts={footballProducts}
                             soccerProducts={soccerProducts}
                             ufcProducts={ufcProducts}
-                            wweProducts={wweProducts}
+                            wrestlingProducts={wweProducts}
                             pokemonProducts={pokemonProducts}
                         />
                     ) : (

@@ -45,7 +45,7 @@ export function isNotNullOrUndefined<T>(candidate: unknown): candidate is T {
 }
 
 export function isEnumMember<E extends { [s: string]: unknown }>(enumToTest: E): ITypeGuard<E[keyof E]> {
-    return (candidate: any): candidate is E[keyof E] => {
+    return (candidate: unknown): candidate is E[keyof E] => {
         const members = Object.values(enumToTest);
 
         return members.includes(candidate);
