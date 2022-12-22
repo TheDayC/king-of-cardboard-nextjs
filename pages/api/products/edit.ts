@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { Category, Configuration, Interest } from '../../../enums/products';
 
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
@@ -42,7 +43,9 @@ async function editProduct(req: NextApiRequest, res: NextApiResponse): Promise<v
                         content: safelyParse(req, 'body.content', parseAsString, existingProduct.content),
                         mainImage: safelyParse(req, 'body.mainImage', parseAsString, existingProduct.mainImage),
                         gallery: safelyParse(req, 'body.gallery', parseAsArrayOfStrings, existingProduct.gallery),
-                        productType: safelyParse(req, 'body.productType', parseAsNumber, existingProduct.productType),
+                        category: safelyParse(req, 'body.category', parseAsNumber, Category.Other),
+                        configuration: safelyParse(req, 'body.configuration', parseAsNumber, Configuration.Other),
+                        interest: safelyParse(req, 'body.interest', parseAsNumber, Interest.Other),
                         quantity: safelyParse(req, 'body.quantity', parseAsNumber, existingProduct.quantity),
                         price: safelyParse(req, 'body.price', parseAsNumber, existingProduct.price),
                         salePrice: safelyParse(req, 'body.salePrice', parseAsNumber, existingProduct.salePrice),

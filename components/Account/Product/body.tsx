@@ -15,16 +15,33 @@ import InputField from './Input';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import RichTextEditor from '../../RichTextEditor';
 import SelectField from './Select';
-import { ProductType } from '../../../enums/products';
+import { Category, Configuration, Interest } from '../../../enums/products';
 import { addGalleryToBucket, addImageToBucket, addProduct, editProduct } from '../../../utils/account/products';
 import { addError, addSuccess } from '../../../store/slices/alerts';
 import ImageUpload from './ImageUpload';
 
-const productTypes = [
-    { key: 'Sealed', value: ProductType.Sealed },
-    { key: 'Singles', value: ProductType.Singles },
-    { key: 'Packs', value: ProductType.Packs },
-    { key: 'Other', value: ProductType.Other },
+const productCategory = [
+    { key: 'Sports', value: Category.Sports },
+    { key: 'TCG', value: Category.TCG },
+    { key: 'Other', value: Category.Other },
+];
+
+const productConfig = [
+    { key: 'Sealed', value: Configuration.Sealed },
+    { key: 'Singles', value: Configuration.Singles },
+    { key: 'Packs', value: Configuration.Packs },
+    { key: 'Other', value: Configuration.Other },
+];
+
+const productInterest = [
+    { key: 'Baseball', value: Interest.Baseball },
+    { key: 'Basketball', value: Interest.Basketball },
+    { key: 'Football', value: Interest.Football },
+    { key: 'Soccer', value: Interest.Soccer },
+    { key: 'UFC', value: Interest.UFC },
+    { key: 'Wrestling', value: Interest.Wrestling },
+    { key: 'Pokemon', value: Interest.Pokemon },
+    { key: 'Other', value: Interest.Other },
 ];
 
 interface ProductBodyProps {
@@ -37,7 +54,9 @@ interface ProductBodyProps {
     content?: string;
     mainImage?: string;
     gallery?: string[] | null;
-    productType?: ProductType;
+    category?: number;
+    configuration?: number;
+    interest?: number;
     quantity?: number | null;
     price?: number;
     salePrice?: number;
@@ -53,7 +72,9 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     content: existingContent,
     mainImage,
     gallery,
-    productType,
+    category,
+    configuration,
+    interest,
     quantity,
     price,
     salePrice,
@@ -98,7 +119,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
 
         setIsLoading(true);
 
-        const { sku, slug, title, content, productType, quantity, price, salePrice } = data;
+        const { sku, slug, title, content, category, configuration, interest, quantity, price, salePrice } = data;
         let fileName: string | null = mainImage ?? null;
         let galleryFileNames: string[] | null = gallery ?? null;
 
@@ -143,7 +164,9 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                 content,
                 fileName,
                 galleryFileNames,
-                productType,
+                toNumber(category),
+                toNumber(configuration),
+                toNumber(interest),
                 toNumber(quantity),
                 toNumber(price),
                 toNumber(salePrice),
@@ -167,7 +190,9 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                 content,
                 mainImage: fileName,
                 gallery: galleryFileNames,
-                productType: toNumber(productType),
+                category: toNumber(category),
+                configuration: toNumber(configuration),
+                interest: toNumber(interest),
                 quantity: toNumber(quantity),
                 price: toNumber(price),
                 salePrice: toNumber(salePrice),
@@ -230,14 +255,36 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         defaultValue={sku}
                         isRequired
                     />
+                </div>
+                <div className="flex flex-row space-x-4 items-start justify-start">
                     <SelectField
-                        placeholder="Product type"
-                        fieldName="productType"
-                        instruction="Product type is required."
-                        options={productTypes}
+                        placeholder="Category"
+                        fieldName="category"
+                        instruction="Category is required."
+                        options={productCategory}
                         error={typeErr}
                         register={register}
-                        defaultValue={productType}
+                        defaultValue={category}
+                        Icon={BsBoxSeam}
+                    />
+                    <SelectField
+                        placeholder="Configuration"
+                        fieldName="configuration"
+                        instruction="Configuration is required."
+                        options={productConfig}
+                        error={typeErr}
+                        register={register}
+                        defaultValue={configuration}
+                        Icon={BsBoxSeam}
+                    />
+                    <SelectField
+                        placeholder="Interest"
+                        fieldName="interest"
+                        instruction="Interest is required."
+                        options={productInterest}
+                        error={typeErr}
+                        register={register}
+                        defaultValue={interest}
                         Icon={BsBoxSeam}
                     />
                 </div>
