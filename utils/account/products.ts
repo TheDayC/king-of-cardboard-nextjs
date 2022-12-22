@@ -64,14 +64,12 @@ export async function listProducts(
     interests?: Interest[]
 ): Promise<ListProducts> {
     try {
-        const res = await axios.get(`${URL}/api/products/list`, {
-            params: {
-                count,
-                page,
-                categories,
-                configurations,
-                interests,
-            },
+        const res = await axios.post(`${URL}/api/products/list`, {
+            count,
+            page,
+            categories,
+            configurations,
+            interests,
         });
 
         return res.data;

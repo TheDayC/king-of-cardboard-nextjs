@@ -2,7 +2,7 @@ import { isArray } from '../typeguards';
 
 interface SearchInQuery {
     [key: string]: {
-        in: number[];
+        $in: number[];
     };
 }
 
@@ -13,15 +13,15 @@ export function buildProductListMongoQueryValues(
 ): SearchInQuery {
     const queryValues = [
         {
-            key: 'categories',
+            key: 'category',
             value: categories,
         },
         {
-            key: 'interests',
+            key: 'interest',
             value: interests,
         },
         {
-            key: 'configurations',
+            key: 'configuration',
             value: configurations,
         },
     ];
@@ -29,7 +29,7 @@ export function buildProductListMongoQueryValues(
 
     queryValues.forEach(({ key, value }) => {
         if (isArray(value)) {
-            query[key] = { in: value };
+            query[key] = { $in: value };
         }
     });
 

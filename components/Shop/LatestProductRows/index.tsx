@@ -92,6 +92,7 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                                     amount={getPrettyPrice(product.price)}
                                     compareAmount={getPrettyPrice(product.salePrice)}
                                     slug={product.slug}
+                                    shouldShowCompare={product.salePrice > 0 && product.salePrice !== product.price}
                                 />
                             ))}
                         </div>

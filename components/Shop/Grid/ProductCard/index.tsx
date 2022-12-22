@@ -11,6 +11,7 @@ interface CardProps {
     amount: string;
     compareAmount: string;
     slug: string;
+    shouldShowCompare: boolean;
 }
 
 export const ProductCard: React.FC<CardProps> = ({
@@ -22,8 +23,8 @@ export const ProductCard: React.FC<CardProps> = ({
     amount,
     compareAmount,
     slug,
+    shouldShowCompare,
 }) => {
-    const shouldShowCompare = amount !== compareAmount && compareAmount.length > 0;
     const linkOptions = {
         pathname: '/product/[slug]',
         query: { slug },
