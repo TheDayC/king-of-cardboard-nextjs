@@ -1,46 +1,20 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { GetServerSideProps } from 'next';
-import * as contentful from 'contentful';
-import { useDispatch } from 'react-redux';
-import { Document } from '@contentful/rich-text-types';
-import CommerceLayer from '@commercelayer/sdk';
 
 import PageWrapper from '../../components/PageWrapper';
-import {
-    parseAsArrayOfDocuments,
-    parseAsArrayOfStrings,
-    parseAsBoolean,
-    parseAsNumber,
-    parseAsString,
-    safelyParse,
-} from '../../utils/parsers';
+import { parseAsString, safelyParse } from '../../utils/parsers';
 import Custom404Page from '../404';
-import { createToken } from '../../utils/auth';
-import { CreateToken, SkuOption } from '../../types/commerce';
-import { setAccessToken, setExpires } from '../../store/slices/global';
 import Product from '../../components/Product';
 import { ImageItem } from '../../types/contentful';
+import { getPrettyPrice, getProduct } from '../../utils/account/products';
+import { Category, Configuration, Interest } from '../../enums/products';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const slug = safelyParse(context, 'query.slug', parseAsString, null);
+    const productSlug = safelyParse(context, 'query.slug', parseAsString, undefined);
 
-    const client = contentful.createClient({
-        space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || '',
-        accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_TOKEN || '',
-        environment: process.env.NEXT_PUBLIC_CONTENTFUL_ENV || '',
-    });
-    const accessToken = await createToken();
-    const cl = CommerceLayer({
-        organization: process.env.NEXT_PUBLIC_ECOM_SLUG || '',
-        accessToken: accessToken.token || '',
-    });
-    const products = await client.getEntries({
-        content_type: 'product',
-        limit: 1,
-        'fields.slug': slug,
-    });
+    const product = await getProduct(undefined, productSlug);
 
-    if (products.items.length === 0) {
+    if (!product) {
         return {
             props: {
                 errorCode: 404,
@@ -73,59 +47,34 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         };
     }
 
-    const productFields = products.items[0].fields;
-    const sku = safelyParse(productFields, 'productLink', parseAsString, '');
-    const skus = await cl.skus.list({
-        filters: {
-            code_in: sku,
-        },
-        fields: {
-            skus: ['id'],
-        },
-    });
-    const id = safelyParse(skus[0], 'id', parseAsString, '');
-    const skuInventory = await cl.skus.retrieve(id, {
-        fields: {
-            skus: ['inventory'],
-        },
-    });
-    const prices = await cl.skus.prices(id, {
-        fields: ['formatted_amount', 'formatted_compare_at_amount'],
-    });
-    const skuOptions = await cl.skus.sku_options(id, {
-        fields: ['id', 'name', 'description', 'formatted_price_amount'],
-    });
+    const { _id, title, slug, content, sku, mainImage, price, salePrice, quantity, interest, category, configuration } =
+        product;
 
     return {
         props: {
             errorCode: null,
-            metaTitle: safelyParse(productFields, 'metaTitle', parseAsString, ''),
-            metaDescription: safelyParse(productFields, 'metaDescription', parseAsString, ''),
-            accessToken,
-            id,
-            name: safelyParse(productFields, 'name', parseAsString, ''),
-            slug: safelyParse(productFields, 'slug', parseAsString, ''),
-            description: safelyParse(productFields, 'description.content', parseAsArrayOfDocuments, null),
+            metaTitle: '',
+            metaDescription: '',
+            id: _id,
+            name: title,
+            slug,
+            description: content,
             sku,
             image: {
-                title: safelyParse(productFields, 'cardImage.fields.title', parseAsString, ''),
-                description: safelyParse(productFields, 'cardImage.fields.description', parseAsString, ''),
-                url: safelyParse(productFields, 'cardImage.fields.file.url', parseAsString, ''),
+                title: `${title} main image`,
+                description: `${title} main product image`,
+                url: `${process.env.NEXT_PUBLIC_AWS_S3_URL}${mainImage}`,
             },
             galleryImages: [],
-            amount: safelyParse(prices[0], 'formatted_amount', parseAsString, ''),
-            compareAmount: safelyParse(prices[0], 'formatted_compare_at_amount', parseAsString, ''),
-            isAvailable: safelyParse(skuInventory, 'inventory.available', parseAsBoolean, false),
-            stock: safelyParse(skuInventory, 'inventory.quantity', parseAsNumber, 0),
-            tags: safelyParse(productFields, 'tags', parseAsArrayOfStrings, []),
-            types: safelyParse(productFields, 'types', parseAsArrayOfStrings, []),
-            categories: safelyParse(productFields, 'categories', parseAsArrayOfStrings, []),
-            options: skuOptions.map((option) => ({
-                id: option.id,
-                name: option.name || '',
-                description: option.description || '',
-                amount: option.formatted_price_amount || '£0.00',
-            })),
+            amount: getPrettyPrice(price),
+            compareAmount: getPrettyPrice(salePrice),
+            isAvailable: quantity && quantity > 0,
+            stock: quantity,
+            tags: [],
+            interest,
+            category,
+            configuration,
+            shouldShowCompare: salePrice && salePrice > 0,
         },
     };
 };
@@ -134,11 +83,10 @@ interface ProductPageProps {
     errorCode: number | null;
     metaTitle: string;
     metaDescription: string;
-    accessToken: CreateToken;
     id: string;
     name: string;
     slug: string;
-    description: Document[] | null;
+    description: string | null;
     sku: string;
     image: ImageItem;
     galleryImages: ImageItem[];
@@ -147,16 +95,16 @@ interface ProductPageProps {
     isAvailable: boolean;
     stock: number;
     tags: string[];
-    types: string[];
-    categories: string[];
-    options: SkuOption[];
+    interest: Interest;
+    category: Category;
+    configuration: Configuration;
+    shouldShowCompare: boolean;
 }
 
 export const ProductPage: React.FC<ProductPageProps> = ({
     errorCode,
     metaTitle,
     metaDescription,
-    accessToken,
     id,
     name,
     slug,
@@ -169,17 +117,12 @@ export const ProductPage: React.FC<ProductPageProps> = ({
     isAvailable,
     stock,
     tags,
-    types,
-    categories,
-    options,
+    interest,
+    category,
+    configuration,
+    shouldShowCompare,
 }) => {
-    const dispatch = useDispatch();
     const imageUrl = image.url.length > 0 ? `https:${image.url}` : undefined;
-
-    useEffect(() => {
-        dispatch(setAccessToken(accessToken.token));
-        dispatch(setExpires(accessToken.expires));
-    }, [dispatch, accessToken]);
 
     // Show error page if a code is provided.
     if (errorCode) {
@@ -201,10 +144,10 @@ export const ProductPage: React.FC<ProductPageProps> = ({
                 isAvailable={isAvailable}
                 stock={stock}
                 tags={tags}
-                types={types}
-                categories={categories}
-                options={options}
-                accessToken={accessToken.token}
+                interest={interest}
+                category={category}
+                configuration={configuration}
+                shouldShowCompare={shouldShowCompare}
             />
         </PageWrapper>
     );

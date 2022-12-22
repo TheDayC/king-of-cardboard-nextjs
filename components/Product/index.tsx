@@ -15,14 +15,14 @@ import { gaEvent } from '../../utils/ga';
 import { parseAsNumber, parseAsString, safelyParse } from '../../utils/parsers';
 import { SavedSkuOptions } from '../../types/products';
 import { checkIfOrderExists } from '../../utils/order';
-import { SkuOption } from '../../types/commerce';
 import { ImageItem } from '../../types/contentful';
+import { Configuration, Interest, Category } from '../../enums/products';
 
 interface ImportProps {
     id: string;
     name: string;
     slug: string;
-    description: Document[] | null;
+    description: string | null;
     sku: string;
     image: ImageItem;
     galleryImages: ImageItem[];
@@ -31,10 +31,10 @@ interface ImportProps {
     isAvailable: boolean;
     stock: number;
     tags: string[];
-    types: string[];
-    categories: string[];
-    options: SkuOption[];
-    accessToken: string | null;
+    interest: Interest;
+    category: Category;
+    configuration: Configuration;
+    shouldShowCompare: boolean;
 }
 
 export const Product: React.FC<ImportProps> = ({
@@ -48,10 +48,10 @@ export const Product: React.FC<ImportProps> = ({
     isAvailable,
     stock,
     tags,
-    types,
-    categories,
-    options,
-    accessToken,
+    interest,
+    category,
+    configuration,
+    shouldShowCompare,
 }) => {
     const dispatch = useDispatch();
     const { status } = useSession();
@@ -69,7 +69,7 @@ export const Product: React.FC<ImportProps> = ({
     // Handle the form submission.
     const addItemsToCart = useCallback(
         async (data: unknown, newOrderId: string | null = orderId) => {
-            if (!accessToken || !newOrderId || isUpdatingCart || hasExceededStock) return;
+            /* if (!newOrderId || isUpdatingCart || hasExceededStock) return;
 
             const attributes = {
                 quantity: parseInt(safelyParse(data, 'quantity', parseAsString, '1')),
@@ -110,10 +110,10 @@ export const Product: React.FC<ImportProps> = ({
             } else {
                 dispatch(setUpdatingCart(false));
                 dispatch(addError('Failed to add product, please check the quantity.'));
-            }
+            } */
         },
         [
-            accessToken,
+            /* accessToken,
             orderId,
             dispatch,
             isUpdatingCart,
@@ -123,14 +123,14 @@ export const Product: React.FC<ImportProps> = ({
             name,
             types,
             image.url,
-            savedSkuOptions,
+            savedSkuOptions, */
         ]
     );
 
     // Handle the form submission.
     const onSubmit = useCallback(
         async (data: unknown) => {
-            if (!accessToken || !orderId) return;
+            /* if (!orderId) return;
             dispatch(setUpdatingCart(true));
             const doesOrderExist = await checkIfOrderExists(accessToken, orderId);
 
@@ -143,12 +143,14 @@ export const Product: React.FC<ImportProps> = ({
                 addItemsToCart(data);
             }
 
-            dispatch(setUpdatingCart(false));
+            dispatch(setUpdatingCart(false)); */
         },
-        [accessToken, orderId, dispatch, addItemsToCart, isGuest, items.length]
+        [
+            /* orderId, dispatch, addItemsToCart, isGuest, items.length */
+        ]
     );
 
-    const handleSkuOptionChange = (
+    /* const handleSkuOptionChange = (
         e: React.ChangeEvent<HTMLInputElement>,
         id: string,
         amount: string,
@@ -162,7 +164,7 @@ export const Product: React.FC<ImportProps> = ({
         } else {
             setSavedSkuOptions(savedSkuOptions.filter((option) => option.id !== id));
         }
-    };
+    }; */
 
     return (
         <div className="flex flex-col relative lg:flex-row lg:space-x-8">
@@ -178,12 +180,13 @@ export const Product: React.FC<ImportProps> = ({
                         quantity={stock}
                         tags={tags}
                         description={description}
+                        shouldShowCompare={shouldShowCompare}
                     />
 
                     {isAvailable && (
                         <div className="quantity mb-4 flex flex-col justify-center">
                             <form onSubmit={handleSubmit(onSubmit)}>
-                                {options.length > 0 &&
+                                {/* options.length > 0 &&
                                     options.map((option) => (
                                         <React.Fragment key={`option-${option.id}`}>
                                             <h4 className="text-2xl mb-2 font-semibold">Extras</h4>
@@ -214,7 +217,7 @@ export const Product: React.FC<ImportProps> = ({
                                                 </label>
                                             </div>
                                         </React.Fragment>
-                                    ))}
+                                    )) */}
                                 <h4 className="text-2xl mt-2 mb-2 font-semibold">Amount</h4>
                                 <div className="flex flex-col lg:flex-row justify-start align-center lg:space-x-2">
                                     {!isQuantityAtMax && (

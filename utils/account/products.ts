@@ -113,11 +113,12 @@ export async function editProduct(id: string, options: any): Promise<boolean> {
     return false;
 }
 
-export async function getProduct(id: string): Promise<Product | null> {
+export async function getProduct(id?: string, slug?: string): Promise<Product | null> {
     try {
         const res = await axios.get(`${URL}/api/products/get`, {
             params: {
                 id,
+                slug,
             },
         });
 
