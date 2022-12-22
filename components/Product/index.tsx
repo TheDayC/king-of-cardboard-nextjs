@@ -1,20 +1,11 @@
-import React, { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { AiFillQuestionCircle } from 'react-icons/ai';
-import { useSession } from 'next-auth/react';
-import { Document } from '@contentful/rich-text-types';
 
-import { createLineItemOption, createOrder, setLineItem } from '../../utils/commerce';
 import selector from './selector';
-import { fetchCartItems, fetchItemCount, setOrder, setUpdatingCart } from '../../store/slices/cart';
 import Images from './Images';
 import Details from './Details';
-import { addError, addSuccess } from '../../store/slices/alerts';
-import { gaEvent } from '../../utils/ga';
-import { parseAsNumber, parseAsString, safelyParse } from '../../utils/parsers';
-import { SavedSkuOptions } from '../../types/products';
-import { checkIfOrderExists } from '../../utils/order';
+import { parseAsNumber, safelyParse } from '../../utils/parsers';
 import { ImageItem } from '../../types/contentful';
 import { Configuration, Interest, Category } from '../../enums/products';
 
@@ -48,15 +39,15 @@ export const Product: React.FC<ImportProps> = ({
     isAvailable,
     stock,
     tags,
-    interest,
+    /* interest,
     category,
-    configuration,
+    configuration, */
     shouldShowCompare,
 }) => {
-    const dispatch = useDispatch();
-    const { status } = useSession();
-    const { items, orderId, isUpdatingCart } = useSelector(selector);
-    const [savedSkuOptions, setSavedSkuOptions] = useState<SavedSkuOptions[]>([]);
+    //const dispatch = useDispatch();
+    //const { status } = useSession();
+    const { items, isUpdatingCart } = useSelector(selector);
+    //const [savedSkuOptions, setSavedSkuOptions] = useState<SavedSkuOptions[]>([]);
     const { handleSubmit, register } = useForm();
     const item = items.find((c) => c.sku_code === sku);
     const quantity = safelyParse(item, 'quantity', parseAsNumber, 0);
@@ -64,12 +55,12 @@ export const Product: React.FC<ImportProps> = ({
     const btnDisabled = hasExceededStock ? ' btn-disabled' : ' btn-primary';
     const btnLoading = isUpdatingCart ? ' loading' : '';
     const isQuantityAtMax = quantity === stock;
-    const isGuest = status !== 'authenticated';
+    //const isGuest = status !== 'authenticated';
 
     // Handle the form submission.
-    const addItemsToCart = useCallback(
+    /*const addItemsToCart = useCallback(
         async (data: unknown, newOrderId: string | null = orderId) => {
-            /* if (!newOrderId || isUpdatingCart || hasExceededStock) return;
+             if (!newOrderId || isUpdatingCart || hasExceededStock) return;
 
             const attributes = {
                 quantity: parseInt(safelyParse(data, 'quantity', parseAsString, '1')),
@@ -110,10 +101,10 @@ export const Product: React.FC<ImportProps> = ({
             } else {
                 dispatch(setUpdatingCart(false));
                 dispatch(addError('Failed to add product, please check the quantity.'));
-            } */
+            } 
         },
         [
-            /* accessToken,
+            accessToken,
             orderId,
             dispatch,
             isUpdatingCart,
@@ -123,13 +114,13 @@ export const Product: React.FC<ImportProps> = ({
             name,
             types,
             image.url,
-            savedSkuOptions, */
+            savedSkuOptions,
         ]
-    );
+    );*/
 
     // Handle the form submission.
     const onSubmit = useCallback(
-        async (data: unknown) => {
+        async (/* data: unknown */) => {
             /* if (!orderId) return;
             dispatch(setUpdatingCart(true));
             const doesOrderExist = await checkIfOrderExists(accessToken, orderId);

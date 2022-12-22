@@ -1,8 +1,5 @@
-import { upperCase, upperFirst } from 'lodash';
 import React from 'react';
 
-import { Interest } from '../../../enums/products';
-import { ShallowProduct } from '../../../types/products';
 import ProductCard from '../Grid/ProductCard';
 import { Product } from '../../../types/productsNew';
 import { getPrettyPrice } from '../../../utils/account/products';
@@ -93,6 +90,7 @@ export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
                                     compareAmount={getPrettyPrice(product.salePrice)}
                                     slug={product.slug}
                                     shouldShowCompare={product.salePrice > 0 && product.salePrice !== product.price}
+                                    key={`product-${product.slug}`}
                                 />
                             ))}
                         </div>

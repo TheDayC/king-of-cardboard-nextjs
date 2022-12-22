@@ -1,7 +1,4 @@
-import { Document } from '@contentful/rich-text-types';
 import React from 'react';
-
-import Content from '../../Content';
 
 interface DetailsProps {
     name: string;

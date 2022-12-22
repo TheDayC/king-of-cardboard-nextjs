@@ -1,8 +1,8 @@
 import { DateTime } from 'luxon';
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Category, Configuration, Interest } from '../../../enums/products';
 
+import { Category, Configuration, Interest } from '../../../enums/products';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import {
