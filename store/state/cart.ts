@@ -6,7 +6,6 @@ const cartInitialState: CartState = {
     orderId: null,
     orderNumber: null,
     orderExpiry: null,
-    itemCount: 0,
     items: [],
     isUpdatingCart: false,
     subTotal: '£0.00',

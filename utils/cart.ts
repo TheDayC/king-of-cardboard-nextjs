@@ -8,19 +8,6 @@ import { parseAsArrayOfStrings, parseAsNumber, parseAsString, safelyParse } from
 import { fetchProductImagesByProductLink } from './products';
 import { fetchImportImagesWithProductLink } from './imports';
 
-export async function getItemCount(accessToken: string, orderId: string): Promise<number> {
-    try {
-        const cl = authClient(accessToken);
-        const res = await cl.get(`/api/orders/${orderId}?fields[orders]=skus_count`);
-
-        return safelyParse(res, 'data.data.attributes.skus_count', parseAsNumber, 0);
-    } catch (error: unknown) {
-        errorHandler(error, 'Failed to fetch cart item count.');
-    }
-
-    return 0;
-}
-
 export async function getCartTotals(accessToken: string, orderId: string): Promise<CartTotals> {
     try {
         const cl = authClient(accessToken);

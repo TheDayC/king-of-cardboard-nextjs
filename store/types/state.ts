@@ -30,7 +30,6 @@ export interface CartState {
     orderId: string | null;
     orderNumber: number | null;
     orderExpiry: string | null;
-    itemCount: number;
     items: CartItem[];
     isUpdatingCart: boolean;
     subTotal: string;

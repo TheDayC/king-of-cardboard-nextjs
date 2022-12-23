@@ -24,15 +24,6 @@ interface FetchOrderInput {
 const hydrate = createAction<AppState>(HYDRATE);
 const purge = createAction<AppState>(PURGE);
 
-export const fetchItemCount = createAsyncThunk(
-    'cart/fetchItemCount',
-    async (data: CommonThunkInput): Promise<number> => {
-        const { accessToken, orderId } = data;
-
-        return await getItemCount(accessToken, orderId);
-    }
-);
-
 export const createCLOrder = createAsyncThunk(
     'cart/createCLOrder',
     async (data: CreateOrderInput): Promise<CreateOrder> => {
@@ -111,7 +102,6 @@ const cartSlice = createSlice({
             const { orderId, orderNumber, expiry } = action.payload;
             const {
                 shouldUpdateCart,
-                itemCount,
                 items,
                 isUpdatingCart,
                 subTotal,
@@ -130,7 +120,6 @@ const cartSlice = createSlice({
 
             // Reset remaining data.
             state.shouldUpdateCart = shouldUpdateCart;
-            state.itemCount = itemCount;
             state.items = items;
             state.isUpdatingCart = isUpdatingCart;
             state.subTotal = subTotal;
@@ -143,42 +132,37 @@ const cartSlice = createSlice({
     },
     extraReducers: (builder) => {
         // Add reducers for additional action types here, and handle loading state as needed
-        builder.addCase(fetchItemCount.fulfilled, (state, action) => {
-            state.itemCount = action.payload;
+        builder.addCase(createCLOrder.fulfilled, (state, action) => {
+            const { orderId, orderNumber, expiry } = action.payload;
+            const {
+                shouldUpdateCart,
+                items,
+                isUpdatingCart,
+                subTotal,
+                shipping,
+                discount,
+                total,
+                orderHasGiftCard,
+                updateQuantities,
+            } = cartInitialState;
+
+            // Set new order id, number expiry.
+            state.orderId = orderId;
+            state.orderNumber = orderNumber;
+            state.orderExpiry = expiry;
+            state.shouldCreateOrder = false;
+
+            // Reset remaining data.
+            state.shouldUpdateCart = shouldUpdateCart;
+            state.items = items;
+            state.isUpdatingCart = isUpdatingCart;
+            state.subTotal = subTotal;
+            state.shipping = shipping;
+            state.discount = discount;
+            state.total = total;
+            state.orderHasGiftCard = orderHasGiftCard;
+            state.updateQuantities = updateQuantities;
         }),
-            builder.addCase(createCLOrder.fulfilled, (state, action) => {
-                const { orderId, orderNumber, expiry } = action.payload;
-                const {
-                    shouldUpdateCart,
-                    itemCount,
-                    items,
-                    isUpdatingCart,
-                    subTotal,
-                    shipping,
-                    discount,
-                    total,
-                    orderHasGiftCard,
-                    updateQuantities,
-                } = cartInitialState;
-
-                // Set new order id, number expiry.
-                state.orderId = orderId;
-                state.orderNumber = orderNumber;
-                state.orderExpiry = expiry;
-                state.shouldCreateOrder = false;
-
-                // Reset remaining data.
-                state.shouldUpdateCart = shouldUpdateCart;
-                state.itemCount = itemCount;
-                state.items = items;
-                state.isUpdatingCart = isUpdatingCart;
-                state.subTotal = subTotal;
-                state.shipping = shipping;
-                state.discount = discount;
-                state.total = total;
-                state.orderHasGiftCard = orderHasGiftCard;
-                state.updateQuantities = updateQuantities;
-            }),
             builder.addCase(fetchCartTotals.fulfilled, (state, action) => {
                 const { subTotal, shipping, discount, total } = action.payload;
 
@@ -205,7 +189,6 @@ const cartSlice = createSlice({
                 state.orderNumber = order.number || null;
 
                 // Reset remaining data.
-                state.itemCount = get(order, 'line_items', []).length;
                 state.items = line_items;
                 state.subTotal = safelyParse(order, 'formatted_subtotal_amount', parseAsString, '£0.00');
                 state.shipping = safelyParse(order, 'formatted_shipping_amount', parseAsString, '£0.00');
