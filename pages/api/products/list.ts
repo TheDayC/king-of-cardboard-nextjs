@@ -5,7 +5,7 @@ import { errorHandler } from '../../../middleware/errors';
 import { buildProductListMongoQueryValues } from '../../../utils/account/database';
 import { parseAsArrayOfNumbers, parseAsNumber, safelyParse } from '../../../utils/parsers';
 
-const defaultErr = 'Could not find any products.';
+const defaultErr = 'No products found.';
 
 async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
@@ -21,7 +21,7 @@ async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<
             const stockStatuses = safelyParse(req, 'body.stockStatuses', parseAsArrayOfNumbers, null);
             const query = buildProductListMongoQueryValues(categories, interests, configurations, stockStatuses);
 
-            const productCount = await productsCollection.countDocuments();
+            const productCount = await productsCollection.countDocuments(query);
             const productList = await productsCollection
                 .find(
                     {
@@ -32,7 +32,7 @@ async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<
                 .toArray();
 
             if (productList.length === 0) {
-                res.status(400).json({ message: defaultErr });
+                res.status(404).json({ message: defaultErr });
                 return;
             }
 
