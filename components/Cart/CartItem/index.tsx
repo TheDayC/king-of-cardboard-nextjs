@@ -103,7 +103,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                             <h4 className="hidden lg:block text-xs mb-1 font-bold lg:text-lg hover:underline">
                                 {name}
                             </h4>
-                            <p className="hidden lg:block text-xs text-gray-400 mb-4 lg:text-lg">{sku || ''}</p>
+                            <p className="hidden lg:block text-xs text-gray-400 lg:text-lg">{sku || ''}</p>
 
                             {/* lineItemOptions.length > 0 &&
                                 lineItemOptions.map((option) => (
