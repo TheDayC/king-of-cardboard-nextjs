@@ -4,9 +4,9 @@ import { BsFillCartCheckFill, BsBoxSeam, BsCurrencyPound } from 'react-icons/bs'
 import { MdOutlineTitle } from 'react-icons/md';
 import { ImFontSize } from 'react-icons/im';
 import { AiOutlineBarcode, AiOutlinePoundCircle } from 'react-icons/ai';
-import { FaBoxes } from 'react-icons/fa';
+import { FaBoxes, FaPlaneArrival } from 'react-icons/fa';
 import { toNumber } from 'lodash';
-import { BiSave } from 'react-icons/bi';
+import { BiCategory, BiFootball, BiSave } from 'react-icons/bi';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
@@ -15,7 +15,7 @@ import InputField from './Input';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import RichTextEditor from '../../RichTextEditor';
 import SelectField from './Select';
-import { Category, Configuration, Interest } from '../../../enums/products';
+import { Category, Configuration, Interest, StockStatus } from '../../../enums/products';
 import { addGalleryToBucket, addImageToBucket, addProduct, editProduct } from '../../../utils/account/products';
 import { addError, addSuccess } from '../../../store/slices/alerts';
 import ImageUpload from './ImageUpload';
@@ -44,6 +44,13 @@ const productInterest = [
     { key: 'Other', value: Interest.Other },
 ];
 
+const productStatus = [
+    { key: 'In Stock', value: StockStatus.InStock },
+    { key: 'Out of Stock', value: StockStatus.OutOfStock },
+    { key: 'Pre-Order', value: StockStatus.PreOrder },
+    { key: 'Import', value: StockStatus.Import },
+];
+
 interface ProductBodyProps {
     _id?: string;
     sku?: string;
@@ -57,6 +64,7 @@ interface ProductBodyProps {
     category?: number;
     configuration?: number;
     interest?: number;
+    stockStatus?: number;
     quantity?: number | null;
     price?: number;
     salePrice?: number;
@@ -75,6 +83,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     category,
     configuration,
     interest,
+    stockStatus,
     quantity,
     price,
     salePrice,
@@ -119,7 +128,19 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
 
         setIsLoading(true);
 
-        const { sku, slug, title, content, category, configuration, interest, quantity, price, salePrice } = data;
+        const {
+            sku,
+            slug,
+            title,
+            content,
+            category,
+            configuration,
+            interest,
+            quantity,
+            stockStatus,
+            price,
+            salePrice,
+        } = data;
         let fileName: string | null = mainImage ?? null;
         let galleryFileNames: string[] | null = gallery ?? null;
 
@@ -155,49 +176,38 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             }
         }
 
+        const productData = {
+            sku,
+            userId,
+            title,
+            slug,
+            content,
+            mainImage: fileName,
+            gallery: galleryFileNames,
+            category: toNumber(category),
+            configuration: toNumber(configuration),
+            interest: toNumber(interest),
+            quantity: toNumber(quantity),
+            stockStatus: toNumber(stockStatus),
+            price: toNumber(price),
+            salePrice: toNumber(salePrice),
+            isInfinite: false,
+        };
+
         if (isNew) {
-            const hasAddedProduct = await addProduct(
-                sku,
-                userId,
-                title,
-                slug,
-                content,
-                fileName,
-                galleryFileNames,
-                toNumber(category),
-                toNumber(configuration),
-                toNumber(interest),
-                toNumber(quantity),
-                toNumber(price),
-                toNumber(salePrice),
-                false
-            );
+            const hasAddedProduct = await addProduct(productData);
 
             if (hasAddedProduct) {
                 dispatch(addSuccess('Product added!'));
             } else {
                 dispatch(addError('Product already exists.'));
             }
+
             reset();
             handleRichContent(undefined);
             router.push('/account/products');
         } else {
-            const hasEditedProduct = await editProduct(_id || '', {
-                sku,
-                userId,
-                title,
-                slug,
-                content,
-                mainImage: fileName,
-                gallery: galleryFileNames,
-                category: toNumber(category),
-                configuration: toNumber(configuration),
-                interest: toNumber(interest),
-                quantity: toNumber(quantity),
-                price: toNumber(price),
-                salePrice: toNumber(salePrice),
-                isInfinite: false,
-            });
+            const hasEditedProduct = await editProduct(_id || '', productData);
 
             if (hasEditedProduct) {
                 dispatch(addSuccess('Product saved!'));
@@ -265,7 +275,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         error={typeErr}
                         register={register}
                         defaultValue={category}
-                        Icon={BsBoxSeam}
+                        Icon={BiCategory}
                     />
                     <SelectField
                         placeholder="Configuration"
@@ -285,7 +295,17 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         error={typeErr}
                         register={register}
                         defaultValue={interest}
-                        Icon={BsBoxSeam}
+                        Icon={BiFootball}
+                    />
+                    <SelectField
+                        placeholder="Stock Status"
+                        fieldName="stockStatus"
+                        instruction="Stock status is required."
+                        options={productStatus}
+                        error={typeErr}
+                        register={register}
+                        defaultValue={stockStatus}
+                        Icon={FaPlaneArrival}
                     />
                 </div>
                 <div className="flex flex-row space-x-4 items-start justify-start">

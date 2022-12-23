@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { Category, Configuration, Interest } from '../../../enums/products';
+import { Category, Configuration, Interest, StockStatus } from '../../../enums/products';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import {
@@ -43,6 +43,7 @@ async function addProduct(req: NextApiRequest, res: NextApiResponse): Promise<vo
                 category: safelyParse(req, 'body.category', parseAsNumber, Category.Other),
                 configuration: safelyParse(req, 'body.configuration', parseAsNumber, Configuration.Other),
                 interest: safelyParse(req, 'body.interest', parseAsNumber, Interest.Other),
+                stockStatus: safelyParse(req, 'body.stockStatus', parseAsNumber, StockStatus.OutOfStock),
                 quantity: safelyParse(req, 'body.quantity', parseAsNumber, 0),
                 price: safelyParse(req, 'body.price', parseAsNumber, 0),
                 salePrice: safelyParse(req, 'body.salePrice', parseAsNumber, 0),

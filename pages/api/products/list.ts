@@ -27,7 +27,7 @@ async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<
                     {
                         ...query,
                     },
-                    { skip: page, limit: count }
+                    { skip: 0, limit: count }
                 )
                 .toArray();
 

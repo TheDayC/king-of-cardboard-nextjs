@@ -14,38 +14,10 @@ export function getPrettyPrice(cost: number): string {
     return `£${(cost / 100).toFixed(2)}`;
 }
 
-export async function addProduct(
-    sku: string,
-    userId: string | null,
-    title: string,
-    slug: string,
-    content: string,
-    mainImage: string | null,
-    gallery: string[] | null,
-    category: number,
-    configuration: number,
-    interest: number,
-    quantity: number,
-    price: number,
-    salePrice: number,
-    isInfinite: boolean
-): Promise<boolean> {
+export async function addProduct(options: any): Promise<boolean> {
     try {
         const res = await axios.post(`${URL}/api/products/add`, {
-            sku,
-            userId,
-            title,
-            slug,
-            content,
-            mainImage,
-            gallery,
-            category,
-            configuration,
-            interest,
-            quantity,
-            price,
-            salePrice,
-            isInfinite,
+            ...options,
         });
         const status = safelyParse(res, 'status', parseAsNumber, 400);
 

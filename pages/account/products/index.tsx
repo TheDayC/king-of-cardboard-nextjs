@@ -14,11 +14,14 @@ import Product from '../../../components/Account/Product';
 import Loading from '../../../components/Loading';
 import Pagination from '../../../components/Pagination';
 
+const LIMIT = 10;
+const PAGE = 0;
+
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const session = await unstable_getServerSession(req, res, authOptions);
     const role = safelyParse(session, 'user.role', parseAsRole, Roles.User);
     const isAdmin = role === Roles.Admin;
-    const { products, count } = await listProducts(10, 1);
+    const { products, count } = await listProducts(LIMIT, PAGE);
 
     if (!session || !isAdmin) {
         return {
@@ -45,11 +48,11 @@ interface ProductsPageProps {
 export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, initialTotalProducts }) => {
     const [products, setProducts] = useState<ProductType[]>(initialProducts);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [count, setCount] = useState(10);
-    const [page, setPage] = useState(1);
+    const [count, setCount] = useState(LIMIT);
+    const [page, setPage] = useState(PAGE);
     const [totalProducts, setTotalProducts] = useState(initialTotalProducts);
     const [isLoading, setIsLoading] = useState(false);
-    const pageCount = totalProducts / 10;
+    const pageCount = totalProducts / LIMIT;
 
     const handleUpdateProducts = useCallback(async () => {
         setIsLoading(true);
