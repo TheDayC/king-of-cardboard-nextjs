@@ -11,6 +11,7 @@ import { fetchCartTotals, setUpdatingCart } from '../../store/slices/cart';
 import UseCoins from '../UseCoins';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { getPrettyPrice } from '../../utils/account/products';
+import { BiExit, BiRefresh } from 'react-icons/bi';
 
 export const Cart: React.FC = () => {
     const { itemCount, items, isUpdatingCart, balance } = useSelector(selector);
@@ -69,13 +70,12 @@ export const Cart: React.FC = () => {
                         {shouldShowCoins && <UseCoins />}
                         <div className="flex flex-col justify-center items-center lg:flex-row lg:justify-end lg:items-end mt-4 lg:mt-6">
                             <button
-                                className={`btn bg-green-400 hover:bg-green-600 border-none btn-wide rounded-md mb-4 lg:mb-0 lg:mr-4 w-full lg:btn-wide${
-                                    isUpdatingCart ? ' loading btn-square' : ''
-                                }`}
+                                className="btn border-none btn-wide rounded-md mb-4 lg:mb-0 lg:mr-4 w-full lg:btn-wide"
                                 onClick={handleUpdateQuantities}
                                 role="button"
                             >
-                                {isUpdatingCart ? '' : 'Update quantities'}
+                                Update quantities
+                                <BiRefresh className="inline-block w-6 h-6 ml-2" />
                             </button>
                             <Link href="/checkout" passHref>
                                 <button
@@ -84,7 +84,8 @@ export const Cart: React.FC = () => {
                                     }`}
                                     role="button"
                                 >
-                                    {isUpdatingCart ? '' : 'Checkout'}
+                                    Checkout
+                                    <BiExit className="inline-block w-6 h-6 ml-2" />
                                 </button>
                             </Link>
                         </div>
