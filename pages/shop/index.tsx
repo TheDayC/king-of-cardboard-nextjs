@@ -126,17 +126,15 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount
             description="A broad selection of sports cards products for the UK."
         >
             <div className="flex flex-col w-full relative">
-                {content && <Content content={[content]} />}
-                <div className="flex flex-col w-full relative md:flex-row">
-                    {shouldShowRows ? (
-                        <LatestProductRows />
-                    ) : (
-                        <React.Fragment>
-                            <Filters />
-                            <Grid />
-                        </React.Fragment>
-                    )}
-                </div>
+                <div className="block w-full mb-10">{content && <Content content={[content]} />}</div>
+                {shouldShowRows ? (
+                    <LatestProductRows />
+                ) : (
+                    <div className="flex flex-col w-full relative md:flex-row">
+                        <Filters />
+                        <Grid />
+                    </div>
+                )}
             </div>
         </PageWrapper>
     );
