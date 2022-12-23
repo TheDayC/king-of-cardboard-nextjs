@@ -99,29 +99,11 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 interface ShopProps {
     content: Document | null;
-    baseballProducts: Product[];
-    basketballProducts: Product[];
-    footballProducts: Product[];
-    soccerProducts: Product[];
-    ufcProducts: Product[];
-    wweProducts: Product[];
-    pokemonProducts: Product[];
     allProducts: Product[];
     totalCount: number;
 }
 
-export const ShopPage: React.FC<ShopProps> = ({
-    content,
-    baseballProducts,
-    basketballProducts,
-    footballProducts,
-    soccerProducts,
-    ufcProducts,
-    wweProducts,
-    pokemonProducts,
-    allProducts,
-    totalCount,
-}) => {
+export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount }) => {
     const dispatch = useDispatch();
     const { shouldShowRows } = useSelector(selector);
 
