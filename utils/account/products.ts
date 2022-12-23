@@ -6,7 +6,7 @@ import { s3Client } from '../../lib/aws';
 import { errorHandler } from '../../middleware/errors';
 import { ListProducts, Product } from '../../types/productsNew';
 import { parseAsNumber, safelyParse } from '../parsers';
-import { Category, Configuration, Interest } from '../../enums/products';
+import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
@@ -62,7 +62,8 @@ export async function listProducts(
     page: number,
     categories?: Category[],
     configurations?: Configuration[],
-    interests?: Interest[]
+    interests?: Interest[],
+    stockStatuses?: StockStatus[]
 ): Promise<ListProducts> {
     try {
         const res = await axios.post(`${URL}/api/products/list`, {
@@ -71,6 +72,7 @@ export async function listProducts(
             categories,
             configurations,
             interests,
+            stockStatuses,
         });
 
         return res.data;

@@ -4,6 +4,13 @@ export enum Category {
     Other,
 }
 
+export enum StockStatus {
+    InStock,
+    OutOfStock,
+    Import,
+    PreOrder,
+}
+
 export enum Configuration {
     Sealed,
     Singles,
@@ -21,3 +28,12 @@ export enum Interest {
     Pokemon,
     Other,
 }
+
+export enum FilterType {
+    Category,
+    Configuration,
+    Interest,
+    StockStatus,
+}
+
+export type FilterValue = Category | Configuration | Interest | StockStatus;

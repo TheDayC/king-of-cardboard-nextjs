@@ -18,7 +18,8 @@ async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<
             const categories = safelyParse(req, 'body.categories', parseAsArrayOfNumbers, null);
             const interests = safelyParse(req, 'body.interests', parseAsArrayOfNumbers, null);
             const configurations = safelyParse(req, 'body.configurations', parseAsArrayOfNumbers, null);
-            const query = buildProductListMongoQueryValues(categories, interests, configurations);
+            const stockStatuses = safelyParse(req, 'body.stockStatuses', parseAsArrayOfNumbers, null);
+            const query = buildProductListMongoQueryValues(categories, interests, configurations, stockStatuses);
 
             const productCount = await productsCollection.countDocuments();
             const productList = await productsCollection

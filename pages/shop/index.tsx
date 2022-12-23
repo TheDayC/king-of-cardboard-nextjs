@@ -6,10 +6,12 @@ import { Document } from '@contentful/rich-text-types';
 import PageWrapper from '../../components/PageWrapper';
 import Filters from '../../components/Shop/Filters';
 import Grid from '../../components/Shop/Grid';
-import { removeAllCategories, removeAllProductTypes } from '../../store/slices/filters';
-import { setAccessToken, setExpires } from '../../store/slices/global';
-import { CreateToken } from '../../types/commerce';
-import { createToken } from '../../utils/auth';
+import {
+    removeAllCategories,
+    removeAllConfigurations,
+    removeAllInterests,
+    removeAllStockStatuses,
+} from '../../store/slices/filters';
 import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import selector from './selector';
@@ -23,27 +25,9 @@ const LIMIT = 4;
 const SKIP = 0;
 const CATEGORIES: Category[] = [];
 const CONFIGURATIONS: Configuration[] = [];
-const DEFAULT_PRODUCTS: Product[] = [];
 
 export const getServerSideProps: GetServerSideProps = async () => {
-    const accessToken = await createToken();
     const { content } = await getPageBySlug('shop', '');
-
-    if (!accessToken.token) {
-        return {
-            props: {
-                errorCode: !accessToken.token ? 500 : null,
-                accessToken,
-                content,
-                basketballProducts: DEFAULT_PRODUCTS,
-                footballProducts: DEFAULT_PRODUCTS,
-                soccerProducts: DEFAULT_PRODUCTS,
-                ufcProducts: DEFAULT_PRODUCTS,
-                wweProducts: DEFAULT_PRODUCTS,
-                pokemonProducts: DEFAULT_PRODUCTS,
-            },
-        };
-    }
 
     const { products: baseballProducts } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [
         Interest.Baseball,
@@ -64,7 +48,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
     return {
         props: {
             errorCode: null,
-            accessToken,
             content,
             baseballProducts,
             basketballProducts,
@@ -78,7 +61,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
 };
 
 interface ShopProps {
-    accessToken: CreateToken;
     content: Document | null;
     baseballProducts: Product[];
     basketballProducts: Product[];
@@ -90,7 +72,6 @@ interface ShopProps {
 }
 
 export const ShopPage: React.FC<ShopProps> = ({
-    accessToken,
     content,
     baseballProducts,
     basketballProducts,
@@ -104,14 +85,11 @@ export const ShopPage: React.FC<ShopProps> = ({
     const { shouldShowRows } = useSelector(selector);
 
     useEffect(() => {
-        dispatch(removeAllProductTypes());
         dispatch(removeAllCategories());
+        dispatch(removeAllConfigurations());
+        dispatch(removeAllInterests());
+        dispatch(removeAllStockStatuses());
     }, [dispatch]);
-
-    useEffect(() => {
-        dispatch(setAccessToken(accessToken.token));
-        dispatch(setExpires(accessToken.expires));
-    }, [dispatch, accessToken]);
 
     return (
         <PageWrapper
@@ -121,7 +99,7 @@ export const ShopPage: React.FC<ShopProps> = ({
             <div className="flex flex-col w-full relative">
                 {content && <Content content={[content]} />}
                 <div className="flex flex-col w-full relative md:flex-row">
-                    <Filters mode={FilterMode.Products} />
+                    <Filters />
                     {shouldShowRows ? (
                         <LatestProductRows
                             baseballProducts={baseballProducts}
@@ -133,7 +111,7 @@ export const ShopPage: React.FC<ShopProps> = ({
                             pokemonProducts={pokemonProducts}
                         />
                     ) : (
-                        <Grid mode={FilterMode.Products} />
+                        <Grid />
                     )}
                 </div>
             </div>

@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import { Category, Configuration, Interest, Stock, StockStatus } from '../../enums/products';
 
 import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
@@ -50,8 +51,10 @@ export interface PaymentMethod {
 }
 
 export interface Filters {
-    productTypes: ProductType[];
-    categories: Categories[];
+    categories: Category[];
+    interests: Interest[];
+    configurations: Configuration[];
+    stockStatus: StockStatus[];
 }
 
 export interface Global {

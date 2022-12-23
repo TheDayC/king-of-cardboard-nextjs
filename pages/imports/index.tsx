@@ -126,7 +126,7 @@ export const ImportsPage: React.FC<ImportPageProps> = ({
             <div className="flex flex-col w-full relative">
                 {content && <Content content={[content]} />}
                 <div className="flex flex-col w-full relative md:flex-row">
-                    <Filters mode={FilterMode.Imports} />
+                    <Filters />
                     {shouldShowRows ? (
                         <LatestImportRows
                             baseballProducts={baseballProducts}
@@ -138,7 +138,7 @@ export const ImportsPage: React.FC<ImportPageProps> = ({
                             pokemonProducts={pokemonProducts}
                         />
                     ) : (
-                        <Grid mode={FilterMode.Imports} />
+                        <Grid />
                     )}
                 </div>
             </div>

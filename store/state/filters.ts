@@ -1,8 +1,10 @@
 import { Filters } from '../types/state';
 
 const filtersInitialState: Filters = {
-    productTypes: [],
     categories: [],
+    interests: [],
+    configurations: [],
+    stockStatus: [],
 };
 
 export default filtersInitialState;

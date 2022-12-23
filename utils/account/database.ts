@@ -9,7 +9,8 @@ interface SearchInQuery {
 export function buildProductListMongoQueryValues(
     categories: number[] | null,
     interests: number[] | null,
-    configurations: number[] | null
+    configurations: number[] | null,
+    stockStatuses: number[] | null
 ): SearchInQuery {
     const queryValues = [
         {
@@ -23,6 +24,10 @@ export function buildProductListMongoQueryValues(
         {
             key: 'configuration',
             value: configurations,
+        },
+        {
+            key: 'stockStatus',
+            value: stockStatuses,
         },
     ];
     const query: SearchInQuery = {};
