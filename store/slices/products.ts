@@ -29,8 +29,7 @@ export const fetchProducts = createAsyncThunk(
         const state = getState() as AppStateShape;
         const { categories, configurations, interests, stockStatus } = state.filters;
 
-        const list = await listProducts(limit, skip, categories, configurations, interests, stockStatus);
-        return list;
+        return await listProducts(limit, skip, categories, configurations, interests, stockStatus);
     }
 );
 
@@ -88,13 +87,11 @@ const productsSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(fetchProducts.fulfilled, (state, action) => {
-            if (action.payload) {
-                const { products, count } = action.payload;
+            const { products, count } = action.payload;
 
-                state.products = products;
-                state.productsTotal = count;
-                state.isLoadingProducts = false;
-            }
+            state.products = products;
+            state.productsTotal = count;
+            state.isLoadingProducts = false;
         }),
             builder.addCase(fetchSingleProduct.fulfilled, (state, action) => {
                 state.currentProduct = action.payload;

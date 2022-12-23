@@ -19,6 +19,7 @@ import LatestProductRows from '../../components/Shop/LatestProductRows';
 import { Category, Configuration, Interest } from '../../enums/products';
 import { Product } from '../../types/productsNew';
 import { listProducts } from '../../utils/account/products';
+import { setProductsAndCount } from '../../store/slices/products';
 
 const LIMIT = 4;
 const SKIP = 0;
@@ -28,21 +29,47 @@ const CONFIGURATIONS: Configuration[] = [];
 export const getServerSideProps: GetServerSideProps = async () => {
     const { content } = await getPageBySlug('shop', '');
 
-    const { products: baseballProducts } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [
-        Interest.Baseball,
+    const { products: baseballProducts, count: baseballCount } = await listProducts(
+        LIMIT,
+        SKIP,
+        CATEGORIES,
+        CONFIGURATIONS,
+        [Interest.Baseball]
+    );
+    const { products: basketballProducts, count: basketballCount } = await listProducts(
+        LIMIT,
+        SKIP,
+        CATEGORIES,
+        CONFIGURATIONS,
+        [Interest.Basketball]
+    );
+    const { products: footballProducts, count: footballCount } = await listProducts(
+        LIMIT,
+        SKIP,
+        CATEGORIES,
+        CONFIGURATIONS,
+        [Interest.Football]
+    );
+    const { products: soccerProducts, count: soccerCount } = await listProducts(
+        LIMIT,
+        SKIP,
+        CATEGORIES,
+        CONFIGURATIONS,
+        [Interest.Soccer]
+    );
+    const { products: ufcProducts, count: ufcCount } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [
+        Interest.UFC,
     ]);
-    const { products: basketballProducts } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [
-        Interest.Basketball,
+    const { products: wweProducts, count: wweCount } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [
+        Interest.Wrestling,
     ]);
-    const { products: footballProducts } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [
-        Interest.Football,
-    ]);
-    const { products: soccerProducts } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [Interest.Soccer]);
-    const { products: ufcProducts } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [Interest.UFC]);
-    const { products: wweProducts } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [Interest.Wrestling]);
-    const { products: pokemonProducts } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [
-        Interest.Pokemon,
-    ]);
+    const { products: pokemonProducts, count: pokemonCount } = await listProducts(
+        LIMIT,
+        SKIP,
+        CATEGORIES,
+        CONFIGURATIONS,
+        [Interest.Pokemon]
+    );
 
     return {
         props: {
@@ -55,6 +82,17 @@ export const getServerSideProps: GetServerSideProps = async () => {
             ufcProducts,
             wweProducts,
             pokemonProducts,
+            allProducts: [
+                ...baseballProducts,
+                ...basketballProducts,
+                ...footballProducts,
+                ...soccerProducts,
+                ...ufcProducts,
+                ...wweProducts,
+                ...pokemonProducts,
+            ],
+            totalCount:
+                baseballCount + basketballCount + footballCount + soccerCount + ufcCount + wweCount + pokemonCount,
         },
     };
 };
@@ -68,6 +106,8 @@ interface ShopProps {
     ufcProducts: Product[];
     wweProducts: Product[];
     pokemonProducts: Product[];
+    allProducts: Product[];
+    totalCount: number;
 }
 
 export const ShopPage: React.FC<ShopProps> = ({
@@ -79,6 +119,8 @@ export const ShopPage: React.FC<ShopProps> = ({
     ufcProducts,
     wweProducts,
     pokemonProducts,
+    allProducts,
+    totalCount,
 }) => {
     const dispatch = useDispatch();
     const { shouldShowRows } = useSelector(selector);
@@ -88,6 +130,12 @@ export const ShopPage: React.FC<ShopProps> = ({
         dispatch(removeAllConfigurations());
         dispatch(removeAllInterests());
         dispatch(removeAllStockStatuses());
+        dispatch(
+            setProductsAndCount({
+                products: allProducts,
+                count: totalCount,
+            })
+        );
     }, [dispatch]);
 
     return (
@@ -98,19 +146,13 @@ export const ShopPage: React.FC<ShopProps> = ({
             <div className="flex flex-col w-full relative">
                 {content && <Content content={[content]} />}
                 <div className="flex flex-col w-full relative md:flex-row">
-                    <Filters />
                     {shouldShowRows ? (
-                        <LatestProductRows
-                            baseballProducts={baseballProducts}
-                            basketballProducts={basketballProducts}
-                            footballProducts={footballProducts}
-                            soccerProducts={soccerProducts}
-                            ufcProducts={ufcProducts}
-                            wrestlingProducts={wweProducts}
-                            pokemonProducts={pokemonProducts}
-                        />
+                        <LatestProductRows />
                     ) : (
-                        <Grid />
+                        <React.Fragment>
+                            <Filters />
+                            <Grid />
+                        </React.Fragment>
                     )}
                 </div>
             </div>

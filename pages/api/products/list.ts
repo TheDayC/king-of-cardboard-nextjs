@@ -31,11 +31,6 @@ async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<
                 )
                 .toArray();
 
-            if (productList.length === 0) {
-                res.status(404).json({ message: defaultErr });
-                return;
-            }
-
             res.status(200).json({ products: productList, count: productCount });
         } catch (err: unknown) {
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);

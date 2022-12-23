@@ -3,26 +3,20 @@ import React from 'react';
 import ProductCard from '../Grid/ProductCard';
 import { Product } from '../../../types/productsNew';
 import { getPrettyPrice } from '../../../utils/account/products';
+import { useSelector } from 'react-redux';
+import selector from './selector';
 
-interface LatestProductRowsProps {
-    baseballProducts: Product[];
-    basketballProducts: Product[];
-    footballProducts: Product[];
-    soccerProducts: Product[];
-    ufcProducts: Product[];
-    wrestlingProducts: Product[];
-    pokemonProducts: Product[];
-}
+export const LatestProductRows: React.FC = () => {
+    const {
+        baseballProducts,
+        basketballProducts,
+        footballProducts,
+        soccerProducts,
+        ufcProducts,
+        wrestlingProducts,
+        pokemonProducts,
+    } = useSelector(selector);
 
-export const LatestProductRows: React.FC<LatestProductRowsProps> = ({
-    baseballProducts,
-    basketballProducts,
-    footballProducts,
-    soccerProducts,
-    ufcProducts,
-    wrestlingProducts,
-    pokemonProducts,
-}) => {
     const rows = [
         {
             title: 'Baseball',
