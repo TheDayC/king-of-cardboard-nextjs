@@ -8,39 +8,27 @@ import { updateGiftCardCode } from '../../utils/checkout';
 import selector from './selector';
 
 export const UseCoins: React.FC = () => {
-    const { accessToken, orderId, code, orderHasGiftCard } = useSelector(selector);
+    const { coins } = useSelector(selector);
     const dispatch = useDispatch();
 
     const handleOnChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const checked = e.target.checked;
-        const codeToSend = checked ? code : '';
-
-        if (!accessToken || !orderId) return;
 
         dispatch(setUpdatingCart(true));
         dispatch(setCheckoutLoading(true));
-
-        await updateGiftCardCode(accessToken, orderId, codeToSend);
-        //dispatch(fetchCartTotals({ accessToken, orderId }));
-        dispatch(setOrderHasGiftCard(checked));
 
         dispatch(setUpdatingCart(false));
         dispatch(setCheckoutLoading(false));
     };
 
     return (
-        <div className="flex flex-col w-full">
-            <div className="form-control w-full">
+        <div className="flex flex-col w-full items-end">
+            <div className="form-control w-auto">
                 <label className="cursor-pointer label">
                     <span className="label-text text-lg">
                         <GiCrownCoin className="text-primary text-3xl mr-2 inline-block" /> Spend your coins?
                     </span>
-                    <input
-                        type="checkbox"
-                        className="checkbox"
-                        defaultChecked={orderHasGiftCard}
-                        onChange={handleOnChange}
-                    />
+                    <input type="checkbox" className="checkbox checkbox-accent ml-2" onChange={handleOnChange} />
                 </label>
             </div>
         </div>

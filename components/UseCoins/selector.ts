@@ -1,12 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectGlobalData, selectAccountData, selectCartData } from '../../store/state/selectors';
+import { selectAccountData } from '../../store/state/selectors';
 
-const selector = createSelector([selectGlobalData, selectAccountData, selectCartData], (global, account, cart) => ({
-    accessToken: global.accessToken,
-    orderId: cart.orderId,
-    code: account.giftCard.code,
-    orderHasGiftCard: cart.orderHasGiftCard,
+const selector = createSelector([selectAccountData], (account) => ({
+    coins: account.coins,
 }));
 
 export default selector;
