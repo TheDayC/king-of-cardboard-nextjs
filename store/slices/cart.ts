@@ -99,6 +99,15 @@ const cartSlice = createSlice({
         subtractFromTotal(state, action) {
             state.total -= action.payload;
         },
+        updateItemQty(state, action) {
+            const { id, quantity } = action.payload;
+            const item = state.items.find((i) => i._id === id);
+            const newItems = state.items.filter((i) => i._id !== id);
+
+            if (item) {
+                state.items = [...newItems, { ...item, quantity }];
+            }
+        },
         resetCart() {
             return cartInitialState;
         },
@@ -218,5 +227,6 @@ export const {
     addToTotal,
     subtractFromSubtotal,
     subtractFromTotal,
+    updateItemQty,
 } = cartSlice.actions;
 export default cartSlice.reducer;

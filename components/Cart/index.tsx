@@ -7,7 +7,7 @@ import selector from './selector';
 import CartItem from './CartItem';
 import CartTotals from './CartTotals';
 import Loading from '../Loading';
-import { clearUpdateQuantities, setUpdatingCart } from '../../store/slices/cart';
+import { clearUpdateQuantities, setUpdatingCart, updateItemQty } from '../../store/slices/cart';
 import UseCoins from '../UseCoins';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { updateLineItem } from '../../utils/commerce';
@@ -23,49 +23,18 @@ export const Cart: React.FC = () => {
     const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
     const shouldShowCoins = status === 'authenticated' && balance > 0;
 
-    // Catch all function to update the primary aspects of the cart.
-    /* const updateCart = useCallback(() => {
-        if (!accessToken || !orderId) return;
-        dispatch(fetchCartItems({ accessToken, orderId }));
-        dispatch(fetchCartTotals({ accessToken, orderId }));
-    }, [dispatch, accessToken, orderId]); */
-
     const handleUpdateQuantities = async () => {
         if (updateQuantities.length <= 0) return;
 
         dispatch(setUpdatingCart(true));
 
         for (const item of updateQuantities) {
-            //await updateLineItem(accessToken, item.id, item.quantity);
+            dispatch(updateItemQty(item));
         }
+
         dispatch(clearUpdateQuantities());
-        //updateCart();
         dispatch(setUpdatingCart(false));
     };
-
-    /* useEffect(() => {
-        dispatch(resetConfirmationDetails());
-    }, [dispatch]);
-
-    useEffect(() => {
-        if (shouldFetch) {
-            setShouldFetch(false);
-            updateCart();
-        }
-    }, [dispatch, shouldFetch, updateCart]);
-
-    useEffect(() => {
-        if (shouldUpdateCart) {
-            dispatch(setShouldUpdateCart(false));
-            updateCart();
-        }
-    }, [dispatch, updateCart, shouldUpdateCart]);
-
-    useEffect(() => {
-        if (itemCount <= 0) {
-            dispatch(clearUpdateQuantities());
-        }
-    }, [dispatch, itemCount]); */
 
     return (
         <div className="flex flex-col">
@@ -102,7 +71,7 @@ export const Cart: React.FC = () => {
                                 ))}
                         </div>
                         {<CartTotals />}
-                        {/* shouldShowCoins && <UseCoins /> */}
+                        {shouldShowCoins && <UseCoins />}
                         <div className="flex flex-col justify-center items-center lg:flex-row lg:justify-end lg:items-end mt-4 lg:mt-6">
                             <button
                                 className={`btn bg-green-400 hover:bg-green-600 border-none btn-wide rounded-md mb-4 lg:mb-0 lg:mr-4 w-full lg:btn-wide${
