@@ -62,8 +62,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 url: `${process.env.NEXT_PUBLIC_AWS_S3_URL}${mainImage}`,
             },
             gallery: [],
-            price: getPrettyPrice(price),
-            salePrice: getPrettyPrice(salePrice),
+            price: price,
+            salePrice: salePrice,
             isAvailable: quantity && quantity > 0,
             stock: quantity,
             tags: [],
@@ -86,8 +86,8 @@ interface ProductPageProps {
     sku: string;
     mainImage: ImageItem;
     gallery: ImageItem[];
-    price: string;
-    salePrice: string;
+    price: number;
+    salePrice: number;
     isAvailable: boolean;
     stock: number;
     tags: string[];

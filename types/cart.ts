@@ -1,7 +1,5 @@
-import { LineItemOption, Order } from '@commercelayer/sdk';
-import { Category, Configuration, Interest } from '../enums/products';
-
-import { ImageItem } from './contentful';
+import { Order } from '@commercelayer/sdk';
+import { ImageItem } from '../types/contentful';
 import { Product } from './productsNew';
 
 export interface CartTotals {
@@ -17,22 +15,11 @@ export interface CreateOrder {
     expiry: string | null;
 }
 
-/* export interface CartItem {
-    _id: string;
-    sku: string;
-    title: string;
-    slug: string;
-    mainImage: string;
-    category: Category;
-    interest: Interest;
-    configuration: Configuration;
-    quantity: number;
-    price: number;
-    salePrice: number;
-    isInfinite: boolean;
-} */
-
-export type CartItem = Omit<Product, 'created' | 'lastUpdated' | 'userId' | 'content' | 'gallery'>;
+export interface CartItem
+    extends Omit<Product, 'created' | 'lastUpdated' | 'userId' | 'content' | 'mainImage' | 'gallery'> {
+    mainImage: ImageItem;
+    stock: number;
+}
 
 export interface UpdateQuantity {
     id: string;

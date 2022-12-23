@@ -12,19 +12,15 @@ import {
     clearUpdateQuantities,
     fetchCartItems,
     fetchCartTotals,
-    fetchItemCount,
     setShouldUpdateCart,
     setUpdatingCart,
 } from '../../store/slices/cart';
 import UseCoins from '../UseCoins';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { updateLineItem } from '../../utils/commerce';
+import { getPrettyPrice } from '../../utils/account/products';
 
-interface CartProps {
-    accessToken: string | null;
-}
-
-export const Cart: React.FC<CartProps> = ({ accessToken }) => {
+export const Cart: React.FC = () => {
     const { itemCount, items, isUpdatingCart, orderId, shouldUpdateCart, balance, updateQuantities } =
         useSelector(selector);
     const dispatch = useDispatch();
@@ -35,27 +31,26 @@ export const Cart: React.FC<CartProps> = ({ accessToken }) => {
     const shouldShowCoins = status === 'authenticated' && balance > 0;
 
     // Catch all function to update the primary aspects of the cart.
-    const updateCart = useCallback(() => {
+    /* const updateCart = useCallback(() => {
         if (!accessToken || !orderId) return;
         dispatch(fetchCartItems({ accessToken, orderId }));
         dispatch(fetchCartTotals({ accessToken, orderId }));
-        dispatch(fetchItemCount({ accessToken, orderId }));
-    }, [dispatch, accessToken, orderId]);
+    }, [dispatch, accessToken, orderId]); */
 
     const handleUpdateQuantities = async () => {
-        if (!accessToken || updateQuantities.length <= 0) return;
+        if (updateQuantities.length <= 0) return;
 
         dispatch(setUpdatingCart(true));
 
         for (const item of updateQuantities) {
-            await updateLineItem(accessToken, item.id, item.quantity);
+            //await updateLineItem(accessToken, item.id, item.quantity);
         }
         dispatch(clearUpdateQuantities());
-        updateCart();
+        //updateCart();
         dispatch(setUpdatingCart(false));
     };
 
-    useEffect(() => {
+    /* useEffect(() => {
         dispatch(resetConfirmationDetails());
     }, [dispatch]);
 
@@ -77,7 +72,7 @@ export const Cart: React.FC<CartProps> = ({ accessToken }) => {
         if (itemCount <= 0) {
             dispatch(clearUpdateQuantities());
         }
-    }, [dispatch, itemCount]);
+    }, [dispatch, itemCount]); */
 
     return (
         <div className="flex flex-col">
@@ -98,16 +93,16 @@ export const Cart: React.FC<CartProps> = ({ accessToken }) => {
                             {items &&
                                 items.map((item) => (
                                     <CartItem
-                                        id={item.id}
-                                        sku={item.sku_code}
-                                        name={item.name}
-                                        image={item.image}
-                                        unitAmount={item.formatted_unit_amount}
-                                        totalAmount={item.formatted_total_amount}
+                                        id={item._id}
+                                        sku={item.sku}
+                                        name={item.title}
+                                        slug={item.slug}
+                                        image={item.mainImage}
+                                        unitAmount={getPrettyPrice(item.price)}
+                                        totalAmount={getPrettyPrice(item.price * item.quantity)}
                                         quantity={item.quantity}
                                         stock={item.stock}
-                                        lineItemOptions={item.line_item_options}
-                                        key={item.name}
+                                        key={`cart-item-${item.title}`}
                                     />
                                 ))}
                         </div>

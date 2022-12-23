@@ -3,7 +3,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import { selectCartData, selectGlobalData, selectAccountData } from '../../store/state/selectors';
 
 const selector = createSelector([selectCartData, selectGlobalData, selectAccountData], (cart, global, account) => ({
-    itemCount: cart.itemCount,
+    itemCount: cart.items.length,
     items: cart.items,
     isUpdatingCart: cart.isUpdatingCart,
     accessToken: global.accessToken,

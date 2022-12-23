@@ -11,6 +11,7 @@ import { ImageItem } from '../../types/contentful';
 import { addItem, setUpdatingCart } from '../../store/slices/cart';
 import { gaEvent } from '../../utils/ga';
 import { addSuccess } from '../../store/slices/alerts';
+import { getPrettyPrice } from '../../utils/account/products';
 
 interface ImportProps {
     id: string;
@@ -20,8 +21,8 @@ interface ImportProps {
     sku: string;
     mainImage: ImageItem;
     gallery: ImageItem[];
-    price: string;
-    salePrice: string;
+    price: number;
+    salePrice: number;
     isAvailable: boolean;
     stock: number;
     tags: string[];
@@ -67,11 +68,12 @@ export const Product: React.FC<ImportProps> = ({
             sku,
             title,
             slug,
-            mainImage: mainImage.url,
+            mainImage,
             category,
             interest,
             configuration,
             quantity: chosenQty,
+            stock,
             price,
             salePrice,
         };
@@ -106,8 +108,8 @@ export const Product: React.FC<ImportProps> = ({
                 <div className="card rounded-md lg:shadow-lg md:p-4 lg:p-8">
                     <Details
                         name={title}
-                        price={price}
-                        salePrice={salePrice}
+                        price={getPrettyPrice(price)}
+                        salePrice={getPrettyPrice(salePrice)}
                         isAvailable={isAvailable}
                         quantity={stock}
                         tags={tags}

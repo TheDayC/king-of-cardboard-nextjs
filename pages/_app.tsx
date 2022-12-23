@@ -30,21 +30,21 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps: { session, ...pagePro
     return (
         <PersistGate persistor={persistor} loading={<div>Loading</div>}>
             <SessionProvider session={session}>
-                <OrderAndTokenProvider>
-                    <Elements stripe={stripePromise}>
-                        <Drawer>
-                            {/* Global Site Tag (gtag.js) - Google Analytics */}
-                            {cookieConsent && (
-                                <React.Fragment>
-                                    <Script
-                                        strategy="afterInteractive"
-                                        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
-                                    />
-                                    <Script
-                                        id="gtag-init"
-                                        strategy="afterInteractive"
-                                        dangerouslySetInnerHTML={{
-                                            __html: `
+                {/* <OrderAndTokenProvider> */}
+                <Elements stripe={stripePromise}>
+                    <Drawer>
+                        {/* Global Site Tag (gtag.js) - Google Analytics */}
+                        {cookieConsent && (
+                            <React.Fragment>
+                                <Script
+                                    strategy="afterInteractive"
+                                    src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
+                                />
+                                <Script
+                                    id="gtag-init"
+                                    strategy="afterInteractive"
+                                    dangerouslySetInnerHTML={{
+                                        __html: `
                                                 window.dataLayer = window.dataLayer || [];
                                                 function gtag(){dataLayer.push(arguments);}
                                                 gtag('js', new Date());
@@ -52,15 +52,15 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps: { session, ...pagePro
                                                 page_path: window.location.pathname,
                                                 });
                                             `,
-                                        }}
-                                    />
-                                </React.Fragment>
-                            )}
-                            <Script
-                                id="facebook-pixel-script"
-                                strategy="afterInteractive"
-                                dangerouslySetInnerHTML={{
-                                    __html: `
+                                    }}
+                                />
+                            </React.Fragment>
+                        )}
+                        <Script
+                            id="facebook-pixel-script"
+                            strategy="afterInteractive"
+                            dangerouslySetInnerHTML={{
+                                __html: `
                                         !function(f,b,e,v,n,t,s)
   {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
   n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -72,13 +72,13 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps: { session, ...pagePro
   fbq('init', ${process.env.NEXT_PUBLIC_FB_PIXEL_ID});
   fbq('track', 'PageView');
                                     `,
-                                }}
-                            />
-                            <Component {...pageProps} />
-                            <Alert />
-                        </Drawer>
-                    </Elements>
-                </OrderAndTokenProvider>
+                            }}
+                        />
+                        <Component {...pageProps} />
+                        <Alert />
+                    </Drawer>
+                </Elements>
+                {/* </OrderAndTokenProvider> */}
             </SessionProvider>
         </PersistGate>
     );
