@@ -185,7 +185,7 @@ export interface AccountState {
     socialMedia: SocialMedia;
     balance: number;
     shouldFetchRewards: boolean;
-    giftCard: GiftCard;
+    coins: number;
     orders: Order[];
     orderPageCount: number;
     currentOrder: SingleOrder;

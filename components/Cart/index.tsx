@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -14,12 +14,12 @@ import { parseAsString, safelyParse } from '../../utils/parsers';
 import { getPrettyPrice } from '../../utils/account/products';
 
 export const Cart: React.FC = () => {
-    const { itemCount, items, isUpdatingCart, balance } = useSelector(selector);
+    const { itemCount, items, isUpdatingCart, coins } = useSelector(selector);
     const dispatch = useDispatch();
     const { data: session } = useSession();
     const itemPlural = itemCount === 1 ? 'item' : 'items';
     const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
-    const shouldShowCoins = status === 'authenticated' && balance > 0;
+    const shouldShowCoins = status === 'authenticated' && coins > 0;
 
     const handleUpdateQuantities = async () => {
         dispatch(setUpdatingCart(true));

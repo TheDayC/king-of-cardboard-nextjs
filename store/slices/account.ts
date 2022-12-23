@@ -1,4 +1,5 @@
 import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import axios from 'axios';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
@@ -13,6 +14,7 @@ import {
     getCurrentAddress,
     getSocialMedia,
 } from '../../utils/account';
+import { parseAsNumber, safelyParse } from '../../utils/parsers';
 import accountInitialState from '../state/account';
 
 const hydrate = createAction<AppState>(HYDRATE);
@@ -40,14 +42,13 @@ interface AddressThunkInput {
     id: string;
 }
 
-export const fetchGiftCard = createAsyncThunk(
-    'account/fetchGiftCard',
-    async (data: EmailThunkInput): Promise<GiftCard> => {
-        const { accessToken, emailAddress } = data;
+const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
-        return await getGiftCard(accessToken, emailAddress);
-    }
-);
+export const fetchCoins = createAsyncThunk('account/fetchCoins', async (userId: string): Promise<number> => {
+    const res = await axios.get(`${URL}/api/account/coins/get`, { params: { userId } });
+
+    return safelyParse(res, 'data.coins', parseAsNumber, 0);
+});
 
 export const fetchOrders = createAsyncThunk(
     'account/fetchOrders',
@@ -109,8 +110,8 @@ const accountSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        builder.addCase(fetchGiftCard.fulfilled, (state, action) => {
-            state.giftCard = action.payload;
+        builder.addCase(fetchCoins.fulfilled, (state, action) => {
+            state.coins = action.payload;
         }),
             builder.addCase(fetchOrders.fulfilled, (state, action) => {
                 const { orders, count } = action.payload;

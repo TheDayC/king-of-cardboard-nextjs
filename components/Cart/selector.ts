@@ -6,7 +6,7 @@ const selector = createSelector([selectCartData, selectAccountData], (cart, acco
     itemCount: cart.items.length,
     items: [...cart.items].sort((a, b) => a.title.localeCompare(b.title)),
     isUpdatingCart: cart.isUpdatingCart,
-    balance: account.giftCard.balance,
+    coins: account.coins,
 }));
 
 export default selector;
