@@ -39,11 +39,9 @@ export const CartItem: React.FC<CartItemProps> = ({
     const handleRemoveItem = useCallback(async () => {
         if (!id) return;
 
-        dispatch(setUpdatingCart(true));
         dispatch(removeItem(id));
         gaEvent('Item removed from cart.', { sku });
         dispatch(addSuccess('Item removed from cart.'));
-        dispatch(setUpdatingCart(false));
     }, [dispatch, id]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,8 +105,8 @@ export const CartItem: React.FC<CartItemProps> = ({
                     </Link>
                 </div>
             </div>
-            <div className="hidden lg:flex lg:flex-row items-center justify-center">{unitAmount}</div>
-            <div className="flex flex-row items-center justify-center">
+            <div className="hidden lg:flex lg:flex-row items-center justify-center lg:text-lg">{unitAmount}</div>
+            <div className="flex flex-row items-center justify-center lg:text-lg">
                 {isQuantityAtMax ? (
                     <p className="px-2 w-full text-center">{quantity}</p>
                 ) : (
@@ -123,7 +121,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                     />
                 )}
             </div>
-            <div className="flex flex-row items-center justify-center font-semibold text-sm lg:text-md">
+            <div className="flex flex-row items-center justify-center font-semibold text-sm lg:text-lg">
                 {totalAmount}
             </div>
         </div>

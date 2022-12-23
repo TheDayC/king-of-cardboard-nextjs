@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -6,15 +6,8 @@ import { useSession } from 'next-auth/react';
 import selector from './selector';
 import CartItem from './CartItem';
 import CartTotals from './CartTotals';
-import { resetConfirmationDetails } from '../../store/slices/confirmation';
 import Loading from '../Loading';
-import {
-    clearUpdateQuantities,
-    fetchCartItems,
-    fetchCartTotals,
-    setShouldUpdateCart,
-    setUpdatingCart,
-} from '../../store/slices/cart';
+import { clearUpdateQuantities, setUpdatingCart } from '../../store/slices/cart';
 import UseCoins from '../UseCoins';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { updateLineItem } from '../../utils/commerce';
@@ -106,8 +99,8 @@ export const Cart: React.FC = () => {
                                     />
                                 ))}
                         </div>
-                        <CartTotals />
-                        {shouldShowCoins && <UseCoins />}
+                        {/* <CartTotals /> */}
+                        {/* shouldShowCoins && <UseCoins /> */}
                         <div className="flex flex-col justify-center items-center lg:flex-row lg:justify-end lg:items-end mt-4 lg:mt-6">
                             <button
                                 className={`btn bg-green-400 hover:bg-green-600 border-none btn-wide rounded-md mb-4 lg:mb-0 lg:mr-4 w-full lg:btn-wide${
