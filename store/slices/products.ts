@@ -8,7 +8,7 @@ import { ListProducts } from '../../types/productsNew';
 import { listProducts } from '../../utils/account/products';
 import { getProducts, getSingleProduct } from '../../utils/products';
 import productsInitialState from '../state/products';
-import { IAppState } from '../types/state';
+import { AppStateShape } from '../types/state';
 
 const hydrate = createAction<AppState>(HYDRATE);
 
@@ -26,7 +26,7 @@ export const fetchProducts = createAsyncThunk(
     'products/fetchProducts',
     async (data: ProductsThunkInput, { getState }): Promise<ListProducts> => {
         const { limit, skip } = data;
-        const state = getState() as IAppState;
+        const state = getState() as AppStateShape;
         const { categories, configurations, interests, stockStatus } = state.filters;
 
         const list = await listProducts(limit, skip, categories, configurations, interests, stockStatus);

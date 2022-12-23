@@ -1,19 +1,17 @@
 import { DateTime } from 'luxon';
-import { Category, Configuration, Interest, Stock, StockStatus } from '../../enums/products';
+import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
 
-import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
 import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../../types/account';
 import { Break, SingleBreak } from '../../types/breaks';
 import { CartItem, UpdateQuantity } from '../../types/cart';
 import { Shipment } from '../../types/checkout';
-import { ShallowImport } from '../../types/imports';
 import { ContentfulPage } from '../../types/pages';
 import { SingleProduct } from '../../types/products';
 import { Product } from '../../types/productsNew';
 import { SocialMedia } from '../../types/profile';
 
-export interface IAppState {
+export interface AppStateShape {
     global: Global;
     products: ProductsState;
     cart: CartState;
@@ -24,7 +22,6 @@ export interface IAppState {
     pages: PagesState;
     breaks: BreaksState;
     account: AccountState;
-    imports: ImportsState;
 }
 
 export interface CartState {
@@ -222,10 +219,4 @@ export interface ProductsState {
     productsTotal: number;
     isLoadingProducts: boolean;
     currentProduct: SingleProduct;
-}
-
-export interface ImportsState {
-    imports: ShallowImport[];
-    importsTotal: number;
-    isLoadingImports: boolean;
 }
