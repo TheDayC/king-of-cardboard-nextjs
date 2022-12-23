@@ -75,7 +75,7 @@ export const CartItem: React.FC<CartItemProps> = ({
     };
 
     return (
-        <div className="grid grid-cols-4 lg:grid-cols-7 bg-white p-4 border-b p-4">
+        <div className="grid grid-cols-4 lg:grid-cols-7 bg-white p-4 border-b border-gray-300 p-4">
             <div className="text-error flex flex-row items-center justify-center">
                 <button aria-label="remove item" onClick={handleRemoveItem}>
                     <MdDeleteForever className="text-3xl" />

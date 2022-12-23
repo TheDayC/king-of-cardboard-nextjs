@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -7,14 +7,13 @@ import selector from './selector';
 import CartItem from './CartItem';
 import CartTotals from './CartTotals';
 import Loading from '../Loading';
-import { clearUpdateQuantities, fetchCartTotals, setUpdatingCart, updateItemQty } from '../../store/slices/cart';
+import { fetchCartTotals, setUpdatingCart } from '../../store/slices/cart';
 import UseCoins from '../UseCoins';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { getPrettyPrice } from '../../utils/account/products';
 
 export const Cart: React.FC = () => {
-    const { itemCount, items, isUpdatingCart, orderId, shouldUpdateCart, balance, updateQuantities } =
-        useSelector(selector);
+    const { itemCount, items, isUpdatingCart, balance } = useSelector(selector);
     const dispatch = useDispatch();
     const { data: session } = useSession();
     const itemPlural = itemCount === 1 ? 'item' : 'items';
