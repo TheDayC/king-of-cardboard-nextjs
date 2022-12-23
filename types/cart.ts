@@ -29,3 +29,15 @@ export interface UpdateQuantity {
 export interface FetchOrder extends Omit<Order, 'line_items'> {
     line_items: CartItem[];
 }
+
+export interface Totals {
+    subTotal: number;
+    shipping: number;
+    discount: number;
+    total: number;
+}
+
+export interface FetchCartTotals {
+    id: string;
+    quantity: number;
+}

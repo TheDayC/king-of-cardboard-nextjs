@@ -11,11 +11,13 @@ import {
     setUpdatingCart,
     subtractFromSubtotal,
     subtractFromTotal,
+    updateItemQty,
 } from '../../../store/slices/cart';
 import { ImageItem } from '../../../types/contentful';
 import { addSuccess } from '../../../store/slices/alerts';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { gaEvent } from '../../../utils/ga';
+import { toNumber } from 'lodash';
 
 interface CartItemProps {
     id: string;
@@ -66,21 +68,14 @@ export const CartItem: React.FC<CartItemProps> = ({
         const value = safelyParse(e, 'target.value', parseAsString, null);
 
         if (value) {
-            const newQty = parseInt(value, 10);
+            const newQty = toNumber(value);
 
-            if (newQty > stock) {
-                dispatch(clearUpdateQuantities());
-                return;
-            }
-
-            if (newQty !== quantity) {
-                dispatch(setUpdateQuantities({ id, quantity: parseInt(value, 10) }));
-            }
+            dispatch(updateItemQty({ id, quantity: newQty <= 0 ? 1 : newQty }));
         }
     };
 
     return (
-        <div className="grid grid-cols-4 lg:grid-cols-6 bg-white p-4 border-b p-4">
+        <div className="grid grid-cols-4 lg:grid-cols-7 bg-white p-4 border-b p-4">
             <div className="text-error flex flex-row items-center justify-center">
                 <button aria-label="remove item" onClick={handleRemoveItem}>
                     <MdDeleteForever className="text-3xl" />
@@ -125,20 +120,18 @@ export const CartItem: React.FC<CartItemProps> = ({
             </div>
             <div className="hidden lg:flex lg:flex-row items-center justify-center lg:text-lg">{unitAmount}</div>
             <div className="flex flex-row items-center justify-center lg:text-lg">
-                {isQuantityAtMax ? (
-                    <p className="px-2 w-full text-center">{quantity}</p>
-                ) : (
-                    <input
-                        type="number"
-                        defaultValue={quantity}
-                        name="quantity"
-                        placeholder="1"
-                        className="input input-md lg:input-sm input-bordered text-center w-14 px-0"
-                        onChange={handleChange}
-                        min={1}
-                    />
-                )}
+                <input
+                    type="number"
+                    defaultValue={quantity}
+                    name="quantity"
+                    placeholder="1"
+                    className="input input-md lg:input-sm input-bordered text-center w-14 px-0"
+                    onChange={handleChange}
+                    min={1}
+                    max={stock}
+                />
             </div>
+            <div className="flex flex-row items-center justify-center text-sm lg:text-lg">{stock}</div>
             <div className="flex flex-row items-center justify-center font-semibold text-sm lg:text-lg">
                 {totalAmount}
             </div>

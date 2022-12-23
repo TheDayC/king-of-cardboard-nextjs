@@ -7,10 +7,9 @@ import selector from './selector';
 import CartItem from './CartItem';
 import CartTotals from './CartTotals';
 import Loading from '../Loading';
-import { clearUpdateQuantities, setUpdatingCart, updateItemQty } from '../../store/slices/cart';
+import { clearUpdateQuantities, fetchCartTotals, setUpdatingCart, updateItemQty } from '../../store/slices/cart';
 import UseCoins from '../UseCoins';
 import { parseAsString, safelyParse } from '../../utils/parsers';
-import { updateLineItem } from '../../utils/commerce';
 import { getPrettyPrice } from '../../utils/account/products';
 
 export const Cart: React.FC = () => {
@@ -18,21 +17,17 @@ export const Cart: React.FC = () => {
         useSelector(selector);
     const dispatch = useDispatch();
     const { data: session } = useSession();
-    const [shouldFetch, setShouldFetch] = useState(true);
     const itemPlural = itemCount === 1 ? 'item' : 'items';
     const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
     const shouldShowCoins = status === 'authenticated' && balance > 0;
 
     const handleUpdateQuantities = async () => {
-        if (updateQuantities.length <= 0) return;
-
         dispatch(setUpdatingCart(true));
 
-        for (const item of updateQuantities) {
-            dispatch(updateItemQty(item));
-        }
+        // Map items and get just ids and qty.
+        const cartTotalInput = items.map(({ _id, quantity }) => ({ id: _id, quantity }));
+        dispatch(fetchCartTotals(cartTotalInput));
 
-        dispatch(clearUpdateQuantities());
         dispatch(setUpdatingCart(false));
     };
 
@@ -43,12 +38,13 @@ export const Cart: React.FC = () => {
                 <div className="block w-full relative">
                     <Loading show={isUpdatingCart} />
                     <div className="flex flex-col w-full">
-                        <div className="grid grid-cols-4 bg-neutral text-neutral-content p-2 rounded-md text-sm lg:text-md lg:p-4 lg:grid-cols-6">
+                        <div className="grid grid-cols-4 bg-neutral text-neutral-content p-2 rounded-md text-sm lg:text-md lg:p-4 lg:grid-cols-7">
                             <div className="text-center lg:table-cell">Remove</div>
                             <div className="text-center hidden lg:table-cell">&nbsp;</div>
                             <div className="text-center">Product</div>
                             <div className="text-center hidden lg:table-cell">Price</div>
                             <div className="text-center">Quantity</div>
+                            <div className="text-center">Stock</div>
                             <div className="text-center">Total</div>
                         </div>
                         <div className="flex flex-col w-full">
@@ -76,8 +72,7 @@ export const Cart: React.FC = () => {
                             <button
                                 className={`btn bg-green-400 hover:bg-green-600 border-none btn-wide rounded-md mb-4 lg:mb-0 lg:mr-4 w-full lg:btn-wide${
                                     isUpdatingCart ? ' loading btn-square' : ''
-                                }${updateQuantities.length <= 0 ? ' btn-disabled' : ''}`}
-                                disabled={updateQuantities.length <= 0}
+                                }`}
                                 onClick={handleUpdateQuantities}
                                 role="button"
                             >

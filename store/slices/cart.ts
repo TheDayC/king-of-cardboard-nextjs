@@ -1,13 +1,15 @@
 import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import axios from 'axios';
 import { HYDRATE } from 'next-redux-wrapper';
 import { PURGE } from 'redux-persist';
 
 import { AppState } from '..';
-import { CartItem, CreateOrder, FetchOrder } from '../../types/cart';
-import { getCartItems } from '../../utils/cart';
+import { CreateOrder, FetchCartTotals, FetchOrder, Totals } from '../../types/cart';
 import { createOrder, getOrder } from '../../utils/commerce';
+import { parseAsNumber, safelyParse } from '../../utils/parsers';
 import cartInitialState from '../state/cart';
-import { CommonThunkInput } from '../types/state';
+
+const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
 interface CreateOrderInput {
     accessToken: string;
@@ -40,12 +42,17 @@ export const fetchOrder = createAsyncThunk(
     }
 );
 
-export const fetchCartItems = createAsyncThunk(
-    'cart/fetchCartItems',
-    async (data: CommonThunkInput): Promise<CartItem[]> => {
-        const { accessToken, orderId, isImport } = data;
+export const fetchCartTotals = createAsyncThunk(
+    'cart/fetchCartTotals',
+    async (data: FetchCartTotals[]): Promise<Totals> => {
+        const res = await axios.post(`${URL}/api/cart/calculateTotals`, { items: data });
 
-        return await getCartItems(accessToken, orderId, isImport);
+        return {
+            subTotal: safelyParse(res, 'data.subTotal', parseAsNumber, 0),
+            shipping: safelyParse(res, 'data.shipping', parseAsNumber, 0),
+            discount: safelyParse(res, 'data.discount', parseAsNumber, 0),
+            total: safelyParse(res, 'data.total', parseAsNumber, 0),
+        };
     }
 );
 
@@ -176,9 +183,13 @@ const cartSlice = createSlice({
             state.orderHasGiftCard = orderHasGiftCard;
             state.updateQuantities = updateQuantities;
         }),
-            builder.addCase(fetchCartItems.fulfilled, (state, action) => {
-                state.items = action.payload;
+            builder.addCase(fetchCartTotals.fulfilled, (state, action) => {
+                const { subTotal, shipping, discount, total } = action.payload;
 
+                state.subTotal = subTotal;
+                state.shipping = shipping;
+                state.discount = discount;
+                state.total = total;
                 state.isUpdatingCart = false;
             }),
             builder.addCase(fetchOrder.fulfilled, (state, action) => {

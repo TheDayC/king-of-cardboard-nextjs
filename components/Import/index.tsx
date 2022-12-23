@@ -7,7 +7,7 @@ import { Document } from '@contentful/rich-text-types';
 
 import { createLineItemOption, createOrder, setLineItem } from '../../utils/commerce';
 import selector from './selector';
-import { setOrder, fetchCartItems, fetchItemCount, setUpdatingCart } from '../../store/slices/cart';
+import { setOrder, setUpdatingCart } from '../../store/slices/cart';
 import Images from './Images';
 import Details from './Details';
 import { addError, addSuccess } from '../../store/slices/alerts';
@@ -64,7 +64,7 @@ export const Import: React.FC<ImportProps> = ({
     const [savedSkuOptions, setSavedSkuOptions] = useState<SavedSkuOptions[]>([]);
     const [hasAgreedToTerms, setHasAgreedToTerms] = useState(false);
     const { handleSubmit, register } = useForm();
-    const item = items.find((c) => c.sku_code === sku);
+    const item = items.find((c) => c.sku === sku);
     const quantity = safelyParse(item, 'quantity', parseAsNumber, 0);
     const hasExceededStock = hasUnlimitedStock ? false : quantity >= stock;
     const btnDisabled = hasExceededStock ? ' btn-disabled' : ' btn-primary';
@@ -109,8 +109,8 @@ export const Import: React.FC<ImportProps> = ({
                     }
                 }
 
-                dispatch(fetchItemCount({ accessToken, orderId: newOrderId }));
-                dispatch(fetchCartItems({ accessToken, orderId: newOrderId }));
+                //dispatch(fetchItemCount({ accessToken, orderId: newOrderId }));
+                //dispatch(fetchCartItems({ accessToken, orderId: newOrderId }));
                 gaEvent('addProductToCart', { sku_code: sku });
                 dispatch(addSuccess(`${name} added to cart.`));
             } else {

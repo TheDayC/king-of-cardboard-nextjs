@@ -5,7 +5,7 @@ import { GiCardRandom } from 'react-icons/gi';
 
 import { removeLineItem, setLineItem } from '../../../../../utils/commerce';
 import selector from './selector';
-import { fetchCartItems, fetchItemCount } from '../../../../../store/slices/cart';
+//import { fetchCartItems, fetchItemCount } from '../../../../../store/slices/cart';
 import { ImageItem } from '../../../../../types/contentful';
 import { addError, addSuccess } from '../../../../../store/slices/alerts';
 import styles from './slot.module.css';
@@ -62,8 +62,8 @@ export const Slot: React.FC<SlotProps> = ({
 
         if (hasLineItemUpdated) {
             dispatch(addSuccess(`${name} added to your cart!`));
-            dispatch(fetchItemCount({ accessToken, orderId }));
-            dispatch(fetchCartItems({ accessToken, orderId }));
+            //dispatch(fetchItemCount({ accessToken, orderId }));
+            //dispatch(fetchCartItems({ accessToken, orderId }));
         } else {
             dispatch(addError(`${name} couldn't be added to your cart.`));
         }
@@ -76,8 +76,8 @@ export const Slot: React.FC<SlotProps> = ({
         const hasDeleted = await removeLineItem(accessToken, item.id);
 
         if (hasDeleted) {
-            dispatch(fetchItemCount({ accessToken, orderId }));
-            dispatch(fetchCartItems({ accessToken, orderId }));
+            // dispatch(fetchItemCount({ accessToken, orderId }));
+            //dispatch(fetchCartItems({ accessToken, orderId }));
             dispatch(addSuccess(`${name} removed from your cart!`));
         } else {
             dispatch(addError(`${name} couldn't be removed from your cart.`));

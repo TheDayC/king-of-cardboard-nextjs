@@ -6,7 +6,7 @@ import { GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi';
 
 import { setLineItem } from '../../../../../utils/commerce';
 import selector from './selector';
-import { fetchCartItems, fetchItemCount } from '../../../../../store/slices/cart';
+//import { fetchCartItems, fetchItemCount } from '../../../../../store/slices/cart';
 import { ImageItem } from '../../../../../types/contentful';
 import { addError, addSuccess } from '../../../../../store/slices/alerts';
 import { gaEvent } from '../../../../../utils/ga';
@@ -51,8 +51,8 @@ export const Slot: React.FC<SlotProps> = ({ image, sku_code, name, amount, compa
         if (hasLineItemUpdated) {
             gaEvent('addBreakToCart', { sku_code });
             dispatch(addSuccess(`${name} added to your cart!`));
-            dispatch(fetchItemCount({ accessToken, orderId }));
-            dispatch(fetchCartItems({ accessToken, orderId }));
+            //dispatch(fetchItemCount({ accessToken, orderId }));
+            //dispatch(fetchCartItems({ accessToken, orderId }));
         } else {
             dispatch(addError(`${name} couldn't be added to your cart.`));
         }
