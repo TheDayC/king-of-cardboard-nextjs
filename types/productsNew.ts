@@ -1,4 +1,4 @@
-import { ProductType } from '../enums/products';
+import { Category, Configuration, Interest } from '../enums/products';
 
 export interface Product {
     _id: string;
@@ -11,7 +11,9 @@ export interface Product {
     content: string;
     mainImage: string;
     gallery: string[] | null;
-    productType: ProductType;
+    category: Category;
+    interest: Interest;
+    configuration: Configuration;
     quantity: number | null;
     price: number;
     salePrice: number;

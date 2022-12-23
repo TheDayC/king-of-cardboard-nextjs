@@ -14,7 +14,9 @@ async function getProduct(req: NextApiRequest, res: NextApiResponse): Promise<vo
 
             const productsCollection = db.collection('products');
             const id = safelyParse(req, 'query.id', parseAsString, '');
-            const existingProduct = await productsCollection.findOne({ _id: new ObjectId(id) });
+            const slug = safelyParse(req, 'query.slug', parseAsString, null);
+            const query = slug ? { slug } : { _id: new ObjectId(id) };
+            const existingProduct = await productsCollection.findOne(query);
 
             if (!existingProduct) {
                 res.status(400).json({ message: 'Product does not exist.' });

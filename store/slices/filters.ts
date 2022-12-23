@@ -10,31 +10,53 @@ const filtersSlice = createSlice({
     name: 'filters',
     initialState: filtersInitialState,
     reducers: {
-        addProductType(state, action) {
-            state.productTypes.push(action.payload);
-        },
-        removeProductType(state, action) {
-            const productTypeIndex = state.productTypes.findIndex((type) => type === action.payload);
-
-            state.productTypes.splice(productTypeIndex, 1);
-        },
-        setUrlProductType(state, action) {
-            state.productTypes = [];
-            state.productTypes.push(action.payload);
-        },
-        removeAllProductTypes(state) {
-            state.productTypes = [];
-        },
         addCategory(state, action) {
             state.categories.push(action.payload);
         },
+        addConfiguration(state, action) {
+            state.configurations.push(action.payload);
+        },
+        addInterest(state, action) {
+            state.interests.push(action.payload);
+        },
+        addStockStatus(state, action) {
+            state.stockStatus.push(action.payload);
+        },
+        setStaticPageInterest(state, action) {
+            state.interests = [];
+            state.interests.push(action.payload);
+        },
         removeCategory(state, action) {
-            const categoryIndex = state.categories.findIndex((cat) => cat === action.payload);
+            const index = state.categories.findIndex((type) => type === action.payload);
 
-            state.categories.splice(categoryIndex, 1);
+            state.categories.splice(index, 1);
+        },
+        removeConfiguration(state, action) {
+            const index = state.configurations.findIndex((type) => type === action.payload);
+
+            state.configurations.splice(index, 1);
+        },
+        removeInterest(state, action) {
+            const index = state.interests.findIndex((type) => type === action.payload);
+
+            state.interests.splice(index, 1);
+        },
+        removeStockStatus(state, action) {
+            const index = state.stockStatus.findIndex((type) => type === action.payload);
+
+            state.stockStatus.splice(index, 1);
         },
         removeAllCategories(state) {
             state.categories = [];
+        },
+        removeAllConfigurations(state) {
+            state.configurations = [];
+        },
+        removeAllInterests(state) {
+            state.interests = [];
+        },
+        removeAllStockStatuses(state) {
+            state.stockStatus = [];
         },
     },
     extraReducers: (builder) => {
@@ -46,12 +68,18 @@ const filtersSlice = createSlice({
 });
 
 export const {
-    addProductType,
-    removeProductType,
-    setUrlProductType,
-    removeAllProductTypes,
     addCategory,
+    addConfiguration,
+    addInterest,
     removeCategory,
+    removeConfiguration,
+    removeInterest,
+    setStaticPageInterest,
     removeAllCategories,
+    removeAllConfigurations,
+    removeAllInterests,
+    addStockStatus,
+    removeStockStatus,
+    removeAllStockStatuses,
 } = filtersSlice.actions;
 export default filtersSlice.reducer;

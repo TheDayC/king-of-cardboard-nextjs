@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface CardProps {
     name: string;
@@ -10,6 +11,7 @@ interface CardProps {
     amount: string;
     compareAmount: string;
     slug: string;
+    shouldShowCompare: boolean;
 }
 
 export const ProductCard: React.FC<CardProps> = ({
@@ -21,8 +23,8 @@ export const ProductCard: React.FC<CardProps> = ({
     amount,
     compareAmount,
     slug,
+    shouldShowCompare,
 }) => {
-    const shouldShowCompare = amount !== compareAmount && compareAmount.length > 0;
     const linkOptions = {
         pathname: '/product/[slug]',
         query: { slug },
@@ -37,11 +39,12 @@ export const ProductCard: React.FC<CardProps> = ({
                 <Link href={linkOptions} passHref>
                     <div className="relative w-full h-40 cursor-pointer flex flex-row justify-center">
                         <div className="rounded-md overflow-hidden shadow-md w-40 h-40">
-                            <img
-                                src={`${image}?w=160&h=160`}
+                            <Image
+                                src={`${process.env.NEXT_PUBLIC_AWS_S3_URL}${image}`}
+                                width={160}
+                                height={160}
                                 alt={imgDesc}
                                 title={imgTitle}
-                                className="w-auto h-full"
                             />
                         </div>
                     </div>

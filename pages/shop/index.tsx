@@ -6,69 +6,74 @@ import { Document } from '@contentful/rich-text-types';
 import PageWrapper from '../../components/PageWrapper';
 import Filters from '../../components/Shop/Filters';
 import Grid from '../../components/Shop/Grid';
-import { removeAllCategories, removeAllProductTypes } from '../../store/slices/filters';
-import { setAccessToken, setExpires } from '../../store/slices/global';
-import { CreateToken } from '../../types/commerce';
-import { createToken } from '../../utils/auth';
+import {
+    removeAllCategories,
+    removeAllConfigurations,
+    removeAllInterests,
+    removeAllStockStatuses,
+} from '../../store/slices/filters';
 import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import selector from './selector';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
-import { Categories, FilterMode, ProductType } from '../../enums/shop';
-import { getShallowProducts } from '../../utils/products';
-import { Product, ShallowProduct } from '../../types/products';
+import { Category, Configuration, Interest } from '../../enums/products';
+import { Product } from '../../types/productsNew';
+import { listProducts } from '../../utils/account/products';
+import { setProductsAndCount } from '../../store/slices/products';
 
 const LIMIT = 4;
 const SKIP = 0;
-const CATEGORIES: Categories[] = [];
-const DEFAULT_PRODUCTS: Product[] = [];
+const CATEGORIES: Category[] = [];
+const CONFIGURATIONS: Configuration[] = [];
 
 export const getServerSideProps: GetServerSideProps = async () => {
-    const accessToken = await createToken();
     const { content } = await getPageBySlug('shop', '');
 
-    if (!accessToken.token) {
-        return {
-            props: {
-                errorCode: !accessToken.token ? 500 : null,
-                accessToken,
-                content,
-                basketballProducts: DEFAULT_PRODUCTS,
-                footballProducts: DEFAULT_PRODUCTS,
-                soccerProducts: DEFAULT_PRODUCTS,
-                ufcProducts: DEFAULT_PRODUCTS,
-                wweProducts: DEFAULT_PRODUCTS,
-                pokemonProducts: DEFAULT_PRODUCTS,
-            },
-        };
-    }
-
-    const { products: baseballProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.Baseball,
+    const { products: baseballProducts, count: baseballCount } = await listProducts(
+        LIMIT,
+        SKIP,
+        CATEGORIES,
+        CONFIGURATIONS,
+        [Interest.Baseball]
+    );
+    const { products: basketballProducts, count: basketballCount } = await listProducts(
+        LIMIT,
+        SKIP,
+        CATEGORIES,
+        CONFIGURATIONS,
+        [Interest.Basketball]
+    );
+    const { products: footballProducts, count: footballCount } = await listProducts(
+        LIMIT,
+        SKIP,
+        CATEGORIES,
+        CONFIGURATIONS,
+        [Interest.Football]
+    );
+    const { products: soccerProducts, count: soccerCount } = await listProducts(
+        LIMIT,
+        SKIP,
+        CATEGORIES,
+        CONFIGURATIONS,
+        [Interest.Soccer]
+    );
+    const { products: ufcProducts, count: ufcCount } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [
+        Interest.UFC,
     ]);
-    const { products: basketballProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.Basketball,
+    const { products: wweProducts, count: wweCount } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [
+        Interest.Wrestling,
     ]);
-    const { products: footballProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.Football,
-    ]);
-    const { products: soccerProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.Soccer,
-    ]);
-    const { products: ufcProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.UFC,
-    ]);
-    const { products: wweProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.Wrestling,
-    ]);
-    const { products: pokemonProducts } = await getShallowProducts(accessToken.token, LIMIT, SKIP, CATEGORIES, [
-        ProductType.Pokemon,
-    ]);
+    const { products: pokemonProducts, count: pokemonCount } = await listProducts(
+        LIMIT,
+        SKIP,
+        CATEGORIES,
+        CONFIGURATIONS,
+        [Interest.Pokemon]
+    );
 
     return {
         props: {
             errorCode: null,
-            accessToken,
             content,
             baseballProducts,
             basketballProducts,
@@ -77,45 +82,43 @@ export const getServerSideProps: GetServerSideProps = async () => {
             ufcProducts,
             wweProducts,
             pokemonProducts,
+            allProducts: [
+                ...baseballProducts,
+                ...basketballProducts,
+                ...footballProducts,
+                ...soccerProducts,
+                ...ufcProducts,
+                ...wweProducts,
+                ...pokemonProducts,
+            ],
+            totalCount:
+                baseballCount + basketballCount + footballCount + soccerCount + ufcCount + wweCount + pokemonCount,
         },
     };
 };
 
 interface ShopProps {
-    accessToken: CreateToken;
     content: Document | null;
-    baseballProducts: ShallowProduct[];
-    basketballProducts: ShallowProduct[];
-    footballProducts: ShallowProduct[];
-    soccerProducts: ShallowProduct[];
-    ufcProducts: ShallowProduct[];
-    wweProducts: ShallowProduct[];
-    pokemonProducts: ShallowProduct[];
+    allProducts: Product[];
+    totalCount: number;
 }
 
-export const ShopPage: React.FC<ShopProps> = ({
-    accessToken,
-    content,
-    baseballProducts,
-    basketballProducts,
-    footballProducts,
-    soccerProducts,
-    ufcProducts,
-    wweProducts,
-    pokemonProducts,
-}) => {
+export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount }) => {
     const dispatch = useDispatch();
     const { shouldShowRows } = useSelector(selector);
 
     useEffect(() => {
-        dispatch(removeAllProductTypes());
         dispatch(removeAllCategories());
-    }, [dispatch]);
-
-    useEffect(() => {
-        dispatch(setAccessToken(accessToken.token));
-        dispatch(setExpires(accessToken.expires));
-    }, [dispatch, accessToken]);
+        dispatch(removeAllConfigurations());
+        dispatch(removeAllInterests());
+        dispatch(removeAllStockStatuses());
+        dispatch(
+            setProductsAndCount({
+                products: allProducts,
+                count: totalCount,
+            })
+        );
+    }, [dispatch, allProducts, totalCount]);
 
     return (
         <PageWrapper
@@ -123,23 +126,15 @@ export const ShopPage: React.FC<ShopProps> = ({
             description="A broad selection of sports cards products for the UK."
         >
             <div className="flex flex-col w-full relative">
-                {content && <Content content={[content]} />}
-                <div className="flex flex-col w-full relative md:flex-row">
-                    <Filters mode={FilterMode.Products} />
-                    {shouldShowRows ? (
-                        <LatestProductRows
-                            baseballProducts={baseballProducts}
-                            basketballProducts={basketballProducts}
-                            footballProducts={footballProducts}
-                            soccerProducts={soccerProducts}
-                            ufcProducts={ufcProducts}
-                            wweProducts={wweProducts}
-                            pokemonProducts={pokemonProducts}
-                        />
-                    ) : (
-                        <Grid mode={FilterMode.Products} />
-                    )}
-                </div>
+                <div className="block w-full mb-10">{content && <Content content={[content]} />}</div>
+                {shouldShowRows ? (
+                    <LatestProductRows />
+                ) : (
+                    <div className="flex flex-col w-full relative md:flex-row">
+                        <Filters />
+                        <Grid />
+                    </div>
+                )}
             </div>
         </PageWrapper>
     );

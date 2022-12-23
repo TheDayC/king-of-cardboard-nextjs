@@ -1,45 +1,23 @@
 import axios from 'axios';
 import { Upload } from '@aws-sdk/lib-storage';
+import { round } from 'lodash';
 
 import { s3Client } from '../../lib/aws';
 import { errorHandler } from '../../middleware/errors';
 import { ListProducts, Product } from '../../types/productsNew';
 import { parseAsNumber, safelyParse } from '../parsers';
+import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
 export function getPrettyPrice(cost: number): string {
-    return `£${cost / 100}`;
+    return `£${(cost / 100).toFixed(2)}`;
 }
 
-export async function addProduct(
-    sku: string,
-    userId: string | null,
-    title: string,
-    slug: string,
-    content: string,
-    mainImage: string | null,
-    gallery: string[] | null,
-    productType: string,
-    quantity: number,
-    price: number,
-    salePrice: number,
-    isInfinite: boolean
-): Promise<boolean> {
+export async function addProduct(options: any): Promise<boolean> {
     try {
         const res = await axios.post(`${URL}/api/products/add`, {
-            sku,
-            userId,
-            title,
-            slug,
-            content,
-            mainImage,
-            gallery,
-            productType,
-            quantity,
-            price,
-            salePrice,
-            isInfinite,
+            ...options,
         });
         const status = safelyParse(res, 'status', parseAsNumber, 400);
 
@@ -51,13 +29,22 @@ export async function addProduct(
     return false;
 }
 
-export async function listProducts(count: number, page: number): Promise<ListProducts> {
+export async function listProducts(
+    count: number,
+    page: number,
+    categories?: Category[],
+    configurations?: Configuration[],
+    interests?: Interest[],
+    stockStatuses?: StockStatus[]
+): Promise<ListProducts> {
     try {
-        const res = await axios.get(`${URL}/api/products/list`, {
-            params: {
-                count,
-                page,
-            },
+        const res = await axios.post(`${URL}/api/products/list`, {
+            count,
+            page,
+            categories,
+            configurations,
+            interests,
+            stockStatuses,
         });
 
         return res.data;
@@ -86,7 +73,6 @@ export async function deleteProduct(key: string): Promise<boolean> {
 }
 
 export async function editProduct(id: string, options: any): Promise<boolean> {
-    console.log('🚀 ~ file: products.ts:89 ~ editProduct ~ options', options);
     try {
         const res = await axios.put(`${URL}/api/products/edit`, {
             ...options,
@@ -102,11 +88,12 @@ export async function editProduct(id: string, options: any): Promise<boolean> {
     return false;
 }
 
-export async function getProduct(id: string): Promise<Product | null> {
+export async function getProduct(id?: string, slug?: string): Promise<Product | null> {
     try {
         const res = await axios.get(`${URL}/api/products/get`, {
             params: {
                 id,
+                slug,
             },
         });
 
@@ -176,5 +163,26 @@ export async function deleteImageFromBucket(key: string): Promise<boolean> {
         return status === 204;
     } catch (err) {
         return false;
+    }
+}
+
+export function getInterestBySlug(slug: string): Interest {
+    switch (slug) {
+        case 'baseball':
+            return Interest.Baseball;
+        case 'basketball':
+            return Interest.Basketball;
+        case 'football':
+            return Interest.Football;
+        case 'pokemon':
+            return Interest.Pokemon;
+        case 'soccer':
+            return Interest.Soccer;
+        case 'ufc':
+            return Interest.UFC;
+        case 'wrestling':
+            return Interest.Wrestling;
+        default:
+            return Interest.Other;
     }
 }

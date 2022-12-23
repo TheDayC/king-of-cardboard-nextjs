@@ -1,7 +1,4 @@
-import { Document } from '@contentful/rich-text-types';
 import React from 'react';
-
-import Content from '../../Content';
 
 interface DetailsProps {
     name: string;
@@ -10,7 +7,8 @@ interface DetailsProps {
     isAvailable: boolean;
     quantity: number;
     tags: string[];
-    description: Document[] | null;
+    description: string | null;
+    shouldShowCompare: boolean;
 }
 
 export const Details: React.FC<DetailsProps> = ({
@@ -21,9 +19,8 @@ export const Details: React.FC<DetailsProps> = ({
     quantity,
     tags,
     description,
+    shouldShowCompare,
 }) => {
-    const shouldShowCompare = amount !== compareAmount && compareAmount.length > 0;
-
     return (
         <div className="block relative w-full">
             <h1 className="card-title text-xl lg:text-4xl mb-4">{name}</h1>
@@ -56,9 +53,7 @@ export const Details: React.FC<DetailsProps> = ({
                         </div>
                     ))}
             </div>
-            {description && description.length > 0 && (
-                <div className="description">{description && <Content content={description} />}</div>
-            )}
+            {description && <div className="description" dangerouslySetInnerHTML={{ __html: description }} />}
         </div>
     );
 };

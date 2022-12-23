@@ -1,133 +1,182 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { upperFirst, upperCase } from 'lodash';
 import { BiFootball, BiBall, BiBasketball, BiBaseball } from 'react-icons/bi';
-import { SiUfc, SiWwe } from 'react-icons/si';
+import { SiDcentertainment, SiUfc, SiWwe } from 'react-icons/si';
 import { MdOutlineCatchingPokemon } from 'react-icons/md';
-import { BsBoxSeam } from 'react-icons/bs';
+import { BsBoxSeam, BsCalendarEvent, BsEye, BsEyeSlash } from 'react-icons/bs';
 import { IoIdCardOutline } from 'react-icons/io5';
 import { RiRedPacketLine } from 'react-icons/ri';
 import { GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi';
+import { FaPlaneArrival } from 'react-icons/fa';
 
 import selector from './selector';
-import { Categories, combinedFilters, FilterMode, FilterTypes, ProductType } from '../../../enums/shop';
 import {
     addCategory,
-    addProductType,
+    addConfiguration,
+    addInterest,
+    addStockStatus,
     removeAllCategories,
-    removeAllProductTypes,
+    removeAllConfigurations,
+    removeAllInterests,
+    removeAllStockStatuses,
     removeCategory,
-    removeProductType,
+    removeConfiguration,
+    removeInterest,
+    removeStockStatus,
 } from '../../../store/slices/filters';
 import Filter from './Filter';
-import { fetchProducts, setIsLoadingProducts } from '../../../store/slices/products';
-import { fetchImports, setIsLoadingImports } from '../../../store/slices/imports';
+import { Interest, Category, Configuration, FilterType, FilterValue, StockStatus } from '../../../enums/products';
+import { fetchProducts } from '../../../store/slices/products';
 
 const iconClassName = 'w-6 h-6 inline-block mr-2';
-const categories = [
-    { category: Categories.Sealed, icon: <BsBoxSeam className={iconClassName} /> },
-    { category: Categories.Singles, icon: <IoIdCardOutline className={iconClassName} /> },
-    { category: Categories.Packs, icon: <RiRedPacketLine className={iconClassName} /> },
-    { category: Categories.Other, icon: <GiPerspectiveDiceSixFacesRandom className={iconClassName} /> },
-];
-const upperCaseTypes = [ProductType.TCG, ProductType.UFC];
 
-export const TYPE_FILTERS = [
-    { type: ProductType.Baseball, icon: <BiBaseball className={iconClassName} /> },
-    { type: ProductType.Basketball, icon: <BiBasketball className={iconClassName} /> },
-    { type: ProductType.Football, icon: <BiBall className={iconClassName} /> },
-    { type: ProductType.Soccer, icon: <BiFootball className={iconClassName} /> },
-    { type: ProductType.UFC, icon: <SiUfc className={iconClassName} /> },
-    { type: ProductType.Wrestling, icon: <SiWwe className={iconClassName} /> },
-    { type: ProductType.Pokemon, icon: <MdOutlineCatchingPokemon className={iconClassName} /> },
+export const CATEGORY_FILTERS = [
+    { value: Category.Sports, icon: <BiFootball className={iconClassName} />, label: 'Sports' },
+    { value: Category.TCG, icon: <MdOutlineCatchingPokemon className={iconClassName} />, label: 'TCG' },
+    { value: Category.Other, icon: <SiDcentertainment className={iconClassName} />, label: 'Other' },
 ];
 
-interface FiltersProps {
-    mode: FilterMode;
-}
+const CONFIGURATION_FILTERS = [
+    { value: Configuration.Sealed, icon: <BsBoxSeam className={iconClassName} />, label: 'Sealed' },
+    { value: Configuration.Packs, icon: <RiRedPacketLine className={iconClassName} />, label: 'Packs' },
+    { value: Configuration.Singles, icon: <IoIdCardOutline className={iconClassName} />, label: 'Singles' },
+    { value: Configuration.Other, icon: <GiPerspectiveDiceSixFacesRandom className={iconClassName} />, label: 'Other' },
+];
 
-export const Filters: React.FC<FiltersProps> = ({ mode }) => {
+export const INTEREST_FILTERS = [
+    { value: Interest.Baseball, icon: <BiBaseball className={iconClassName} />, label: 'Baseball' },
+    { value: Interest.Basketball, icon: <BiBasketball className={iconClassName} />, label: 'Basketball' },
+    { value: Interest.Football, icon: <BiBall className={iconClassName} />, label: 'Football' },
+    { value: Interest.Soccer, icon: <BiFootball className={iconClassName} />, label: 'Soccer' },
+    { value: Interest.UFC, icon: <SiUfc className={iconClassName} />, label: 'UFC' },
+    { value: Interest.Wrestling, icon: <SiWwe className={iconClassName} />, label: 'Wrestling' },
+    { value: Interest.Pokemon, icon: <MdOutlineCatchingPokemon className={iconClassName} />, label: 'Pokemon' },
+];
+
+export const STATUS_FILTERS = [
+    { value: StockStatus.InStock, icon: <BsEye className={iconClassName} />, label: 'In Stock' },
+    { value: StockStatus.OutOfStock, icon: <BsEyeSlash className={iconClassName} />, label: 'Out of Stock' },
+    { value: StockStatus.PreOrder, icon: <BsCalendarEvent className={iconClassName} />, label: 'Pre-Order' },
+    { value: StockStatus.Import, icon: <FaPlaneArrival className={iconClassName} />, label: 'Import' },
+];
+
+export const Filters: React.FC = () => {
     const { filters } = useSelector(selector);
     const dispatch = useDispatch();
 
-    const handleFilterOnChange = (filter: combinedFilters, filterType: FilterTypes, addFilter: boolean) => {
+    const handleFilterOnChange = (value: FilterValue, filterType: FilterType, addFilter: boolean) => {
         if (addFilter) {
             switch (filterType) {
-                case FilterTypes.Category:
-                    dispatch(addCategory(filter));
+                case FilterType.Category:
+                    dispatch(addCategory(value));
                     break;
-                case FilterTypes.ProductType:
-                    dispatch(addProductType(filter));
+                case FilterType.Configuration:
+                    dispatch(addConfiguration(value));
+                    break;
+                case FilterType.Interest:
+                    dispatch(addInterest(value));
+                    break;
+                case FilterType.StockStatus:
+                    dispatch(addStockStatus(value));
                     break;
                 default:
                     break;
             }
         } else {
             switch (filterType) {
-                case FilterTypes.Category:
-                    dispatch(removeCategory(filter));
+                case FilterType.Category:
+                    dispatch(removeCategory(value));
                     break;
-                case FilterTypes.ProductType:
-                    dispatch(removeProductType(filter));
+                case FilterType.Configuration:
+                    dispatch(removeConfiguration(value));
+                    break;
+                case FilterType.Interest:
+                    dispatch(removeInterest(value));
+                    break;
+                case FilterType.StockStatus:
+                    dispatch(removeStockStatus(value));
                     break;
                 default:
+                    break;
             }
         }
 
-        switch (mode) {
-            case FilterMode.Imports:
-                dispatch(setIsLoadingImports(true));
-                dispatch(fetchImports({ limit: 8, skip: 0 }));
-                break;
-            case FilterMode.Products:
-            default:
-                dispatch(setIsLoadingProducts(true));
-                dispatch(fetchProducts({ limit: 8, skip: 0 }));
-                break;
-        }
+        dispatch(fetchProducts({ limit: 8, skip: 0 }));
     };
 
     const handleClearFilters = () => {
-        dispatch(removeAllProductTypes());
         dispatch(removeAllCategories());
+        dispatch(removeAllConfigurations());
+        dispatch(removeAllInterests());
+        dispatch(removeAllStockStatuses());
     };
 
     return (
         <div className="flex flex-col w-full md:w-1/6 md:mr-4 relative">
             <div className="card bordered mb-4 rounded-md">
                 <div className="card-body p-4">
-                    <h3 className="card-title text-sm lg:text-lg mb-4">Categories</h3>
-                    {TYPE_FILTERS.map(({ type, icon }) => (
+                    <h3 className="card-title text-sm lg:text-lg mb-4">Category</h3>
+                    {CATEGORY_FILTERS.map(({ value, icon, label }) => (
                         <Filter
-                            value={type}
-                            type={FilterTypes.ProductType}
-                            label={`${upperCaseTypes.includes(type) ? upperCase(type) : upperFirst(type)}`}
-                            checked={filters.productTypes.includes(type)}
+                            value={value}
+                            type={FilterType.Category}
+                            label={label}
+                            checked={filters.categories.includes(value)}
                             changeFilterState={handleFilterOnChange}
                             icon={icon}
-                            key={`Filter-${type}`}
+                            key={`category-filter-${label}`}
                         />
                     ))}
                 </div>
             </div>
-            {categories.length > 0 && (
-                <div className="card bordered mb-4 rounded-md">
-                    <div className="card-body p-4">
-                        <h3 className="card-title text-sm lg:text-lg mb-4">Product Types</h3>
-                        {categories.map(({ category, icon }) => (
-                            <Filter
-                                value={category}
-                                type={FilterTypes.Category}
-                                label={`${upperFirst(category)}`}
-                                checked={filters.categories.includes(category)}
-                                changeFilterState={handleFilterOnChange}
-                                icon={icon}
-                                key={`Filter-${category}`}
-                            />
-                        ))}
-                    </div>
+            <div className="card bordered mb-4 rounded-md">
+                <div className="card-body p-4">
+                    <h3 className="card-title text-sm lg:text-lg mb-4">Status</h3>
+                    {STATUS_FILTERS.map(({ value, icon, label }) => (
+                        <Filter
+                            value={value}
+                            type={FilterType.StockStatus}
+                            label={label}
+                            checked={filters.stockStatus.includes(value)}
+                            changeFilterState={handleFilterOnChange}
+                            icon={icon}
+                            key={`status-filter-${label}`}
+                        />
+                    ))}
                 </div>
-            )}
+            </div>
+            <div className="card bordered mb-4 rounded-md">
+                <div className="card-body p-4">
+                    <h3 className="card-title text-sm lg:text-lg mb-4">Configuration</h3>
+                    {CONFIGURATION_FILTERS.map(({ value, icon, label }) => (
+                        <Filter
+                            value={value}
+                            type={FilterType.Configuration}
+                            label={label}
+                            checked={filters.configurations.includes(value)}
+                            changeFilterState={handleFilterOnChange}
+                            icon={icon}
+                            key={`configuration-filter-${label}`}
+                        />
+                    ))}
+                </div>
+            </div>
+            <div className="card bordered mb-4 rounded-md">
+                <div className="card-body p-4">
+                    <h3 className="card-title text-sm lg:text-lg mb-4">Interest</h3>
+                    {INTEREST_FILTERS.map(({ value, icon, label }) => (
+                        <Filter
+                            value={value}
+                            type={FilterType.Interest}
+                            label={label}
+                            checked={filters.interests.includes(value)}
+                            changeFilterState={handleFilterOnChange}
+                            icon={icon}
+                            key={`configuration-filter-${label}`}
+                        />
+                    ))}
+                </div>
+            </div>
             <button className="btn btn-md mb-4 btn-secondary" onClick={handleClearFilters}>
                 Clear Filters
             </button>

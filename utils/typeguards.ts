@@ -11,6 +11,7 @@ import { ITypeGuard } from '../types/parsers';
 import { ContentfulProduct } from '../types/products';
 import { ImageCollection, ImageItem, Repeater } from '../types/contentful';
 import { SocialMedia } from '../types/profile';
+import { Interest, Category, Configuration } from '../enums/products';
 
 export function isString(candidate: unknown): candidate is string {
     return typeof candidate === 'string';
@@ -45,7 +46,7 @@ export function isNotNullOrUndefined<T>(candidate: unknown): candidate is T {
 }
 
 export function isEnumMember<E extends { [s: string]: unknown }>(enumToTest: E): ITypeGuard<E[keyof E]> {
-    return (candidate: any): candidate is E[keyof E] => {
+    return (candidate: unknown): candidate is E[keyof E] => {
         const members = Object.values(enumToTest);
 
         return members.includes(candidate);
@@ -212,4 +213,28 @@ export function isRepeater(candidate: unknown): candidate is Repeater {
 
 export function isArrayOfRepeater(candidate: unknown): candidate is Repeater[] {
     return isArray(candidate) && isRepeater(candidate[0]);
+}
+
+export function isInterest(candidate: unknown): candidate is Interest {
+    return isEnumMember(Interest)(candidate);
+}
+
+export function isCategory(candidate: unknown): candidate is Category {
+    return isEnumMember(Category)(candidate);
+}
+
+export function isConfiguration(candidate: unknown): candidate is Configuration {
+    return isEnumMember(Configuration)(candidate);
+}
+
+export function isArrayOfInterests(candidate: unknown): candidate is Interest[] {
+    return isArray(candidate) && isInterest(candidate[0]);
+}
+
+export function isArrayOfCategories(candidate: unknown): candidate is Category[] {
+    return isArray(candidate) && isCategory(candidate[0]);
+}
+
+export function isArrayOfConfigurations(candidate: unknown): candidate is Configuration[] {
+    return isArray(candidate) && isConfiguration(candidate[0]);
 }

@@ -4,9 +4,11 @@ import { HYDRATE } from 'next-redux-wrapper';
 import { AppState } from '..';
 import { Categories, ProductType } from '../../enums/shop';
 import { ProductsWithCount, SingleProduct } from '../../types/products';
+import { ListProducts } from '../../types/productsNew';
+import { listProducts } from '../../utils/account/products';
 import { getProducts, getSingleProduct } from '../../utils/products';
 import productsInitialState from '../state/products';
-import { IAppState } from '../types/state';
+import { AppStateShape } from '../types/state';
 
 const hydrate = createAction<AppState>(HYDRATE);
 
@@ -22,15 +24,12 @@ interface SingleProductThunkInput {
 
 export const fetchProducts = createAsyncThunk(
     'products/fetchProducts',
-    async (data: ProductsThunkInput, { getState }): Promise<ProductsWithCount | null> => {
+    async (data: ProductsThunkInput, { getState }): Promise<ListProducts> => {
         const { limit, skip } = data;
-        const state = getState() as IAppState;
-        const { accessToken } = state.global;
-        const { categories, productTypes } = state.filters;
+        const state = getState() as AppStateShape;
+        const { categories, configurations, interests, stockStatus } = state.filters;
 
-        if (!accessToken) return null;
-
-        return await getProducts(accessToken, limit, skip, categories, productTypes);
+        return await listProducts(limit, skip, categories, configurations, interests, stockStatus);
     }
 );
 
@@ -88,13 +87,11 @@ const productsSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(fetchProducts.fulfilled, (state, action) => {
-            if (action.payload) {
-                const { products, count } = action.payload;
+            const { products, count } = action.payload;
 
-                state.products = products;
-                state.productsTotal = count;
-                state.isLoadingProducts = false;
-            }
+            state.products = products;
+            state.productsTotal = count;
+            state.isLoadingProducts = false;
         }),
             builder.addCase(fetchSingleProduct.fulfilled, (state, action) => {
                 state.currentProduct = action.payload;

@@ -1,5 +1,5 @@
 import {
-    IAppState,
+    AppStateShape,
     Filters,
     Global,
     Checkout,
@@ -11,18 +11,16 @@ import {
     AccountState,
     AlertsState,
     ProductsState,
-    ImportsState,
 } from '../types/state';
 
-export const selectGlobalData = (state: IAppState): Global => state.global;
-export const selectProductData = (state: IAppState): ProductsState => state.products;
-export const selectCartData = (state: IAppState): CartState => state.cart;
-export const selectAlertsData = (state: IAppState): AlertsState => state.alerts;
-export const selectFiltersData = (state: IAppState): Filters => state.filters;
-export const selectCheckoutData = (state: IAppState): Checkout => state.checkout;
-export const selectCheckoutCustomerData = (state: IAppState): CustomerDetails => state.checkout.customerDetails;
-export const selectConfirmationData = (state: IAppState): Confirmation => state.confirmation;
-export const selectPageData = (state: IAppState): PagesState => state.pages;
-export const selectBreaksData = (state: IAppState): BreaksState => state.breaks;
-export const selectAccountData = (state: IAppState): AccountState => state.account;
-export const selectImportsData = (state: IAppState): ImportsState => state.imports;
+export const selectGlobalData = (state: AppStateShape): Global => state.global;
+export const selectProductData = (state: AppStateShape): ProductsState => state.products;
+export const selectCartData = (state: AppStateShape): CartState => state.cart;
+export const selectAlertsData = (state: AppStateShape): AlertsState => state.alerts;
+export const selectFiltersData = (state: AppStateShape): Filters => state.filters;
+export const selectCheckoutData = (state: AppStateShape): Checkout => state.checkout;
+export const selectCheckoutCustomerData = (state: AppStateShape): CustomerDetails => state.checkout.customerDetails;
+export const selectConfirmationData = (state: AppStateShape): Confirmation => state.confirmation;
+export const selectPageData = (state: AppStateShape): PagesState => state.pages;
+export const selectBreaksData = (state: AppStateShape): BreaksState => state.breaks;
+export const selectAccountData = (state: AppStateShape): AccountState => state.account;
