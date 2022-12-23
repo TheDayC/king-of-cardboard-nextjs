@@ -1,13 +1,11 @@
 import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { get } from 'lodash';
 import { HYDRATE } from 'next-redux-wrapper';
 import { PURGE } from 'redux-persist';
 
 import { AppState } from '..';
-import { CartItem, CartTotals, CreateOrder, FetchOrder } from '../../types/cart';
-import { getCartItems, getCartTotals, getItemCount } from '../../utils/cart';
+import { CartItem, CreateOrder, FetchOrder } from '../../types/cart';
+import { getCartItems } from '../../utils/cart';
 import { createOrder, getOrder } from '../../utils/commerce';
-import { parseAsString, safelyParse } from '../../utils/parsers';
 import cartInitialState from '../state/cart';
 import { CommonThunkInput } from '../types/state';
 
@@ -39,15 +37,6 @@ export const fetchOrder = createAsyncThunk(
         const { accessToken, orderId } = data;
 
         return await getOrder(accessToken, orderId);
-    }
-);
-
-export const fetchCartTotals = createAsyncThunk(
-    'cart/fetchCartTotals',
-    async (data: CommonThunkInput): Promise<CartTotals> => {
-        const { accessToken, orderId } = data;
-
-        return await getCartTotals(accessToken, orderId);
     }
 );
 
@@ -96,9 +85,19 @@ const cartSlice = createSlice({
             state.items.push(action.payload);
         },
         removeItem(state, action) {
-            state.isUpdatingCart = true;
             state.items = state.items.filter((item) => item._id !== action.payload);
-            state.isUpdatingCart = false;
+        },
+        addToSubtotal(state, action) {
+            state.subTotal += action.payload;
+        },
+        addToTotal(state, action) {
+            state.total += action.payload;
+        },
+        subtractFromSubtotal(state, action) {
+            state.subTotal -= action.payload;
+        },
+        subtractFromTotal(state, action) {
+            state.total -= action.payload;
         },
         resetCart() {
             return cartInitialState;
@@ -168,14 +167,6 @@ const cartSlice = createSlice({
             state.orderHasGiftCard = orderHasGiftCard;
             state.updateQuantities = updateQuantities;
         }),
-            builder.addCase(fetchCartTotals.fulfilled, (state, action) => {
-                const { subTotal, shipping, discount, total } = action.payload;
-
-                state.subTotal = subTotal;
-                state.shipping = shipping;
-                state.discount = discount;
-                state.total = total;
-            }),
             builder.addCase(fetchCartItems.fulfilled, (state, action) => {
                 state.items = action.payload;
 
@@ -195,10 +186,10 @@ const cartSlice = createSlice({
 
                 // Reset remaining data.
                 state.items = line_items;
-                state.subTotal = safelyParse(order, 'formatted_subtotal_amount', parseAsString, '£0.00');
+                /* state.subTotal = safelyParse(order, 'formatted_subtotal_amount', parseAsString, '£0.00');
                 state.shipping = safelyParse(order, 'formatted_shipping_amount', parseAsString, '£0.00');
                 state.discount = safelyParse(order, 'formatted_discount_amount', parseAsString, '£0.00');
-                state.total = safelyParse(order, 'formatted_total_amount', parseAsString, '£0.00');
+                state.total = safelyParse(order, 'formatted_total_amount', parseAsString, '£0.00'); */
             }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,
@@ -223,5 +214,9 @@ export const {
     setOrder,
     addItem,
     removeItem,
+    addToSubtotal,
+    addToTotal,
+    subtractFromSubtotal,
+    subtractFromTotal,
 } = cartSlice.actions;
 export default cartSlice.reducer;

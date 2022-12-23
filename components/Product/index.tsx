@@ -8,7 +8,7 @@ import Images from './Images';
 import Details from './Details';
 import { Configuration, Interest, Category } from '../../enums/products';
 import { ImageItem } from '../../types/contentful';
-import { addItem, setUpdatingCart } from '../../store/slices/cart';
+import { addItem, addToSubtotal, addToTotal, setUpdatingCart } from '../../store/slices/cart';
 import { gaEvent } from '../../utils/ga';
 import { addSuccess } from '../../store/slices/alerts';
 import { getPrettyPrice } from '../../utils/account/products';
@@ -58,10 +58,12 @@ export const Product: React.FC<ImportProps> = ({
     const hasExceededStock = qtyInCart >= stock;
     const btnDisabled = hasExceededStock ? ' btn-disabled' : ' btn-primary';
     const btnLoading = isUpdatingCart ? ' loading' : '';
+    const shouldUseSalePrice = salePrice > 0 && salePrice !== price;
 
     // Handle the form submission.
     const addItemsToCart = async (chosenQty: number) => {
         if (isUpdatingCart || hasExceededStock) return;
+        const priceToUse = shouldUseSalePrice ? salePrice : price;
 
         const attributes = {
             _id: id,
@@ -80,6 +82,12 @@ export const Product: React.FC<ImportProps> = ({
 
         // Add item to the cart.
         dispatch(addItem(attributes));
+
+        // Increase the subTotal
+        dispatch(addToSubtotal(priceToUse));
+
+        // Increase the total
+        dispatch(addToTotal(priceToUse));
 
         // Capture event.
         gaEvent('addProductToCart', { sku_code: sku });

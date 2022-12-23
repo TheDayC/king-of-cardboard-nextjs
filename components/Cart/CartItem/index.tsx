@@ -4,7 +4,14 @@ import { useDispatch } from 'react-redux';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { clearUpdateQuantities, removeItem, setUpdateQuantities, setUpdatingCart } from '../../../store/slices/cart';
+import {
+    clearUpdateQuantities,
+    removeItem,
+    setUpdateQuantities,
+    setUpdatingCart,
+    subtractFromSubtotal,
+    subtractFromTotal,
+} from '../../../store/slices/cart';
 import { ImageItem } from '../../../types/contentful';
 import { addSuccess } from '../../../store/slices/alerts';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -16,6 +23,8 @@ interface CartItemProps {
     name: string;
     slug: string;
     image: ImageItem;
+    price: number;
+    salePrice: number;
     unitAmount: string;
     totalAmount: string;
     quantity: number;
@@ -28,6 +37,8 @@ export const CartItem: React.FC<CartItemProps> = ({
     name,
     slug,
     image,
+    price,
+    salePrice,
     unitAmount,
     totalAmount,
     quantity,
@@ -35,13 +46,20 @@ export const CartItem: React.FC<CartItemProps> = ({
 }) => {
     const dispatch = useDispatch();
     const isQuantityAtMax = quantity === stock;
+    const shouldUseSalePrice = salePrice > 0 && salePrice !== price;
 
     const handleRemoveItem = useCallback(async () => {
         if (!id) return;
 
+        const priceToUse = shouldUseSalePrice ? salePrice : price;
+
+        dispatch(setUpdatingCart(true));
         dispatch(removeItem(id));
+        dispatch(subtractFromSubtotal(priceToUse));
+        dispatch(subtractFromTotal(priceToUse));
         gaEvent('Item removed from cart.', { sku });
         dispatch(addSuccess('Item removed from cart.'));
+        dispatch(setUpdatingCart(false));
     }, [dispatch, id]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -91,6 +91,8 @@ export const Cart: React.FC = () => {
                                         name={item.title}
                                         slug={item.slug}
                                         image={item.mainImage}
+                                        price={item.price}
+                                        salePrice={item.salePrice}
                                         unitAmount={getPrettyPrice(item.price)}
                                         totalAmount={getPrettyPrice(item.price * item.quantity)}
                                         quantity={item.quantity}
@@ -99,7 +101,7 @@ export const Cart: React.FC = () => {
                                     />
                                 ))}
                         </div>
-                        {/* <CartTotals /> */}
+                        {<CartTotals />}
                         {/* shouldShowCoins && <UseCoins /> */}
                         <div className="flex flex-col justify-center items-center lg:flex-row lg:justify-end lg:items-end mt-4 lg:mt-6">
                             <button

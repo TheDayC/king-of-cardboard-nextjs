@@ -32,10 +32,10 @@ export interface CartState {
     orderExpiry: string | null;
     items: CartItem[];
     isUpdatingCart: boolean;
-    subTotal: string;
-    shipping: string;
-    discount: string;
-    total: string;
+    subTotal: number;
+    shipping: number;
+    discount: number;
+    total: number;
     orderHasGiftCard: boolean;
     updateQuantities: UpdateQuantity[];
 }
