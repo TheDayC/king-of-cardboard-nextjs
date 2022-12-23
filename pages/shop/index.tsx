@@ -19,7 +19,6 @@ import LatestProductRows from '../../components/Shop/LatestProductRows';
 import { Category, Configuration, Interest } from '../../enums/products';
 import { Product } from '../../types/productsNew';
 import { listProducts } from '../../utils/account/products';
-import { FilterMode } from '../../enums/shop';
 
 const LIMIT = 4;
 const SKIP = 0;

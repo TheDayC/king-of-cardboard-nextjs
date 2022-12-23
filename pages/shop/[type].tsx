@@ -5,17 +5,12 @@ import { useDispatch } from 'react-redux';
 import { Document } from '@contentful/rich-text-types';
 
 import PageWrapper from '../../components/PageWrapper';
-import { parseAsProductType, parseAsString, safelyParse } from '../../utils/parsers';
+import { parseAsString, safelyParse } from '../../utils/parsers';
 import Filters from '../../components/Shop/Filters';
 import Grid from '../../components/Shop/Grid';
 import { setStaticPageInterest, removeAllInterests } from '../../store/slices/filters';
-import { createToken } from '../../utils/auth';
-import { CreateToken } from '../../types/commerce';
-import { setAccessToken, setExpires } from '../../store/slices/global';
 import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
-import { Categories, FilterMode, ProductType } from '../../enums/shop';
-import { getProducts } from '../../utils/products';
 import { setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
 import { getInterestBySlug, listProducts } from '../../utils/account/products';
 import { Category, Configuration, Interest } from '../../enums/products';
@@ -27,7 +22,6 @@ const SKIP = 0;
 const CATEGORIES: Category[] = [];
 const CONFIGURATIONS: Configuration[] = [];
 const INTERESTS: Interest[] = [];
-const DEFAULT_PRODUCTS: Product[] = [];
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const staticInterest = safelyParse(context, 'query.type', parseAsString, '');

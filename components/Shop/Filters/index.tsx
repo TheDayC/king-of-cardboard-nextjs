@@ -7,6 +7,7 @@ import { BsBoxSeam, BsCalendarEvent, BsEye, BsEyeSlash } from 'react-icons/bs';
 import { IoIdCardOutline } from 'react-icons/io5';
 import { RiRedPacketLine } from 'react-icons/ri';
 import { GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi';
+import { FaPlaneArrival } from 'react-icons/fa';
 
 import selector from './selector';
 import {
@@ -25,7 +26,6 @@ import {
 } from '../../../store/slices/filters';
 import Filter from './Filter';
 import { Interest, Category, Configuration, FilterType, FilterValue, StockStatus } from '../../../enums/products';
-import { FaPlaneArrival } from 'react-icons/fa';
 import { fetchProducts } from '../../../store/slices/products';
 
 const iconClassName = 'w-6 h-6 inline-block mr-2';
