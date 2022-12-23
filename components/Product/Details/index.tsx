@@ -2,8 +2,8 @@ import React from 'react';
 
 interface DetailsProps {
     name: string;
-    amount: string;
-    compareAmount: string;
+    price: string;
+    salePrice: string;
     isAvailable: boolean;
     quantity: number;
     tags: string[];
@@ -13,8 +13,8 @@ interface DetailsProps {
 
 export const Details: React.FC<DetailsProps> = ({
     name,
-    amount,
-    compareAmount,
+    price,
+    salePrice,
     isAvailable,
     quantity,
     tags,
@@ -25,10 +25,8 @@ export const Details: React.FC<DetailsProps> = ({
         <div className="block relative w-full">
             <h1 className="card-title text-xl lg:text-4xl mb-4">{name}</h1>
             <div className="flex flex-row mb-2">
-                {shouldShowCompare && (
-                    <span className="text-xs line-through text-base-200 mr-2 mt-2">{compareAmount}</span>
-                )}
-                <p className="text-3xl font-semibold">{amount}</p>
+                {shouldShowCompare && <span className="text-xs line-through text-base-200 mr-2 mt-2">{salePrice}</span>}
+                <p className="text-3xl font-semibold">{price}</p>
             </div>
             <div className="flex flex-col mb-4">
                 <p className="text-base-400 text-mb-2">

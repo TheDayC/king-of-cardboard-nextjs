@@ -14,7 +14,7 @@ export interface Product {
     category: Category;
     interest: Interest;
     configuration: Configuration;
-    quantity: number | null;
+    quantity: number;
     price: number;
     salePrice: number;
     isInfinite: boolean;

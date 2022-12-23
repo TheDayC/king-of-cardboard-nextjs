@@ -101,6 +101,9 @@ const cartSlice = createSlice({
         setOrderExpiry(state, action) {
             state.orderExpiry = action.payload;
         },
+        addItem(state, action) {
+            state.items.push(action.payload);
+        },
         resetCart() {
             return cartInitialState;
         },
@@ -230,5 +233,6 @@ export const {
     setOrderExpiry,
     setOrderId,
     setOrder,
+    addItem,
 } = cartSlice.actions;
 export default cartSlice.reducer;
