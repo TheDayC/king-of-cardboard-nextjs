@@ -40,7 +40,7 @@ export const Delivery: React.FC<DeliveryProps> = ({ accessToken }) => {
         }
 
         // Fetch items, totals and item count along with payment methods
-        dispatch(fetchCartTotals({ accessToken, orderId }));
+        //dispatch(fetchCartTotals({ accessToken, orderId }));
         dispatch(fetchPaymentMethods({ accessToken, orderId }));
 
         // Redirect to next stage.

@@ -21,7 +21,7 @@ export const UseCoins: React.FC = () => {
         dispatch(setCheckoutLoading(true));
 
         await updateGiftCardCode(accessToken, orderId, codeToSend);
-        dispatch(fetchCartTotals({ accessToken, orderId }));
+        //dispatch(fetchCartTotals({ accessToken, orderId }));
         dispatch(setOrderHasGiftCard(checked));
 
         dispatch(setUpdatingCart(false));

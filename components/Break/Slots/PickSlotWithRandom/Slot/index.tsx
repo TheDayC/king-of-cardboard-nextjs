@@ -24,7 +24,7 @@ export const Slot: React.FC<SlotProps> = ({ image, sku_code, name, amount, compa
     const { accessToken, orderId, items } = useSelector(selector);
     const dispatch = useDispatch();
     const shouldShowCompare = amount !== compare_amount && compare_amount !== '£0.00';
-    const isInBasket = Boolean(items.find((item) => item.sku_code === sku_code));
+    const isInBasket = Boolean(items.find((item) => item.sku === sku_code));
 
     const handleClick = async () => {
         if (!accessToken || !orderId || isInBasket) return;

@@ -6,7 +6,7 @@ import { parseAsString, safelyParse } from '../../utils/parsers';
 import Custom404Page from '../404';
 import Product from '../../components/Product';
 import { ImageItem } from '../../types/contentful';
-import { getPrettyPrice, getProduct } from '../../utils/account/products';
+import { getProduct } from '../../utils/account/products';
 import { Category, Configuration, Interest } from '../../enums/products';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

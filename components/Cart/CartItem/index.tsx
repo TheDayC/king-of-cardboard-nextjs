@@ -1,13 +1,12 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { MdDeleteForever } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import Image from 'next/image';
 import Link from 'next/link';
+import { toNumber } from 'lodash';
 
 import {
-    clearUpdateQuantities,
     removeItem,
-    setUpdateQuantities,
     setUpdatingCart,
     subtractFromSubtotal,
     subtractFromTotal,
@@ -17,7 +16,6 @@ import { ImageItem } from '../../../types/contentful';
 import { addSuccess } from '../../../store/slices/alerts';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { gaEvent } from '../../../utils/ga';
-import { toNumber } from 'lodash';
 
 interface CartItemProps {
     id: string;
@@ -47,10 +45,9 @@ export const CartItem: React.FC<CartItemProps> = ({
     stock,
 }) => {
     const dispatch = useDispatch();
-    const isQuantityAtMax = quantity === stock;
     const shouldUseSalePrice = salePrice > 0 && salePrice !== price;
 
-    const handleRemoveItem = useCallback(async () => {
+    const handleRemoveItem = async () => {
         if (!id) return;
 
         const priceToUse = shouldUseSalePrice ? salePrice : price;
@@ -62,7 +59,7 @@ export const CartItem: React.FC<CartItemProps> = ({
         gaEvent('Item removed from cart.', { sku });
         dispatch(addSuccess('Item removed from cart.'));
         dispatch(setUpdatingCart(false));
-    }, [dispatch, id]);
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = safelyParse(e, 'target.value', parseAsString, null);

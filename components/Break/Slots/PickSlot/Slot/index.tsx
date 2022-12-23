@@ -34,7 +34,7 @@ export const Slot: React.FC<SlotProps> = ({
     const { accessToken, orderId, items } = useSelector(selector);
     const dispatch = useDispatch();
     const shouldShowCompare = amount !== compare_amount && compare_amount !== '£0.00';
-    const item = items.find((item) => item.sku_code === sku_code);
+    const item = items.find((item) => item.sku === sku_code);
     const isInBasket = Boolean(item);
 
     const handleClick = async () => {
@@ -73,7 +73,7 @@ export const Slot: React.FC<SlotProps> = ({
         if (!accessToken || !item || !orderId) return;
 
         setLoading(true);
-        const hasDeleted = await removeLineItem(accessToken, item.id);
+        const hasDeleted = await removeLineItem(accessToken, item._id);
 
         if (hasDeleted) {
             // dispatch(fetchItemCount({ accessToken, orderId }));

@@ -2,6 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { BiExit, BiRefresh } from 'react-icons/bi';
 
 import selector from './selector';
 import CartItem from './CartItem';
@@ -11,7 +12,6 @@ import { fetchCartTotals, setUpdatingCart } from '../../store/slices/cart';
 import UseCoins from '../UseCoins';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { getPrettyPrice } from '../../utils/account/products';
-import { BiExit, BiRefresh } from 'react-icons/bi';
 
 export const Cart: React.FC = () => {
     const { itemCount, items, isUpdatingCart, balance } = useSelector(selector);
