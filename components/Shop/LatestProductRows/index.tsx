@@ -1,15 +1,15 @@
 import React from 'react';
-
-import ProductCard from '../Grid/ProductCard';
-import { getPrettyPrice } from '../../../utils/account/products';
 import { useSelector } from 'react-redux';
-import selector from './selector';
 import Link from 'next/link';
 import { BiFootball, BiBall, BiBasketball, BiBaseball } from 'react-icons/bi';
-import { SiUfc, SiWwe } from 'react-icons/si';
+import { SiWwe } from 'react-icons/si';
 import { MdOutlineCatchingPokemon } from 'react-icons/md';
 import { GiPunch } from 'react-icons/gi';
 import { BsArrowRightCircle } from 'react-icons/bs';
+
+import selector from './selector';
+import ProductCard from '../Grid/ProductCard';
+import { getPrettyPrice } from '../../../utils/account/products';
 
 const iconClassName = 'w-10 h-10 inline-block -mt-1 ml-2';
 

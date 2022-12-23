@@ -118,7 +118,7 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount
                 count: totalCount,
             })
         );
-    }, [dispatch]);
+    }, [dispatch, allProducts, totalCount]);
 
     return (
         <PageWrapper

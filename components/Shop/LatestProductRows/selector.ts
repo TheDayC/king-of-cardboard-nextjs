@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { Interest } from '../../../enums/products';
 
+import { Interest } from '../../../enums/products';
 import { selectProductData } from '../../../store/state/selectors';
 
 const selector = createSelector([selectProductData], (products) => ({
