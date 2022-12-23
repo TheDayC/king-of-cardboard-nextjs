@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Upload } from '@aws-sdk/lib-storage';
+import { round } from 'lodash';
 
 import { s3Client } from '../../lib/aws';
 import { errorHandler } from '../../middleware/errors';
@@ -10,7 +11,7 @@ import { Category, Configuration, Interest } from '../../enums/products';
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
 export function getPrettyPrice(cost: number): string {
-    return `£${cost / 100}`;
+    return `£${(cost / 100).toFixed(2)}`;
 }
 
 export async function addProduct(
@@ -188,5 +189,26 @@ export async function deleteImageFromBucket(key: string): Promise<boolean> {
         return status === 204;
     } catch (err) {
         return false;
+    }
+}
+
+export function getInterestBySlug(slug: string): Interest {
+    switch (slug) {
+        case 'baseball':
+            return Interest.Baseball;
+        case 'basketball':
+            return Interest.Basketball;
+        case 'football':
+            return Interest.Football;
+        case 'pokemon':
+            return Interest.Pokemon;
+        case 'soccer':
+            return Interest.Soccer;
+        case 'ufc':
+            return Interest.UFC;
+        case 'wrestling':
+            return Interest.Wrestling;
+        default:
+            return Interest.Other;
     }
 }

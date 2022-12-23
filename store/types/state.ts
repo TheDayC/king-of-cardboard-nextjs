@@ -8,7 +8,8 @@ import { CartItem, UpdateQuantity } from '../../types/cart';
 import { Shipment } from '../../types/checkout';
 import { ShallowImport } from '../../types/imports';
 import { ContentfulPage } from '../../types/pages';
-import { Product, ShallowProduct, SingleProduct } from '../../types/products';
+import { SingleProduct } from '../../types/products';
+import { Product } from '../../types/productsNew';
 import { SocialMedia } from '../../types/profile';
 
 export interface IAppState {
@@ -214,7 +215,7 @@ export interface CommonThunkInput {
 }
 
 export interface ProductsState {
-    products: ShallowProduct[];
+    products: Product[];
     productsTotal: number;
     isLoadingProducts: boolean;
     currentProduct: SingleProduct;

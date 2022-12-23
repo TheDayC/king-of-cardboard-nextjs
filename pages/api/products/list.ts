@@ -19,7 +19,6 @@ async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<
             const interests = safelyParse(req, 'body.interests', parseAsArrayOfNumbers, null);
             const configurations = safelyParse(req, 'body.configurations', parseAsArrayOfNumbers, null);
             const query = buildProductListMongoQueryValues(categories, interests, configurations);
-            console.log('🚀 ~ file: list.ts:22 ~ listProducts ~ query', query);
 
             const productCount = await productsCollection.countDocuments();
             const productList = await productsCollection

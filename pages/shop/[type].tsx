@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { Document } from '@contentful/rich-text-types';
 
 import PageWrapper from '../../components/PageWrapper';
-import { parseAsProductType, safelyParse } from '../../utils/parsers';
+import { parseAsProductType, parseAsString, safelyParse } from '../../utils/parsers';
 import Filters from '../../components/Shop/Filters';
 import Grid from '../../components/Shop/Grid';
 import { removeAllProductTypes, setUrlProductType } from '../../store/slices/filters';
@@ -16,45 +16,35 @@ import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import { Categories, FilterMode, ProductType } from '../../enums/shop';
 import { getProducts } from '../../utils/products';
-import { Product } from '../../types/products';
 import { setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
+import { getInterestBySlug, listProducts } from '../../utils/account/products';
+import { Category, Configuration, Interest } from '../../enums/products';
+import { Product } from '../../types/productsNew';
+import { isNumber } from '../../utils/typeguards';
 
 const LIMIT = 8;
 const SKIP = 0;
-const CATEGORIES: Categories[] = [];
+const CATEGORIES: Category[] = [];
+const CONFIGURATIONS: Configuration[] = [];
+const INTERESTS: Interest[] = [];
 const DEFAULT_PRODUCTS: Product[] = [];
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const accessToken = await createToken();
-
-    if (!accessToken.token) {
-        return {
-            props: {
-                errorCode: 500,
-                shopType: null,
-                accessToken,
-                content: null,
-                products: DEFAULT_PRODUCTS,
-                count: 0,
-            },
-        };
-    }
-
-    const shopType = safelyParse(context, 'query.type', parseAsProductType, null);
+    const shopType = safelyParse(context, 'query.type', parseAsString, '');
+    const interest = getInterestBySlug(shopType);
     const { content } = await getPageBySlug(shopType, 'shop/');
-    const { products, count } = await getProducts(
-        accessToken.token,
+    const { products, count } = await listProducts(
         LIMIT,
         SKIP,
         CATEGORIES,
-        shopType ? [shopType] : []
+        CONFIGURATIONS,
+        isNumber(interest) ? [interest] : INTERESTS
     );
 
     return {
         props: {
-            errorCode: !shopType ? 404 : null,
+            interest,
             shopType,
-            accessToken,
             content,
             products,
             count,
@@ -63,17 +53,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 interface ShopTypeProps {
-    shopType: ProductType | null;
-    accessToken: CreateToken;
+    interest: Interest;
+    shopType: string;
     content: Document | null;
     products: Product[] | null;
     count: number;
 }
 
-export const ShopType: React.FC<ShopTypeProps> = ({ shopType, accessToken, content, products, count }) => {
+export const ShopType: React.FC<ShopTypeProps> = ({ interest, shopType, content, products, count }) => {
     const dispatch = useDispatch();
-    const shouldUpperCase = shopType === ProductType.UFC;
-    const caseChangedShopType = shouldUpperCase ? upperCase(shopType || '') : startCase(shopType || '');
+    const shouldUpperCase = interest === Interest.UFC;
+    const caseChangedShopType = shouldUpperCase ? upperCase(shopType) : startCase(shopType);
 
     useEffect(() => {
         if (shopType) {
@@ -82,11 +72,6 @@ export const ShopType: React.FC<ShopTypeProps> = ({ shopType, accessToken, conte
             dispatch(removeAllProductTypes());
         }
     }, [dispatch, shopType]);
-
-    useEffect(() => {
-        dispatch(setAccessToken(accessToken.token));
-        dispatch(setExpires(accessToken.expires));
-    }, [dispatch, accessToken]);
 
     useEffect(() => {
         dispatch(setIsLoadingProducts(true));

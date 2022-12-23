@@ -11,6 +11,7 @@ import NoProducts from './NoProducts';
 import { FilterMode } from '../../../enums/shop';
 import ImportCard from './ImportCard';
 import { fetchImports, setIsLoadingImports } from '../../../store/slices/imports';
+import { getPrettyPrice } from '../../../utils/account/products';
 
 const PER_PAGE = 8;
 
@@ -105,15 +106,16 @@ export const Grid: React.FC<GridProps> = ({ mode }) => {
                     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl2:grid-cols-6">
                         {products.map((product) => (
                             <ProductCard
-                                name={product.name}
-                                image={product.image.url}
-                                imgDesc={product.image.description}
-                                imgTitle={product.image.title}
-                                tags={product.tags}
-                                amount={product.amount}
-                                compareAmount={product.compareAmount}
+                                name={product.title}
+                                image={product.mainImage}
+                                imgDesc={`${product.title} primary image`}
+                                imgTitle={`${product.title} image`}
+                                tags={[]}
+                                amount={getPrettyPrice(product.price)}
+                                compareAmount={getPrettyPrice(product.salePrice)}
                                 slug={product.slug}
-                                key={`product-card-${product.name}`}
+                                shouldShowCompare={product.salePrice > 0 && product.salePrice !== product.price}
+                                key={`product-card-${product.slug}`}
                             />
                         ))}
                     </div>

@@ -38,6 +38,12 @@ import {
     isDocument,
     isArrayOfNumbers,
     isFile,
+    isInterest,
+    isCategory,
+    isConfiguration,
+    isArrayOfInterests,
+    isArrayOfCategories,
+    isArrayOfConfigurations,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
@@ -248,3 +254,11 @@ export const parseAsArrayOfSliderImages = parseAsType(isArrayOfSliderImages);
 export const parseAsRepeater = parseAsType(isRepeater);
 export const parseAsArrayOfRepeater = parseAsType(isArrayOfRepeater);
 export const parseAsRole = parseAsType(isEnumMember(Roles));
+
+// Product enum parsers
+export const parseAsInterest = parseAsType(isInterest);
+export const parseAsCategory = parseAsType(isCategory);
+export const parseAsConfiguration = parseAsType(isConfiguration);
+export const parseAsArrayOfInterests = parseAsType(isArrayOfInterests);
+export const parseAsArrayOfCategories = parseAsType(isArrayOfCategories);
+export const parseAsArrayOfConfigurations = parseAsType(isArrayOfConfigurations);
