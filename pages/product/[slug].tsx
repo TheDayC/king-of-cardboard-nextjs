@@ -74,7 +74,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             interest,
             category,
             configuration,
-            shouldShowCompare: salePrice && salePrice > 0,
+            shouldShowCompare: salePrice > 0 && salePrice !== price,
         },
     };
 };
