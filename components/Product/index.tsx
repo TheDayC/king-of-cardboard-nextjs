@@ -61,7 +61,7 @@ export const Product: React.FC<ImportProps> = ({
 
     // Handle the form submission.
     const addItemsToCart = async (chosenQty: number) => {
-        if (isUpdatingCart || hasExceededStock) return;
+        if (isUpdatingCart || hasExceededStock || chosenQty > stock) return;
 
         const attributes = {
             _id: id,
@@ -163,6 +163,8 @@ export const Product: React.FC<ImportProps> = ({
                                                 required: { value: true, message: 'Required' },
                                             })}
                                             className="input input-lg input-bordered text-center w-32 px-0 w-full mb-4 lg:w-auto lg:mb-0"
+                                            min={1}
+                                            max={stock - qtyInCart}
                                         />
                                     )}
                                     <button
