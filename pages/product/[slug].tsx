@@ -6,7 +6,7 @@ import { parseAsString, safelyParse } from '../../utils/parsers';
 import Custom404Page from '../404';
 import Product from '../../components/Product';
 import { ImageItem } from '../../types/contentful';
-import { getPrettyPrice, getProduct } from '../../utils/account/products';
+import { getProduct } from '../../utils/account/products';
 import { Category, Configuration, Interest } from '../../enums/products';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -20,10 +20,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 errorCode: 404,
                 metaTitle: '',
                 metaDescription: '',
-                accessToken: {
-                    token: null,
-                    expires: '',
-                },
                 id: '',
                 name: '',
                 slug: '',
@@ -35,8 +31,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                     url: '',
                 },
                 galleryImages: [],
-                amount: '',
-                compareAmount: '',
+                price: '',
+                salePrice: '',
                 isAvailable: false,
                 stock: 0,
                 tags: [],
@@ -60,14 +56,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             slug,
             description: content,
             sku,
-            image: {
+            mainImage: {
                 title: `${title} main image`,
                 description: `${title} main product image`,
                 url: `${process.env.NEXT_PUBLIC_AWS_S3_URL}${mainImage}`,
             },
-            galleryImages: [],
-            amount: getPrettyPrice(price),
-            compareAmount: getPrettyPrice(salePrice),
+            gallery: [],
+            price: price,
+            salePrice: salePrice,
             isAvailable: quantity && quantity > 0,
             stock: quantity,
             tags: [],
@@ -88,10 +84,10 @@ interface ProductPageProps {
     slug: string;
     description: string | null;
     sku: string;
-    image: ImageItem;
-    galleryImages: ImageItem[];
-    amount: string;
-    compareAmount: string;
+    mainImage: ImageItem;
+    gallery: ImageItem[];
+    price: number;
+    salePrice: number;
     isAvailable: boolean;
     stock: number;
     tags: string[];
@@ -110,10 +106,10 @@ export const ProductPage: React.FC<ProductPageProps> = ({
     slug,
     description,
     sku,
-    image,
-    galleryImages,
-    amount,
-    compareAmount,
+    mainImage,
+    gallery,
+    price,
+    salePrice,
     isAvailable,
     stock,
     tags,
@@ -122,25 +118,27 @@ export const ProductPage: React.FC<ProductPageProps> = ({
     configuration,
     shouldShowCompare,
 }) => {
-    const imageUrl = image.url.length > 0 ? `https:${image.url}` : undefined;
-
     // Show error page if a code is provided.
     if (errorCode) {
         return <Custom404Page />;
     }
 
     return (
-        <PageWrapper title={`${metaTitle} | Import | King of Cardboard`} description={metaDescription} image={imageUrl}>
+        <PageWrapper
+            title={`${metaTitle} | Import | King of Cardboard`}
+            description={metaDescription}
+            image={mainImage.url}
+        >
             <Product
                 id={id}
-                name={name}
+                title={name}
                 slug={slug}
                 description={description}
                 sku={sku}
-                image={image}
-                galleryImages={galleryImages}
-                amount={amount}
-                compareAmount={compareAmount}
+                mainImage={mainImage}
+                gallery={gallery}
+                price={price}
+                salePrice={salePrice}
                 isAvailable={isAvailable}
                 stock={stock}
                 tags={tags}

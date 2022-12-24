@@ -3,16 +3,9 @@ import { IoLocationSharp } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
 import { BsCheck2Circle } from 'react-icons/bs';
 
-import {
-    setShippingAddress,
-    setBillingAddress,
-    setCloneBillingAddressId,
-    setCloneShippingAddressId,
-} from '../../../../../store/slices/checkout';
 import { CommerceLayerResponse } from '../../../../../types/api';
 import { getAddress } from '../../../../../utils/account';
-import { updateAddressClone } from '../../../../../utils/checkout';
-import { parseAsString, safelyParse, parseAddress } from '../../../../../utils/parsers';
+import { parseAsString, safelyParse } from '../../../../../utils/parsers';
 import selector from './selector';
 import { setCheckoutLoading } from '../../../../../store/slices/global';
 
@@ -23,7 +16,7 @@ interface AddressProps {
 }
 
 export const Address: React.FC<AddressProps> = ({ id, name, isShipping }) => {
-    const { accessToken, orderId, cloneBillingAddressId, cloneShippingAddressId } = useSelector(selector);
+    const { cloneBillingAddressId, cloneShippingAddressId } = useSelector(selector);
     const [address, setAddress] = useState<CommerceLayerResponse | null>(null);
     const dispatch = useDispatch();
     const [shouldFetchAddress, setShouldFetchAddress] = useState(true);
@@ -35,9 +28,8 @@ export const Address: React.FC<AddressProps> = ({ id, name, isShipping }) => {
     const isSelected = isShipping ? Boolean(cloneShippingAddressId === id) : Boolean(cloneBillingAddressId === id);
 
     const handleClick = async () => {
-        if (orderId && accessToken) {
-            dispatch(setCheckoutLoading(true));
-            const res = await updateAddressClone(accessToken, orderId, id, isShipping);
+        dispatch(setCheckoutLoading(true));
+        /* const res = await updateAddressClone(accessToken, orderId, id, isShipping);
 
             if (res) {
                 const addressPayload = parseAddress(address);
@@ -49,10 +41,9 @@ export const Address: React.FC<AddressProps> = ({ id, name, isShipping }) => {
                     dispatch(setCloneBillingAddressId(id));
                     dispatch(setBillingAddress(addressPayload));
                 }
-            }
+            } */
 
-            dispatch(setCheckoutLoading(false));
-        }
+        dispatch(setCheckoutLoading(false));
     };
 
     const fetchAddress = useCallback(async (token: string, addressId: string) => {
@@ -64,13 +55,13 @@ export const Address: React.FC<AddressProps> = ({ id, name, isShipping }) => {
     }, []);
 
     useEffect(() => {
-        if (accessToken && id && shouldFetchAddress) {
+        if (id && shouldFetchAddress) {
             // Stop multiple requests using internal state.
             setShouldFetchAddress(false);
 
-            fetchAddress(accessToken, id);
+            //fetchAddress(accessToken, id);
         }
-    }, [id, accessToken, shouldFetchAddress, fetchAddress]);
+    }, [id, shouldFetchAddress, fetchAddress]);
 
     return (
         <div

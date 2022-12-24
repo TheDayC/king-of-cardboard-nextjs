@@ -55,26 +55,26 @@ export const Shipment: React.FC<ShipmentProps> = ({
             <div className="collapse-body">
                 {lineItemSkus &&
                     lineItemSkus.map((sku) => {
-                        const lineItem = lineItems.find((item) => item.sku_code === sku);
+                        const lineItem = lineItems.find((item) => item.sku === sku);
 
                         if (lineItem) {
                             return (
-                                <React.Fragment key={`checkout-line-item-${lineItem.sku_code}`}>
+                                <React.Fragment key={`checkout-line-item-${lineItem.sku}`}>
                                     <div className="flex flex-row justify-between items-center px-4">
                                         <div className={`${styles.imageContainer}`}>
-                                            {lineItem.image.url.length > 0 && (
+                                            {lineItem.mainImage.url.length > 0 && (
                                                 <Image
-                                                    src={lineItem.image.url}
-                                                    alt={lineItem.image.description}
-                                                    title={lineItem.image.title}
+                                                    src={lineItem.mainImage.url}
+                                                    alt={lineItem.mainImage.description}
+                                                    title={lineItem.mainImage.title}
                                                     layout="fill"
                                                     objectFit="scale-down"
                                                 />
                                             )}
                                         </div>
                                         <div>
-                                            <h4 className="text-md">{lineItem.name}</h4>
-                                            <p className="text-xs text-base-200">{lineItem.sku_code}</p>
+                                            <h4 className="text-md">{lineItem.title}</h4>
+                                            <p className="text-xs text-base-200">{lineItem.sku}</p>
                                         </div>
                                         <p className="text-md">Quantity: {lineItem.quantity}</p>
                                     </div>

@@ -1,5 +1,4 @@
 import React from 'react';
-import { useStore } from 'react-redux';
 import type { AppProps } from 'next/app';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Elements } from '@stripe/react-stripe-js';
@@ -7,20 +6,20 @@ import { loadStripe } from '@stripe/stripe-js';
 import { SessionProvider } from 'next-auth/react';
 import Script from 'next/script';
 import Cookies from 'js-cookie';
+import { Provider } from 'react-redux';
 
 import 'react-quill/dist/quill.snow.css';
 import '../styles/globals.css';
 
 import { wrapper } from '../store';
-import OrderAndTokenProvider from '../context/OrderAndTokenProvider';
 import Drawer from '../components/Drawer';
 import Alert from '../components/Alert';
 
 // Called outside of the render to only create once.
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
 
-const MyApp: React.FC<AppProps> = ({ Component, pageProps: { session, ...pageProps } }) => {
-    const store = useStore();
+const MyApp: React.FC<AppProps> = ({ Component, ...rest }) => {
+    const { store, props } = wrapper.useWrappedStore(rest);
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -28,9 +27,9 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps: { session, ...pagePro
     const cookieConsent = Boolean(Cookies.get('cookieConsent'));
 
     return (
-        <PersistGate persistor={persistor} loading={<div>Loading</div>}>
-            <SessionProvider session={session}>
-                <OrderAndTokenProvider>
+        <Provider store={store}>
+            <PersistGate persistor={persistor} loading={<div>Loading</div>}>
+                <SessionProvider session={props.pageProps.session}>
                     <Elements stripe={stripePromise}>
                         <Drawer>
                             {/* Global Site Tag (gtag.js) - Google Analytics */}
@@ -74,14 +73,14 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps: { session, ...pagePro
                                     `,
                                 }}
                             />
-                            <Component {...pageProps} />
+                            <Component {...props.pageProps} />
                             <Alert />
                         </Drawer>
                     </Elements>
-                </OrderAndTokenProvider>
-            </SessionProvider>
-        </PersistGate>
+                </SessionProvider>
+            </PersistGate>
+        </Provider>
     );
 };
 
-export default wrapper.withRedux(MyApp);
+export default MyApp;

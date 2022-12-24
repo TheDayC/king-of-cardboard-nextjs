@@ -17,15 +17,13 @@ const selector = createSelector(
         userToken: global.userToken,
         customerDetails,
         checkoutLoading: global.checkoutLoading,
-        orderId: cart.orderId,
         subTotal: cart.subTotal,
         shipping: cart.shipping,
         total: cart.total,
         items: cart.items,
-        orderNumber: cart.orderNumber,
         billingAddress: checkout.billingAddress,
         shippingAddress: checkout.shippingAddress,
-        balance: account.giftCard.balance,
+        coins: account.coins,
     })
 );
 

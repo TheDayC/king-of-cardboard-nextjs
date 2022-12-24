@@ -25,20 +25,13 @@ export interface AppStateShape {
 }
 
 export interface CartState {
-    shouldCreateOrder: boolean;
-    shouldUpdateCart: boolean;
-    orderId: string | null;
-    orderNumber: number | null;
-    orderExpiry: string | null;
-    itemCount: number;
     items: CartItem[];
     isUpdatingCart: boolean;
-    subTotal: string;
-    shipping: string;
-    discount: string;
-    total: string;
-    orderHasGiftCard: boolean;
-    updateQuantities: UpdateQuantity[];
+    subTotal: number;
+    shipping: number;
+    discount: number;
+    total: number;
+    shouldUseCoins: boolean;
 }
 
 export interface PaymentMethod {
@@ -186,7 +179,7 @@ export interface AccountState {
     socialMedia: SocialMedia;
     balance: number;
     shouldFetchRewards: boolean;
-    giftCard: GiftCard;
+    coins: number;
     orders: Order[];
     orderPageCount: number;
     currentOrder: SingleOrder;

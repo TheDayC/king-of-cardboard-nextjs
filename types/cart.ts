@@ -1,6 +1,6 @@
-import { LineItemOption, Order } from '@commercelayer/sdk';
-
-import { ImageItem } from './contentful';
+import { Order } from '@commercelayer/sdk';
+import { ImageItem } from '../types/contentful';
+import { Product } from './productsNew';
 
 export interface CartTotals {
     subTotal: string;
@@ -15,20 +15,11 @@ export interface CreateOrder {
     expiry: string | null;
 }
 
-export interface CartItem {
-    id: string;
-    sku_code: string;
-    name: string;
-    quantity: number;
-    formatted_unit_amount: string;
-    formatted_total_amount: string;
-    image: ImageItem;
-    metadata?: {
-        categories: string[];
-        types: string[];
-    };
+export interface CartItem
+    extends Omit<Product, 'created' | 'lastUpdated' | 'userId' | 'content' | 'mainImage' | 'gallery'> {
+    mainImage: ImageItem;
     stock: number;
-    line_item_options: LineItemOption[];
+    cartQty: number;
 }
 
 export interface UpdateQuantity {
@@ -38,4 +29,16 @@ export interface UpdateQuantity {
 
 export interface FetchOrder extends Omit<Order, 'line_items'> {
     line_items: CartItem[];
+}
+
+export interface Totals {
+    subTotal: number;
+    shipping: number;
+    discount: number;
+    total: number;
+}
+
+export interface FetchCartItems {
+    id: string;
+    quantity: number;
 }

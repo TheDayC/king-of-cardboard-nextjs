@@ -13,8 +13,8 @@ import {
 import { toNumber } from 'lodash';
 import { MdOutlineTrendingUp, MdTrendingDown, MdTrendingFlat } from 'react-icons/md';
 
-import { PriceHistory } from '../../../types/imports';
-import { getPercentageChange } from '../../../utils/imports';
+import { PriceHistory } from '../../types/imports';
+import { getPercentageChange } from '../../utils/imports';
 
 const CONFIG = {
     responsive: true,

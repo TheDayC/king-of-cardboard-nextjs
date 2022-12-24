@@ -1,16 +1,7 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useRouter } from 'next/router';
-import { MdAdsClick } from 'react-icons/md';
+import { useSelector } from 'react-redux';
 
-import { addError } from '../../../store/slices/alerts';
-import { completePayPalOrder } from '../../../utils/checkout';
 import selector from './selector';
-import { confirmOrder } from '../../../utils/payment';
-import { setConfirmationData } from '../../../store/slices/confirmation';
-import { setCheckoutLoading } from '../../../store/slices/global';
-import Addresses from './Addresses';
-import { useWarnIfUnsavedChanges } from '../../../utils';
 
 interface CompleteProps {
     paymentId: string | null;
@@ -18,70 +9,74 @@ interface CompleteProps {
     orderId: string;
 }
 
-const Complete: React.FC<CompleteProps> = ({ paymentId, payerId, orderId }) => {
+const Complete: React.FC<CompleteProps> = (
+    {
+        /*paymentId,  payerId, orderId  */
+    }
+) => {
     const {
-        accessToken,
-        checkoutLoading,
+        /* checkoutLoading,
         subTotal,
         shipping,
         total,
-        orderNumber,
         items,
         customerDetails,
         billingAddress,
-        shippingAddress,
+        shippingAddress, */
     } = useSelector(selector);
-    const dispatch = useDispatch();
-    const router = useRouter();
+    /* const dispatch = useDispatch();
+    const router = useRouter(); */
 
-    const handleComplete = async () => {
-        if (accessToken && paymentId) {
-            dispatch(setCheckoutLoading(true));
-            const res = await completePayPalOrder(accessToken, paymentId, payerId);
+    return null;
 
-            if (res) {
-                // Place the order with commerce layer.
-                const hasBeenPlaced = await confirmOrder(accessToken, orderId, '_place');
+    /* const handleComplete = async () => {
+        if (paymentId) {
+            dispatch(setCheckoutLoading(true)); */
+    //const res = await completePayPalOrder(accessToken, paymentId, payerId);
 
-                if (hasBeenPlaced && paymentId) {
-                    const hasBeenAuthorized = await confirmOrder(accessToken, orderId, '_authorize');
-                    const hasBeenApproved = await confirmOrder(accessToken, orderId, '_approve_and_capture');
+    //if (res) {
+    // Place the order with commerce layer.
+    //const hasBeenPlaced = await confirmOrder(accessToken, orderId, '_place');
 
-                    // Set the confirmation data in the store.
-                    if (hasBeenAuthorized && hasBeenApproved) {
-                        // Set the confirmation data in the store.
-                        dispatch(
+    //if (hasBeenPlaced && paymentId) {
+    // const hasBeenAuthorized = await confirmOrder(accessToken, orderId, '_authorize');
+    // const hasBeenApproved = await confirmOrder(accessToken, orderId, '_approve_and_capture');
+
+    // Set the confirmation data in the store.
+    //if (hasBeenAuthorized && hasBeenApproved) {
+    // Set the confirmation data in the store.
+    /* dispatch(
                             setConfirmationData({
                                 subTotal,
                                 shipping,
                                 total,
-                                orderNumber,
+                                //orderNumber,
                                 items,
                                 customerDetails,
                                 billingAddress,
                                 shippingAddress,
                             })
-                        );
-                    } else {
+                        ); */
+    /* } else {
                         dispatch(addError('Failed to confirm your order, please contact support.'));
-                    }
-                } else {
+                    } */
+    /* } else {
                     dispatch(addError('Failed to confirm your order, please contact support.'));
-                }
+                } */
 
-                router.push('/confirmation');
-            } else {
+    //router.push('/confirmation');
+    /* } else {
                 dispatch(addError('Failed to confirm your order, please contact support.'));
-            }
+            } */
 
-            dispatch(setCheckoutLoading(false));
+    /* dispatch(setCheckoutLoading(false));
         }
-    };
+    }; */
 
     // Give the user a warning before leaving the page.
-    useWarnIfUnsavedChanges(!checkoutLoading, 'Are you sure you want leave without completing your order?');
+    //useWarnIfUnsavedChanges(!checkoutLoading, 'Are you sure you want leave without completing your order?');
 
-    return (
+    /* return (
         <div className="flex flex-col w-full">
             <h1 className="text-2xl mb-4">Complete Order</h1>
             <p>Please review your details below and complete your order.</p>
@@ -111,7 +106,7 @@ const Complete: React.FC<CompleteProps> = ({ paymentId, payerId, orderId }) => {
                 your payment.
             </p>
         </div>
-    );
+    ); */
 };
 
 export default Complete;

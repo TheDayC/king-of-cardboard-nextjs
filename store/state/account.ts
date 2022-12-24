@@ -10,14 +10,7 @@ const accountInitialState: AccountState = {
     },
     balance: 0,
     shouldFetchRewards: true,
-    giftCard: {
-        id: '',
-        status: '',
-        balance: 0,
-        reference: '',
-        recipient_email: '',
-        code: '',
-    },
+    coins: 0,
     orders: [],
     orderPageCount: 0,
     currentOrder: {

@@ -1,15 +1,11 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Image from 'next/image';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi';
 
-import { setLineItem } from '../../../../../utils/commerce';
 import selector from './selector';
-import { fetchCartItems, fetchItemCount } from '../../../../../store/slices/cart';
 import { ImageItem } from '../../../../../types/contentful';
-import { addError, addSuccess } from '../../../../../store/slices/alerts';
-import { gaEvent } from '../../../../../utils/ga';
 
 interface SlotProps {
     image: ImageItem;
@@ -21,23 +17,22 @@ interface SlotProps {
 }
 
 export const Slot: React.FC<SlotProps> = ({ image, sku_code, name, amount, compare_amount, setLoading }) => {
-    const { accessToken, orderId, items } = useSelector(selector);
-    const dispatch = useDispatch();
+    const { items } = useSelector(selector);
     const shouldShowCompare = amount !== compare_amount && compare_amount !== '£0.00';
-    const isInBasket = Boolean(items.find((item) => item.sku_code === sku_code));
+    const isInBasket = Boolean(items.find((item) => item.sku === sku_code));
 
     const handleClick = async () => {
-        if (!accessToken || !orderId || isInBasket) return;
+        if (isInBasket) return;
 
         setLoading(true);
-        const attributes = {
+        /* const attributes = {
             quantity: 1,
             sku_code,
             _external_price: false,
             _update_quantity: true,
-        };
+        }; */
 
-        const relationships = {
+        /* const relationships = {
             order: {
                 data: {
                     id: orderId,
@@ -46,16 +41,16 @@ export const Slot: React.FC<SlotProps> = ({ image, sku_code, name, amount, compa
             },
         };
 
-        const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
+        const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships); */
 
-        if (hasLineItemUpdated) {
+        /* if (hasLineItemUpdated) {
             gaEvent('addBreakToCart', { sku_code });
             dispatch(addSuccess(`${name} added to your cart!`));
             dispatch(fetchItemCount({ accessToken, orderId }));
             dispatch(fetchCartItems({ accessToken, orderId }));
         } else {
             dispatch(addError(`${name} couldn't be added to your cart.`));
-        }
+        } */
     };
 
     useEffect(() => {

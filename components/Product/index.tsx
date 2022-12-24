@@ -1,24 +1,28 @@
-import React, { useCallback } from 'react';
-import { useSelector } from 'react-redux';
-import { useForm } from 'react-hook-form';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { FieldValues, useForm } from 'react-hook-form';
+import { toNumber } from 'lodash';
 
 import selector from './selector';
 import Images from './Images';
 import Details from './Details';
-import { parseAsNumber, safelyParse } from '../../utils/parsers';
-import { ImageItem } from '../../types/contentful';
 import { Configuration, Interest, Category } from '../../enums/products';
+import { ImageItem } from '../../types/contentful';
+import { addItem, setUpdatingCart } from '../../store/slices/cart';
+import { gaEvent } from '../../utils/ga';
+import { addSuccess } from '../../store/slices/alerts';
+import { getPrettyPrice } from '../../utils/account/products';
 
 interface ImportProps {
     id: string;
-    name: string;
+    title: string;
     slug: string;
     description: string | null;
     sku: string;
-    image: ImageItem;
-    galleryImages: ImageItem[];
-    amount: string;
-    compareAmount: string;
+    mainImage: ImageItem;
+    gallery: ImageItem[];
+    price: number;
+    salePrice: number;
     isAvailable: boolean;
     stock: number;
     tags: string[];
@@ -29,144 +33,84 @@ interface ImportProps {
 }
 
 export const Product: React.FC<ImportProps> = ({
-    name,
+    id,
+    title,
+    slug,
     description,
     sku,
-    image,
-    galleryImages,
-    amount,
-    compareAmount,
+    mainImage,
+    gallery,
+    price,
+    salePrice,
     isAvailable,
     stock,
     tags,
-    /* interest,
+    interest,
     category,
-    configuration, */
+    configuration,
     shouldShowCompare,
 }) => {
-    //const dispatch = useDispatch();
-    //const { status } = useSession();
+    const dispatch = useDispatch();
     const { items, isUpdatingCart } = useSelector(selector);
-    //const [savedSkuOptions, setSavedSkuOptions] = useState<SavedSkuOptions[]>([]);
     const { handleSubmit, register } = useForm();
-    const item = items.find((c) => c.sku_code === sku);
-    const quantity = safelyParse(item, 'quantity', parseAsNumber, 0);
-    const hasExceededStock = quantity >= stock;
+    const item = items.find((c) => c.sku === sku);
+    const qtyInCart = item ? item.quantity : 0;
+    const hasExceededStock = qtyInCart >= stock;
     const btnDisabled = hasExceededStock ? ' btn-disabled' : ' btn-primary';
     const btnLoading = isUpdatingCart ? ' loading' : '';
-    const isQuantityAtMax = quantity === stock;
-    //const isGuest = status !== 'authenticated';
 
     // Handle the form submission.
-    /*const addItemsToCart = useCallback(
-        async (data: unknown, newOrderId: string | null = orderId) => {
-             if (!newOrderId || isUpdatingCart || hasExceededStock) return;
+    const addItemsToCart = async (chosenQty: number) => {
+        if (isUpdatingCart || hasExceededStock || chosenQty > stock) return;
 
-            const attributes = {
-                quantity: parseInt(safelyParse(data, 'quantity', parseAsString, '1')),
-                sku_code: sku,
-                name: name,
-                image_url: image.url,
-                _external_price: false,
-                _update_quantity: true,
-                metadata: {
-                    types: types,
-                    categories: categories,
-                },
-            };
-
-            const relationships = {
-                order: {
-                    data: {
-                        id: newOrderId,
-                        type: 'orders',
-                    },
-                },
-            };
-
-            const lineItemId = await setLineItem(accessToken, attributes, relationships);
-
-            if (lineItemId) {
-                // Create line item options
-                if (savedSkuOptions.length) {
-                    for (const savedSkuOption of savedSkuOptions) {
-                        await createLineItemOption(accessToken, lineItemId, savedSkuOption);
-                    }
-                }
-
-                dispatch(fetchItemCount({ accessToken, orderId: newOrderId }));
-                dispatch(fetchCartItems({ accessToken, orderId: newOrderId }));
-                gaEvent('addProductToCart', { sku_code: sku });
-                dispatch(addSuccess(`${name} added to cart.`));
-            } else {
-                dispatch(setUpdatingCart(false));
-                dispatch(addError('Failed to add product, please check the quantity.'));
-            } 
-        },
-        [
-            accessToken,
-            orderId,
-            dispatch,
-            isUpdatingCart,
-            hasExceededStock,
+        const attributes = {
+            _id: id,
             sku,
-            categories,
-            name,
-            types,
-            image.url,
-            savedSkuOptions,
-        ]
-    );*/
+            title,
+            slug,
+            mainImage,
+            category,
+            interest,
+            configuration,
+            quantity: chosenQty,
+            cartQty: chosenQty,
+            stock,
+            price,
+            salePrice,
+        };
+
+        // Add item to the cart.
+        dispatch(addItem(attributes));
+
+        // Capture event.
+        gaEvent('addProductToCart', { sku_code: sku });
+
+        // Inform user.
+        dispatch(addSuccess(`${title} added to cart.`));
+    };
 
     // Handle the form submission.
-    const onSubmit = useCallback(
-        async (/* data: unknown */) => {
-            /* if (!orderId) return;
-            dispatch(setUpdatingCart(true));
-            const doesOrderExist = await checkIfOrderExists(accessToken, orderId);
+    const onSubmit = async (data: FieldValues) => {
+        // Show loading spinner.
+        dispatch(setUpdatingCart(true));
 
-            if (!doesOrderExist || items.length === 0) {
-                const order = await createOrder(accessToken, isGuest);
+        // Add the chosen items to the cart.
+        addItemsToCart(toNumber(data.quantity));
 
-                dispatch(setOrder(order));
-                addItemsToCart(data, order.orderId);
-            } else {
-                addItemsToCart(data);
-            }
-
-            dispatch(setUpdatingCart(false)); */
-        },
-        [
-            /* orderId, dispatch, addItemsToCart, isGuest, items.length */
-        ]
-    );
-
-    /* const handleSkuOptionChange = (
-        e: React.ChangeEvent<HTMLInputElement>,
-        id: string,
-        amount: string,
-        name: string,
-        quantity: number
-    ) => {
-        const checked = e.target.checked;
-
-        if (checked) {
-            setSavedSkuOptions([...savedSkuOptions, { id, amount, name, quantity }]);
-        } else {
-            setSavedSkuOptions(savedSkuOptions.filter((option) => option.id !== id));
-        }
-    }; */
+        // Remove loading spinner.
+        dispatch(setUpdatingCart(false));
+    };
 
     return (
         <div className="flex flex-col relative lg:flex-row lg:space-x-8">
-            <Images mainImage={image} imageCollection={galleryImages} />
+            <Images mainImage={mainImage} imageCollection={gallery} />
 
             <div id="productDetails" className="flex flex-col w-full lg:w-3/4">
                 <div className="card rounded-md lg:shadow-lg md:p-4 lg:p-8">
                     <Details
-                        name={name}
-                        amount={amount}
-                        compareAmount={compareAmount}
+                        name={title}
+                        price={getPrettyPrice(price)}
+                        salePrice={getPrettyPrice(salePrice)}
                         isAvailable={isAvailable}
                         quantity={stock}
                         tags={tags}
@@ -211,7 +155,7 @@ export const Product: React.FC<ImportProps> = ({
                                     )) */}
                                 <h4 className="text-2xl mt-2 mb-2 font-semibold">Amount</h4>
                                 <div className="flex flex-col lg:flex-row justify-start align-center lg:space-x-2">
-                                    {!isQuantityAtMax && (
+                                    {!hasExceededStock && (
                                         <input
                                             type="number"
                                             defaultValue="1"
@@ -219,6 +163,8 @@ export const Product: React.FC<ImportProps> = ({
                                                 required: { value: true, message: 'Required' },
                                             })}
                                             className="input input-lg input-bordered text-center w-32 px-0 w-full mb-4 lg:w-auto lg:mb-0"
+                                            min={1}
+                                            max={stock - qtyInCart}
                                         />
                                     )}
                                     <button

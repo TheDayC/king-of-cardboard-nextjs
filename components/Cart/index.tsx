@@ -1,83 +1,34 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { BiExit, BiRefresh } from 'react-icons/bi';
 
 import selector from './selector';
 import CartItem from './CartItem';
 import CartTotals from './CartTotals';
-import { resetConfirmationDetails } from '../../store/slices/confirmation';
 import Loading from '../Loading';
-import {
-    clearUpdateQuantities,
-    fetchCartItems,
-    fetchCartTotals,
-    fetchItemCount,
-    setShouldUpdateCart,
-    setUpdatingCart,
-} from '../../store/slices/cart';
+import { fetchCartTotals, setUpdatingCart, updateItemQty } from '../../store/slices/cart';
 import UseCoins from '../UseCoins';
-import { parseAsString, safelyParse } from '../../utils/parsers';
-import { updateLineItem } from '../../utils/commerce';
+import { getPrettyPrice } from '../../utils/account/products';
 
-interface CartProps {
-    accessToken: string | null;
-}
-
-export const Cart: React.FC<CartProps> = ({ accessToken }) => {
-    const { itemCount, items, isUpdatingCart, orderId, shouldUpdateCart, balance, updateQuantities } =
-        useSelector(selector);
+export const Cart: React.FC = () => {
+    const { itemCount, items, isUpdatingCart, coins } = useSelector(selector);
     const dispatch = useDispatch();
-    const { data: session } = useSession();
-    const [shouldFetch, setShouldFetch] = useState(true);
+    const { status } = useSession();
     const itemPlural = itemCount === 1 ? 'item' : 'items';
-    const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
-    const shouldShowCoins = status === 'authenticated' && balance > 0;
-
-    // Catch all function to update the primary aspects of the cart.
-    const updateCart = useCallback(() => {
-        if (!accessToken || !orderId) return;
-        dispatch(fetchCartItems({ accessToken, orderId }));
-        dispatch(fetchCartTotals({ accessToken, orderId }));
-        dispatch(fetchItemCount({ accessToken, orderId }));
-    }, [dispatch, accessToken, orderId]);
+    const shouldShowCoins = status === 'authenticated' && coins > 0;
 
     const handleUpdateQuantities = async () => {
-        if (!accessToken || updateQuantities.length <= 0) return;
-
         dispatch(setUpdatingCart(true));
-
-        for (const item of updateQuantities) {
-            await updateLineItem(accessToken, item.id, item.quantity);
-        }
-        dispatch(clearUpdateQuantities());
-        updateCart();
+        dispatch(updateItemQty());
+        dispatch(fetchCartTotals());
         dispatch(setUpdatingCart(false));
     };
 
     useEffect(() => {
-        dispatch(resetConfirmationDetails());
+        dispatch(fetchCartTotals());
     }, [dispatch]);
-
-    useEffect(() => {
-        if (shouldFetch) {
-            setShouldFetch(false);
-            updateCart();
-        }
-    }, [dispatch, shouldFetch, updateCart]);
-
-    useEffect(() => {
-        if (shouldUpdateCart) {
-            dispatch(setShouldUpdateCart(false));
-            updateCart();
-        }
-    }, [dispatch, updateCart, shouldUpdateCart]);
-
-    useEffect(() => {
-        if (itemCount <= 0) {
-            dispatch(clearUpdateQuantities());
-        }
-    }, [dispatch, itemCount]);
 
     return (
         <div className="flex flex-col">
@@ -86,43 +37,44 @@ export const Cart: React.FC<CartProps> = ({ accessToken }) => {
                 <div className="block w-full relative">
                     <Loading show={isUpdatingCart} />
                     <div className="flex flex-col w-full">
-                        <div className="grid grid-cols-4 bg-neutral text-neutral-content p-2 rounded-md text-sm lg:text-md lg:p-4 lg:grid-cols-6">
+                        <div className="grid grid-cols-4 bg-neutral text-neutral-content p-2 rounded-md text-sm lg:text-md lg:p-4 lg:grid-cols-7">
                             <div className="text-center lg:table-cell">Remove</div>
                             <div className="text-center hidden lg:table-cell">&nbsp;</div>
                             <div className="text-center">Product</div>
                             <div className="text-center hidden lg:table-cell">Price</div>
                             <div className="text-center">Quantity</div>
+                            <div className="text-center">Stock</div>
                             <div className="text-center">Total</div>
                         </div>
                         <div className="flex flex-col w-full">
                             {items &&
                                 items.map((item) => (
                                     <CartItem
-                                        id={item.id}
-                                        sku={item.sku_code}
-                                        name={item.name}
-                                        image={item.image}
-                                        unitAmount={item.formatted_unit_amount}
-                                        totalAmount={item.formatted_total_amount}
+                                        id={item._id}
+                                        sku={item.sku}
+                                        name={item.title}
+                                        slug={item.slug}
+                                        image={item.mainImage}
+                                        price={item.price}
+                                        salePrice={item.salePrice}
+                                        unitAmount={getPrettyPrice(item.price)}
+                                        totalAmount={getPrettyPrice(item.price * item.quantity)}
                                         quantity={item.quantity}
                                         stock={item.stock}
-                                        lineItemOptions={item.line_item_options}
-                                        key={item.name}
+                                        key={`cart-item-${item.title}`}
                                     />
                                 ))}
                         </div>
-                        <CartTotals />
+                        {<CartTotals />}
                         {shouldShowCoins && <UseCoins />}
                         <div className="flex flex-col justify-center items-center lg:flex-row lg:justify-end lg:items-end mt-4 lg:mt-6">
                             <button
-                                className={`btn bg-green-400 hover:bg-green-600 border-none btn-wide rounded-md mb-4 lg:mb-0 lg:mr-4 w-full lg:btn-wide${
-                                    isUpdatingCart ? ' loading btn-square' : ''
-                                }${updateQuantities.length <= 0 ? ' btn-disabled' : ''}`}
-                                disabled={updateQuantities.length <= 0}
+                                className="btn border-none btn-wide rounded-md mb-4 lg:mb-0 lg:mr-4 w-full lg:btn-wide"
                                 onClick={handleUpdateQuantities}
                                 role="button"
                             >
-                                {isUpdatingCart ? '' : 'Update quantities'}
+                                Update quantities
+                                <BiRefresh className="inline-block w-6 h-6 ml-2" />
                             </button>
                             <Link href="/checkout" passHref>
                                 <button
@@ -131,7 +83,8 @@ export const Cart: React.FC<CartProps> = ({ accessToken }) => {
                                     }`}
                                     role="button"
                                 >
-                                    {isUpdatingCart ? '' : 'Checkout'}
+                                    Checkout
+                                    <BiExit className="inline-block w-6 h-6 ml-2" />
                                 </button>
                             </Link>
                         </div>
