@@ -86,7 +86,7 @@ export const Product: React.FC<ImportProps> = ({
         gaEvent('addProductToCart', { sku_code: sku });
 
         // Inform user.
-        dispatch(addSuccess(`${name} added to cart.`));
+        dispatch(addSuccess(`${title} added to cart.`));
     };
 
     // Handle the form submission.

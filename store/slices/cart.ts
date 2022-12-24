@@ -73,7 +73,17 @@ const cartSlice = createSlice({
             state.isUpdatingCart = action.payload;
         },
         addItem(state, action) {
-            state.items.push(action.payload);
+            const { _id, quantity } = action.payload;
+            const existingItem = state.items.find((i) => i._id === _id);
+
+            if (existingItem) {
+                const newItems = state.items.filter((i) => i._id !== _id);
+                const newQty = existingItem.quantity + quantity;
+
+                state.items = [...newItems, { ...existingItem, quantity: newQty }];
+            } else {
+                state.items.push(action.payload);
+            }
         },
         removeItem(state, action) {
             state.items = state.items.filter((item) => item._id !== action.payload);
@@ -89,7 +99,6 @@ const cartSlice = createSlice({
         },
         updateItemQty(state) {
             const items = state.items;
-            console.log('🚀 ~ file: cart.ts:104 ~ updateItemQty ~ items', items);
 
             state.items = items.map((item) => ({ ...item, quantity: item.cartQty || item.quantity }));
         },
