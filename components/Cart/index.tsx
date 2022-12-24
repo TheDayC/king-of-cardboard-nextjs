@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -25,6 +25,10 @@ export const Cart: React.FC = () => {
         dispatch(fetchCartTotals());
         dispatch(setUpdatingCart(false));
     };
+
+    useEffect(() => {
+        dispatch(fetchCartTotals());
+    }, [dispatch]);
 
     return (
         <div className="flex flex-col">
