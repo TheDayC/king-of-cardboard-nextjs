@@ -19,6 +19,7 @@ export interface CartItem
     extends Omit<Product, 'created' | 'lastUpdated' | 'userId' | 'content' | 'mainImage' | 'gallery'> {
     mainImage: ImageItem;
     stock: number;
+    cartQty: number;
 }
 
 export interface UpdateQuantity {
@@ -37,7 +38,7 @@ export interface Totals {
     total: number;
 }
 
-export interface FetchCartTotals {
+export interface FetchCartItems {
     id: string;
     quantity: number;
 }

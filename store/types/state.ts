@@ -25,19 +25,13 @@ export interface AppStateShape {
 }
 
 export interface CartState {
-    shouldCreateOrder: boolean;
-    shouldUpdateCart: boolean;
-    orderId: string | null;
-    orderNumber: number | null;
-    orderExpiry: string | null;
     items: CartItem[];
     isUpdatingCart: boolean;
     subTotal: number;
     shipping: number;
     discount: number;
     total: number;
-    orderHasGiftCard: boolean;
-    updateQuantities: UpdateQuantity[];
+    shouldUseCoins: boolean;
 }
 
 export interface PaymentMethod {

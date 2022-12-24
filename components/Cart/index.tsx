@@ -8,7 +8,7 @@ import selector from './selector';
 import CartItem from './CartItem';
 import CartTotals from './CartTotals';
 import Loading from '../Loading';
-import { fetchCartTotals, setUpdatingCart } from '../../store/slices/cart';
+import { fetchCartTotals, setUpdatingCart, updateItemQty } from '../../store/slices/cart';
 import UseCoins from '../UseCoins';
 import { getPrettyPrice } from '../../utils/account/products';
 
@@ -21,11 +21,8 @@ export const Cart: React.FC = () => {
 
     const handleUpdateQuantities = async () => {
         dispatch(setUpdatingCart(true));
-
-        // Map items and get just ids and qty.
-        const cartTotalInput = items.map(({ _id, quantity }) => ({ id: _id, quantity }));
-        dispatch(fetchCartTotals(cartTotalInput));
-
+        dispatch(updateItemQty());
+        dispatch(fetchCartTotals());
         dispatch(setUpdatingCart(false));
     };
 

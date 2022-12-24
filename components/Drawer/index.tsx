@@ -7,7 +7,6 @@ import { AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
 import { FaPlaneArrival } from 'react-icons/fa';
 
 import logo from '../../images/logo-full.png';
-import { parseAsString, safelyParse } from '../../utils/parsers';
 import Rewards from '../Header/Rewards';
 import selector from './selector';
 import { setIsDrawerOpen } from '../../store/slices/global';
@@ -19,10 +18,9 @@ interface DrawerProps {
 
 export const Drawer: React.FC<DrawerProps> = ({ children }) => {
     const { isDrawerOpen } = useSelector(selector);
-    const { data: session, status } = useSession();
+    const { status } = useSession();
     const dispatch = useDispatch();
     const router = useRouter();
-    const email = safelyParse(session, 'user.email', parseAsString, null);
 
     const handleDrawerClick = () => {
         dispatch(setIsDrawerOpen(!isDrawerOpen));
@@ -52,7 +50,7 @@ export const Drawer: React.FC<DrawerProps> = ({ children }) => {
                     </li>
                     {status === 'authenticated' && (
                         <li className="text-neutral-content mb-2">
-                            <Rewards emailAddress={email} fullWidth />
+                            <Rewards fullWidth />
                         </li>
                     )}
                     <li className="text-neutral-content mb-4">

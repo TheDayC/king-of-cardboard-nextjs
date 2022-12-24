@@ -53,7 +53,7 @@ export const Header: React.FC = () => {
                 <div className="navbar-end">
                     {status === 'authenticated' && (
                         <div className="hidden lg:inline-block">
-                            <Rewards emailAddress={email} fullWidth={false} />
+                            <Rewards fullWidth={false} />
                         </div>
                     )}
                     <CartIcon />

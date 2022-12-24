@@ -5,13 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { toNumber } from 'lodash';
 
-import {
-    removeItem,
-    setUpdatingCart,
-    subtractFromSubtotal,
-    subtractFromTotal,
-    updateItemQty,
-} from '../../../store/slices/cart';
+import { fetchCartTotals, removeItem, setUpdatingCart, updateCartQty } from '../../../store/slices/cart';
 import { ImageItem } from '../../../types/contentful';
 import { addSuccess } from '../../../store/slices/alerts';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -37,28 +31,21 @@ export const CartItem: React.FC<CartItemProps> = ({
     name,
     slug,
     image,
-    price,
-    salePrice,
     unitAmount,
     totalAmount,
     quantity,
     stock,
 }) => {
     const dispatch = useDispatch();
-    const shouldUseSalePrice = salePrice > 0 && salePrice !== price;
 
     const handleRemoveItem = async () => {
         if (!id) return;
 
-        const priceToUse = shouldUseSalePrice ? salePrice : price;
-
         dispatch(setUpdatingCart(true));
         dispatch(removeItem(id));
-        dispatch(subtractFromSubtotal(priceToUse));
-        dispatch(subtractFromTotal(priceToUse));
+        dispatch(fetchCartTotals());
         gaEvent('Item removed from cart.', { sku });
         dispatch(addSuccess('Item removed from cart.'));
-        dispatch(setUpdatingCart(false));
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +54,7 @@ export const CartItem: React.FC<CartItemProps> = ({
         if (value) {
             const newQty = toNumber(value);
 
-            dispatch(updateItemQty({ id, quantity: newQty <= 0 ? 1 : newQty }));
+            dispatch(updateCartQty({ id, quantity: newQty <= 0 ? 1 : newQty }));
         }
     };
 

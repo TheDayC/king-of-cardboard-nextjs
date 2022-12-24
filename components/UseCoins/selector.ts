@@ -1,9 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectAccountData } from '../../store/state/selectors';
+import { selectCartData } from '../../store/state/selectors';
 
-const selector = createSelector([selectAccountData], (account) => ({
-    coins: account.coins,
+const selector = createSelector([selectCartData], (cart) => ({
+    shouldUseCoins: cart.shouldUseCoins,
 }));
 
 export default selector;

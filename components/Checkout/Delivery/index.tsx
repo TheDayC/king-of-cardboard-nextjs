@@ -6,7 +6,6 @@ import selector from './selector';
 import { fetchPaymentMethods, setCurrentStep } from '../../../store/slices/checkout';
 import { updateShipmentMethod } from '../../../utils/checkout';
 import Shipment from './Shipment';
-import { fetchCartTotals } from '../../../store/slices/cart';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Loading from '../../Loading';
 
