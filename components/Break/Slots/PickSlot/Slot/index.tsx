@@ -1,13 +1,10 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AiOutlineShoppingCart, AiFillCloseCircle } from 'react-icons/ai';
 import { GiCardRandom } from 'react-icons/gi';
 
-import { removeLineItem, setLineItem } from '../../../../../utils/commerce';
 import selector from './selector';
-//import { fetchCartItems, fetchItemCount } from '../../../../../store/slices/cart';
 import { ImageItem } from '../../../../../types/contentful';
-import { addError, addSuccess } from '../../../../../store/slices/alerts';
 import styles from './slot.module.css';
 
 interface SlotProps {
@@ -31,57 +28,56 @@ export const Slot: React.FC<SlotProps> = ({
     isRandom,
     setLoading,
 }) => {
-    const { accessToken, orderId, items } = useSelector(selector);
-    const dispatch = useDispatch();
+    const { items } = useSelector(selector);
     const shouldShowCompare = amount !== compare_amount && compare_amount !== '£0.00';
     const item = items.find((item) => item.sku === sku_code);
     const isInBasket = Boolean(item);
 
     const handleClick = async () => {
-        if (!accessToken || !orderId || isInBasket || !isAvailable) return;
+        if (isInBasket || !isAvailable) return;
 
         setLoading(true);
-        const attributes = {
+        /*  const attributes = {
             quantity: 1,
             sku_code,
             _external_price: false,
             _update_quantity: true,
             image_url: image.url,
-        };
+        }; */
 
-        const relationships = {
+        /* const relationships = {
             order: {
                 data: {
                     id: orderId,
                     type: 'orders',
                 },
             },
-        };
+        }; */
 
-        const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
+        //const hasLineItemUpdated = await setLineItem(accessToken, attributes, relationships);
 
-        if (hasLineItemUpdated) {
+        /* if (hasLineItemUpdated) {
             dispatch(addSuccess(`${name} added to your cart!`));
-            //dispatch(fetchItemCount({ accessToken, orderId }));
-            //dispatch(fetchCartItems({ accessToken, orderId }));
+            dispatch(fetchItemCount({ accessToken, orderId }));
+            dispatch(fetchCartItems({ accessToken, orderId }));
         } else {
             dispatch(addError(`${name} couldn't be added to your cart.`));
-        }
+        } */
     };
 
     const handleRemove = async () => {
-        if (!accessToken || !item || !orderId) return;
+        if (!item) return;
 
         setLoading(true);
-        const hasDeleted = await removeLineItem(accessToken, item._id);
+        //const hasDeleted = await removeLineItem(accessToken, item._id);
 
-        if (hasDeleted) {
-            // dispatch(fetchItemCount({ accessToken, orderId }));
-            //dispatch(fetchCartItems({ accessToken, orderId }));
+        /* if (hasDeleted) {
+            dispatch(fetchItemCount({ accessToken, orderId }));
+            dispatch(fetchCartItems({ accessToken, orderId }));
             dispatch(addSuccess(`${name} removed from your cart!`));
         } else {
             dispatch(addError(`${name} couldn't be removed from your cart.`));
-        }
+        } */
 
         setLoading(false);
     };

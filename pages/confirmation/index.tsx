@@ -6,7 +6,6 @@ import Summary from '../../components/Checkout/Summary';
 import ConfirmationDetails from '../../components/ConfirmationDetails';
 import PageWrapper from '../../components/PageWrapper';
 import { setCheckoutLoading } from '../../store/slices/global';
-import { setShouldCreateOrder } from '../../store/slices/cart';
 import { resetCheckoutDetails } from '../../store/slices/checkout';
 import selector from './selector';
 
@@ -21,7 +20,7 @@ export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
             dispatch(resetCheckoutDetails());
 
             // Tell the system to generate a new order - this also resets the cart.
-            dispatch(setShouldCreateOrder(true));
+            //dispatch(setShouldCreateOrder(true));
 
             // Checkout has finished loading by moving to the confirmation.
             dispatch(setCheckoutLoading(false));

@@ -13,10 +13,9 @@ interface SummaryProps {
 }
 
 export const Summary: React.FC<SummaryProps> = ({ isConfirmation = false }) => {
-    const { cartOrderNumber, confirmationOrderNumber, checkoutLoading, cartItems, confirmedItems } =
-        useSelector(selector);
+    const { confirmationOrderNumber, checkoutLoading, cartItems, confirmedItems } = useSelector(selector);
     const lineItems = isConfirmation ? confirmedItems : cartItems;
-    const orderNumber = isConfirmation ? confirmationOrderNumber : cartOrderNumber;
+    const orderNumber = confirmationOrderNumber;
 
     return (
         <div className="flex flex-col relative">

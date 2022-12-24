@@ -4,8 +4,8 @@ import { HYDRATE } from 'next-redux-wrapper';
 import { PURGE } from 'redux-persist';
 
 import { AppState } from '..';
-import { CreateOrder, FetchCartItems, FetchOrder, Totals } from '../../types/cart';
-import { createOrder, getOrder } from '../../utils/commerce';
+import { CreateOrder, FetchOrder, Totals } from '../../types/cart';
+import { createOrder } from '../../utils/commerce';
 import { parseAsNumber, safelyParse } from '../../utils/parsers';
 import cartInitialState from '../state/cart';
 import { AppStateShape } from '../types/state';
@@ -17,11 +17,6 @@ interface CreateOrderInput {
     isGuest: boolean;
 }
 
-interface FetchOrderInput {
-    accessToken: string;
-    orderId: string;
-}
-
 const hydrate = createAction<AppState>(HYDRATE);
 const purge = createAction<AppState>(PURGE);
 
@@ -31,15 +26,6 @@ export const createCLOrder = createAsyncThunk(
         const { accessToken, isGuest } = data;
 
         return await createOrder(accessToken, isGuest);
-    }
-);
-
-export const fetchOrder = createAsyncThunk(
-    'cart/fetchOrder',
-    async (data: FetchOrderInput): Promise<FetchOrder | null> => {
-        const { accessToken, orderId } = data;
-
-        return await getOrder(accessToken, orderId);
     }
 );
 

@@ -3,19 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
 import selector from './selector';
-import { fetchPaymentMethods, setCurrentStep } from '../../../store/slices/checkout';
-import { updateShipmentMethod } from '../../../utils/checkout';
+import { setCurrentStep } from '../../../store/slices/checkout';
 import Shipment from './Shipment';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Loading from '../../Loading';
 
-interface DeliveryProps {
-    accessToken: string | null;
-}
-
-export const Delivery: React.FC<DeliveryProps> = ({ accessToken }) => {
+export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
-    const { currentStep, orderId, checkoutLoading, hasBothAddresses, shipments } = useSelector(selector);
+    const { currentStep, checkoutLoading, hasBothAddresses, shipments } = useSelector(selector);
     const {
         register,
         handleSubmit,
@@ -25,8 +20,8 @@ export const Delivery: React.FC<DeliveryProps> = ({ accessToken }) => {
     const hasErrors = Object.keys(errors).length > 0;
     const hasShipments = shipments.length > 0;
 
-    const handleSelectShippingMethod: SubmitHandler<FieldValues> = async (data: FieldValues) => {
-        if (hasErrors || checkoutLoading || !accessToken || !shipments || !orderId) {
+    const handleSelectShippingMethod: SubmitHandler<FieldValues> = async (/* data: FieldValues */) => {
+        if (hasErrors || checkoutLoading || !shipments) {
             return;
         }
 
@@ -34,13 +29,13 @@ export const Delivery: React.FC<DeliveryProps> = ({ accessToken }) => {
         dispatch(setCheckoutLoading(true));
 
         // for...of used here over forEach to avoid race conditions with await.
-        for (const shipment of shipments) {
+        /* for (const shipment of shipments) {
             await updateShipmentMethod(accessToken, shipment.id, data.method[shipment.id].methodId);
-        }
+        } */
 
         // Fetch items, totals and item count along with payment methods
         //dispatch(fetchCartTotals({ accessToken, orderId }));
-        dispatch(fetchPaymentMethods({ accessToken, orderId }));
+        //dispatch(fetchPaymentMethods({ accessToken, orderId }));
 
         // Redirect to next stage.
         dispatch(setCurrentStep(2));

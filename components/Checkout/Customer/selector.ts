@@ -12,8 +12,6 @@ const selector = createSelector(
     (checkout, cart, global, account) => ({
         currentStep: checkout.currentStep,
         customerDetails: checkout.customerDetails,
-        orderId: cart.orderId,
-        accessToken: global.userToken || global.accessToken,
         checkoutLoading: global.checkoutLoading,
         isShippingSameAsBilling: checkout.isShippingSameAsBilling,
         cloneBillingAddressId: checkout.cloneBillingAddressId,
