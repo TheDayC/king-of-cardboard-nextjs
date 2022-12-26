@@ -31,3 +31,20 @@ export interface Shipment {
     category: string;
     methods: Method[];
 }
+
+export interface CustomerDetails {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+}
+
+export interface Address {
+    lineOne: string;
+    lineTwo: string;
+    company: string;
+    city: string;
+    postcode: string;
+    county: string;
+    country: string;
+}

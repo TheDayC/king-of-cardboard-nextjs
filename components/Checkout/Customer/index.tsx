@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useForm } from 'react-hook-form';
+import { FieldValues, useForm } from 'react-hook-form';
 import { useSession } from 'next-auth/react';
 
 import selector from './selector';
@@ -21,73 +21,29 @@ import PersonalDetails from './PersonalDetails';
 import SelectionWrapper from '../../SelectionWrapper';
 import ExistingAddress from './ExistingAddress';
 import { CustomerAddress } from '../../../store/types/state';
+import { Address } from '../../../types/checkout';
+import { BillingAddressChoice, ShippingAddressChoice } from '../../../enums/checkout';
 
-const defaultBillingAddress: CustomerAddress = {
-    id: null,
-    billing_info: null,
-    business: false,
-    city: null,
-    company: null,
-    country_code: null,
-    email: null,
-    first_name: null,
-    full_address: null,
-    full_name: null,
-    is_geocoded: false,
-    is_localized: false,
-    last_name: null,
-    lat: null,
-    line_1: null,
-    line_2: null,
-    lng: null,
-    map_url: null,
-    name: null,
-    notes: null,
-    phone: null,
-    provider_name: null,
-    reference: null,
-    reference_origin: null,
-    state_code: null,
-    static_map_url: null,
-    zip_code: null,
+const defaultAddress: Address = {
+    lineOne: '',
+    lineTwo: '',
+    company: '',
+    city: '',
+    postcode: '',
+    county: '',
+    country: '',
 };
 
-const defaultShippingAddress: CustomerAddress = {
-    id: null,
-    billing_info: null,
-    business: false,
-    city: null,
-    company: null,
-    country_code: null,
-    email: null,
-    first_name: null,
-    full_address: null,
-    full_name: null,
-    is_geocoded: false,
-    is_localized: false,
-    last_name: null,
-    lat: null,
-    line_1: null,
-    line_2: null,
-    lng: null,
-    map_url: null,
-    name: null,
-    notes: null,
-    phone: null,
-    provider_name: null,
-    reference: null,
-    reference_origin: null,
-    state_code: null,
-    static_map_url: null,
-    zip_code: null,
-};
+interface CustomerProps {
+    hasSession: boolean;
+}
 
-const Customer: React.FC = () => {
+const Customer: React.FC<CustomerProps> = ({ hasSession }) => {
     const { data: session } = useSession();
     const { currentStep, checkoutLoading, isShippingSameAsBilling, addresses } = useSelector(selector);
     const dispatch = useDispatch();
-    const [billingAddressEntryChoice, setBillingAddressEntryChoice] = useState('existingBillingAddress');
-    const [shippingAddressEntryChoice, setShippingAddressEntryChoice] = useState('existingShippingAddress');
+    const [billingAddressChoice, setBillingAddressChoice] = useState(BillingAddressChoice.New);
+    const [shippingAddressChoice, setShippingAddressChoice] = useState(ShippingAddressChoice.New);
     const [shouldSubmit, setShouldSubmit] = useState(true);
     const {
         register,
@@ -98,163 +54,69 @@ const Customer: React.FC = () => {
     } = useForm();
     const isCurrentStep = currentStep === 0;
     const hasErrors = Object.keys(errors).length > 0;
-    const showExisting = Boolean(session) && addresses.length > 0;
+    const showExisting = hasSession && addresses.length > 0;
 
-    //const handleNewBillingAddress = useCallback(
-    //async (data: unknown/* , customerDetails: CustomerDetails */) => {
-
-    // Parse the billing address into a customer address partial.
-    // CommerceLayer only expects the basic user input on their side hence the partial data parse.
-    //const billingAddressParsed = parseBillingAddress(data);
-
-    // Update billing address details in commerceLayer.
-    //await updateAddress(accessToken, orderId, customerDetails, billingAddressParsed, false);
-
-    // Set the billing address in full in our local store.
-    //dispatch(setBillingAddress(parseAddress(billingAddressParsed)));
-
-    // If we're cloning a new address to shipping then update the shipping details with CommerceLayer.
-    //if (isShippingSameAsBilling) {
-    //await updateAddress(accessToken, orderId, customerDetails, billingAddressParsed, true);
-
-    // Set the shipping address in full in our local store so our shipping matches billing locally.
-    //dispatch(setShippingAddress(parseAddress(billingAddressParsed)));
-    //}
-    //},
-    //[dispatch, isShippingSameAsBilling]
-    //);
-
-    //const handleExistingBillingAddress = useCallback(
-    //async (/* customerDetails: CustomerDetails */) => {
-    // if (!billingAddress.id) return;
-
-    // Parse the billing address into a customer address partial.
-    // CommerceLayer only expects the basic user input on their side hence the partial data parse.
-    // const billingAddressParsed = parseExistingAddress(billingAddress);
-
-    // Update billing address details in commerceLayer.
-    //await updateAddress(accessToken, orderId, customerDetails, billingAddressParsed, false);
-
-    // Set the billing address in full in our local store.
-    // dispatch(setBillingAddress(parseAddress(billingAddressParsed)));
-
-    // If we're cloning a new address to shipping then update the shipping details with CommerceLayer.
-    // if (isShippingSameAsBilling) {
-    //await updateAddress(accessToken, orderId, customerDetails, billingAddressParsed, true);
-
-    // Set the shipping address in full in our local store so our shipping matches billing locally.
-    //dispatch(setShippingAddress(parseAddress(billingAddressParsed)));
-    // }
-
-    // Ensure we have a clone id and update clone address field.
-    //if (cloneBillingAddressId) {
-    //await updateAddressClone(accessToken, orderId, cloneBillingAddressId, false);
-    //} else {
-    //    setShouldSubmit(false);
-    //   dispatch(addWarning('Please select a billing address'));
-    // }
-    //},
-    //[dispatch, cloneBillingAddressId, billingAddress, isShippingSameAsBilling]
-    // );
-
-    //const handleNewShippingAddress = useCallback(
-    //async (data: unknown/* , customerDetails: CustomerDetails */) => {
-
-    // Parse the shipping address into a customer address partial.
-    // CommerceLayer only expects the basic user input on their side hence the partial data parse.
-    //const shippingAddressParsed = parseShippingAddress(data);
-
-    // Update shipping address details in commerceLayer.
-    //await updateAddress(accessToken, orderId, customerDetails, shippingAddressParsed, true);
-
-    // Set the shipping address as the in full in our local store.
-    //dispatch(setShippingAddress(parseAddress(shippingAddressParsed)));
-    //},
-    //[dispatch]
-    //);
-
-    //const handleExistingShippingAddress = useCallback(
-    //async (/* customerDetails: CustomerDetails */) => {
-
-    // Parse the shipping address into a customer address partial.
-    //const shippingAddressParsed = parseExistingAddress(shippingAddress);
-
-    // Update shipping address details in commerceLayer. No check for same as billing here.
-    //await updateAddress(accessToken, orderId, customerDetails, shippingAddressParsed, true);
-
-    // Set the shipping address in full in our local store.
-    //dispatch(setShippingAddress(parseAddress(shippingAddressParsed)));
-
-    // Ensure we have a clone id and update clone address field.
-    //if (cloneShippingAddressId) {
-    //await updateAddressClone(accessToken, orderId, cloneShippingAddressId, true);
-    //} else {
-    //    dispatch(addWarning('Please select a shipping address'));
-    //    setShouldSubmit(false);
-    //}
-    //},
-    //[dispatch, cloneShippingAddressId, shippingAddress]
-    //);
-
-    const onSubmit = async (data: unknown) => {
+    const onSubmit = async (data: FieldValues) => {
         if (hasErrors || checkoutLoading) {
             return;
         }
-        // Reset form state on submission
-        setShouldSubmit(true);
 
         // Set loading in current form.
         dispatch(setCheckoutLoading(true));
 
         // Parse the customer details like name, email, phone etc
-        const customerDetails = {
-            first_name: safelyParse(data, 'firstName', parseAsString, ''),
-            last_name: safelyParse(data, 'lastName', parseAsString, ''),
-            email: safelyParse(data, 'email', parseAsString, ''),
-            phone: safelyParse(data, 'phone', parseAsString, ''),
-        };
-        dispatch(setCustomerDetails(customerDetails));
+        dispatch(
+            setCustomerDetails({
+                firstName: data.firstName,
+                lastName: data.lastName,
+                email: data.email,
+                phone: data.phone,
+            })
+        );
 
         // Handle a new billing address.
-        /* if (billingAddressEntryChoice === 'newBillingAddress') {
-            await handleNewBillingAddress(data, customerDetails);
-        } else if (billingAddressEntryChoice === 'existingBillingAddress') {
-            // Handle existing billing address.
-            await handleExistingBillingAddress(customerDetails);
-        } */
+        if (billingAddressChoice === BillingAddressChoice.New) {
+            const newBillingAddress = {
+                lineOne: safelyParse(data, 'billingAddressLineOne', parseAsString, ''),
+                lineTwo: safelyParse(data, 'billingAddressLineTwo', parseAsString, ''),
+                company: safelyParse(data, 'billingCompany', parseAsString, ''),
+                city: safelyParse(data, 'billingCity', parseAsString, ''),
+                postcode: safelyParse(data, 'billingPostcode', parseAsString, ''),
+                county: safelyParse(data, 'billingCounty', parseAsString, ''),
+                country: safelyParse(data, 'country', parseAsString, 'GB'),
+            };
 
-        // If our shipping is the same as the billing address then update _shipping_address_same_as_billing field in CommerceLayer.
-        if (isShippingSameAsBilling) {
-            //await updateSameAsBilling(accessToken, orderId, isShippingSameAsBilling);
+            dispatch(setBillingAddress(newBillingAddress));
+
+            // If the shipping same as billing checkbox is selected just copy the billing address to shipping address.
+            if (isShippingSameAsBilling) dispatch(setShippingAddress(newBillingAddress));
         } else {
-            // NOTE: At this point we know if the user is adding a shipping address manually.
-            // Handle shipping address, no need to check for existing or as we handle that onClick.
-            /* if (shippingAddressEntryChoice === 'newShippingAddress') {
-                await handleNewShippingAddress(data, customerDetails);
-            } else if (shippingAddressEntryChoice === 'existingShippingAddress') {
-                // Handle existing shipping address.
-                await handleExistingShippingAddress(customerDetails);
-            } */
+            // TODO: Add existing billing address to state here.
         }
 
-        if (!shouldSubmit) {
-            // Remove load blockers.
-            dispatch(setCheckoutLoading(false));
+        // Handle a new shipping address.
+        if (!isShippingSameAsBilling) {
+            if (shippingAddressChoice === ShippingAddressChoice.New) {
+                const newShippingAddress = {
+                    lineOne: safelyParse(data, 'shippingAddressLineOne', parseAsString, ''),
+                    lineTwo: safelyParse(data, 'shippingAddressLineTwo', parseAsString, ''),
+                    company: safelyParse(data, 'shippingCompany', parseAsString, ''),
+                    city: safelyParse(data, 'shippingCity', parseAsString, ''),
+                    postcode: safelyParse(data, 'shippingPostcode', parseAsString, ''),
+                    county: safelyParse(data, 'shippingCounty', parseAsString, ''),
+                    country: safelyParse(data, 'country', parseAsString, 'GB'),
+                };
 
-            return;
+                dispatch(setBillingAddress(newShippingAddress));
+            } else {
+                // TODO: Add existing shipping address to state here.
+            }
         }
-
-        submissionCleanup();
-    };
-
-    const submissionCleanup = () => {
-        //dispatch(fetchShipments({ accessToken, orderId }));
-
-        // Remove load blockers.
-        dispatch(setCheckoutLoading(false));
 
         // Redirect to next stage.
         dispatch(setCurrentStep(1));
+
+        dispatch(setCheckoutLoading(false));
     };
 
     // Handle the edit collapsed item functionality.
@@ -265,43 +127,25 @@ const Customer: React.FC = () => {
         }
     };
 
-    const handleBillingSelect = (id: string) => {
-        setBillingAddressEntryChoice(id);
+    const handleBillingSelect = (choice: number) => {
+        const newChoice = choice as BillingAddressChoice;
+        setBillingAddressChoice(newChoice);
 
-        if (id === 'newBillingAddress') {
+        if (newChoice === BillingAddressChoice.New) {
             dispatch(setCloneBillingAddressId(null));
-            dispatch(setBillingAddress(defaultBillingAddress));
+            dispatch(setBillingAddress(defaultAddress));
         }
     };
 
-    const handleShippingSelect = (id: string) => {
-        setShippingAddressEntryChoice(id);
+    const handleShippingSelect = (choice: number) => {
+        const newChoice = choice as ShippingAddressChoice;
+        setShippingAddressChoice(newChoice);
 
-        if (id === 'newShippingAddress') {
+        if (newChoice === ShippingAddressChoice.New) {
             dispatch(setCloneShippingAddressId(null));
-            dispatch(setShippingAddress(defaultShippingAddress));
+            dispatch(setShippingAddress(defaultAddress));
         }
     };
-
-    // Session doesn't load in immediately so we need to update the defaults on change.
-    useEffect(() => {
-        if (showExisting) {
-            setBillingAddressEntryChoice('existingBillingAddress');
-            setShippingAddressEntryChoice('existingShippingAddress');
-        } else {
-            setBillingAddressEntryChoice('newBillingAddress');
-            setShippingAddressEntryChoice('newShippingAddress');
-        }
-    }, [session, showExisting]);
-
-    // If we click the sameAs checkbox I want to reset the shipping address.
-    useEffect(() => {
-        if (isShippingSameAsBilling) {
-            clearErrors();
-        } else {
-            dispatch(setShippingAddress(defaultShippingAddress));
-        }
-    }, [isShippingSameAsBilling, dispatch, billingAddressEntryChoice, clearErrors]);
 
     return (
         <div
@@ -321,10 +165,10 @@ const Customer: React.FC = () => {
                             <h3 className="text-2xl font-semibold mb-4">Billing Details</h3>
                             {showExisting && (
                                 <SelectionWrapper
-                                    id="existingBillingAddress"
+                                    id={BillingAddressChoice.Existing}
                                     title="Choose an existing billing address"
                                     name="billingAddress"
-                                    isChecked={billingAddressEntryChoice === 'existingBillingAddress'}
+                                    isChecked={billingAddressChoice === BillingAddressChoice.Existing}
                                     defaultChecked={showExisting}
                                     onSelect={handleBillingSelect}
                                 >
@@ -332,10 +176,10 @@ const Customer: React.FC = () => {
                                 </SelectionWrapper>
                             )}
                             <SelectionWrapper
-                                id="newBillingAddress"
+                                id={BillingAddressChoice.New}
                                 title="Add a new billing address"
                                 name="billingAddress"
-                                isChecked={billingAddressEntryChoice === 'newBillingAddress'}
+                                isChecked={billingAddressChoice === BillingAddressChoice.New}
                                 defaultChecked={!showExisting}
                                 onSelect={handleBillingSelect}
                             >
@@ -350,10 +194,10 @@ const Customer: React.FC = () => {
                                     <h3 className="text-2xl mb-4 font-semibold">Shipping Details</h3>
                                     {showExisting && (
                                         <SelectionWrapper
-                                            id="existingShippingAddress"
+                                            id={ShippingAddressChoice.Existing}
                                             title="Choose an existing shipping address"
                                             name="shippingAddress"
-                                            isChecked={shippingAddressEntryChoice === 'existingShippingAddress'}
+                                            isChecked={shippingAddressChoice === ShippingAddressChoice.Existing}
                                             defaultChecked={showExisting}
                                             onSelect={handleShippingSelect}
                                         >
@@ -361,10 +205,10 @@ const Customer: React.FC = () => {
                                         </SelectionWrapper>
                                     )}
                                     <SelectionWrapper
-                                        id="newShippingAddress"
+                                        id={ShippingAddressChoice.New}
                                         title="Add a new shipping address"
                                         name="shippingAddress"
-                                        isChecked={shippingAddressEntryChoice === 'newShippingAddress'}
+                                        isChecked={shippingAddressChoice === ShippingAddressChoice.New}
                                         defaultChecked={!showExisting}
                                         onSelect={handleShippingSelect}
                                     >

@@ -9,14 +9,24 @@ import Delivery from '../../components/Checkout/Delivery';
 import Payment from '../../components/Checkout/Payment';
 import Summary from '../../components/Checkout/Summary';
 import PageWrapper from '../../components/PageWrapper';
+import { unstable_getServerSession } from 'next-auth';
+import { authOptions } from '../api/auth/[...nextauth]';
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+    const session = await unstable_getServerSession(req, res, authOptions);
+
     return {
-        props: {},
+        props: {
+            hasSession: Boolean(session),
+        },
     };
 };
 
-export const CheckoutPage: React.FC = () => {
+interface CheckoutPageProps {
+    hasSession: boolean;
+}
+
+export const CheckoutPage: React.FC<CheckoutPageProps> = ({ hasSession }) => {
     const { currentStep } = useSelector(selector);
 
     return (

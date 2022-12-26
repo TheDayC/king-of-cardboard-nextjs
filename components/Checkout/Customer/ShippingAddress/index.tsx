@@ -17,11 +17,12 @@ interface ShippingAddressProps {
 const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors, setValue }) => {
     const { shippingAddress } = useSelector(selector);
     const {
-        line_1: addressLineOne,
-        line_2: addressLineTwo,
+        lineOne: addressLineOne,
+        lineTwo: addressLineTwo,
         city,
-        zip_code: postcode,
-        state_code: county,
+        postcode: postcode,
+        county,
+        country,
         company,
     } = shippingAddress;
 

@@ -17,11 +17,12 @@ interface BillingAddressProps {
 const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors, setValue }) => {
     const { billingAddress } = useSelector(selector);
     const {
-        line_1: addressLineOne,
-        line_2: addressLineTwo,
+        lineOne: addressLineOne,
+        lineTwo: addressLineTwo,
         city,
-        zip_code: postcode,
-        state_code: county,
+        postcode: postcode,
+        county,
+        country,
         company,
     } = billingAddress;
 

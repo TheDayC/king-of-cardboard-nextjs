@@ -2,10 +2,10 @@ import { DateTime } from 'luxon';
 import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
 
 import { AlertLevel } from '../../enums/system';
-import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../../types/account';
+import { Address as AccountAddress, GiftCard, Order, SingleAddress, SingleOrder } from '../../types/account';
 import { Break, SingleBreak } from '../../types/breaks';
 import { CartItem, UpdateQuantity } from '../../types/cart';
-import { Shipment } from '../../types/checkout';
+import { Address, CustomerDetails, Shipment } from '../../types/checkout';
 import { ContentfulPage } from '../../types/pages';
 import { SingleProduct } from '../../types/products';
 import { Product } from '../../types/productsNew';
@@ -63,20 +63,13 @@ export interface Global {
 export interface Checkout {
     currentStep: number;
     customerDetails: CustomerDetails;
-    billingAddress: CustomerAddress;
-    shippingAddress: CustomerAddress;
+    billingAddress: Address;
+    shippingAddress: Address;
     cloneBillingAddressId: string | null;
     cloneShippingAddressId: string | null;
     isShippingSameAsBilling: boolean;
     paymentMethods: PaymentMethod[];
     shipments: Shipment[];
-}
-
-export interface CustomerDetails {
-    email: string | null;
-    first_name: string | null;
-    last_name: string | null;
-    phone: string | null;
 }
 
 export interface CustomerAddress {
@@ -183,7 +176,7 @@ export interface AccountState {
     orders: Order[];
     orderPageCount: number;
     currentOrder: SingleOrder;
-    addresses: Address[];
+    addresses: AccountAddress[];
     addressPageCount: number;
     currentAddress: SingleAddress;
     isLoadingOrder: boolean;

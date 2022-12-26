@@ -95,3 +95,13 @@ export enum Counties {
     Wiltshire = 'Wiltshire',
     Worcestershire = 'Worcestershire',
 }
+
+export enum BillingAddressChoice {
+    New,
+    Existing,
+}
+
+export enum ShippingAddressChoice {
+    New,
+    Existing,
+}
