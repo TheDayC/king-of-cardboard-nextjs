@@ -77,25 +77,6 @@ export const Header: React.FC = () => {
                                 className="p-2 shadow menu dropdown-content bg-base-100 rounded-md w-52 text-base-content"
                             >
                                 <li
-                                    className={`${slug === Slugs.Account ? 'bordered' : 'hover-bordered'}`}
-                                    role="menuitem"
-                                >
-                                    <Link href={{ pathname: '/account' }}>Account</Link>
-                                </li>
-                                <li
-                                    className={`${slug === Slugs.Details ? 'bordered' : 'hover-bordered'}`}
-                                    role="menuitem"
-                                >
-                                    <Link
-                                        href={{
-                                            pathname: '/account/[slug]',
-                                            query: { slug: Slugs.Details },
-                                        }}
-                                    >
-                                        Details
-                                    </Link>
-                                </li>
-                                <li
                                     className={`${slug === Slugs.Profile ? 'bordered' : 'hover-bordered'}`}
                                     role="menuitem"
                                 >
