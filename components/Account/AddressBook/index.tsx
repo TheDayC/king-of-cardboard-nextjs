@@ -31,7 +31,7 @@ export const AddressBook: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {addresses.length > 0 &&
                     addresses.map(({ _id, title, ...address }) => (
-                        <DisplayAddress id={_id} name={title} address={address} key={`address-${_id}`} />
+                        <DisplayAddress id={_id} title={title} address={address} key={`address-${_id}`} />
                     ))}
                 <Add />
             </div>

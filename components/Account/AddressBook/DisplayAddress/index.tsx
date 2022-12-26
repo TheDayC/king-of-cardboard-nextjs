@@ -11,14 +11,14 @@ import { fetchAddresses, deleteAddress, setIsLoadingAddressBook } from '../../..
 
 interface AddressProps {
     id: string;
-    name: string;
+    title: string;
     address: Address;
 }
 
 const LIMIT = 10;
 const SKIP = 0;
 
-export const DisplayAddress: React.FC<AddressProps> = ({ id, name, address }) => {
+export const DisplayAddress: React.FC<AddressProps> = ({ id, title, address }) => {
     const dispatch = useDispatch();
     const { data: session } = useSession();
     const userId = safelyParse(session, 'user.id', parseAsString, null);
@@ -35,14 +35,16 @@ export const DisplayAddress: React.FC<AddressProps> = ({ id, name, address }) =>
     };
 
     return (
-        <div className="flex flex-col p-6 border border-solid border-base-200 justify-center items-start w-full rounded-md shadow-md">
-            <h4 className="text-md mb-4 font-semibold">{name}</h4>
-            <p className="text-sm mb-4">{lineOne}</p>
-            <p className="text-sm mb-4">{lineTwo}</p>
-            {company && <p className="text-sm mb-4">{company}</p>}
-            <p className="text-sm mb-4">{postcode}</p>
-            <p className="text-sm mb-4">{county}</p>
-            <p className="text-sm mb-4">{country}</p>
+        <div className="flex flex-col p-6 border border-solid border-base-200 justify-center items-start w-full rounded-md shadow-md space-y-6">
+            <div className="flex flex-col space-y-1">
+                <h4 className="text-md font-semibold">{title}</h4>
+                <p className="text-sm">{lineOne}</p>
+                {lineTwo && <p className="text-sm">{lineTwo}</p>}
+                {company && <p className="text-sm">{company}</p>}
+                <p className="text-sm">{postcode}</p>
+                <p className="text-sm">{county}</p>
+                {country && <p className="text-sm">{country}</p>}
+            </div>
             <div className="flex flex-row w-full justify-between">
                 <Link
                     href={{

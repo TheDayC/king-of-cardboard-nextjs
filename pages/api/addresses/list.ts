@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';
@@ -23,13 +24,12 @@ async function listAddresses(req: NextApiRequest, res: NextApiResponse): Promise
 
             const count = await collection.countDocuments();
             const addresses = await collection
-                .find({ userId }, { skip, limit })
-                .project({ userId: 1, created: 1, lastUpdated: 1 })
+                .find({ userId: new ObjectId(userId) }, { skip, limit })
+                .project({ userId: 0, created: 0, lastUpdated: 0 })
                 .toArray();
 
             res.status(200).json({ addresses, count });
         } catch (err: unknown) {
-            console.log('🚀 ~ file: list.ts:30 ~ listAddresses ~ err', err);
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);
 
             res.status(status).json(errorHandler(err, defaultErr));

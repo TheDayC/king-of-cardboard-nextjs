@@ -6,7 +6,7 @@ import { AppState } from '..';
 import { AccountAddress, GetOrders, SingleAddress, SingleOrder } from '../../types/account';
 import { SocialMedia } from '../../types/profile';
 import { getOrders, getOrder, getCurrentAddress, getSocialMedia } from '../../utils/account';
-import { parseAsArrayOfAccountAddresses, parseAsNumber, safelyParse } from '../../utils/parsers';
+import { parseAsAccountAddress, parseAsArrayOfAccountAddresses, parseAsNumber, safelyParse } from '../../utils/parsers';
 import accountInitialState from '../state/account';
 
 const hydrate = createAction<AppState>(HYDRATE);
@@ -70,6 +70,13 @@ export const fetchCurrentOrder = createAsyncThunk(
         return await getOrder(accessToken, orderNumber);
     }
 );
+
+export const addAddress = createAsyncThunk('account/addAddress', async (_id: string): Promise<boolean> => {
+    const res = await axios.get(`${URL}/api/addresses/get`, { params: { _id } });
+    const status = safelyParse(res, 'status', parseAsNumber, 400);
+
+    return status === 201;
+});
 
 export const fetchAddresses = createAsyncThunk(
     'account/fetchAddresses',
