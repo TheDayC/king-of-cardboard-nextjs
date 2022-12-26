@@ -13,15 +13,14 @@ interface SummaryProps {
 }
 
 export const Summary: React.FC<SummaryProps> = ({ isConfirmation = false }) => {
-    const { confirmationOrderNumber, checkoutLoading, cartItems, confirmedItems } = useSelector(selector);
+    const { confirmationOrderNumber: orderNumber, checkoutLoading, cartItems, confirmedItems } = useSelector(selector);
     const lineItems = isConfirmation ? confirmedItems : cartItems;
-    const orderNumber = confirmationOrderNumber;
 
     return (
         <div className="flex flex-col relative">
             <Loading show={checkoutLoading} />
             <div className="flex flex-row w-100 justify-between items-center">
-                <h2 className="text-2xl">Order #{orderNumber}</h2>
+                <h2 className="text-2xl">{orderNumber ? `Order #${orderNumber}` : 'Summary'}</h2>
                 <p className="text-xl">{`(${lineItems.length} item${lineItems.length > 1 ? 's' : ''})`}</p>
             </div>
             <div className="divider"></div>
@@ -30,14 +29,14 @@ export const Summary: React.FC<SummaryProps> = ({ isConfirmation = false }) => {
                     lineItems.map((item) => (
                         <React.Fragment key={`checkout-line-item-${item.sku}`}>
                             <div className="flex flex-row justify-between items-center px-4">
-                                <div className="relative w-16 h-16">
+                                <div className="relative w-16 h-16 overflow-hidden rounded-md">
                                     {item.mainImage.url.length > 0 && (
                                         <Image
                                             src={item.mainImage.url}
                                             alt={item.mainImage.description}
                                             title={item.mainImage.title}
-                                            layout="fill"
-                                            objectFit="scale-down"
+                                            width={64}
+                                            height={64}
                                         />
                                     )}
                                 </div>
