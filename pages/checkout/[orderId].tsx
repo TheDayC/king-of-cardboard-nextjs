@@ -1,5 +1,6 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
+import { unstable_getServerSession } from 'next-auth';
 
 import PageWrapper from '../../components/PageWrapper';
 import Steps from '../../components/Checkout/Steps';
@@ -7,6 +8,7 @@ import Customer from '../../components/Checkout/Customer';
 import Delivery from '../../components/Checkout/Delivery';
 import Payment from '../../components/Checkout/Payment';
 import Summary from '../../components/Checkout/Summary';
+import { authOptions } from '../api/auth/[...nextauth]';
 
 export const getServerSideProps: GetServerSideProps = async () => {
     return {

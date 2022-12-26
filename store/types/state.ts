@@ -65,8 +65,8 @@ export interface Checkout {
     customerDetails: CustomerDetails;
     billingAddress: Address;
     shippingAddress: Address;
-    cloneBillingAddressId: string | null;
-    cloneShippingAddressId: string | null;
+    existingBillingAddressId: string | null;
+    existingShippingAddressId: string | null;
     isShippingSameAsBilling: boolean;
     paymentMethods: PaymentMethod[];
     shipments: Shipment[];

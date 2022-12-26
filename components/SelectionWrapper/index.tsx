@@ -25,7 +25,6 @@ export const SelectionWrapper: React.FC<SelectionWrapperProps> = ({
     register,
     onSelect,
 }) => {
-    const shouldShowChildren = isChecked && Boolean(children);
     const handleSelect = () => {
         onSelect(id);
     };
@@ -58,7 +57,7 @@ export const SelectionWrapper: React.FC<SelectionWrapperProps> = ({
                     <input {...radioPropsBase} />
                 )}
             </label>
-            {shouldShowChildren && <div className="mt-4">{children}</div>}
+            {isChecked && <div className="mt-4">{children}</div>}
         </div>
     );
 };

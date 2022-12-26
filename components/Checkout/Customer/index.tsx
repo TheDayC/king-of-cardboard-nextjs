@@ -10,6 +10,8 @@ import {
     setCloneShippingAddressId,
     setCurrentStep,
     setCustomerDetails,
+    setExistingBillingAddressId,
+    setExistingShippingAddressId,
     setShippingAddress,
 } from '../../../store/slices/checkout';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -23,6 +25,7 @@ import ExistingAddress from './ExistingAddress';
 import { CustomerAddress } from '../../../store/types/state';
 import { Address } from '../../../types/checkout';
 import { BillingAddressChoice, ShippingAddressChoice } from '../../../enums/checkout';
+import { fetchAddresses } from '../../../store/slices/account';
 
 const defaultAddress: Address = {
     lineOne: '',
@@ -34,27 +37,21 @@ const defaultAddress: Address = {
     country: '',
 };
 
-interface CustomerProps {
-    hasSession: boolean;
-}
-
-const Customer: React.FC<CustomerProps> = ({ hasSession }) => {
+const Customer: React.FC = () => {
     const { data: session } = useSession();
-    const { currentStep, checkoutLoading, isShippingSameAsBilling, addresses } = useSelector(selector);
+    const { currentStep, checkoutLoading, isShippingSameAsBilling, billingAddress, shippingAddress } =
+        useSelector(selector);
     const dispatch = useDispatch();
     const [billingAddressChoice, setBillingAddressChoice] = useState(BillingAddressChoice.New);
     const [shippingAddressChoice, setShippingAddressChoice] = useState(ShippingAddressChoice.New);
-    const [shouldSubmit, setShouldSubmit] = useState(true);
     const {
         register,
         handleSubmit,
         formState: { errors },
         setValue,
-        clearErrors,
     } = useForm();
     const isCurrentStep = currentStep === 0;
     const hasErrors = Object.keys(errors).length > 0;
-    const showExisting = hasSession && addresses.length > 0;
 
     const onSubmit = async (data: FieldValues) => {
         if (hasErrors || checkoutLoading) {
@@ -91,7 +88,9 @@ const Customer: React.FC<CustomerProps> = ({ hasSession }) => {
             // If the shipping same as billing checkbox is selected just copy the billing address to shipping address.
             if (isShippingSameAsBilling) dispatch(setShippingAddress(newBillingAddress));
         } else {
-            // TODO: Add existing billing address to state here.
+            dispatch(setBillingAddress(billingAddress));
+
+            if (isShippingSameAsBilling) dispatch(setShippingAddress(billingAddress));
         }
 
         // Handle a new shipping address.
@@ -107,9 +106,9 @@ const Customer: React.FC<CustomerProps> = ({ hasSession }) => {
                     country: safelyParse(data, 'country', parseAsString, 'GB'),
                 };
 
-                dispatch(setBillingAddress(newShippingAddress));
+                dispatch(setShippingAddress(newShippingAddress));
             } else {
-                // TODO: Add existing shipping address to state here.
+                dispatch(setShippingAddress(shippingAddress));
             }
         }
 
@@ -132,7 +131,7 @@ const Customer: React.FC<CustomerProps> = ({ hasSession }) => {
         setBillingAddressChoice(newChoice);
 
         if (newChoice === BillingAddressChoice.New) {
-            dispatch(setCloneBillingAddressId(null));
+            dispatch(setExistingBillingAddressId(null));
             dispatch(setBillingAddress(defaultAddress));
         }
     };
@@ -142,10 +141,17 @@ const Customer: React.FC<CustomerProps> = ({ hasSession }) => {
         setShippingAddressChoice(newChoice);
 
         if (newChoice === ShippingAddressChoice.New) {
-            dispatch(setCloneShippingAddressId(null));
+            dispatch(setExistingShippingAddressId(null));
             dispatch(setShippingAddress(defaultAddress));
         }
     };
+
+    useEffect(() => {
+        if (session) {
+            setBillingAddressChoice(BillingAddressChoice.Existing);
+            setShippingAddressChoice(ShippingAddressChoice.Existing);
+        }
+    }, [session]);
 
     return (
         <div
@@ -163,13 +169,13 @@ const Customer: React.FC<CustomerProps> = ({ hasSession }) => {
                             <PersonalDetails register={register} errors={errors} setValue={setValue} />
                             <div className="divider lightDivider"></div>
                             <h3 className="text-2xl font-semibold mb-4">Billing Details</h3>
-                            {showExisting && (
+                            {Boolean(session) && (
                                 <SelectionWrapper
                                     id={BillingAddressChoice.Existing}
                                     title="Choose an existing billing address"
                                     name="billingAddress"
                                     isChecked={billingAddressChoice === BillingAddressChoice.Existing}
-                                    defaultChecked={showExisting}
+                                    defaultChecked={shippingAddressChoice === ShippingAddressChoice.Existing}
                                     onSelect={handleBillingSelect}
                                 >
                                     <ExistingAddress isShipping={false} />
@@ -180,7 +186,7 @@ const Customer: React.FC<CustomerProps> = ({ hasSession }) => {
                                 title="Add a new billing address"
                                 name="billingAddress"
                                 isChecked={billingAddressChoice === BillingAddressChoice.New}
-                                defaultChecked={!showExisting}
+                                defaultChecked={billingAddressChoice === BillingAddressChoice.New}
                                 onSelect={handleBillingSelect}
                             >
                                 <BillingAddress register={register} errors={errors} setValue={setValue} />
@@ -192,13 +198,13 @@ const Customer: React.FC<CustomerProps> = ({ hasSession }) => {
                             {!isShippingSameAsBilling && (
                                 <React.Fragment>
                                     <h3 className="text-2xl mb-4 font-semibold">Shipping Details</h3>
-                                    {showExisting && (
+                                    {Boolean(session) && (
                                         <SelectionWrapper
                                             id={ShippingAddressChoice.Existing}
                                             title="Choose an existing shipping address"
                                             name="shippingAddress"
                                             isChecked={shippingAddressChoice === ShippingAddressChoice.Existing}
-                                            defaultChecked={showExisting}
+                                            defaultChecked={shippingAddressChoice === ShippingAddressChoice.Existing}
                                             onSelect={handleShippingSelect}
                                         >
                                             <ExistingAddress isShipping={true} />
@@ -209,7 +215,7 @@ const Customer: React.FC<CustomerProps> = ({ hasSession }) => {
                                         title="Add a new shipping address"
                                         name="shippingAddress"
                                         isChecked={shippingAddressChoice === ShippingAddressChoice.New}
-                                        defaultChecked={!showExisting}
+                                        defaultChecked={shippingAddressChoice === ShippingAddressChoice.New}
                                         onSelect={handleShippingSelect}
                                     >
                                         <ShippingAddress register={register} errors={errors} setValue={setValue} />
