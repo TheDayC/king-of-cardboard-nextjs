@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSession } from 'next-auth/react';
+import { unstable_getServerSession } from 'next-auth';
 
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import selector from './selector';
@@ -10,10 +11,11 @@ import Fields from '../../../components/Account/AddressBook/Fields';
 import PageWrapper from '../../../components/PageWrapper';
 import { fetchCurrentAddress } from '../../../store/slices/account';
 import Custom404Page from '../../404';
+import { authOptions } from '../../api/auth/[...nextauth]';
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await getSession(context);
-    const addressId = safelyParse(context, 'query.addressId', parseAsString, null);
+export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+    const session = await unstable_getServerSession(req, res, authOptions);
+    const addressId = safelyParse(query, 'addressId', parseAsString, null);
 
     // If session hasn't been established redirect to the login page.
     if (!session) {
