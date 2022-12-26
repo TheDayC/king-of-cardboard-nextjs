@@ -1,15 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
 import { BiTrash, BiEdit } from 'react-icons/bi';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useSession } from 'next-auth/react';
 
-import selector from './selector';
-import { deleteAddress } from '../../../../utils/account';
-import { addError, addSuccess } from '../../../../store/slices/alerts';
+import { addSuccess } from '../../../../store/slices/alerts';
 import { Address } from '../../../../types/checkout';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
-import { fetchAddresses, setIsLoadingAddressBook } from '../../../../store/slices/account';
+import { fetchAddresses, deleteAddress, setIsLoadingAddressBook } from '../../../../store/slices/account';
 
 interface AddressProps {
     id: string;
@@ -27,18 +25,12 @@ export const DisplayAddress: React.FC<AddressProps> = ({ id, name, address }) =>
     const { lineOne, lineTwo, company, postcode, county, country } = address;
 
     const handleDelete = async () => {
-        if (id) {
-            const res = await deleteAddress(accessToken, id);
+        dispatch(deleteAddress(id));
+        dispatch(addSuccess('Address deleted!'));
 
-            if (res) {
-                dispatch(addSuccess('Address deleted!'));
-                if (userId) {
-                    dispatch(setIsLoadingAddressBook(true));
-                    dispatch(fetchAddresses({ userId, limit: LIMIT, skip: SKIP }));
-                }
-            } else {
-                dispatch(addError('Failed to delete address.'));
-            }
+        if (userId) {
+            dispatch(setIsLoadingAddressBook(true));
+            dispatch(fetchAddresses({ userId, limit: LIMIT, skip: SKIP }));
         }
     };
 
