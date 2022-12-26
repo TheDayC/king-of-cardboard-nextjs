@@ -22,7 +22,10 @@ async function listAddresses(req: NextApiRequest, res: NextApiResponse): Promise
             }
 
             const count = await collection.countDocuments();
-            const addresses = await collection.find({ userId }, { skip, limit }).toArray();
+            const addresses = await collection
+                .find({ userId }, { skip, limit })
+                .project({ userId: 1, created: 1, lastUpdated: 1 })
+                .toArray();
 
             res.status(200).json({ addresses, count });
         } catch (err: unknown) {

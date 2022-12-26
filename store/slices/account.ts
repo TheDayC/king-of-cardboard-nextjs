@@ -4,12 +4,10 @@ import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
 import { AccountAddress, GetOrders, SingleAddress, SingleOrder } from '../../types/account';
-import { Address } from '../../types/checkout';
 import { SocialMedia } from '../../types/profile';
 import { getOrders, getOrder, getCurrentAddress, getSocialMedia } from '../../utils/account';
 import { parseAsArrayOfAccountAddresses, parseAsNumber, safelyParse } from '../../utils/parsers';
 import accountInitialState from '../state/account';
-import { AppStateShape } from '../types/state';
 
 const hydrate = createAction<AppState>(HYDRATE);
 
@@ -43,7 +41,7 @@ interface ListAddressInput {
 }
 
 interface ListAddressOutput {
-    addresses: Address[];
+    addresses: AccountAddress[];
     count: number;
 }
 
@@ -85,6 +83,12 @@ export const fetchAddresses = createAsyncThunk(
     }
 );
 
+export const deleteAddress = createAsyncThunk('account/deleteAddress', async (_id: string): Promise<string> => {
+    await axios.delete(`${URL}/api/addresses/delete`, { params: { _id } });
+
+    return _id;
+});
+
 export const fetchCurrentAddress = createAsyncThunk(
     'account/fetchCurrentAddress',
     async (data: AddressThunkInput): Promise<SingleAddress> => {
@@ -111,6 +115,9 @@ const accountSlice = createSlice({
         setIsLoadingOrders(state, action) {
             state.isLoadingOrders = action.payload;
         },
+        setIsLoadingAddressBook(state, action) {
+            state.isLoadingAddressBook = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(fetchCoins.fulfilled, (state, action) => {
@@ -132,6 +139,10 @@ const accountSlice = createSlice({
 
                 state.addresses = addresses;
                 state.addressCount = count;
+                state.isLoadingAddressBook = false;
+            }),
+            builder.addCase(deleteAddress.fulfilled, (state, action) => {
+                state.addresses = state.addresses.filter(({ _id }) => _id !== action.payload);
             }),
             builder.addCase(fetchCurrentAddress.fulfilled, (state, action) => {
                 state.currentAddress = action.payload;
@@ -146,5 +157,5 @@ const accountSlice = createSlice({
     },
 });
 
-export const { setIsLoadingOrder, setIsLoadingOrders } = accountSlice.actions;
+export const { setIsLoadingOrder, setIsLoadingOrders, setIsLoadingAddressBook } = accountSlice.actions;
 export default accountSlice.reducer;

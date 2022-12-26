@@ -178,6 +178,7 @@ export interface AccountState {
     currentOrder: SingleOrder;
     addresses: AccountAddress[];
     addressCount: number;
+    isLoadingAddressBook: boolean;
     currentAddress: SingleAddress;
     isLoadingOrder: boolean;
     isLoadingOrders: boolean;

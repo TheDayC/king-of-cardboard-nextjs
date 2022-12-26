@@ -108,7 +108,5 @@ export interface GetOrders {
 
 export interface AccountAddress extends Address {
     _id: string;
-    created: string;
-    lastUpdated: string;
     title: string;
 }
