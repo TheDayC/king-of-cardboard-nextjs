@@ -3,19 +3,13 @@ import axios from 'axios';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { Address, GetOrders, GiftCard, SingleAddress, SingleOrder } from '../../types/account';
+import { AccountAddress, GetOrders, SingleAddress, SingleOrder } from '../../types/account';
+import { Address } from '../../types/checkout';
 import { SocialMedia } from '../../types/profile';
-import {
-    getGiftCard,
-    getOrders,
-    getOrder,
-    getAddresses,
-    getAddressPageCount,
-    getCurrentAddress,
-    getSocialMedia,
-} from '../../utils/account';
-import { parseAsNumber, safelyParse } from '../../utils/parsers';
+import { getOrders, getOrder, getCurrentAddress, getSocialMedia } from '../../utils/account';
+import { parseAsArrayOfAccountAddresses, parseAsNumber, safelyParse } from '../../utils/parsers';
 import accountInitialState from '../state/account';
+import { AppStateShape } from '../types/state';
 
 const hydrate = createAction<AppState>(HYDRATE);
 
@@ -40,6 +34,17 @@ interface OrderThunkInput {
 interface AddressThunkInput {
     accessToken: string;
     id: string;
+}
+
+interface ListAddressInput {
+    userId: string;
+    limit: number;
+    skip: number;
+}
+
+interface ListAddressOutput {
+    addresses: Address[];
+    count: number;
 }
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
@@ -70,15 +75,13 @@ export const fetchCurrentOrder = createAsyncThunk(
 
 export const fetchAddresses = createAsyncThunk(
     'account/fetchAddresses',
-    async (accessToken: string): Promise<Address[]> => {
-        return await getAddresses(accessToken);
-    }
-);
+    async (data: ListAddressInput): Promise<ListAddressOutput> => {
+        const res = await axios.get(`${URL}/api/addresses/list`, { params: { ...data } });
 
-export const fetchAddressPageCount = createAsyncThunk(
-    'account/fetchAddressPageCount',
-    async (accessToken: string): Promise<number> => {
-        return await getAddressPageCount(accessToken);
+        return {
+            addresses: safelyParse(res, 'data.addresses', parseAsArrayOfAccountAddresses, [] as AccountAddress[]),
+            count: safelyParse(res, 'data.count', parseAsNumber, 0),
+        };
     }
 );
 
@@ -125,10 +128,10 @@ const accountSlice = createSlice({
                 state.isLoadingOrder = false;
             }),
             builder.addCase(fetchAddresses.fulfilled, (state, action) => {
-                state.addresses = action.payload;
-            }),
-            builder.addCase(fetchAddressPageCount.fulfilled, (state, action) => {
-                state.addressPageCount = action.payload;
+                const { addresses, count } = action.payload;
+
+                state.addresses = addresses;
+                state.addressCount = count;
             }),
             builder.addCase(fetchCurrentAddress.fulfilled, (state, action) => {
                 state.currentAddress = action.payload;

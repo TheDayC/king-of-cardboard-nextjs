@@ -12,6 +12,8 @@ import { ContentfulProduct } from '../types/products';
 import { ImageCollection, ImageItem, Repeater } from '../types/contentful';
 import { SocialMedia } from '../types/profile';
 import { Interest, Category, Configuration } from '../enums/products';
+import { Address } from '../types/checkout';
+import { AccountAddress } from '../types/account';
 
 export function isString(candidate: unknown): candidate is string {
     return typeof candidate === 'string';
@@ -237,4 +239,12 @@ export function isArrayOfCategories(candidate: unknown): candidate is Category[]
 
 export function isArrayOfConfigurations(candidate: unknown): candidate is Configuration[] {
     return isArray(candidate) && isConfiguration(candidate[0]);
+}
+
+export function isAccountAddress(candidate: unknown): candidate is AccountAddress {
+    return isNotNullOrUndefined<object>(candidate) && 'lineOne' in candidate;
+}
+
+export function isArrayOfAccountAddresses(candidate: unknown): candidate is AccountAddress[] {
+    return isArray(candidate) && isAccountAddress(candidate[0]);
 }

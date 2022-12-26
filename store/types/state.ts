@@ -2,9 +2,9 @@ import { DateTime } from 'luxon';
 import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
 
 import { AlertLevel } from '../../enums/system';
-import { Address as AccountAddress, GiftCard, Order, SingleAddress, SingleOrder } from '../../types/account';
+import { AccountAddress, Order, SingleAddress, SingleOrder } from '../../types/account';
 import { Break, SingleBreak } from '../../types/breaks';
-import { CartItem, UpdateQuantity } from '../../types/cart';
+import { CartItem } from '../../types/cart';
 import { Address, CustomerDetails, Shipment } from '../../types/checkout';
 import { ContentfulPage } from '../../types/pages';
 import { SingleProduct } from '../../types/products';
@@ -177,7 +177,7 @@ export interface AccountState {
     orderPageCount: number;
     currentOrder: SingleOrder;
     addresses: AccountAddress[];
-    addressPageCount: number;
+    addressCount: number;
     currentAddress: SingleAddress;
     isLoadingOrder: boolean;
     isLoadingOrders: boolean;

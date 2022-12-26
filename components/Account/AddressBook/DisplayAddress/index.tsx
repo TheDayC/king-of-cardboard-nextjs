@@ -6,17 +6,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import selector from './selector';
 import { deleteAddress } from '../../../../utils/account';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
+import { Address } from '../../../../types/checkout';
 
 interface AddressProps {
     id: string;
     name: string;
-    full_address: string;
+    address: Address;
     fetchAddresses(shouldFetch: boolean): void;
 }
 
-export const Address: React.FC<AddressProps> = ({ id, name, full_address, fetchAddresses }) => {
+export const DisplayAddress: React.FC<AddressProps> = ({ id, name, address, fetchAddresses }) => {
     const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
+    const { lineOne, lineTwo, company, postcode, county, country } = address;
 
     const handleDelete = async () => {
         if (accessToken && id) {
@@ -34,7 +36,12 @@ export const Address: React.FC<AddressProps> = ({ id, name, full_address, fetchA
     return (
         <div className="flex flex-col p-6 border border-solid border-base-200 justify-center items-start w-full rounded-md shadow-md">
             <h4 className="text-md mb-4 font-semibold">{name}</h4>
-            <p className="text-sm mb-4">{full_address}</p>
+            <p className="text-sm mb-4">{lineOne}</p>
+            <p className="text-sm mb-4">{lineTwo}</p>
+            {company && <p className="text-sm mb-4">{company}</p>}
+            <p className="text-sm mb-4">{postcode}</p>
+            <p className="text-sm mb-4">{county}</p>
+            <p className="text-sm mb-4">{county}</p>
             <div className="flex flex-row w-full justify-between">
                 <Link
                     href={{
@@ -55,4 +62,4 @@ export const Address: React.FC<AddressProps> = ({ id, name, full_address, fetchA
     );
 };
 
-export default Address;
+export default DisplayAddress;
