@@ -1,12 +1,11 @@
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useForm } from 'react-hook-form';
-import { useElements, useStripe } from '@stripe/react-stripe-js';
+import { FieldValues, useForm } from 'react-hook-form';
+import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { BsPaypal, BsFillCreditCard2BackFill } from 'react-icons/bs';
 import { useSession } from 'next-auth/react';
 
-import { setCurrentStep } from '../../../store/slices/checkout';
-import { setCheckoutLoading } from '../../../store/slices/global';
+import { setCurrentStep, setIsCheckoutLoading } from '../../../store/slices/checkout';
 import { addError } from '../../../store/slices/alerts';
 import selector from './selector';
 import SelectionWrapper from '../../SelectionWrapper';
@@ -16,7 +15,11 @@ import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parser
 import UseCoins from '../../UseCoins';
 import { gaEvent } from '../../../utils/ga';
 import { PaymentMethods } from '../../../enums/checkout';
+import { toNumber } from 'lodash';
+import { isNumber } from '../../../utils/typeguards';
+import axios from 'axios';
 
+const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 const paymentMethods = [
     { id: PaymentMethods.Stripe, title: 'Credit / Debit Card' },
     { id: PaymentMethods.PayPal, title: 'PayPal' },
@@ -31,8 +34,8 @@ export const Payment: React.FC = () => {
         customerDetails,
         isCheckoutLoading,
         /* subTotal,
-        shipping,
-        total, */
+        shipping,*/
+        total,
         items,
         billingAddress,
         shippingAddress,
@@ -58,10 +61,14 @@ export const Payment: React.FC = () => {
     const handleError = useCallback(
         (message: string) => {
             dispatch(addError(message));
-            dispatch(setCheckoutLoading(false));
+            dispatch(setIsCheckoutLoading(false));
         },
         [dispatch]
     );
+
+    const placeOrder = () => {
+        return false;
+    };
 
     const handleStripePayment = async () => {
         // Ensure we return to avoid multiple executions if criteria is met.
@@ -69,53 +76,62 @@ export const Payment: React.FC = () => {
             handleError('Missing some details');
             return;
         }
-
         // Show load blockers.
-        dispatch(setCheckoutLoading(true));
+        //dispatch(setIsCheckoutLoading(true));
 
         // Piece together the attributes for the payment source request.
         //const attributes = buildPaymentAttributes(STRIPE_METHOD, orderId);
 
         // Create the payment source in CommerceLayer.
         //const { paymentId, clientSecret } = await createPaymentSource(accessToken, orderId, STRIPE_METHOD, attributes);
+        const res = await axios.get(`${URL}/api/payments/getPaymentIntent`, { params: { total } });
+        const clientSecret = safelyParse(res, 'data.client_secret', parseAsString, null);
 
-        // Get the card element with Stripe hooks.
-        /*const card = elements.getElement(CardElement);
-
-         if (!clientSecret || !paymentId || !card) {
-            handleError('Failed to validate the credit / debit card, please check your details.');
+        if (!clientSecret) {
+            handleError('Failed to connect to Stripe, please contact support.');
+            //dispatch(setIsCheckoutLoading(false));
             return;
-        } */
+        }
+
+        console.log('🚀 ~ file: index.tsx:85 ~ handleStripePayment ~ res', res);
+        // Get the card element with Stripe hooks.
+        const card = elements.getElement(CardElement);
+
+        if (!card) {
+            handleError('Failed to validate the credit / debit card, please check your details.');
+            //dispatch(setIsCheckoutLoading(false));
+            return;
+        }
 
         // Assuming we've got a secret then confirm the card payment with stripe.
-        /* const result = await stripe.confirmCardPayment(clientSecret, {
+        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
             payment_method: {
                 card,
                 billing_details: {
-                    name: `${billingAddress.first_name || ''} ${billingAddress.last_name || ''}`,
-                    email: billingAddress.email || '',
-                    phone: billingAddress.phone || '',
+                    name: `${customerDetails.firstName} ${customerDetails.lastName}`,
+                    email: customerDetails.email,
+                    phone: customerDetails.phone,
                     address: {
-                        city: billingAddress.city || '',
-                        country: billingAddress.country_code || 'GB',
-                        line1: billingAddress.line_1 || '',
-                        line2: billingAddress.line_2 || '',
-                        postal_code: billingAddress.zip_code || '',
-                        state: billingAddress.state_code || '',
+                        line1: billingAddress.lineOne,
+                        line2: billingAddress.lineTwo,
+                        city: billingAddress.city,
+                        postal_code: billingAddress.postcode,
+                        state: billingAddress.county,
+                        country: billingAddress.country || 'GB',
                     },
                 },
             },
-        }); */
+        });
+        console.log('🚀 ~ file: index.tsx:104 ~ handleStripePayment ~ paymentIntent', paymentIntent);
 
         // Handle the stripe card confirmation error.
-        /* if (result.error) {
-            console.error(result.error.message);
-            handleError('Failed to confirm card, please contact support');
+        if (error || paymentIntent) {
+            handleError('Failed to confirm card payment, please contact support');
             return;
         }
- */
-        // Place the order with commerce layer.
-        //const hasBeenPlaced = await confirmOrder(accessToken, orderId, '_place');
+
+        // Place the order.
+        const hasBeenPlaced = placeOrder();
 
         /* if (!hasBeenPlaced) {
             handleError('Failed to confirm your order, please contact support.');
@@ -147,7 +163,7 @@ export const Payment: React.FC = () => {
             dispatch(addError('Failed to place your order, please contact support.'));
         }*/
 
-        dispatch(setCheckoutLoading(false));
+        //dispatch(setIsCheckoutLoading(false));
     };
 
     // If the user has chosen paypal, handle it here.
@@ -163,38 +179,29 @@ export const Payment: React.FC = () => {
 
         // If the payment source was created then capture the approval url from paypal.
         /* if (approvalUrl) {
-            dispatch(setCheckoutLoading(false));
+            dispatch(setIsCheckoutLoading(false));
             location.assign(approvalUrl);
         } else {
             // Dispatch an error if we for some reason can't handle this properly.
             dispatch(addError('Failed to fetch approval url for PayPal, please contact support.'));
         } */
 
-        //dispatch(setCheckoutLoading(false));
+        //dispatch(setIsCheckoutLoading(false));
     }, [dispatch, isCheckoutLoading]);
 
-    const onSubmit = async (data: unknown) => {
-        const formPaymentMethod = safelyParse(data, 'paymentMethod', parseAsNumber, null);
+    const onSubmit = async (data: FieldValues) => {
+        const chosenPaymentMethod = toNumber(data.paymentMethod);
 
-        // Find the payment method chosen by the user.
-        //const paymentMethodData = paymentMethods.find((pM) => pM.payment_source_type === formPaymentMethod) || null;
-
-        if (!formPaymentMethod) return;
-
-        setPaymentMethod(formPaymentMethod);
-
-        // Update the user's payment method choice on selection.
-        //await updatePaymentMethod(accessToken, orderId, paymentMethodData.id);
-
-        gaEvent('checkout', { paymentMethod: formPaymentMethod });
+        setPaymentMethod(chosenPaymentMethod);
+        gaEvent('checkout', { paymentMethod: chosenPaymentMethod });
 
         // Handle a credit / debit card order.
-        if (formPaymentMethod === PaymentMethods.Stripe) {
+        if (chosenPaymentMethod === PaymentMethods.Stripe) {
             handleStripePayment();
         }
 
         // Handle a paypal order.
-        if (formPaymentMethod === PaymentMethods.Stripe) {
+        if (chosenPaymentMethod === PaymentMethods.Stripe) {
             handlePaypalPayment();
         }
     };

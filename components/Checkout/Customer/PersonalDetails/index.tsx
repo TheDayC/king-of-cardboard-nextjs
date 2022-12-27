@@ -18,39 +18,14 @@ interface PersonalDetailsProps {
 const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, setValue }) => {
     const { data: session } = useSession();
     const { customerDetails } = useSelector(selector);
-    const { first_name: firstName, last_name: lastName, email, phone } = customerDetails;
+    const { firstName, lastName, email, phone } = customerDetails;
+    const accountEmail = safelyParse(session, 'user.email', parseAsString, null);
+
+    // Errors
     const firstNameErr = safelyParse(errors, 'firstName.message', parseAsString, null);
     const lastNameErr = safelyParse(errors, 'lastName.message', parseAsString, null);
     const emailErr = safelyParse(errors, 'email.message', parseAsString, null);
     const mobileErr = safelyParse(errors, 'mobile.message', parseAsString, null);
-
-    const accountEmail = safelyParse(session, 'user.email', parseAsString, null);
-
-    useEffect(() => {
-        if (email) {
-            setValue('email', email);
-        } else {
-            setValue('email', accountEmail);
-        }
-    }, [email, setValue, accountEmail]);
-
-    useEffect(() => {
-        if (firstName) {
-            setValue('firstName', firstName);
-        }
-    }, [firstName, setValue]);
-
-    useEffect(() => {
-        if (lastName) {
-            setValue('lastName', lastName);
-        }
-    }, [lastName, setValue]);
-
-    useEffect(() => {
-        if (phone) {
-            setValue('phone', phone);
-        }
-    }, [phone, setValue]);
 
     return (
         <div className="flex flex-col">
@@ -71,6 +46,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                             },
                         })}
                         className={`input input-md input-bordered${firstNameErr ? ' input-error' : ''}`}
+                        defaultValue={firstName}
                     />
                     {firstNameErr && (
                         <label className="label">
@@ -93,6 +69,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                             },
                         })}
                         className={`input input-md input-bordered${lastNameErr ? ' input-error' : ''}`}
+                        defaultValue={lastName}
                     />
                     {lastNameErr && (
                         <label className="label">
@@ -115,6 +92,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                             },
                         })}
                         className={`input input-md input-bordered${emailErr ? ' input-error' : ''}`}
+                        defaultValue={email}
                     />
                     {emailErr && (
                         <label className="label">
@@ -137,6 +115,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, set
                             },
                         })}
                         className={`input input-md input-bordered${mobileErr ? ' input-error' : ''}`}
+                        defaultValue={phone}
                     />
                     {mobileErr && (
                         <label className="label">
