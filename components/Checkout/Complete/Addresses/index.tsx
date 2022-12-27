@@ -1,13 +1,13 @@
 import React from 'react';
-import { IoLocationSharp } from 'react-icons/io5';
-import { useSelector } from 'react-redux';
+// import { IoLocationSharp } from 'react-icons/io5';
+// import { useSelector } from 'react-redux';
 
-import selector from './selector';
+// import selector from './selector';
 
 export const Addresses: React.FC = () => {
-    const { customerDetails, billingAddress, shippingAddress } = useSelector(selector);
-
-    return (
+    //const { customerDetails, billingAddress, shippingAddress } = useSelector(selector);
+    return null;
+    /* return (
         <div className="flex flex-col lg:flex-row justify-between">
             <div className="flex mb-4 lg:mb-0 flex-col">
                 <h4 className="text-lg font-bold">Billing Address:</h4>
@@ -44,7 +44,7 @@ export const Addresses: React.FC = () => {
                 </div>
             </div>
         </div>
-    );
+    ); */
 };
 
 export default Addresses;

@@ -44,8 +44,6 @@ import {
     isArrayOfInterests,
     isArrayOfCategories,
     isArrayOfConfigurations,
-    isAddress,
-    isArrayOfAddresses,
     isAccountAddress,
     isArrayOfAccountAddresses,
 } from './typeguards';

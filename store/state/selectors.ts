@@ -1,9 +1,9 @@
+import { CustomerDetails } from '../../types/checkout';
 import {
     AppStateShape,
     Filters,
     Global,
     Checkout,
-    CustomerDetails,
     CartState,
     Confirmation,
     PagesState,

@@ -1,5 +1,5 @@
-import { PaymentMethod, CustomerAddress, CustomerDetails, ShipmentsWithLineItems } from '../store/types/state';
-import { PaymentAttributes, Shipment } from '../types/checkout';
+import { PaymentMethod, CustomerAddress, ShipmentsWithLineItems } from '../store/types/state';
+import { CustomerDetails, PaymentAttributes, Shipment } from '../types/checkout';
 import { authClient } from './auth';
 import { CommerceLayerResponse } from '../types/api';
 import { errorHandler } from '../middleware/errors';
@@ -22,59 +22,6 @@ export function fieldPatternMsgs(field: string): string {
         default:
             return '';
     }
-}
-
-export async function updateAddress(
-    accessToken: string,
-    id: string,
-    details: CustomerDetails,
-    address: Partial<CustomerAddress>,
-    isShipping: boolean
-): Promise<boolean> {
-    try {
-        const data = {
-            type: 'addresses',
-            attributes: {
-                ...details,
-                ...address,
-            },
-        };
-        const cl = authClient(accessToken);
-        const res = await cl.post('/api/addresses', { data });
-        const addressId = safelyParse(res, 'data.data.id', parseAsString, null);
-
-        if (!addressId) {
-            return false;
-        }
-
-        const relationshipProp = isShipping ? 'shipping_address' : 'billing_address';
-        const relationships = {
-            [relationshipProp]: {
-                data: {
-                    type: 'addresses',
-                    id: addressId,
-                },
-            },
-        };
-
-        const orderRes = await cl.patch(`/api/orders/${id}`, {
-            data: {
-                type: 'orders',
-                id,
-                attributes: {
-                    customer_email: details.email,
-                },
-                relationships,
-            },
-        });
-        const status = safelyParse(orderRes, 'status', parseAsNumber, 500);
-
-        return status === 200;
-    } catch (error: unknown) {
-        errorHandler(error, 'Address could not be updated.');
-    }
-
-    return false;
 }
 
 export async function updateAddressClone(

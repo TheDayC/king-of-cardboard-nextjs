@@ -1,6 +1,6 @@
 import { Document } from '@contentful/rich-text-types';
 
-import { CustomerAddress, CustomerDetails } from '../store/types/state';
+import { CustomerAddress } from '../store/types/state';
 import { Achievement, Objective } from '../types/achievements';
 import { CommerceLayerError, CommerceLayerLineItemRelationship, CommerceLayerResponse } from '../types/api';
 import { BreakSlot, BreakSlotsCollection, BreakTypeItem, ContentfulBreak } from '../types/breaks';
@@ -12,7 +12,7 @@ import { ContentfulProduct } from '../types/products';
 import { ImageCollection, ImageItem, Repeater } from '../types/contentful';
 import { SocialMedia } from '../types/profile';
 import { Interest, Category, Configuration } from '../enums/products';
-import { Address } from '../types/checkout';
+import { Address, CustomerDetails } from '../types/checkout';
 import { AccountAddress } from '../types/account';
 
 export function isString(candidate: unknown): candidate is string {
@@ -140,7 +140,7 @@ export function isArrayofItems(candidate: unknown): candidate is CartItem[] {
 }
 
 export function isCustomerDetails(candidate: unknown): candidate is CustomerDetails {
-    return isNotNullOrUndefined<object>(candidate) && 'first_name' in candidate;
+    return isNotNullOrUndefined<object>(candidate) && 'firstName' in candidate;
 }
 
 export function isCustomerAddress(candidate: unknown): candidate is CustomerAddress {
