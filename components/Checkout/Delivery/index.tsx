@@ -7,10 +7,11 @@ import { fetchShippingMethods, setCurrentStep } from '../../../store/slices/chec
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Loading from '../../Loading';
 import ShippingMethod from './ShippingMethod';
+import { BsCreditCard2BackFill } from 'react-icons/bs';
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
-    const { currentStep, checkoutLoading, hasBothAddresses, shippingMethods } = useSelector(selector);
+    const { currentStep, isCheckoutLoading, hasBothAddresses, shippingMethods } = useSelector(selector);
     const {
         register,
         handleSubmit,
@@ -21,7 +22,7 @@ export const Delivery: React.FC = () => {
     const hasShippingMethods = shippingMethods.length > 0;
 
     const handleSelectShippingMethod: SubmitHandler<FieldValues> = async (/* data: FieldValues */) => {
-        if (hasErrors || checkoutLoading) {
+        if (hasErrors || isCheckoutLoading) {
             return;
         }
 
@@ -71,7 +72,7 @@ export const Delivery: React.FC = () => {
                 {hasBothAddresses ? 'Delivery - Edit' : 'Delivery'}
             </h3>
             <div className="collapse-content p-0 relative">
-                <Loading show={checkoutLoading} />
+                <Loading show={isCheckoutLoading} />
                 <form onSubmit={handleSubmit(handleSelectShippingMethod)}>
                     {shippingMethods.length > 0 && (
                         <div className="flex flex-col space-y-2 p-4">
@@ -98,9 +99,10 @@ export const Delivery: React.FC = () => {
                             type="submit"
                             className={`btn w-full lg:w-auto mb-4${
                                 hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'
-                            }${checkoutLoading ? ' loading' : ''}`}
+                            }${isCheckoutLoading ? ' loading' : ''}`}
                         >
-                            {checkoutLoading ? '' : 'Payment'}
+                            {isCheckoutLoading ? '' : 'Payment'}
+                            <BsCreditCard2BackFill className="w-6 h-6 ml-2 inline" />
                         </button>
                     </div>
                 </form>

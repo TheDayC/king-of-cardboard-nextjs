@@ -233,7 +233,7 @@ const Customer: React.FC = () => {
                             }${checkoutLoading ? ' loading' : ''}`}
                         >
                             {checkoutLoading ? '' : 'delivery'}
-                            <BsTruck className="w-6 h-6 ml-2" />
+                            <BsTruck className="w-6 h-6 ml-2 inline" />
                         </button>
                     </div>
                 </form>
