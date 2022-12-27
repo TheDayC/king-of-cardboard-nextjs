@@ -56,6 +56,10 @@ const checkoutSlice = createSlice({
         setIsCheckoutLoading(state, action) {
             state.isCheckoutLoading = action.payload;
         },
+        setChosenShippingMethodId(state, action) {
+            state.chosenShippingMethodId = action.payload;
+            state.isCheckoutLoading = false;
+        },
         resetCheckoutDetails() {
             return checkoutInitialState;
         },
@@ -85,6 +89,7 @@ export const {
     setSameAsBilling,
     resetCheckoutDetails,
     setIsCheckoutLoading,
+    setChosenShippingMethodId,
 } = checkoutSlice.actions;
 
 export default checkoutSlice.reducer;

@@ -72,6 +72,7 @@ export interface Checkout {
     paymentMethods: PaymentMethod[];
     shippingMethods: AccountShippingMethod[];
     isCheckoutLoading: boolean;
+    chosenShippingMethodId: string | null;
 }
 
 export interface CustomerAddress {

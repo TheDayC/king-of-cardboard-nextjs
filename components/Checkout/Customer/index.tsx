@@ -6,12 +6,11 @@ import { useSession } from 'next-auth/react';
 import selector from './selector';
 import {
     setBillingAddress,
-    setCloneBillingAddressId,
-    setCloneShippingAddressId,
     setCurrentStep,
     setCustomerDetails,
     setExistingBillingAddressId,
     setExistingShippingAddressId,
+    setIsCheckoutLoading,
     setShippingAddress,
 } from '../../../store/slices/checkout';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -40,7 +39,7 @@ const defaultAddress: Address = {
 
 const Customer: React.FC = () => {
     const { data: session } = useSession();
-    const { currentStep, checkoutLoading, isShippingSameAsBilling, billingAddress, shippingAddress } =
+    const { currentStep, isCheckoutLoading, isShippingSameAsBilling, billingAddress, shippingAddress } =
         useSelector(selector);
     const dispatch = useDispatch();
     const [billingAddressChoice, setBillingAddressChoice] = useState(BillingAddressChoice.New);
@@ -55,12 +54,12 @@ const Customer: React.FC = () => {
     const hasErrors = Object.keys(errors).length > 0;
 
     const onSubmit = async (data: FieldValues) => {
-        if (hasErrors || checkoutLoading) {
+        if (hasErrors || isCheckoutLoading) {
             return;
         }
 
         // Set loading in current form.
-        dispatch(setCheckoutLoading(true));
+        dispatch(setIsCheckoutLoading(true));
 
         // Parse the customer details like name, email, phone etc
         dispatch(
@@ -116,7 +115,7 @@ const Customer: React.FC = () => {
         // Redirect to next stage.
         dispatch(setCurrentStep(1));
 
-        dispatch(setCheckoutLoading(false));
+        dispatch(setIsCheckoutLoading(false));
     };
 
     // Handle the edit collapsed item functionality.
@@ -230,9 +229,9 @@ const Customer: React.FC = () => {
                             type="submit"
                             className={`btn w-full lg:w-auto${
                                 hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'
-                            }${checkoutLoading ? ' loading' : ''}`}
+                            }${isCheckoutLoading ? ' loading' : ''}`}
                         >
-                            {checkoutLoading ? '' : 'delivery'}
+                            {isCheckoutLoading ? '' : 'delivery'}
                             <BsTruck className="w-6 h-6 ml-2 inline" />
                         </button>
                     </div>

@@ -5,7 +5,7 @@ import { selectCheckoutData, selectGlobalData } from '../../../store/state/selec
 const selector = createSelector([selectCheckoutData, selectGlobalData], (checkout, global) => ({
     currentStep: checkout.currentStep,
     customerDetails: checkout.customerDetails,
-    checkoutLoading: global.checkoutLoading,
+    isCheckoutLoading: checkout.isCheckoutLoading,
     isShippingSameAsBilling: checkout.isShippingSameAsBilling,
     billingAddress: checkout.billingAddress,
     shippingAddress: checkout.shippingAddress,

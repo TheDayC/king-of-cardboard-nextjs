@@ -3,11 +3,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
 import selector from './selector';
-import { fetchShippingMethods, setCurrentStep } from '../../../store/slices/checkout';
+import {
+    fetchShippingMethods,
+    setChosenShippingMethodId,
+    setCurrentStep,
+    setIsCheckoutLoading,
+} from '../../../store/slices/checkout';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Loading from '../../Loading';
 import ShippingMethod from './ShippingMethod';
 import { BsCreditCard2BackFill } from 'react-icons/bs';
+import { fetchCartTotals, setUpdatingCart } from '../../../store/slices/cart';
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
@@ -19,30 +25,22 @@ export const Delivery: React.FC = () => {
     } = useForm();
     const isCurrentStep = currentStep === 1;
     const hasErrors = Object.keys(errors).length > 0;
-    const hasShippingMethods = shippingMethods.length > 0;
 
-    const handleSelectShippingMethod: SubmitHandler<FieldValues> = async (/* data: FieldValues */) => {
+    const handleSelectShippingMethod: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         if (hasErrors || isCheckoutLoading) {
             return;
         }
 
+        const shippingMethodId = Object.keys(data.method)[0];
+
         // Start checkout loader.
-        dispatch(setCheckoutLoading(true));
-
-        // for...of used here over forEach to avoid race conditions with await.
-        /* for (const shipment of shipments) {
-            await updateShipmentMethod(accessToken, shipment.id, data.method[shipment.id].methodId);
-        } */
-
-        // Fetch items, totals and item count along with payment methods
-        //dispatch(fetchCartTotals({ accessToken, orderId }));
-        //dispatch(fetchPaymentMethods({ accessToken, orderId }));
+        dispatch(setIsCheckoutLoading(true));
+        dispatch(setUpdatingCart(true));
+        dispatch(setChosenShippingMethodId(shippingMethodId));
+        dispatch(fetchCartTotals());
 
         // Redirect to next stage.
         dispatch(setCurrentStep(2));
-
-        // Stop the checkout loader
-        dispatch(setCheckoutLoading(false));
     };
 
     // Handle edit for opening / closing the collapse element

@@ -26,6 +26,7 @@ const checkoutInitialState: Checkout = {
     paymentMethods: [],
     shippingMethods: [],
     isCheckoutLoading: false,
+    chosenShippingMethodId: null,
 };
 
 export default checkoutInitialState;
