@@ -376,3 +376,15 @@ export async function updateGiftCardCode(accessToken: string, orderId: string, c
 
     return false;
 }
+
+export function formatOrderNumber(orderNumber: number): string {
+    if (orderNumber < 100) {
+        return `#00${orderNumber}`;
+    }
+
+    if (orderNumber < 1000) {
+        return `#0${orderNumber}`;
+    }
+
+    return `#${orderNumber}`;
+}

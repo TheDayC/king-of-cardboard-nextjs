@@ -5,7 +5,7 @@ import { selectCartData, selectConfirmationData, selectCheckoutData } from '../.
 const selector = createSelector(
     [selectCartData, selectCheckoutData, selectConfirmationData],
     (cart, checkout, confirmation) => ({
-        confirmationOrderNumber: confirmation.orderNumber,
+        orderNumber: confirmation.orderNumber,
         isCheckoutLoading: checkout.isCheckoutLoading,
         cartItems: cart.items,
         confirmedItems: confirmation.items,

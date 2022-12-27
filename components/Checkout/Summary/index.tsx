@@ -7,25 +7,21 @@ import styles from './summary.module.css';
 import Loading from '../../Loading';
 import Totals from './Totals';
 import { getPrettyPrice } from '../../../utils/account/products';
+import { formatOrderNumber } from '../../../utils/checkout';
 
 interface SummaryProps {
     isConfirmation: boolean;
 }
 
 export const Summary: React.FC<SummaryProps> = ({ isConfirmation = false }) => {
-    const {
-        confirmationOrderNumber: orderNumber,
-        isCheckoutLoading,
-        cartItems,
-        confirmedItems,
-    } = useSelector(selector);
+    const { orderNumber, isCheckoutLoading, cartItems, confirmedItems } = useSelector(selector);
     const lineItems = isConfirmation ? confirmedItems : cartItems;
 
     return (
         <div className="flex flex-col relative">
             <Loading show={isCheckoutLoading} />
             <div className="flex flex-row w-100 justify-between items-center">
-                <h2 className="text-2xl">{orderNumber ? `Order #${orderNumber}` : 'Summary'}</h2>
+                <h2 className="text-2xl">{orderNumber ? `Order ${formatOrderNumber(orderNumber)}` : 'Summary'}</h2>
                 <p className="text-xl">{`(${lineItems.length} item${lineItems.length > 1 ? 's' : ''})`}</p>
             </div>
             <div className="divider"></div>

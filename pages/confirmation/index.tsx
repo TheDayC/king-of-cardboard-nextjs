@@ -36,7 +36,7 @@ export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
                     <ConfirmationDetails />
                 </div>
                 <div className="flex-1 p-2 lg:p-0">
-                    <Summary isConfirmation={true} />
+                    <Summary isConfirmation />
                 </div>
             </div>
         </PageWrapper>
