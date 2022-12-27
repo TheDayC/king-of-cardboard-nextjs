@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { errorHandler } from '../../middleware/errors';
-import { ListShippingMethods } from '../../types/shipping';
+import { AccountShippingMethod, ListShippingMethods } from '../../types/shipping';
 import { parseAsNumber, safelyParse } from '../parsers';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
@@ -69,4 +69,20 @@ export async function deleteShippingMethod(id: string): Promise<boolean> {
     }
 
     return false;
+}
+
+export async function getShippingMethod(id: string): Promise<AccountShippingMethod | null> {
+    try {
+        const res = await axios.get(`${URL}/api/shipping/get`, {
+            params: {
+                id,
+            },
+        });
+
+        return res.data as AccountShippingMethod;
+    } catch (error: unknown) {
+        errorHandler(error, 'Could not get shipping method.');
+    }
+
+    return null;
 }

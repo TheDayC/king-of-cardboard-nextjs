@@ -73,9 +73,6 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
     const maxErr = safelyParse(errors, 'max.message', parseAsString, null);
     const supplierErr = safelyParse(errors, 'supplier.message', parseAsString, null);
 
-    // Variables
-    const userId = session ? session.user.id : null;
-
     const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         if (hasErrors || isLoading) {
             return;
@@ -83,19 +80,20 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
 
         setIsLoading(true);
 
-        const { sku, slug, title, content, price } = data;
+        const { title, slug, content, price, min, max, supplier } = data;
 
-        const productData = {
-            sku,
-            userId,
+        const methodData = {
             title,
             slug,
             content,
             price: toNumber(price),
+            min: toNumber(min),
+            max: toNumber(max),
+            supplier: toNumber(supplier),
         };
 
         if (isNew) {
-            const hasAddedProduct = await addShippingMethod(productData);
+            const hasAddedProduct = await addShippingMethod(methodData);
 
             if (hasAddedProduct) {
                 dispatch(addSuccess('Shipping method added!'));
@@ -109,7 +107,7 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
         } else {
             if (!_id) return;
 
-            const hasEditedProduct = await editShippingMethod(_id || '', productData);
+            const hasEditedProduct = await editShippingMethod(_id, methodData);
 
             if (hasEditedProduct) {
                 dispatch(addSuccess('Shipping method saved!'));

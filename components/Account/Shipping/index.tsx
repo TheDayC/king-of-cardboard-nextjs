@@ -125,7 +125,7 @@ export const Shipping: React.FC<ShippingProps> = ({ shippingMethod, updateShippi
                 <div className="card-actions justify-start mt-4">
                     <Link
                         href={{
-                            pathname: '/account/products/edit/[id]',
+                            pathname: '/account/shipping/edit/[id]',
                             query: { id },
                         }}
                         passHref
