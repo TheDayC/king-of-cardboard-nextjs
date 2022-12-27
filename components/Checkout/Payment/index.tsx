@@ -12,12 +12,15 @@ import selector from './selector';
 import SelectionWrapper from '../../SelectionWrapper';
 import Source from './Source';
 import { paymentBtnText } from '../../../utils/checkout';
-import { parseAsString, safelyParse } from '../../../utils/parsers';
+import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 import UseCoins from '../../UseCoins';
 import { gaEvent } from '../../../utils/ga';
+import { PaymentMethods } from '../../../enums/checkout';
 
-const STRIPE_METHOD = 'stripe_payments';
-const PAYPAL_METHOD = 'paypal_payments';
+const paymentMethods = [
+    { id: PaymentMethods.Stripe, title: 'Credit / Debit Card' },
+    { id: PaymentMethods.PayPal, title: 'PayPal' },
+];
 
 export const Payment: React.FC = () => {
     const dispatch = useDispatch();
@@ -25,9 +28,8 @@ export const Payment: React.FC = () => {
     const elements = useElements();
     const {
         currentStep,
-        paymentMethods,
         customerDetails,
-        checkoutLoading,
+        isCheckoutLoading,
         /* subTotal,
         shipping,
         total, */
@@ -35,20 +37,20 @@ export const Payment: React.FC = () => {
         billingAddress,
         shippingAddress,
         coins,
+        shouldEnable,
     } = useSelector(selector);
     const { handleSubmit, register } = useForm();
     const { data: session } = useSession();
     const isCurrentStep = currentStep === 2;
-    const [paymentMethod, setPaymentMethod] = useState(STRIPE_METHOD);
+    const [paymentMethod, setPaymentMethod] = useState(PaymentMethods.Stripe);
     const btnText = paymentBtnText(paymentMethod);
     const paypalClass = 'inline-block mr-3 text-md -mt-0.5 text-blue-800';
     const stripeClass = 'inline-block mr-3 text-md -mt-0.5 text-gray-500';
-    const shouldEnable = paymentMethods.length > 0;
     const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
     const shouldShowCoins = status === 'authenticated' && coins > 0;
 
     const handleEdit = () => {
-        if (!isCurrentStep && shouldEnable) {
+        if (!isCurrentStep) {
             dispatch(setCurrentStep(2));
         }
     };
@@ -63,15 +65,7 @@ export const Payment: React.FC = () => {
 
     const handleStripePayment = async () => {
         // Ensure we return to avoid multiple executions if criteria is met.
-        if (
-            checkoutLoading ||
-            !billingAddress.line_1 ||
-            !elements ||
-            !customerDetails ||
-            !items ||
-            !shippingAddress.line_1 ||
-            !stripe
-        ) {
+        if (!billingAddress.lineOne || !elements || !customerDetails || !items || !shippingAddress.lineOne || !stripe) {
             handleError('Missing some details');
             return;
         }
@@ -159,7 +153,7 @@ export const Payment: React.FC = () => {
     // If the user has chosen paypal, handle it here.
     const handlePaypalPayment = useCallback(async () => {
         // If we're already loading make sure not to execute again.
-        if (checkoutLoading) return;
+        if (isCheckoutLoading) return;
 
         // Piece together the attributes for the payment source request.
         //const attributes = buildPaymentAttributes(PAYPAL_METHOD, orderId);
@@ -176,16 +170,16 @@ export const Payment: React.FC = () => {
             dispatch(addError('Failed to fetch approval url for PayPal, please contact support.'));
         } */
 
-        dispatch(setCheckoutLoading(false));
-    }, [dispatch, checkoutLoading]);
+        //dispatch(setCheckoutLoading(false));
+    }, [dispatch, isCheckoutLoading]);
 
     const onSubmit = async (data: unknown) => {
-        const formPaymentMethod = safelyParse(data, 'paymentMethod', parseAsString, null);
+        const formPaymentMethod = safelyParse(data, 'paymentMethod', parseAsNumber, null);
 
         // Find the payment method chosen by the user.
-        const paymentMethodData = paymentMethods.find((pM) => pM.payment_source_type === formPaymentMethod) || null;
+        //const paymentMethodData = paymentMethods.find((pM) => pM.payment_source_type === formPaymentMethod) || null;
 
-        if (!paymentMethodData || !formPaymentMethod) return;
+        if (!formPaymentMethod) return;
 
         setPaymentMethod(formPaymentMethod);
 
@@ -195,18 +189,18 @@ export const Payment: React.FC = () => {
         gaEvent('checkout', { paymentMethod: formPaymentMethod });
 
         // Handle a credit / debit card order.
-        if (formPaymentMethod === STRIPE_METHOD) {
+        if (formPaymentMethod === PaymentMethods.Stripe) {
             handleStripePayment();
         }
 
         // Handle a paypal order.
-        if (formPaymentMethod === PAYPAL_METHOD) {
+        if (formPaymentMethod === PaymentMethods.Stripe) {
             handlePaypalPayment();
         }
     };
 
     // Handle the paypal or stripe choice made by the user.
-    const handlePaymentMethodSelect = async (method: string) => {
+    const handlePaymentMethodSelect = async (method: number) => {
         setPaymentMethod(method);
     };
 
@@ -223,32 +217,29 @@ export const Payment: React.FC = () => {
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="pt-4">
                         {paymentMethods &&
-                            paymentMethods.map((method) => {
-                                const sourceType = method.payment_source_type;
-                                const isPayPal = sourceType === 'paypal_payments';
+                            paymentMethods.map(({ id, title }) => {
+                                const isPayPal = id === PaymentMethods.PayPal;
                                 const logo = isPayPal ? (
                                     <BsPaypal className={paypalClass} />
                                 ) : (
                                     <BsFillCreditCard2BackFill className={stripeClass} />
                                 );
-                                const title = isPayPal ? 'PayPal' : 'Credit / Debit Card';
+                                const isDefault = id === PaymentMethods.Stripe;
+                                const isSelected = paymentMethod === id;
 
                                 return (
                                     <SelectionWrapper
-                                        id={sourceType}
+                                        id={id}
                                         title={title}
                                         name="paymentMethod"
-                                        isChecked={sourceType === STRIPE_METHOD}
-                                        defaultChecked={sourceType === STRIPE_METHOD}
+                                        isChecked={isSelected}
+                                        defaultChecked={isDefault}
                                         titleLogo={logo}
                                         onSelect={handlePaymentMethodSelect}
                                         register={register}
-                                        key={`payment-method-${method.id}`}
+                                        key={`payment-method-${id}`}
                                     >
-                                        <Source
-                                            sourceType={sourceType}
-                                            isCurrentlyDisplayed={paymentMethod === STRIPE_METHOD}
-                                        />
+                                        <Source paymentMethod={id} isCurrentlyDisplayed={isSelected} />
                                     </SelectionWrapper>
                                 );
                             })}
@@ -261,12 +252,12 @@ export const Payment: React.FC = () => {
                         )}
                         <div className="flex justify-end">
                             <button
-                                className={`btn btn-primary w-full lg:w-auto${checkoutLoading ? ' loading' : ''}${
-                                    !stripe || checkoutLoading ? ' btn-disabled' : ''
+                                className={`btn btn-primary w-full lg:w-auto${isCheckoutLoading ? ' loading' : ''}${
+                                    !stripe || isCheckoutLoading ? ' btn-disabled' : ''
                                 }`}
                                 role="button"
                             >
-                                {!checkoutLoading ? btnText : ''}
+                                {!isCheckoutLoading ? btnText : ''}
                             </button>
                         </div>
                     </div>

@@ -1,8 +1,10 @@
 import React from 'react';
 import { CardElement } from '@stripe/react-stripe-js';
 
+import { PaymentMethods } from '../../../../enums/checkout';
+
 interface SourceProps {
-    sourceType: string;
+    paymentMethod: PaymentMethods;
     isCurrentlyDisplayed: boolean;
 }
 
@@ -23,9 +25,9 @@ const STRIPE_OPTIONS = {
     hidePostalCode: true,
 };
 
-export const Source: React.FC<SourceProps> = ({ sourceType, isCurrentlyDisplayed }) => {
-    switch (sourceType) {
-        case 'stripe_payments':
+export const Source: React.FC<SourceProps> = ({ paymentMethod, isCurrentlyDisplayed }) => {
+    switch (paymentMethod) {
+        case PaymentMethods.Stripe:
             return isCurrentlyDisplayed ? (
                 <div className="card bordered rounded-md">
                     <div className="card-body p-2 ">
@@ -33,7 +35,7 @@ export const Source: React.FC<SourceProps> = ({ sourceType, isCurrentlyDisplayed
                     </div>
                 </div>
             ) : null;
-        case 'paypal_payments':
+        case PaymentMethods.PayPal:
         default:
             return null;
     }

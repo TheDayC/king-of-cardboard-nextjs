@@ -4,6 +4,7 @@ import { authClient } from './auth';
 import { CommerceLayerResponse } from '../types/api';
 import { errorHandler } from '../middleware/errors';
 import { parseAsArrayOfCommerceResponse, parseAsNumber, parseAsString, safelyParse } from './parsers';
+import { PaymentMethods } from '../enums/checkout';
 
 export function fieldPatternMsgs(field: string): string {
     switch (field) {
@@ -325,9 +326,9 @@ export async function completePayPalOrder(accessToken: string, paymentId: string
     return false;
 }
 
-export function paymentBtnText(method: string): string {
+export function paymentBtnText(method: PaymentMethods): string {
     switch (method) {
-        case 'paypal_payments':
+        case PaymentMethods.PayPal:
             return 'Checkout with PayPal';
         default:
             return 'Checkout';

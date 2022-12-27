@@ -3,20 +3,16 @@ import { createSelector } from '@reduxjs/toolkit';
 import {
     selectCartData,
     selectCheckoutData,
-    selectGlobalData,
     selectCheckoutCustomerData,
     selectAccountData,
 } from '../../../store/state/selectors';
 
 const selector = createSelector(
-    [selectCheckoutData, selectCartData, selectGlobalData, selectCheckoutCustomerData, selectAccountData],
-    (checkout, cart, global, customerDetails, account) => ({
+    [selectCheckoutData, selectCartData, selectCheckoutCustomerData, selectAccountData],
+    (checkout, cart, customerDetails, account) => ({
         currentStep: checkout.currentStep,
-        paymentMethods: checkout.paymentMethods,
-        accessToken: global.accessToken,
-        userToken: global.userToken,
         customerDetails,
-        checkoutLoading: global.checkoutLoading,
+        isCheckoutLoading: checkout.isCheckoutLoading,
         subTotal: cart.subTotal,
         shipping: cart.shipping,
         total: cart.total,
@@ -24,6 +20,10 @@ const selector = createSelector(
         billingAddress: checkout.billingAddress,
         shippingAddress: checkout.shippingAddress,
         coins: account.coins,
+        shouldEnable:
+            checkout.billingAddress.lineOne.length &&
+            checkout.shippingAddress.lineOne.length &&
+            checkout.chosenShippingMethodId,
     })
 );
 

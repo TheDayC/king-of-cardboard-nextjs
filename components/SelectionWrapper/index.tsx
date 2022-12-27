@@ -1,9 +1,8 @@
 import React, { ReactNode } from 'react';
 import { FieldValues, UseFormRegister } from 'react-hook-form';
-import { BillingAddressChoice, ShippingAddressChoice } from '../../enums/checkout';
 
 interface SelectionWrapperProps {
-    id: BillingAddressChoice | ShippingAddressChoice;
+    id: number;
     title: string;
     name: string;
     isChecked: boolean;

@@ -105,3 +105,8 @@ export enum ShippingAddressChoice {
     New,
     Existing,
 }
+
+export enum PaymentMethods {
+    Stripe,
+    PayPal,
+}
