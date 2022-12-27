@@ -33,9 +33,11 @@ export const Delivery: React.FC = () => {
 
         const shippingMethodId = Object.keys(data.method)[0];
 
-        // Start checkout loader.
+        // Start checkout and cart loaders.
         dispatch(setIsCheckoutLoading(true));
         dispatch(setUpdatingCart(true));
+
+        // Set shipping method and update cart totals
         dispatch(setChosenShippingMethodId(shippingMethodId));
         dispatch(fetchCartTotals());
 
