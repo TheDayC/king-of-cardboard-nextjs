@@ -13,6 +13,7 @@ const selector = createSelector([selectCheckoutData, selectCartData, selectAccou
     isCheckoutLoading: checkout.isCheckoutLoading,
     subTotal: cart.subTotal,
     shipping: cart.shipping,
+    discount: cart.discount,
     total: cart.total,
     items: cart.items,
     billingAddress: checkout.billingAddress,

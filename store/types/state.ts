@@ -151,8 +151,8 @@ export interface Confirmation {
     total: string;
     orderNumber: number | null;
     customerDetails: CustomerDetails;
-    billingAddress: CustomerAddress;
-    shippingAddress: CustomerAddress;
+    billingAddress: Address;
+    shippingAddress: Address;
 }
 
 export interface PagesState {

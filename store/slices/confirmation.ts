@@ -13,6 +13,7 @@ const confirmationSlice = createSlice({
         setConfirmationData(state, action) {
             const { subTotal, shipping, total, orderNumber, items, customerDetails, billingAddress, shippingAddress } =
                 action.payload;
+
             state.subTotal = subTotal;
             state.shipping = shipping;
             state.total = total;

@@ -1,15 +1,27 @@
-import CommerceLayer from '@commercelayer/sdk';
+import axios from 'axios';
+import { errorHandler } from '../middleware/errors';
+import { AddOrderResponse } from '../types/checkout';
 
-const organization = process.env.NEXT_PUBLIC_ECOM_SLUG || '';
+import { parseAsNumber, parseAsString, safelyParse } from './parsers';
 
-export async function checkIfOrderExists(accessToken: string, orderId: string): Promise<boolean> {
+const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
+
+export async function addOrder(options: any): Promise<AddOrderResponse> {
     try {
-        const cl = CommerceLayer({ organization, accessToken });
+        const res = await axios.post(`${URL}/api/orders/add`, {
+            ...options,
+        });
 
-        await cl.orders.retrieve(orderId);
-
-        return true;
-    } catch (err) {
-        return false;
+        return {
+            _id: safelyParse(res, 'data._id', parseAsString, null),
+            orderNumber: safelyParse(res, 'data.orderNumber', parseAsNumber, null),
+        };
+    } catch (error: unknown) {
+        errorHandler(error, 'Could not add order.');
     }
+
+    return {
+        _id: null,
+        orderNumber: null,
+    };
 }

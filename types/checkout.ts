@@ -50,3 +50,8 @@ export interface Address {
     county: string;
     country: string;
 }
+
+export interface AddOrderResponse {
+    _id: string | null;
+    orderNumber: number | null;
+}

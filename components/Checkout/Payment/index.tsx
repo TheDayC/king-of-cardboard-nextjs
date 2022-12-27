@@ -18,6 +18,11 @@ import { PaymentMethods } from '../../../enums/checkout';
 import { toNumber } from 'lodash';
 import { isNumber } from '../../../utils/typeguards';
 import axios from 'axios';
+import { addOrder } from '../../../utils/order';
+import { Status, Payment as PaymentStatus, Fulfillment } from '../../../enums/orders';
+import { setConfirmationData } from '../../../store/slices/confirmation';
+import { getPrettyPrice } from '../../../utils/account/products';
+import { useRouter } from 'next/router';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 const paymentMethods = [
@@ -27,14 +32,16 @@ const paymentMethods = [
 
 export const Payment: React.FC = () => {
     const dispatch = useDispatch();
+    const router = useRouter();
     const stripe = useStripe();
     const elements = useElements();
     const {
         currentStep,
         customerDetails,
         isCheckoutLoading,
-        /* subTotal,
-        shipping,*/
+        subTotal,
+        shipping,
+        discount,
         total,
         items,
         billingAddress,
@@ -66,8 +73,22 @@ export const Payment: React.FC = () => {
         [dispatch]
     );
 
-    const placeOrder = () => {
-        return false;
+    const placeOrder = async (id: string, method: PaymentMethods) => {
+        return await addOrder({
+            email: customerDetails.email,
+            orderStatus: Status.Placed,
+            paymentStatus: PaymentStatus.Paid,
+            fulfillmentStatus: Fulfillment.Unfulfilled,
+            items,
+            subTotal,
+            discount,
+            shipping,
+            total,
+            shippingAddress,
+            billingAddress,
+            paymentId: id,
+            paymentMethod: method,
+        });
     };
 
     const handleStripePayment = async () => {
@@ -77,29 +98,24 @@ export const Payment: React.FC = () => {
             return;
         }
         // Show load blockers.
-        //dispatch(setIsCheckoutLoading(true));
+        dispatch(setIsCheckoutLoading(true));
 
-        // Piece together the attributes for the payment source request.
-        //const attributes = buildPaymentAttributes(STRIPE_METHOD, orderId);
-
-        // Create the payment source in CommerceLayer.
-        //const { paymentId, clientSecret } = await createPaymentSource(accessToken, orderId, STRIPE_METHOD, attributes);
+        // Fetch the payment intent.
         const res = await axios.get(`${URL}/api/payments/getPaymentIntent`, { params: { total } });
         const clientSecret = safelyParse(res, 'data.client_secret', parseAsString, null);
 
         if (!clientSecret) {
             handleError('Failed to connect to Stripe, please contact support.');
-            //dispatch(setIsCheckoutLoading(false));
+            dispatch(setIsCheckoutLoading(false));
             return;
         }
 
-        console.log('🚀 ~ file: index.tsx:85 ~ handleStripePayment ~ res', res);
         // Get the card element with Stripe hooks.
         const card = elements.getElement(CardElement);
 
         if (!card) {
             handleError('Failed to validate the credit / debit card, please check your details.');
-            //dispatch(setIsCheckoutLoading(false));
+            dispatch(setIsCheckoutLoading(false));
             return;
         }
 
@@ -122,48 +138,39 @@ export const Payment: React.FC = () => {
                 },
             },
         });
-        console.log('🚀 ~ file: index.tsx:104 ~ handleStripePayment ~ paymentIntent', paymentIntent);
 
         // Handle the stripe card confirmation error.
-        if (error || paymentIntent) {
+        if (error || !paymentIntent) {
             handleError('Failed to confirm card payment, please contact support');
             return;
         }
 
         // Place the order.
-        const hasBeenPlaced = placeOrder();
+        const { _id: orderId, orderNumber } = await placeOrder(paymentIntent.id, PaymentMethods.Stripe);
 
-        /* if (!hasBeenPlaced) {
-            handleError('Failed to confirm your order, please contact support.');
+        if (!orderId) {
+            handleError('Failed to place your order, please contact support.');
             return;
-        } */
+        }
 
-        /* const hasBeenRefreshed = await refreshPayment(accessToken, paymentId, STRIPE_METHOD);
-        const hasBeenAuthorized = await confirmOrder(accessToken, orderId, '_authorize');
-        const hasBeenApproved = await confirmOrder(accessToken, orderId, '_approve_and_capture'); */
-
-        // Ensure our order has been pushed through.
-        //if (hasBeenRefreshed && hasBeenAuthorized && hasBeenApproved) {
         // Set the confirmation data in the store.
-        /*  dispatch(
-                setConfirmationData({
-                    subTotal,
-                    shipping,
-                    total,
-                    orderNumber,
-                    items,
-                    customerDetails,
-                    billingAddress,
-                    shippingAddress,
-                })
-            ); */
+        dispatch(
+            setConfirmationData({
+                subTotal: getPrettyPrice(subTotal),
+                shipping: getPrettyPrice(shipping),
+                discount: getPrettyPrice(discount),
+                total: getPrettyPrice(total),
+                orderNumber,
+                items,
+                customerDetails,
+                billingAddress,
+                shippingAddress,
+            })
+        );
 
-        /* router.push('/confirmation');
-        } else {
-            dispatch(addError('Failed to place your order, please contact support.'));
-        }*/
+        router.push('/confirmation');
 
-        //dispatch(setIsCheckoutLoading(false));
+        dispatch(setIsCheckoutLoading(false));
     };
 
     // If the user has chosen paypal, handle it here.
