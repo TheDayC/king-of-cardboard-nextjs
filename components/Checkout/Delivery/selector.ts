@@ -6,7 +6,7 @@ const selector = createSelector([selectCheckoutData, selectGlobalData], (checkou
     customerDetails: checkout.customerDetails,
     currentStep: checkout.currentStep,
     isCheckoutLoading: checkout.isCheckoutLoading,
-    hasBothAddresses: Boolean(checkout.billingAddress.lineOne) && Boolean(checkout.shippingAddress.lineTwo),
+    hasBothAddresses: Boolean(checkout.billingAddress.lineOne) && Boolean(checkout.shippingAddress.lineOne),
     shippingMethods: checkout.shippingMethods,
 }));
 
