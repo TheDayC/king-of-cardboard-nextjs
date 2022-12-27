@@ -1,11 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import {
-    selectCartData,
-    selectCheckoutData,
-    selectCheckoutCustomerData,
-    selectAccountData,
-} from '../../../store/state/selectors';
+import { selectCartData, selectCheckoutData, selectAccountData } from '../../../store/state/selectors';
 
 const selector = createSelector([selectCheckoutData, selectCartData, selectAccountData], (checkout, cart, account) => ({
     currentStep: checkout.currentStep,

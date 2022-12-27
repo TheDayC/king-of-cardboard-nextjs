@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import { BsCreditCard2BackFill } from 'react-icons/bs';
 
 import selector from './selector';
 import {
@@ -12,7 +13,6 @@ import {
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Loading from '../../Loading';
 import ShippingMethod from './ShippingMethod';
-import { BsCreditCard2BackFill } from 'react-icons/bs';
 import { fetchCartTotals, setUpdatingCart } from '../../../store/slices/cart';
 
 export const Delivery: React.FC = () => {

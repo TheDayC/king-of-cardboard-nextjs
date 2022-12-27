@@ -5,6 +5,7 @@ import { BiEdit, BiEditAlt, BiTrash } from 'react-icons/bi';
 import { useDispatch } from 'react-redux';
 import { toNumber } from 'lodash';
 import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
+import { BsCalendarEvent, BsTruck } from 'react-icons/bs';
 
 import { addError, addSuccess } from '../../../store/slices/alerts';
 import { getPrettyPrice } from '../../../utils/account/products';
@@ -12,7 +13,6 @@ import { parseAsString, safelyParse } from '../../../utils/parsers';
 import Loading from '../../Loading';
 import { AccountShippingMethod } from '../../../types/shipping';
 import { deleteShippingMethod, editShippingMethod } from '../../../utils/account/shipping';
-import { BsCalendarEvent, BsTruck } from 'react-icons/bs';
 
 interface ShippingProps {
     shippingMethod: AccountShippingMethod;

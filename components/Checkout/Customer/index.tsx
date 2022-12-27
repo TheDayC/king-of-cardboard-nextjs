@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FieldValues, useForm } from 'react-hook-form';
 import { useSession } from 'next-auth/react';
+import { BsTruck } from 'react-icons/bs';
 
 import selector from './selector';
 import {
@@ -22,7 +23,6 @@ import SelectionWrapper from '../../SelectionWrapper';
 import ExistingAddress from './ExistingAddress';
 import { Address } from '../../../types/checkout';
 import { BillingAddressChoice, ShippingAddressChoice } from '../../../enums/checkout';
-import { BsTruck } from 'react-icons/bs';
 
 const defaultAddress: Address = {
     lineOne: '',
@@ -45,7 +45,6 @@ const Customer: React.FC = () => {
         register,
         handleSubmit,
         formState: { errors },
-        setValue,
     } = useForm();
     const isCurrentStep = currentStep === 0;
     const hasErrors = Object.keys(errors).length > 0;
@@ -186,7 +185,7 @@ const Customer: React.FC = () => {
                                 defaultChecked={billingAddressChoice === BillingAddressChoice.New}
                                 onSelect={handleBillingSelect}
                             >
-                                <BillingAddress register={register} errors={errors} setValue={setValue} />
+                                <BillingAddress register={register} errors={errors} />
                             </SelectionWrapper>
 
                             <div className="divider lightDivider my-2 lg:my-4"></div>
@@ -215,7 +214,7 @@ const Customer: React.FC = () => {
                                         defaultChecked={shippingAddressChoice === ShippingAddressChoice.New}
                                         onSelect={handleShippingSelect}
                                     >
-                                        <ShippingAddress register={register} errors={errors} setValue={setValue} />
+                                        <ShippingAddress register={register} errors={errors} />
                                     </SelectionWrapper>
                                 </React.Fragment>
                             )}

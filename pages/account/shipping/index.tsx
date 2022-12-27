@@ -6,11 +6,8 @@ import { MdAddCircleOutline } from 'react-icons/md';
 
 import AccountWrapper from '../../../components/AccountWrapper';
 import { authOptions } from '../../api/auth/[...nextauth]';
-import { listProducts } from '../../../utils/account/products';
 import { parseAsRole, safelyParse } from '../../../utils/parsers';
 import { Roles } from '../../../enums/auth';
-import { Product as ProductType } from '../../../types/productsNew';
-import Product from '../../../components/Account/Product';
 import Loading from '../../../components/Loading';
 import Pagination from '../../../components/Pagination';
 import Shipping from '../../../components/Account/Shipping';

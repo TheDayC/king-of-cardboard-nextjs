@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Supplier } from '../../../enums/shipping';
 
+import { Supplier } from '../../../enums/shipping';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { UseFormRegister, FieldValues, UseFormSetValue } from 'react-hook-form';
+import { UseFormRegister, FieldValues } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
 import { EMAIL_PATTERN, NAME_PATTERN, PHONE_PATTERN } from '../../../../regex';

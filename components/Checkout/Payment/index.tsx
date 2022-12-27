@@ -4,6 +4,9 @@ import { FieldValues, useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { BsPaypal, BsFillCreditCard2BackFill } from 'react-icons/bs';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { toNumber } from 'lodash';
+import axios from 'axios';
 
 import { setCurrentStep, setIsCheckoutLoading } from '../../../store/slices/checkout';
 import { addError } from '../../../store/slices/alerts';
@@ -11,18 +14,14 @@ import selector from './selector';
 import SelectionWrapper from '../../SelectionWrapper';
 import Source from './Source';
 import { paymentBtnText } from '../../../utils/checkout';
-import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
+import { parseAsString, safelyParse } from '../../../utils/parsers';
 import UseCoins from '../../UseCoins';
 import { gaEvent } from '../../../utils/ga';
 import { PaymentMethods } from '../../../enums/checkout';
-import { toNumber } from 'lodash';
-import { isNumber } from '../../../utils/typeguards';
-import axios from 'axios';
 import { addOrder } from '../../../utils/order';
 import { Status, Payment as PaymentStatus, Fulfillment } from '../../../enums/orders';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import { getPrettyPrice } from '../../../utils/account/products';
-import { useRouter } from 'next/router';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 const paymentMethods = [
@@ -65,13 +64,10 @@ export const Payment: React.FC = () => {
         }
     };
 
-    const handleError = useCallback(
-        (message: string) => {
-            dispatch(addError(message));
-            dispatch(setIsCheckoutLoading(false));
-        },
-        [dispatch]
-    );
+    const handleError = (message: string) => {
+        dispatch(addError(message));
+        dispatch(setIsCheckoutLoading(false));
+    };
 
     const placeOrder = async (id: string, method: PaymentMethods) => {
         return await addOrder({
@@ -194,7 +190,7 @@ export const Payment: React.FC = () => {
         } */
 
         //dispatch(setIsCheckoutLoading(false));
-    }, [dispatch, isCheckoutLoading]);
+    }, [isCheckoutLoading]);
 
     const onSubmit = async (data: FieldValues) => {
         const chosenPaymentMethod = toNumber(data.paymentMethod);

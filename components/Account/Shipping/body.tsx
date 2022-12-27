@@ -6,13 +6,11 @@ import { ImFontSize } from 'react-icons/im';
 import { toNumber } from 'lodash';
 import { BiMinusCircle, BiSave } from 'react-icons/bi';
 import { useRouter } from 'next/router';
-import { useSession } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
 
 import InputField from '../Fields/Input';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import RichTextEditor from '../../RichTextEditor';
-import { editProduct } from '../../../utils/account/products';
 import { addError, addSuccess } from '../../../store/slices/alerts';
 import { addShippingMethod, editShippingMethod } from '../../../utils/account/shipping';
 import SelectField from '../Fields/Select';
@@ -50,7 +48,6 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
     supplier,
     isNew,
 }) => {
-    const { data: session } = useSession();
     const {
         register,
         handleSubmit,
