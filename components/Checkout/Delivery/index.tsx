@@ -21,7 +21,7 @@ export const Delivery: React.FC = () => {
     const hasShipments = shipments.length > 0;
 
     const handleSelectShippingMethod: SubmitHandler<FieldValues> = async (/* data: FieldValues */) => {
-        if (hasErrors || checkoutLoading || !shipments) {
+        if (hasErrors || checkoutLoading) {
             return;
         }
 
@@ -61,7 +61,7 @@ export const Delivery: React.FC = () => {
                 {hasBothAddresses ? 'Delivery - Edit' : 'Delivery'}
             </h3>
             <div className="collapse-content p-0 relative">
-                <Loading show={!hasShipments} />
+                <Loading show={false} />
                 <form onSubmit={handleSubmit(handleSelectShippingMethod)}>
                     {hasShipments &&
                         hasBothAddresses &&

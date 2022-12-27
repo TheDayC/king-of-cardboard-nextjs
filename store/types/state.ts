@@ -69,7 +69,7 @@ export interface Checkout {
     existingShippingAddressId: string | null;
     isShippingSameAsBilling: boolean;
     paymentMethods: PaymentMethod[];
-    shipments: Shipment[];
+    shippingMethods: Shipment[];
 }
 
 export interface CustomerAddress {

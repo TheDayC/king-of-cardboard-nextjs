@@ -57,7 +57,6 @@ export const Address: React.FC<AddressProps> = ({
             dispatch(setShippingAddress(address));
             dispatch(setExistingShippingAddressId(id));
         } else {
-            console.log('🚀 ~ file: index.tsx:40 ~ handleClick ~ isShipping', isShipping);
             dispatch(setBillingAddress(address));
             dispatch(setExistingBillingAddressId(id));
         }

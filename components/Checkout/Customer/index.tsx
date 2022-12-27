@@ -26,6 +26,7 @@ import { CustomerAddress } from '../../../store/types/state';
 import { Address } from '../../../types/checkout';
 import { BillingAddressChoice, ShippingAddressChoice } from '../../../enums/checkout';
 import { fetchAddresses } from '../../../store/slices/account';
+import { BsTruck } from 'react-icons/bs';
 
 const defaultAddress: Address = {
     lineOne: '',
@@ -231,7 +232,8 @@ const Customer: React.FC = () => {
                                 hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'
                             }${checkoutLoading ? ' loading' : ''}`}
                         >
-                            {checkoutLoading ? '' : 'Delivery'}
+                            {checkoutLoading ? '' : 'delivery'}
+                            <BsTruck className="w-6 h-6 ml-2" />
                         </button>
                     </div>
                 </form>

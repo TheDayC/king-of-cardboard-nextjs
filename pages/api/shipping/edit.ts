@@ -15,10 +15,10 @@ async function editShipping(req: NextApiRequest, res: NextApiResponse): Promise<
             const shippingCollection = db.collection('shipping');
 
             const id = safelyParse(req, 'body.id', parseAsString, '');
-            const existingProductType = await shippingCollection.findOne({ _id: new ObjectId(id) });
+            const existing = await shippingCollection.findOne({ _id: new ObjectId(id) });
             const currentDate = DateTime.now().setZone('Europe/London');
 
-            if (!existingProductType) {
+            if (!existing) {
                 res.status(400).json({ message: 'Shipping method does not exist.' });
                 return;
             }
@@ -27,11 +27,15 @@ async function editShipping(req: NextApiRequest, res: NextApiResponse): Promise<
                 { _id: new ObjectId(id) },
                 {
                     $set: {
-                        title: safelyParse(req, 'body.title', parseAsString, existingProductType.title),
-                        slug: safelyParse(req, 'body.slug', parseAsString, existingProductType.slug),
-                        cost: safelyParse(req, 'body.cost', parseAsString, existingProductType.cost),
-                        created: existingProductType.created,
+                        created: existing.created,
                         lastUpdated: currentDate.toISO(),
+                        title: safelyParse(req, 'body.title', parseAsString, existing.title),
+                        slug: safelyParse(req, 'body.slug', parseAsString, existing.slug),
+                        content: safelyParse(req, 'body.content', parseAsString, existing.content),
+                        supplier: safelyParse(req, 'body.supplier', parseAsNumber, existing.supplier),
+                        price: safelyParse(req, 'body.price', parseAsNumber, existing.price),
+                        min: safelyParse(req, 'body.min', parseAsNumber, existing.min),
+                        max: safelyParse(req, 'body.max', parseAsNumber, existing.max),
                     },
                 }
             );

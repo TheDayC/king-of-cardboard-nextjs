@@ -82,7 +82,7 @@ export async function editProduct(id: string, options: any): Promise<boolean> {
 
         return status === 204;
     } catch (error: unknown) {
-        errorHandler(error, 'Could not delete product.');
+        errorHandler(error, 'Could not edit product.');
     }
 
     return false;

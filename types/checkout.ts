@@ -1,3 +1,5 @@
+import { Supplier } from '../enums/shipping';
+
 export interface FormErrors {
     [x: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }

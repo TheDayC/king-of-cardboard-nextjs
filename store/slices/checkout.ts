@@ -61,7 +61,7 @@ const checkoutSlice = createSlice({
             state.paymentMethods = action.payload;
         }),
             builder.addCase(fetchShipments.fulfilled, (state, action) => {
-                state.shipments = action.payload;
+                state.shippingMethods = action.payload;
             }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,

@@ -11,14 +11,14 @@ import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
 
-import InputField from './Input';
+import InputField from '../Fields/Input';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import RichTextEditor from '../../RichTextEditor';
-import SelectField from './Select';
+import SelectField from '../Fields/Select';
 import { Category, Configuration, Interest, StockStatus } from '../../../enums/products';
 import { addGalleryToBucket, addImageToBucket, addProduct, editProduct } from '../../../utils/account/products';
 import { addError, addSuccess } from '../../../store/slices/alerts';
-import ImageUpload from './ImageUpload';
+import ImageUpload from '../Fields/ImageUpload';
 
 const productCategory = [
     { key: 'Sports', value: Category.Sports },
