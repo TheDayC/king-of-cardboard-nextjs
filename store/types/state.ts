@@ -10,6 +10,7 @@ import { ContentfulPage } from '../../types/pages';
 import { SingleProduct } from '../../types/products';
 import { Product } from '../../types/productsNew';
 import { SocialMedia } from '../../types/profile';
+import { AccountShippingMethod } from '../../types/shipping';
 
 export interface AppStateShape {
     global: Global;
@@ -69,7 +70,8 @@ export interface Checkout {
     existingShippingAddressId: string | null;
     isShippingSameAsBilling: boolean;
     paymentMethods: PaymentMethod[];
-    shippingMethods: Shipment[];
+    shippingMethods: AccountShippingMethod[];
+    isCheckoutLoading: boolean;
 }
 
 export interface CustomerAddress {

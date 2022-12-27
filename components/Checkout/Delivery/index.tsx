@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
 import selector from './selector';
-import { setCurrentStep } from '../../../store/slices/checkout';
-import Shipment from './Shipment';
+import { fetchShippingMethods, setCurrentStep } from '../../../store/slices/checkout';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Loading from '../../Loading';
+import ShippingMethod from './ShippingMethod';
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
-    const { currentStep, checkoutLoading, hasBothAddresses, shipments } = useSelector(selector);
+    const { currentStep, checkoutLoading, hasBothAddresses, shippingMethods } = useSelector(selector);
     const {
         register,
         handleSubmit,
@@ -18,7 +18,7 @@ export const Delivery: React.FC = () => {
     } = useForm();
     const isCurrentStep = currentStep === 1;
     const hasErrors = Object.keys(errors).length > 0;
-    const hasShipments = shipments.length > 0;
+    const hasShippingMethods = shippingMethods.length > 0;
 
     const handleSelectShippingMethod: SubmitHandler<FieldValues> = async (/* data: FieldValues */) => {
         if (hasErrors || checkoutLoading) {
@@ -51,6 +51,16 @@ export const Delivery: React.FC = () => {
         }
     };
 
+    useEffect(() => {
+        if (shippingMethods.length === 0) {
+            // Set loading
+            dispatch(setCheckoutLoading(true));
+
+            // Fetch the shipping methods and the fetch will remove loading spinner on return.
+            dispatch(fetchShippingMethods());
+        }
+    }, [shippingMethods, dispatch]);
+
     return (
         <div
             className={`collapse${
@@ -61,23 +71,28 @@ export const Delivery: React.FC = () => {
                 {hasBothAddresses ? 'Delivery - Edit' : 'Delivery'}
             </h3>
             <div className="collapse-content p-0 relative">
-                <Loading show={false} />
+                <Loading show={checkoutLoading} />
                 <form onSubmit={handleSubmit(handleSelectShippingMethod)}>
-                    {hasShipments &&
-                        hasBothAddresses &&
-                        shipments.map((shipment, index) => {
-                            return (
-                                <Shipment
-                                    id={shipment.id}
-                                    shippingMethods={shipment.methods}
-                                    shipmentCount={index + 1}
-                                    shipmentsTotal={shipments.length}
-                                    register={register}
-                                    defaultChecked={shipment.methods[0].id}
-                                    key={`shipment-${index}`}
-                                />
-                            );
-                        })}
+                    {shippingMethods.length > 0 && (
+                        <div className="flex flex-col space-y-2 p-4">
+                            {shippingMethods.map(({ _id, title, content, min, max, supplier, price }, index) => {
+                                return (
+                                    <ShippingMethod
+                                        _id={_id}
+                                        title={title}
+                                        content={content}
+                                        price={price}
+                                        min={min}
+                                        max={max}
+                                        supplier={supplier}
+                                        register={register}
+                                        isDefault={index === 0}
+                                        key={`shipping-method-${index}`}
+                                    />
+                                );
+                            })}
+                        </div>
+                    )}
                     <div className="flex justify-end items-center px-4">
                         <button
                             type="submit"

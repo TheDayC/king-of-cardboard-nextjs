@@ -13,12 +13,17 @@ interface SummaryProps {
 }
 
 export const Summary: React.FC<SummaryProps> = ({ isConfirmation = false }) => {
-    const { confirmationOrderNumber: orderNumber, checkoutLoading, cartItems, confirmedItems } = useSelector(selector);
+    const {
+        confirmationOrderNumber: orderNumber,
+        isCheckoutLoading,
+        cartItems,
+        confirmedItems,
+    } = useSelector(selector);
     const lineItems = isConfirmation ? confirmedItems : cartItems;
 
     return (
         <div className="flex flex-col relative">
-            <Loading show={checkoutLoading} />
+            <Loading show={isCheckoutLoading} />
             <div className="flex flex-row w-100 justify-between items-center">
                 <h2 className="text-2xl">{orderNumber ? `Order #${orderNumber}` : 'Summary'}</h2>
                 <p className="text-xl">{`(${lineItems.length} item${lineItems.length > 1 ? 's' : ''})`}</p>

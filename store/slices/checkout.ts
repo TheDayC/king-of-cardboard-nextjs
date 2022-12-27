@@ -3,6 +3,8 @@ import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
 import { Shipment } from '../../types/checkout';
+import { AccountShippingMethod } from '../../types/shipping';
+import { listShippingMethods } from '../../utils/account/shipping';
 import { getPaymentMethods, getShipments } from '../../utils/checkout';
 import checkoutInitialState from '../state/checkout';
 import { PaymentMethod, CommonThunkInput } from '../types/state';
@@ -18,12 +20,11 @@ export const fetchPaymentMethods = createAsyncThunk(
     }
 );
 
-export const fetchShipments = createAsyncThunk(
-    'checkout/fetchShipments',
-    async (data: CommonThunkInput): Promise<Shipment[]> => {
-        const { accessToken, orderId } = data;
-
-        return await getShipments(accessToken, orderId);
+export const fetchShippingMethods = createAsyncThunk(
+    'checkout/fetchShippingMethods',
+    async (): Promise<AccountShippingMethod[]> => {
+        const { shippingMethods } = await listShippingMethods(10, 0);
+        return shippingMethods;
     }
 );
 
@@ -52,6 +53,9 @@ const checkoutSlice = createSlice({
         setSameAsBilling(state, action) {
             state.isShippingSameAsBilling = action.payload;
         },
+        setIsCheckoutLoading(state, action) {
+            state.isCheckoutLoading = action.payload;
+        },
         resetCheckoutDetails() {
             return checkoutInitialState;
         },
@@ -60,8 +64,9 @@ const checkoutSlice = createSlice({
         builder.addCase(fetchPaymentMethods.fulfilled, (state, action) => {
             state.paymentMethods = action.payload;
         }),
-            builder.addCase(fetchShipments.fulfilled, (state, action) => {
+            builder.addCase(fetchShippingMethods.fulfilled, (state, action) => {
                 state.shippingMethods = action.payload;
+                state.isCheckoutLoading = false;
             }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,
@@ -79,6 +84,7 @@ export const {
     setExistingShippingAddressId,
     setSameAsBilling,
     resetCheckoutDetails,
+    setIsCheckoutLoading,
 } = checkoutSlice.actions;
 
 export default checkoutSlice.reducer;
