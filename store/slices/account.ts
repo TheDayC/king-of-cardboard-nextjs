@@ -3,18 +3,10 @@ import axios from 'axios';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { Address, GetOrders, GiftCard, SingleAddress, SingleOrder } from '../../types/account';
+import { AccountAddress, GetOrders, SingleAddress, SingleOrder } from '../../types/account';
 import { SocialMedia } from '../../types/profile';
-import {
-    getGiftCard,
-    getOrders,
-    getOrder,
-    getAddresses,
-    getAddressPageCount,
-    getCurrentAddress,
-    getSocialMedia,
-} from '../../utils/account';
-import { parseAsNumber, safelyParse } from '../../utils/parsers';
+import { getOrders, getOrder, getCurrentAddress, getSocialMedia } from '../../utils/account';
+import { parseAsAccountAddress, parseAsArrayOfAccountAddresses, parseAsNumber, safelyParse } from '../../utils/parsers';
 import accountInitialState from '../state/account';
 
 const hydrate = createAction<AppState>(HYDRATE);
@@ -40,6 +32,17 @@ interface OrderThunkInput {
 interface AddressThunkInput {
     accessToken: string;
     id: string;
+}
+
+interface ListAddressInput {
+    userId: string;
+    limit: number;
+    skip: number;
+}
+
+interface ListAddressOutput {
+    addresses: AccountAddress[];
+    count: number;
 }
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
@@ -68,19 +71,30 @@ export const fetchCurrentOrder = createAsyncThunk(
     }
 );
 
+export const addAddress = createAsyncThunk('account/addAddress', async (_id: string): Promise<boolean> => {
+    const res = await axios.get(`${URL}/api/addresses/get`, { params: { _id } });
+    const status = safelyParse(res, 'status', parseAsNumber, 400);
+
+    return status === 201;
+});
+
 export const fetchAddresses = createAsyncThunk(
     'account/fetchAddresses',
-    async (accessToken: string): Promise<Address[]> => {
-        return await getAddresses(accessToken);
+    async (data: ListAddressInput): Promise<ListAddressOutput> => {
+        const res = await axios.get(`${URL}/api/addresses/list`, { params: { ...data } });
+
+        return {
+            addresses: safelyParse(res, 'data.addresses', parseAsArrayOfAccountAddresses, [] as AccountAddress[]),
+            count: safelyParse(res, 'data.count', parseAsNumber, 0),
+        };
     }
 );
 
-export const fetchAddressPageCount = createAsyncThunk(
-    'account/fetchAddressPageCount',
-    async (accessToken: string): Promise<number> => {
-        return await getAddressPageCount(accessToken);
-    }
-);
+export const deleteAddress = createAsyncThunk('account/deleteAddress', async (_id: string): Promise<string> => {
+    await axios.delete(`${URL}/api/addresses/delete`, { params: { _id } });
+
+    return _id;
+});
 
 export const fetchCurrentAddress = createAsyncThunk(
     'account/fetchCurrentAddress',
@@ -108,6 +122,9 @@ const accountSlice = createSlice({
         setIsLoadingOrders(state, action) {
             state.isLoadingOrders = action.payload;
         },
+        setIsLoadingAddressBook(state, action) {
+            state.isLoadingAddressBook = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(fetchCoins.fulfilled, (state, action) => {
@@ -125,10 +142,14 @@ const accountSlice = createSlice({
                 state.isLoadingOrder = false;
             }),
             builder.addCase(fetchAddresses.fulfilled, (state, action) => {
-                state.addresses = action.payload;
+                const { addresses, count } = action.payload;
+
+                state.addresses = addresses;
+                state.addressCount = count;
+                state.isLoadingAddressBook = false;
             }),
-            builder.addCase(fetchAddressPageCount.fulfilled, (state, action) => {
-                state.addressPageCount = action.payload;
+            builder.addCase(deleteAddress.fulfilled, (state, action) => {
+                state.addresses = state.addresses.filter(({ _id }) => _id !== action.payload);
             }),
             builder.addCase(fetchCurrentAddress.fulfilled, (state, action) => {
                 state.currentAddress = action.payload;
@@ -143,5 +164,5 @@ const accountSlice = createSlice({
     },
 });
 
-export const { setIsLoadingOrder, setIsLoadingOrders } = accountSlice.actions;
+export const { setIsLoadingOrder, setIsLoadingOrders, setIsLoadingAddressBook } = accountSlice.actions;
 export default accountSlice.reducer;

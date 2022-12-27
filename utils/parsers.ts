@@ -44,6 +44,8 @@ import {
     isArrayOfInterests,
     isArrayOfCategories,
     isArrayOfConfigurations,
+    isAccountAddress,
+    isArrayOfAccountAddresses,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
@@ -254,6 +256,8 @@ export const parseAsArrayOfSliderImages = parseAsType(isArrayOfSliderImages);
 export const parseAsRepeater = parseAsType(isRepeater);
 export const parseAsArrayOfRepeater = parseAsType(isArrayOfRepeater);
 export const parseAsRole = parseAsType(isEnumMember(Roles));
+export const parseAsAccountAddress = parseAsType(isAccountAddress);
+export const parseAsArrayOfAccountAddresses = parseAsType(isArrayOfAccountAddresses);
 
 // Product enum parsers
 export const parseAsInterest = parseAsType(isInterest);

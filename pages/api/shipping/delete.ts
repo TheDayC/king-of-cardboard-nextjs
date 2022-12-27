@@ -11,17 +11,22 @@ async function deleteShipping(req: NextApiRequest, res: NextApiResponse): Promis
     if (req.method === 'DELETE') {
         try {
             const { db } = await connectToDatabase();
-            const shippingCollection = db.collection('shipping');
-
+            const collection = db.collection('shipping');
             const id = safelyParse(req, 'body.id', parseAsString, '');
-            const existingProductType = await shippingCollection.findOne({ _id: new ObjectId(id) });
 
-            if (!existingProductType) {
+            if (!id) {
+                res.status(400).json({ message: 'Must supply an id.' });
+                return;
+            }
+
+            const existing = await collection.findOne({ _id: new ObjectId(id) });
+
+            if (!existing) {
                 res.status(400).json({ message: 'Shipping method does not exist.' });
                 return;
             }
 
-            await shippingCollection.deleteOne({ _id: new ObjectId(id) });
+            await collection.deleteOne({ _id: new ObjectId(id) });
 
             res.status(204).end();
         } catch (err: unknown) {

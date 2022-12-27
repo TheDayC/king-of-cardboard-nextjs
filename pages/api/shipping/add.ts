@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 import { NextApiRequest, NextApiResponse } from 'next';
 
+import { Supplier } from '../../../enums/shipping';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
@@ -11,23 +12,26 @@ async function addShipping(req: NextApiRequest, res: NextApiResponse): Promise<v
     if (req.method === 'POST') {
         try {
             const { db } = await connectToDatabase();
-            const shippingCollection = db.collection('shipping');
-
+            const collection = db.collection('shipping');
             const slug = safelyParse(req, 'body.slug', parseAsString, null);
-            const existingShipping = await shippingCollection.findOne({ slug });
+            const existing = await collection.findOne({ slug });
             const currentDate = DateTime.now().setZone('Europe/London');
 
-            if (existingShipping) {
+            if (existing) {
                 res.status(400).json({ message: 'Shipping method already exists.' });
                 return;
             }
 
-            await shippingCollection.insertOne({
-                title: safelyParse(req, 'body.title', parseAsString, null),
-                slug,
-                cost: safelyParse(req, 'body.cost', parseAsNumber, 0),
+            await collection.insertOne({
                 created: currentDate.toISO(),
                 lastUpdated: currentDate.toISO(),
+                title: safelyParse(req, 'body.title', parseAsString, null),
+                slug,
+                content: safelyParse(req, 'body.content', parseAsString, null),
+                supplier: safelyParse(req, 'body.supplier', parseAsNumber, Supplier.RoyalMail),
+                price: safelyParse(req, 'body.price', parseAsNumber, 0),
+                min: safelyParse(req, 'body.min', parseAsNumber, 5),
+                max: safelyParse(req, 'body.max', parseAsNumber, 10),
             });
 
             res.status(201).end();

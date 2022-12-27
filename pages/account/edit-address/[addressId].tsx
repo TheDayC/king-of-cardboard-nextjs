@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { GetServerSideProps } from 'next';
-import { useDispatch, useSelector } from 'react-redux';
-import { getSession } from 'next-auth/react';
+import { useSelector } from 'react-redux';
+import { unstable_getServerSession } from 'next-auth';
 
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import selector from './selector';
-import Loading from '../../../components/Loading';
 import Fields from '../../../components/Account/AddressBook/Fields';
 import PageWrapper from '../../../components/PageWrapper';
-import { fetchCurrentAddress } from '../../../store/slices/account';
 import Custom404Page from '../../404';
+import { authOptions } from '../../api/auth/[...nextauth]';
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await getSession(context);
-    const addressId = safelyParse(context, 'query.addressId', parseAsString, null);
+export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+    const session = await unstable_getServerSession(req, res, authOptions);
+    const addressId = safelyParse(query, 'addressId', parseAsString, null);
 
     // If session hasn't been established redirect to the login page.
     if (!session) {
@@ -39,19 +38,8 @@ interface OrderProps {
     addressId: string | null;
 }
 
-export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId }) => {
-    const { accessToken, currentAddress } = useSelector(selector);
-    const [shouldFetch, setShouldFetch] = useState(true);
-    const [isLoading, setIsLoading] = useState(true);
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        if (accessToken && addressId && shouldFetch) {
-            setShouldFetch(false);
-            dispatch(fetchCurrentAddress({ accessToken, id: addressId }));
-            setIsLoading(false);
-        }
-    }, [accessToken, addressId, dispatch, shouldFetch]);
+export const EditAddressPage: React.FC<OrderProps> = ({ errorCode }) => {
+    const { currentAddress } = useSelector(selector);
 
     if (errorCode) {
         return <Custom404Page />;
@@ -64,20 +52,16 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode, addressId }) 
         >
             <div className="flex flex-col md:flex-row w-full justify-start items-start">
                 <div className="flex flex-col md:px-4 w-full relative">
-                    <Loading show={isLoading} />
+                    {/*  <Loading show={isLoading} /> */}
                     <Fields
                         id={currentAddress.id}
-                        name={currentAddress.name}
+                        title={currentAddress.name}
                         addressId={currentAddress.addressId}
-                        addressLineOne={currentAddress.addressLineOne}
-                        addressLineTwo={currentAddress.addressLineTwo}
+                        lineOne={currentAddress.addressLineOne}
+                        lineTwo={currentAddress.addressLineTwo}
                         city={currentAddress.city}
                         company={currentAddress.company}
                         county={currentAddress.county}
-                        firstName={currentAddress.firstName}
-                        lastName={currentAddress.lastName}
-                        phone={currentAddress.phone}
-                        postcode={currentAddress.postcode}
                     />
                 </div>
             </div>

@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import { FieldValues, UseFormRegister } from 'react-hook-form';
 
 interface SelectionWrapperProps {
-    id: string;
+    id: number;
     title: string;
     name: string;
     isChecked: boolean;
@@ -10,7 +10,7 @@ interface SelectionWrapperProps {
     titleLogo?: ReactNode;
     register?: UseFormRegister<FieldValues>;
     children: ReactNode;
-    onSelect(id: string): void;
+    onSelect(id: number): void;
 }
 
 export const SelectionWrapper: React.FC<SelectionWrapperProps> = ({
@@ -24,7 +24,6 @@ export const SelectionWrapper: React.FC<SelectionWrapperProps> = ({
     register,
     onSelect,
 }) => {
-    const shouldShowChildren = isChecked && Boolean(children);
     const handleSelect = () => {
         onSelect(id);
     };
@@ -57,7 +56,7 @@ export const SelectionWrapper: React.FC<SelectionWrapperProps> = ({
                     <input {...radioPropsBase} />
                 )}
             </label>
-            {shouldShowChildren && <div className="mt-4">{children}</div>}
+            {isChecked && <div className="mt-4">{children}</div>}
         </div>
     );
 };

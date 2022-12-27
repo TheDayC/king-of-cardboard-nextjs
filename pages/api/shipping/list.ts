@@ -10,13 +10,12 @@ async function listShipping(req: NextApiRequest, res: NextApiResponse): Promise<
     if (req.method === 'GET') {
         try {
             const { db } = await connectToDatabase();
+            const collection = db.collection('shipping');
+            const count = safelyParse(req, 'query.count', parseAsNumber, 10);
+            const page = safelyParse(req, 'query.page', parseAsNumber, 0);
 
-            const shippingCollection = db.collection('shipping');
-            const count = safelyParse(req, 'body.count', parseAsNumber, 10);
-            const page = safelyParse(req, 'body.page', parseAsNumber, 0);
-
-            const shippingCount = await shippingCollection.countDocuments();
-            const shippingList = await shippingCollection.find().skip(page).limit(count).toArray();
+            const shippingCount = await collection.countDocuments();
+            const shippingList = await collection.find({}, { skip: page, limit: count }).toArray();
 
             if (shippingList.length === 0) {
                 res.status(400).json({ message: defaultErr });

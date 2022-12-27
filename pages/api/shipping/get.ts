@@ -11,17 +11,17 @@ async function getShipping(req: NextApiRequest, res: NextApiResponse): Promise<v
     if (req.method === 'GET') {
         try {
             const { db } = await connectToDatabase();
-            const shippingCollection = db.collection('shipping');
+            const collection = db.collection('shipping');
 
-            const id = safelyParse(req, 'body.id', parseAsString, '');
-            const existingShipping = await shippingCollection.findOne({ _id: new ObjectId(id) });
+            const id = safelyParse(req, 'query.id', parseAsString, '');
+            const existing = await collection.findOne({ _id: new ObjectId(id) });
 
-            if (!existingShipping) {
-                res.status(400).json({ message: defaultErr });
+            if (!existing) {
+                res.status(404).json({ message: defaultErr });
                 return;
             }
 
-            res.status(200).json(existingShipping);
+            res.status(200).json(existing);
         } catch (err: unknown) {
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);
 

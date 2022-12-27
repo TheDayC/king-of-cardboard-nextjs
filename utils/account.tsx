@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 import { join, values } from 'lodash';
 import CommerceLayer from '@commercelayer/sdk';
 
-import { Address, GetOrders, GiftCard, SingleAddress, SingleOrder } from '../types/account';
+import { GetOrders, GiftCard, SingleAddress, SingleOrder } from '../types/account';
 import {
     parseAsArrayOfCommerceResponse,
     safelyParse,
@@ -414,28 +414,6 @@ export function cardLogo(card: string | null): JSX.Element {
         default:
             return <AiFillCreditCard />;
     }
-}
-
-export async function getAddresses(accessToken: string): Promise<Address[]> {
-    try {
-        const cl = authClient(accessToken);
-
-        const fields = `fields[customer_addresses]=id,reference&fields[addresses]=full_address`;
-        const res = await cl.get(`/api/customer_addresses?include=address&${fields}`);
-        const addresses = safelyParse(res, 'data.data', parseAsArrayOfCommerceResponse, []);
-        const included = safelyParse(res, 'data.included', parseAsArrayOfCommerceResponse, []);
-
-        return addresses.map((address, i) => ({
-            id: safelyParse(address, 'id', parseAsString, ''),
-            addressId: safelyParse(included[i], 'id', parseAsString, ''),
-            name: safelyParse(address, 'attributes.reference', parseAsString, '[NO NAME FOUND]'),
-            full_address: safelyParse(included[i], 'attributes.full_address', parseAsString, ''),
-        }));
-    } catch (error: unknown) {
-        errorHandler(error, 'We could not fetch your saved addresses.');
-    }
-
-    return [];
 }
 
 export async function getAddressPageCount(accessToken: string): Promise<number> {

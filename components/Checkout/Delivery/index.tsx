@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import { BsCreditCard2BackFill } from 'react-icons/bs';
 
 import selector from './selector';
-import { setCurrentStep } from '../../../store/slices/checkout';
-import Shipment from './Shipment';
+import {
+    fetchShippingMethods,
+    setChosenShippingMethodId,
+    setCurrentStep,
+    setIsCheckoutLoading,
+} from '../../../store/slices/checkout';
 import { setCheckoutLoading } from '../../../store/slices/global';
 import Loading from '../../Loading';
+import ShippingMethod from './ShippingMethod';
+import { fetchCartTotals, setUpdatingCart } from '../../../store/slices/cart';
 
 export const Delivery: React.FC = () => {
     const dispatch = useDispatch();
-    const { currentStep, checkoutLoading, hasBothAddresses, shipments } = useSelector(selector);
+    const { currentStep, isCheckoutLoading, hasBothAddresses, shippingMethods } = useSelector(selector);
     const {
         register,
         handleSubmit,
@@ -18,30 +25,24 @@ export const Delivery: React.FC = () => {
     } = useForm();
     const isCurrentStep = currentStep === 1;
     const hasErrors = Object.keys(errors).length > 0;
-    const hasShipments = shipments.length > 0;
 
-    const handleSelectShippingMethod: SubmitHandler<FieldValues> = async (/* data: FieldValues */) => {
-        if (hasErrors || checkoutLoading || !shipments) {
+    const handleSelectShippingMethod: SubmitHandler<FieldValues> = async (data: FieldValues) => {
+        if (hasErrors || isCheckoutLoading) {
             return;
         }
 
-        // Start checkout loader.
-        dispatch(setCheckoutLoading(true));
+        const shippingMethodId = Object.keys(data.method)[0];
 
-        // for...of used here over forEach to avoid race conditions with await.
-        /* for (const shipment of shipments) {
-            await updateShipmentMethod(accessToken, shipment.id, data.method[shipment.id].methodId);
-        } */
+        // Start checkout and cart loaders.
+        dispatch(setIsCheckoutLoading(true));
+        dispatch(setUpdatingCart(true));
 
-        // Fetch items, totals and item count along with payment methods
-        //dispatch(fetchCartTotals({ accessToken, orderId }));
-        //dispatch(fetchPaymentMethods({ accessToken, orderId }));
+        // Set shipping method and update cart totals
+        dispatch(setChosenShippingMethodId(shippingMethodId));
+        dispatch(fetchCartTotals());
 
         // Redirect to next stage.
         dispatch(setCurrentStep(2));
-
-        // Stop the checkout loader
-        dispatch(setCheckoutLoading(false));
     };
 
     // Handle edit for opening / closing the collapse element
@@ -50,6 +51,16 @@ export const Delivery: React.FC = () => {
             dispatch(setCurrentStep(1));
         }
     };
+
+    useEffect(() => {
+        if (shippingMethods.length === 0) {
+            // Set loading
+            dispatch(setCheckoutLoading(true));
+
+            // Fetch the shipping methods and the fetch will remove loading spinner on return.
+            dispatch(fetchShippingMethods());
+        }
+    }, [shippingMethods, dispatch]);
 
     return (
         <div
@@ -61,31 +72,37 @@ export const Delivery: React.FC = () => {
                 {hasBothAddresses ? 'Delivery - Edit' : 'Delivery'}
             </h3>
             <div className="collapse-content p-0 relative">
-                <Loading show={!hasShipments} />
+                <Loading show={isCheckoutLoading} />
                 <form onSubmit={handleSubmit(handleSelectShippingMethod)}>
-                    {hasShipments &&
-                        hasBothAddresses &&
-                        shipments.map((shipment, index) => {
-                            return (
-                                <Shipment
-                                    id={shipment.id}
-                                    shippingMethods={shipment.methods}
-                                    shipmentCount={index + 1}
-                                    shipmentsTotal={shipments.length}
-                                    register={register}
-                                    defaultChecked={shipment.methods[0].id}
-                                    key={`shipment-${index}`}
-                                />
-                            );
-                        })}
+                    {shippingMethods.length > 0 && (
+                        <div className="flex flex-col space-y-2 p-4">
+                            {shippingMethods.map(({ _id, title, content, min, max, supplier, price }, index) => {
+                                return (
+                                    <ShippingMethod
+                                        _id={_id}
+                                        title={title}
+                                        content={content}
+                                        price={price}
+                                        min={min}
+                                        max={max}
+                                        supplier={supplier}
+                                        register={register}
+                                        isDefault={index === 0}
+                                        key={`shipping-method-${index}`}
+                                    />
+                                );
+                            })}
+                        </div>
+                    )}
                     <div className="flex justify-end items-center px-4">
                         <button
                             type="submit"
                             className={`btn w-full lg:w-auto mb-4${
                                 hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'
-                            }${checkoutLoading ? ' loading' : ''}`}
+                            }${isCheckoutLoading ? ' loading' : ''}`}
                         >
-                            {checkoutLoading ? '' : 'Payment'}
+                            {isCheckoutLoading ? '' : 'Payment'}
+                            <BsCreditCard2BackFill className="w-6 h-6 ml-2 inline" />
                         </button>
                     </div>
                 </form>

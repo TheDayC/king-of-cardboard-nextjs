@@ -32,12 +32,13 @@ export const createCLOrder = createAsyncThunk(
 export const fetchCartTotals = createAsyncThunk(
     'cart/fetchCartTotals',
     async (undefined, { getState }): Promise<Totals> => {
-        const { account, cart } = getState() as AppStateShape;
+        const { account, cart, checkout } = getState() as AppStateShape;
         const shallowItems = cart.items.map(({ _id: id, quantity }) => ({ id, quantity }));
 
         const data = {
             items: shallowItems,
             coins: cart.shouldUseCoins ? account.coins : 0,
+            shippingMethodId: checkout.chosenShippingMethodId,
         };
 
         const res = await axios.post(`${URL}/api/cart/calculateTotals`, data);

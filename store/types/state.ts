@@ -2,14 +2,15 @@ import { DateTime } from 'luxon';
 import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
 
 import { AlertLevel } from '../../enums/system';
-import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../../types/account';
+import { AccountAddress, Order, SingleAddress, SingleOrder } from '../../types/account';
 import { Break, SingleBreak } from '../../types/breaks';
-import { CartItem, UpdateQuantity } from '../../types/cart';
-import { Shipment } from '../../types/checkout';
+import { CartItem } from '../../types/cart';
+import { Address, CustomerDetails, Shipment } from '../../types/checkout';
 import { ContentfulPage } from '../../types/pages';
 import { SingleProduct } from '../../types/products';
 import { Product } from '../../types/productsNew';
 import { SocialMedia } from '../../types/profile';
+import { AccountShippingMethod } from '../../types/shipping';
 
 export interface AppStateShape {
     global: Global;
@@ -63,20 +64,15 @@ export interface Global {
 export interface Checkout {
     currentStep: number;
     customerDetails: CustomerDetails;
-    billingAddress: CustomerAddress;
-    shippingAddress: CustomerAddress;
-    cloneBillingAddressId: string | null;
-    cloneShippingAddressId: string | null;
+    billingAddress: Address;
+    shippingAddress: Address;
+    existingBillingAddressId: string | null;
+    existingShippingAddressId: string | null;
     isShippingSameAsBilling: boolean;
     paymentMethods: PaymentMethod[];
-    shipments: Shipment[];
-}
-
-export interface CustomerDetails {
-    email: string | null;
-    first_name: string | null;
-    last_name: string | null;
-    phone: string | null;
+    shippingMethods: AccountShippingMethod[];
+    isCheckoutLoading: boolean;
+    chosenShippingMethodId: string | null;
 }
 
 export interface CustomerAddress {
@@ -155,8 +151,8 @@ export interface Confirmation {
     total: string;
     orderNumber: number | null;
     customerDetails: CustomerDetails;
-    billingAddress: CustomerAddress;
-    shippingAddress: CustomerAddress;
+    billingAddress: Address;
+    shippingAddress: Address;
 }
 
 export interface PagesState {
@@ -183,8 +179,9 @@ export interface AccountState {
     orders: Order[];
     orderPageCount: number;
     currentOrder: SingleOrder;
-    addresses: Address[];
-    addressPageCount: number;
+    addresses: AccountAddress[];
+    addressCount: number;
+    isLoadingAddressBook: boolean;
     currentAddress: SingleAddress;
     isLoadingOrder: boolean;
     isLoadingOrders: boolean;

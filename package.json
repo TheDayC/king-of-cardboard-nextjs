@@ -64,7 +64,8 @@
         "react-quill": "^2.0.0",
         "react-redux": "^8.0.5",
         "react-slideshow-image": "^4.0.5",
-        "redux-persist": "^6.0.0"
+        "redux-persist": "^6.0.0",
+        "stripe": "^11.5.0"
     },
     "devDependencies": {
         "@contentful/rich-text-types": "^15.14.1",

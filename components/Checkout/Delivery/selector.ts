@@ -1,13 +1,13 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectCheckoutData, selectGlobalData } from '../../../store/state/selectors';
+import { selectCheckoutData } from '../../../store/state/selectors';
 
-const selector = createSelector([selectCheckoutData, selectGlobalData], (checkout, global) => ({
+const selector = createSelector([selectCheckoutData], (checkout) => ({
     customerDetails: checkout.customerDetails,
     currentStep: checkout.currentStep,
-    checkoutLoading: global.checkoutLoading,
-    hasBothAddresses: Boolean(checkout.billingAddress.line_1) && Boolean(checkout.shippingAddress.line_1),
-    shipments: checkout.shipments,
+    isCheckoutLoading: checkout.isCheckoutLoading,
+    hasBothAddresses: Boolean(checkout.billingAddress.lineOne) && Boolean(checkout.shippingAddress.lineOne),
+    shippingMethods: checkout.shippingMethods,
 }));
 
 export default selector;

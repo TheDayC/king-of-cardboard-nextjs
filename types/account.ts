@@ -1,3 +1,5 @@
+import { Address } from './checkout';
+
 export interface Order {
     number: number;
     status: string;
@@ -84,13 +86,6 @@ export interface GiftCard {
     code: string;
 }
 
-export interface Address {
-    id: string;
-    addressId: string;
-    name: string;
-    full_address: string;
-}
-
 export interface SingleAddress {
     id: string;
     addressId: string;
@@ -109,4 +104,9 @@ export interface SingleAddress {
 export interface GetOrders {
     orders: Order[];
     count: number;
+}
+
+export interface AccountAddress extends Address {
+    _id: string;
+    title: string;
 }

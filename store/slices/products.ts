@@ -2,11 +2,10 @@ import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { Categories, ProductType } from '../../enums/shop';
-import { ProductsWithCount, SingleProduct } from '../../types/products';
+import { SingleProduct } from '../../types/products';
 import { ListProducts } from '../../types/productsNew';
 import { listProducts } from '../../utils/account/products';
-import { getProducts, getSingleProduct } from '../../utils/products';
+import { getSingleProduct } from '../../utils/products';
 import productsInitialState from '../state/products';
 import { AppStateShape } from '../types/state';
 

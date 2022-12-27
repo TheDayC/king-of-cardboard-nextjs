@@ -1,30 +1,23 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import {
-    selectCartData,
-    selectCheckoutData,
-    selectGlobalData,
-    selectCheckoutCustomerData,
-    selectAccountData,
-} from '../../../store/state/selectors';
+import { selectCartData, selectCheckoutData, selectAccountData } from '../../../store/state/selectors';
 
-const selector = createSelector(
-    [selectCheckoutData, selectCartData, selectGlobalData, selectCheckoutCustomerData, selectAccountData],
-    (checkout, cart, global, customerDetails, account) => ({
-        currentStep: checkout.currentStep,
-        paymentMethods: checkout.paymentMethods,
-        accessToken: global.accessToken,
-        userToken: global.userToken,
-        customerDetails,
-        checkoutLoading: global.checkoutLoading,
-        subTotal: cart.subTotal,
-        shipping: cart.shipping,
-        total: cart.total,
-        items: cart.items,
-        billingAddress: checkout.billingAddress,
-        shippingAddress: checkout.shippingAddress,
-        coins: account.coins,
-    })
-);
+const selector = createSelector([selectCheckoutData, selectCartData, selectAccountData], (checkout, cart, account) => ({
+    currentStep: checkout.currentStep,
+    customerDetails: checkout.customerDetails,
+    isCheckoutLoading: checkout.isCheckoutLoading,
+    subTotal: cart.subTotal,
+    shipping: cart.shipping,
+    discount: cart.discount,
+    total: cart.total,
+    items: cart.items,
+    billingAddress: checkout.billingAddress,
+    shippingAddress: checkout.shippingAddress,
+    coins: account.coins,
+    shouldEnable:
+        checkout.billingAddress.lineOne.length &&
+        checkout.shippingAddress.lineOne.length &&
+        checkout.chosenShippingMethodId,
+}));
 
 export default selector;
