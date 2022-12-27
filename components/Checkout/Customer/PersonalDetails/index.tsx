@@ -1,5 +1,4 @@
-import { useSession } from 'next-auth/react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { UseFormRegister, FieldValues, UseFormSetValue } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
@@ -12,14 +11,11 @@ import selector from './selector';
 interface PersonalDetailsProps {
     register: UseFormRegister<FieldValues>;
     errors: FormErrors;
-    setValue: UseFormSetValue<FieldValues>;
 }
 
-const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors, setValue }) => {
-    const { data: session } = useSession();
+const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) => {
     const { customerDetails } = useSelector(selector);
     const { firstName, lastName, email, phone } = customerDetails;
-    const accountEmail = safelyParse(session, 'user.email', parseAsString, null);
 
     // Errors
     const firstNameErr = safelyParse(errors, 'firstName.message', parseAsString, null);

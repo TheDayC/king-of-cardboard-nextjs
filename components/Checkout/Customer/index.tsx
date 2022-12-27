@@ -14,17 +14,14 @@ import {
     setShippingAddress,
 } from '../../../store/slices/checkout';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
-import { setCheckoutLoading } from '../../../store/slices/global';
 import BillingAddress from './BillingAddress';
 import ShippingAddress from './ShippingAddress';
 import ShipToBilling from './ShipToBilling';
 import PersonalDetails from './PersonalDetails';
 import SelectionWrapper from '../../SelectionWrapper';
 import ExistingAddress from './ExistingAddress';
-import { CustomerAddress } from '../../../store/types/state';
 import { Address } from '../../../types/checkout';
 import { BillingAddressChoice, ShippingAddressChoice } from '../../../enums/checkout';
-import { fetchAddresses } from '../../../store/slices/account';
 import { BsTruck } from 'react-icons/bs';
 
 const defaultAddress: Address = {
@@ -166,7 +163,7 @@ const Customer: React.FC = () => {
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex">
                         <div className="flex flex-col w-full p-4">
-                            <PersonalDetails register={register} errors={errors} setValue={setValue} />
+                            <PersonalDetails register={register} errors={errors} />
                             <div className="divider lightDivider"></div>
                             <h3 className="text-2xl font-semibold mb-4">Billing Details</h3>
                             {Boolean(session) && (
