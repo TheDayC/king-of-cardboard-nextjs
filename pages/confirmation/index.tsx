@@ -5,29 +5,24 @@ import { CommerceAuthProps } from '../../types/commerce';
 import Summary from '../../components/Checkout/Summary';
 import ConfirmationDetails from '../../components/ConfirmationDetails';
 import PageWrapper from '../../components/PageWrapper';
-import { setCheckoutLoading } from '../../store/slices/global';
-import { resetCheckoutDetails } from '../../store/slices/checkout';
+import { resetCheckoutDetails, setIsCheckoutLoading } from '../../store/slices/checkout';
 import selector from './selector';
 
 export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
-    const { confirmationOrderNumber, accessToken } = useSelector(selector);
+    const { orderNumber } = useSelector(selector);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        // Check to see if we've just arrived here from a successful order.
-        if (confirmationOrderNumber) {
+        if (orderNumber) {
+            // Checkout has finished loading by moving to the confirmation.
+            dispatch(setIsCheckoutLoading(true));
+
             // Reset the checkout data
             dispatch(resetCheckoutDetails());
-
-            // Tell the system to generate a new order - this also resets the cart.
-            //dispatch(setShouldCreateOrder(true));
-
-            // Checkout has finished loading by moving to the confirmation.
-            dispatch(setCheckoutLoading(false));
         }
-    }, [confirmationOrderNumber, accessToken, dispatch]);
+    }, [orderNumber, dispatch]);
 
-    if (!confirmationOrderNumber) {
+    if (!orderNumber) {
         return null;
     }
 

@@ -1,10 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectConfirmationData, selectGlobalData } from '../../store/state/selectors';
+import { selectConfirmationData } from '../../store/state/selectors';
 
-const selector = createSelector([selectConfirmationData, selectGlobalData], (confirmation, global) => ({
-    accessToken: global.accessToken,
-    confirmationOrderNumber: confirmation.orderNumber,
+const selector = createSelector([selectConfirmationData], (confirmation) => ({
+    orderNumber: confirmation.orderNumber,
 }));
 
 export default selector;
