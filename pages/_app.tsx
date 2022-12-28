@@ -7,6 +7,7 @@ import { SessionProvider } from 'next-auth/react';
 import Script from 'next/script';
 import Cookies from 'js-cookie';
 import { Provider } from 'react-redux';
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 
 import 'react-quill/dist/quill.snow.css';
 import '../styles/globals.css';
@@ -17,6 +18,13 @@ import Alert from '../components/Alert';
 
 // Called outside of the render to only create once.
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
+
+// PayPal setup options
+const paypalOptions = {
+    'client-id': process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '',
+    currency: 'GBP',
+    intent: 'capture',
+};
 
 const MyApp: React.FC<AppProps> = ({ Component, ...rest }) => {
     const { store, props } = wrapper.useWrappedStore(rest);
@@ -31,19 +39,20 @@ const MyApp: React.FC<AppProps> = ({ Component, ...rest }) => {
             <PersistGate persistor={persistor} loading={<div>Loading</div>}>
                 <SessionProvider session={props.pageProps.session}>
                     <Elements stripe={stripePromise}>
-                        <Drawer>
-                            {/* Global Site Tag (gtag.js) - Google Analytics */}
-                            {cookieConsent && (
-                                <React.Fragment>
-                                    <Script
-                                        strategy="afterInteractive"
-                                        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
-                                    />
-                                    <Script
-                                        id="gtag-init"
-                                        strategy="afterInteractive"
-                                        dangerouslySetInnerHTML={{
-                                            __html: `
+                        <PayPalScriptProvider options={paypalOptions}>
+                            <Drawer>
+                                {/* Global Site Tag (gtag.js) - Google Analytics */}
+                                {cookieConsent && (
+                                    <React.Fragment>
+                                        <Script
+                                            strategy="afterInteractive"
+                                            src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
+                                        />
+                                        <Script
+                                            id="gtag-init"
+                                            strategy="afterInteractive"
+                                            dangerouslySetInnerHTML={{
+                                                __html: `
                                                 window.dataLayer = window.dataLayer || [];
                                                 function gtag(){dataLayer.push(arguments);}
                                                 gtag('js', new Date());
@@ -51,15 +60,15 @@ const MyApp: React.FC<AppProps> = ({ Component, ...rest }) => {
                                                 page_path: window.location.pathname,
                                                 });
                                             `,
-                                        }}
-                                    />
-                                </React.Fragment>
-                            )}
-                            <Script
-                                id="facebook-pixel-script"
-                                strategy="afterInteractive"
-                                dangerouslySetInnerHTML={{
-                                    __html: `
+                                            }}
+                                        />
+                                    </React.Fragment>
+                                )}
+                                <Script
+                                    id="facebook-pixel-script"
+                                    strategy="afterInteractive"
+                                    dangerouslySetInnerHTML={{
+                                        __html: `
                                         !function(f,b,e,v,n,t,s)
   {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
   n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -71,11 +80,12 @@ const MyApp: React.FC<AppProps> = ({ Component, ...rest }) => {
   fbq('init', ${process.env.NEXT_PUBLIC_FB_PIXEL_ID});
   fbq('track', 'PageView');
                                     `,
-                                }}
-                            />
-                            <Component {...props.pageProps} />
-                            <Alert />
-                        </Drawer>
+                                    }}
+                                />
+                                <Component {...props.pageProps} />
+                                <Alert />
+                            </Drawer>
+                        </PayPalScriptProvider>
                     </Elements>
                 </SessionProvider>
             </PersistGate>
