@@ -17,10 +17,14 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
             const { db } = await connectToDatabase();
             const collection = db.collection('orders');
             const productsCollection = db.collection('products');
+            const usersCollection = db.collection('users');
             const currentDate = DateTime.now().setZone('Europe/London');
             const items: CartItem[] = req.body.items || [];
+            const discount = safelyParse(req, 'body.discount', parseAsNumber, 0);
+            const userId = safelyParse(req, 'body.userId', parseAsString, null);
 
             const { insertedId } = await collection.insertOne({
+                userId,
                 email: safelyParse(req, 'body.email', parseAsString, null),
                 orderStatus: safelyParse(req, 'body.orderStatus', parseAsNumber, Status.Placed),
                 paymentStatus: safelyParse(req, 'body.paymentStatus', parseAsNumber, Payment.Unpaid),
@@ -29,7 +33,7 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                 created: currentDate.toISO(),
                 lastUpdated: currentDate.toISO(),
                 subTotal: safelyParse(req, 'body.subTotal', parseAsNumber, 0),
-                discount: safelyParse(req, 'body.discount', parseAsNumber, 0),
+                discount,
                 shipping: safelyParse(req, 'body.shipping', parseAsString, null),
                 total: safelyParse(req, 'body.total', parseAsNumber, 0),
                 shippingAddress: safelyParse(req, 'body.shippingAddress', parseAsString, null),
@@ -44,6 +48,11 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                     { _id: new ObjectId(item._id) },
                     { $inc: { quantity: -item.quantity } }
                 );
+            }
+
+            // Reduce user's coins if discount is larger than zero.
+            if (discount > 0 && userId) {
+                await usersCollection.findOneAndUpdate({ _id: new ObjectId(userId) }, { $inc: { coins: -discount } });
             }
 
             // Wait 1 second for the trigger to finish.

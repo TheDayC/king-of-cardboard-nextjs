@@ -57,6 +57,7 @@ export const Payment: React.FC = () => {
     const paypalClass = 'inline-block mr-3 text-md -mt-0.5 text-blue-800';
     const stripeClass = 'inline-block mr-3 text-md -mt-0.5 text-gray-500';
     const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
+    const userId = safelyParse(session, 'user.id', parseAsString, null);
     const shouldShowCoins = status === 'authenticated' && coins > 0;
 
     const handleEdit = () => {
@@ -72,6 +73,7 @@ export const Payment: React.FC = () => {
 
     const placeOrder = async (id: string, method: PaymentMethods) => {
         return await addOrder({
+            userId,
             email: customerDetails.email,
             orderStatus: Status.Placed,
             paymentStatus: PaymentStatus.Paid,
@@ -169,10 +171,6 @@ export const Payment: React.FC = () => {
 
         // Reset the cart and checkout for re-use
         dispatch(resetCart());
-        dispatch(resetCheckoutDetails());
-
-        // Unblock checkout
-        dispatch(setIsCheckoutLoading(false));
 
         // Push the user to the confirmation page.
         router.push('/confirmation');
