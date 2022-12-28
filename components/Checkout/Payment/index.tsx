@@ -22,6 +22,7 @@ import { addOrder } from '../../../utils/order';
 import { Status, Payment as PaymentStatus, Fulfillment } from '../../../enums/orders';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import { getPrettyPrice } from '../../../utils/account/products';
+import { resetCart } from '../../../store/slices/cart';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 const paymentMethods = [
@@ -93,6 +94,7 @@ export const Payment: React.FC = () => {
             handleError('Missing some details');
             return;
         }
+
         // Show load blockers.
         dispatch(setIsCheckoutLoading(true));
 
@@ -164,9 +166,14 @@ export const Payment: React.FC = () => {
             })
         );
 
-        router.push('/confirmation');
+        // Reset the cart for re-use
+        dispatch(resetCart());
 
+        // Unblock checkout
         dispatch(setIsCheckoutLoading(false));
+
+        // Push the user to the confirmation page.
+        router.push('/confirmation');
     };
 
     // If the user has chosen paypal, handle it here.
