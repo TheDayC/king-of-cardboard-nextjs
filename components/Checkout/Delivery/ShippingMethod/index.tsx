@@ -6,6 +6,7 @@ import { BsTruck } from 'react-icons/bs';
 import { Supplier } from '../../../../enums/shipping';
 import { getPrettyPrice } from '../../../../utils/account/products';
 import royalMailLogo from '../../../../images/royal-mail-logo.svg';
+import { isNumber } from 'lodash';
 
 interface ShippingMethodProps {
     _id: string;
@@ -26,7 +27,7 @@ export const ShippingMethod: React.FC<ShippingMethodProps> = ({
     price,
     min,
     max,
-    supplier = Supplier.RoyalMail,
+    //supplier = Supplier.RoyalMail,
     register,
     isDefault,
 }) => {
@@ -39,7 +40,7 @@ export const ShippingMethod: React.FC<ShippingMethodProps> = ({
                     <div className="flex flex-col space-y-3">
                         <div className="flex flex-row items-center justify-between">
                             <div className="flex flex-row space-x-4 items-center">
-                                {supplier && <Image src={royalMailLogo} width={50} height={50} alt="Royal Mail Logo" />}
+                                {<Image src={royalMailLogo} width={50} height={50} alt="Royal Mail Logo" />}
                                 <h4 className="text-md md:text-lg">{title}</h4>
                             </div>
                             <p className="font-bold text-md md:text-lg">{formattedPrice}</p>

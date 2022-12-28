@@ -1,5 +1,5 @@
 import { sum } from 'lodash';
-import { ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';
@@ -7,7 +7,24 @@ import { errorHandler } from '../../../middleware/errors';
 import { FetchCartItems } from '../../../types/cart';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 
-const defaultErr = 'No products found.';
+const defaultErr = 'Error in cart.';
+
+async function getShippingPrice(methodId: string | null, db: Db): Promise<number> {
+    if (!methodId) return 0;
+
+    const shippingCollection = db.collection('shipping');
+    const shippingList = await shippingCollection
+        .find(
+            {
+                _id: new ObjectId(methodId),
+            },
+            { skip: 0, limit: 1 }
+        )
+        .project({ price: 1 })
+        .toArray();
+
+    return safelyParse(shippingList[0], 'price', parseAsNumber, 0);
+}
 
 async function calculateTotals(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
@@ -15,12 +32,11 @@ async function calculateTotals(req: NextApiRequest, res: NextApiResponse): Promi
             const { db } = await connectToDatabase();
 
             const productsCollection = db.collection('products');
-            const shippingCollection = db.collection('shipping');
             const items: FetchCartItems[] = req.body.items || [];
             const coins: number = req.body.coins || 0;
             const discount = coins > 0 ? coins * 0.3 : 0;
             const itemIds = items.map((item) => new ObjectId(item.id));
-            const shippingMethodId = safelyParse(req, 'body.shippingMethodId', parseAsString, '');
+            const shippingMethodId = safelyParse(req, 'body.shippingMethodId', parseAsString, null);
 
             const productList = await productsCollection
                 .find(
@@ -32,16 +48,6 @@ async function calculateTotals(req: NextApiRequest, res: NextApiResponse): Promi
                 .project({ price: 1, salePrice: 1 })
                 .toArray();
 
-            const shippingList = await shippingCollection
-                .find(
-                    {
-                        _id: new ObjectId(shippingMethodId),
-                    },
-                    { skip: 0, limit: 1 }
-                )
-                .project({ price: 1 })
-                .toArray();
-
             const prices = items.map(({ id, quantity }) => {
                 const matchingProduct = productList.find(({ _id }) => _id.toString() === id);
                 const price = safelyParse(matchingProduct, 'price', parseAsNumber, 0);
@@ -51,7 +57,8 @@ async function calculateTotals(req: NextApiRequest, res: NextApiResponse): Promi
 
                 return chosenPrice * quantity;
             });
-            const shippingPrice = safelyParse(shippingList[0], 'price', parseAsNumber, 0);
+
+            const shippingPrice = await getShippingPrice(shippingMethodId, db);
 
             res.status(200).json({
                 subTotal: sum(prices),
