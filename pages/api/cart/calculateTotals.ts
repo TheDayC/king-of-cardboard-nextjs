@@ -5,6 +5,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { FetchCartItems } from '../../../types/cart';
+import { calculateExcessCoinSpend } from '../../../utils/order';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 
 const defaultErr = 'Error in cart.';
@@ -33,8 +34,6 @@ async function calculateTotals(req: NextApiRequest, res: NextApiResponse): Promi
 
             const productsCollection = db.collection('products');
             const items: FetchCartItems[] = req.body.items || [];
-            const coins: number = req.body.coins || 0;
-            const discount = coins > 0 ? coins * 0.3 : 0;
             const itemIds = items.map((item) => new ObjectId(item.id));
             const shippingMethodId = safelyParse(req, 'body.shippingMethodId', parseAsString, null);
 
@@ -57,14 +56,18 @@ async function calculateTotals(req: NextApiRequest, res: NextApiResponse): Promi
 
                 return chosenPrice * quantity;
             });
-
+            const subTotal = sum(prices);
             const shippingPrice = await getShippingPrice(shippingMethodId, db);
+            const coins: number = req.body.coins || 0;
+            const excessCoins = calculateExcessCoinSpend(coins, subTotal);
+            const discount = coins - excessCoins;
+            const total = subTotal + shippingPrice;
 
             res.status(200).json({
-                subTotal: sum(prices),
+                subTotal,
                 shipping: shippingPrice,
-                discount: coins > 0 ? coins * 0.3 : 0,
-                total: sum(prices) + shippingPrice - discount,
+                discount,
+                total: total - discount,
             });
         } catch (err: unknown) {
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);

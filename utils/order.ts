@@ -25,3 +25,11 @@ export async function addOrder(options: any): Promise<AddOrderResponse> {
         orderNumber: null,
     };
 }
+
+export function calculateExcessCoinSpend(coins: number, subTotal: number): number {
+    const calc = subTotal - coins;
+
+    if (calc < 0) return Math.abs(calc);
+
+    return 0;
+}

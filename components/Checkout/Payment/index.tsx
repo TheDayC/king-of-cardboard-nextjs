@@ -85,6 +85,7 @@ export const Payment: React.FC = () => {
             billingAddress,
             paymentId: id,
             paymentMethod: method,
+            coins,
         });
     };
 
