@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { CommerceAuthProps } from '../../types/commerce';
 import Summary from '../../components/Checkout/Summary';
 import ConfirmationDetails from '../../components/ConfirmationDetails';
 import PageWrapper from '../../components/PageWrapper';
-import { useDispatch } from 'react-redux';
 import { resetCheckoutDetails } from '../../store/slices/checkout';
 
 export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {

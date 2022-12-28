@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FieldValues, useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
@@ -7,6 +7,8 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { toNumber } from 'lodash';
 import axios from 'axios';
+import { BiExit } from 'react-icons/bi';
+import { CreateOrderActions, CreateOrderData, OnApproveActions, OnApproveData } from '@paypal/paypal-js';
 
 import { setCurrentStep, setIsCheckoutLoading } from '../../../store/slices/checkout';
 import { addError } from '../../../store/slices/alerts';
@@ -22,8 +24,6 @@ import { Status, Payment as PaymentStatus, Fulfillment } from '../../../enums/or
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import { getPrettyPrice } from '../../../utils/account/products';
 import { resetCart } from '../../../store/slices/cart';
-import { BiExit } from 'react-icons/bi';
-import { CreateOrderActions, CreateOrderData, OnApproveActions, OnApproveData } from '@paypal/paypal-js';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 const paymentMethods = [
