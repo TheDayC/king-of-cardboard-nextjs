@@ -47,7 +47,7 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
             }
 
             // Wait 1 second for the trigger to finish.
-            await delay(1000);
+            await delay(2000);
 
             // Fetch the order number.
             const existingOrder = await collection.findOne({ _id: insertedId }, { projection: { orderNumber: 1 } });
