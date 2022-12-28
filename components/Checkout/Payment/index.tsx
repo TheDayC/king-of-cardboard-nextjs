@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 import { toNumber } from 'lodash';
 import axios from 'axios';
 
-import { setCurrentStep, setIsCheckoutLoading } from '../../../store/slices/checkout';
+import { resetCheckoutDetails, setCurrentStep, setIsCheckoutLoading } from '../../../store/slices/checkout';
 import { addError } from '../../../store/slices/alerts';
 import selector from './selector';
 import SelectionWrapper from '../../SelectionWrapper';
@@ -166,8 +166,9 @@ export const Payment: React.FC = () => {
             })
         );
 
-        // Reset the cart for re-use
+        // Reset the cart and checkout for re-use
         dispatch(resetCart());
+        dispatch(resetCheckoutDetails());
 
         // Unblock checkout
         dispatch(setIsCheckoutLoading(false));
