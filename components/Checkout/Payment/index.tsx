@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FieldValues, useForm } from 'react-hook-form';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
@@ -7,13 +7,14 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { toNumber } from 'lodash';
 import axios from 'axios';
+import { BiExit } from 'react-icons/bi';
+import { CreateOrderActions, CreateOrderData, OnApproveActions, OnApproveData } from '@paypal/paypal-js';
 
 import { setCurrentStep, setIsCheckoutLoading } from '../../../store/slices/checkout';
 import { addError } from '../../../store/slices/alerts';
 import selector from './selector';
 import SelectionWrapper from '../../SelectionWrapper';
 import Source from './Source';
-import { paymentBtnText } from '../../../utils/checkout';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import UseCoins from '../../UseCoins';
 import { gaEvent } from '../../../utils/ga';
@@ -22,12 +23,14 @@ import { addOrder } from '../../../utils/order';
 import { Status, Payment as PaymentStatus, Fulfillment } from '../../../enums/orders';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import { getPrettyPrice } from '../../../utils/account/products';
+import { resetCart } from '../../../store/slices/cart';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 const paymentMethods = [
     { id: PaymentMethods.Stripe, title: 'Credit / Debit Card' },
     { id: PaymentMethods.PayPal, title: 'PayPal' },
 ];
+const CURRENCY_CODE = 'GBP';
 
 export const Payment: React.FC = () => {
     const dispatch = useDispatch();
@@ -52,10 +55,10 @@ export const Payment: React.FC = () => {
     const { data: session } = useSession();
     const isCurrentStep = currentStep === 2;
     const [paymentMethod, setPaymentMethod] = useState(PaymentMethods.Stripe);
-    const btnText = paymentBtnText(paymentMethod);
     const paypalClass = 'inline-block mr-3 text-md -mt-0.5 text-blue-800';
     const stripeClass = 'inline-block mr-3 text-md -mt-0.5 text-gray-500';
     const status = safelyParse(session, 'status', parseAsString, 'unauthenticated');
+    const userId = safelyParse(session, 'user.id', parseAsString, null);
     const shouldShowCoins = status === 'authenticated' && coins > 0;
 
     const handleEdit = () => {
@@ -69,8 +72,17 @@ export const Payment: React.FC = () => {
         dispatch(setIsCheckoutLoading(false));
     };
 
-    const placeOrder = async (id: string, method: PaymentMethods) => {
-        return await addOrder({
+    const confirmOrder = async (paymentId: string, paymentMethod: PaymentMethods) => {
+        // Place the order.
+        const {
+            _id: orderId,
+            orderNumber,
+            subTotal: orderSubTotal,
+            discount: orderDiscount,
+            shipping: orderShipping,
+            total: orderTotal,
+        } = await addOrder({
+            userId,
             email: customerDetails.email,
             orderStatus: Status.Placed,
             paymentStatus: PaymentStatus.Paid,
@@ -82,9 +94,44 @@ export const Payment: React.FC = () => {
             total,
             shippingAddress,
             billingAddress,
-            paymentId: id,
-            paymentMethod: method,
+            paymentId,
+            paymentMethod,
+            coins,
         });
+
+        // If no order id is returned then we couldn't place the order.
+        if (!orderId) {
+            // Remove spinner.
+            dispatch(setIsCheckoutLoading(false));
+
+            // Show the user some feedback.
+            handleError('Failed to place your order, please contact support.');
+            return;
+        }
+
+        // Set the confirmation data in the store.
+        dispatch(
+            setConfirmationData({
+                subTotal: getPrettyPrice(orderSubTotal),
+                shipping: getPrettyPrice(orderShipping),
+                discount: getPrettyPrice(orderDiscount),
+                total: getPrettyPrice(orderTotal),
+                orderNumber,
+                items,
+                customerDetails,
+                billingAddress,
+                shippingAddress,
+            })
+        );
+
+        // Reset the cart and checkout for re-use
+        dispatch(resetCart());
+
+        // Set loading spinner to false.
+        dispatch(setIsCheckoutLoading(false));
+
+        // Push the user to the confirmation page.
+        router.push('/confirmation');
     };
 
     const handleStripePayment = async () => {
@@ -93,6 +140,7 @@ export const Payment: React.FC = () => {
             handleError('Missing some details');
             return;
         }
+
         // Show load blockers.
         dispatch(setIsCheckoutLoading(true));
 
@@ -141,56 +189,62 @@ export const Payment: React.FC = () => {
             return;
         }
 
-        // Place the order.
-        const { _id: orderId, orderNumber } = await placeOrder(paymentIntent.id, PaymentMethods.Stripe);
-
-        if (!orderId) {
-            handleError('Failed to place your order, please contact support.');
-            return;
-        }
-
-        // Set the confirmation data in the store.
-        dispatch(
-            setConfirmationData({
-                subTotal: getPrettyPrice(subTotal),
-                shipping: getPrettyPrice(shipping),
-                discount: getPrettyPrice(discount),
-                total: getPrettyPrice(total),
-                orderNumber,
-                items,
-                customerDetails,
-                billingAddress,
-                shippingAddress,
-            })
-        );
-
-        router.push('/confirmation');
-
-        dispatch(setIsCheckoutLoading(false));
+        // Confirm the order.
+        await confirmOrder(paymentIntent.id, PaymentMethods.Stripe);
     };
 
-    // If the user has chosen paypal, handle it here.
-    const handlePaypalPayment = useCallback(async () => {
-        // If we're already loading make sure not to execute again.
-        if (isCheckoutLoading) return;
+    const handlePayPalCreateOrder = async (data: CreateOrderData, actions: CreateOrderActions) => {
+        return await actions.order.create({
+            purchase_units: [
+                {
+                    amount: {
+                        currency_code: CURRENCY_CODE,
+                        value: `${(total / 100).toFixed(2)}`,
+                        breakdown: {
+                            item_total: {
+                                value: `${(subTotal / 100).toFixed(2)}`,
+                                currency_code: CURRENCY_CODE,
+                            },
+                            discount: {
+                                value: `${(discount / 100).toFixed(2)}`,
+                                currency_code: CURRENCY_CODE,
+                            },
+                            shipping: {
+                                value: `${(shipping / 100).toFixed(2)}`,
+                                currency_code: CURRENCY_CODE,
+                            },
+                        },
+                    },
+                    items: items.map((item) => ({
+                        name: item.title,
+                        unit_amount: {
+                            currency_code: 'GBP',
+                            value: `${(item.price / 100).toFixed(2)}`,
+                        },
+                        quantity: `${item.quantity}`,
+                        sku: item.sku,
+                    })),
+                },
+            ],
+        });
+    };
 
-        // Piece together the attributes for the payment source request.
-        //const attributes = buildPaymentAttributes(PAYPAL_METHOD, orderId);
+    const handlePayPalOnApprove = async (data: OnApproveData, actions: OnApproveActions) => {
+        if (!actions.order) return;
 
-        // Create the payment source in CommerceLayer.
-        //const { approvalUrl } = await createPaymentSource(accessToken, orderId, PAYPAL_METHOD, attributes);
+        dispatch(setIsCheckoutLoading(true));
 
-        // If the payment source was created then capture the approval url from paypal.
-        /* if (approvalUrl) {
-            dispatch(setIsCheckoutLoading(false));
-            location.assign(approvalUrl);
-        } else {
-            // Dispatch an error if we for some reason can't handle this properly.
-            dispatch(addError('Failed to fetch approval url for PayPal, please contact support.'));
-        } */
+        // Capture the order in PayPal.
+        const paypalOrderResponseBody = await actions.order.capture();
 
-        //dispatch(setIsCheckoutLoading(false));
-    }, [isCheckoutLoading]);
+        // Confirm the order in DB.
+        await confirmOrder(paypalOrderResponseBody.id, PaymentMethods.PayPal);
+    };
+
+    // Handle the paypal or stripe choice made by the user.
+    const handlePaymentMethodSelect = async (method: number) => {
+        setPaymentMethod(method);
+    };
 
     const onSubmit = async (data: FieldValues) => {
         const chosenPaymentMethod = toNumber(data.paymentMethod);
@@ -198,20 +252,8 @@ export const Payment: React.FC = () => {
         setPaymentMethod(chosenPaymentMethod);
         gaEvent('checkout', { paymentMethod: chosenPaymentMethod });
 
-        // Handle a credit / debit card order.
-        if (chosenPaymentMethod === PaymentMethods.Stripe) {
-            handleStripePayment();
-        }
-
-        // Handle a paypal order.
-        if (chosenPaymentMethod === PaymentMethods.Stripe) {
-            handlePaypalPayment();
-        }
-    };
-
-    // Handle the paypal or stripe choice made by the user.
-    const handlePaymentMethodSelect = async (method: number) => {
-        setPaymentMethod(method);
+        // Form now only submits stripe payments
+        handleStripePayment();
     };
 
     return (
@@ -249,7 +291,12 @@ export const Payment: React.FC = () => {
                                         register={register}
                                         key={`payment-method-${id}`}
                                     >
-                                        <Source paymentMethod={id} isCurrentlyDisplayed={isSelected} />
+                                        <Source
+                                            paymentMethod={id}
+                                            isCurrentlyDisplayed={isSelected}
+                                            handleCreateOrder={handlePayPalCreateOrder}
+                                            handleOnApprove={handlePayPalOnApprove}
+                                        />
                                     </SelectionWrapper>
                                 );
                             })}
@@ -261,14 +308,17 @@ export const Payment: React.FC = () => {
                             </React.Fragment>
                         )}
                         <div className="flex justify-end">
-                            <button
-                                className={`btn btn-primary w-full lg:w-auto${isCheckoutLoading ? ' loading' : ''}${
-                                    !stripe || isCheckoutLoading ? ' btn-disabled' : ''
-                                }`}
-                                role="button"
-                            >
-                                {!isCheckoutLoading ? btnText : ''}
-                            </button>
+                            {paymentMethod === PaymentMethods.Stripe && (
+                                <button
+                                    className={`btn btn-primary w-full lg:w-auto${isCheckoutLoading ? ' loading' : ''}${
+                                        !stripe || isCheckoutLoading ? ' btn-disabled' : ''
+                                    }`}
+                                    role="button"
+                                >
+                                    {!isCheckoutLoading ? 'Checkout' : ''}
+                                    <BiExit className="inline-block w-6 h-6 ml-2" />
+                                </button>
+                            )}
                         </div>
                     </div>
                 </form>

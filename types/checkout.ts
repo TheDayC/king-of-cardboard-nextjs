@@ -54,4 +54,8 @@ export interface Address {
 export interface AddOrderResponse {
     _id: string | null;
     orderNumber: number | null;
+    subTotal: number;
+    shipping: number;
+    discount: number;
+    total: number;
 }

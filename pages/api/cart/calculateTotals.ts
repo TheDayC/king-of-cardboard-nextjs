@@ -5,6 +5,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { FetchCartItems } from '../../../types/cart';
+import { calculateExcessCoinSpend } from '../../../utils/order';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 
 const defaultErr = 'Error in cart.';
@@ -33,8 +34,6 @@ async function calculateTotals(req: NextApiRequest, res: NextApiResponse): Promi
 
             const productsCollection = db.collection('products');
             const items: FetchCartItems[] = req.body.items || [];
-            const coins: number = req.body.coins || 0;
-            const discount = coins > 0 ? coins * 0.3 : 0;
             const itemIds = items.map((item) => new ObjectId(item.id));
             const shippingMethodId = safelyParse(req, 'body.shippingMethodId', parseAsString, null);
 
@@ -57,14 +56,18 @@ async function calculateTotals(req: NextApiRequest, res: NextApiResponse): Promi
 
                 return chosenPrice * quantity;
             });
-
-            const shippingPrice = await getShippingPrice(shippingMethodId, db);
+            const subTotal = sum(prices); // Add up all prices to get the sub total.
+            const shipping = await getShippingPrice(shippingMethodId, db); // Fetch the shipping cost.
+            const coins: number = req.body.coins || 0; // Fetch the coins being used.
+            const excessCoins = calculateExcessCoinSpend(coins, subTotal); // Figure out if we're overspending coins and by how much.
+            const discount = coins - excessCoins; // Reduce discount by excess coin amount so system can't owe user money and they keep their excess coins.
+            const total = subTotal + shipping - discount; // Find total
 
             res.status(200).json({
-                subTotal: sum(prices),
-                shipping: shippingPrice,
-                discount: coins > 0 ? coins * 0.3 : 0,
-                total: sum(prices) + shippingPrice - discount,
+                subTotal,
+                shipping,
+                discount,
+                total,
             });
         } catch (err: unknown) {
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);
