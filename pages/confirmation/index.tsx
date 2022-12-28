@@ -22,10 +22,6 @@ export const ConfirmationPage: React.FC<CommerceAuthProps> = () => {
         }
     }, [orderNumber, dispatch]);
 
-    if (!orderNumber) {
-        return null;
-    }
-
     return (
         <PageWrapper
             title="Confirmation - King of Cardboard"
