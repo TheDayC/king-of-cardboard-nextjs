@@ -56,18 +56,18 @@ async function calculateTotals(req: NextApiRequest, res: NextApiResponse): Promi
 
                 return chosenPrice * quantity;
             });
-            const subTotal = sum(prices);
-            const shippingPrice = await getShippingPrice(shippingMethodId, db);
-            const coins: number = req.body.coins || 0;
-            const excessCoins = calculateExcessCoinSpend(coins, subTotal);
-            const discount = coins - excessCoins;
-            const total = subTotal + shippingPrice;
+            const subTotal = sum(prices); // Add up all prices to get the sub total.
+            const shipping = await getShippingPrice(shippingMethodId, db); // Fetch the shipping cost.
+            const coins: number = req.body.coins || 0; // Fetch the coins being used.
+            const excessCoins = calculateExcessCoinSpend(coins, subTotal); // Figure out if we're overspending coins and by how much.
+            const discount = coins - excessCoins; // Reduce discount by excess coin amount so system can't owe user money and they keep their excess coins.
+            const total = subTotal + shipping - discount; // Find total
 
             res.status(200).json({
                 subTotal,
-                shipping: shippingPrice,
+                shipping,
                 discount,
-                total: total - discount,
+                total,
             });
         } catch (err: unknown) {
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);
