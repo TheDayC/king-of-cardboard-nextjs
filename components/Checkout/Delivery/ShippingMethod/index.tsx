@@ -6,7 +6,6 @@ import { BsTruck } from 'react-icons/bs';
 import { Supplier } from '../../../../enums/shipping';
 import { getPrettyPrice } from '../../../../utils/account/products';
 import royalMailLogo from '../../../../images/royal-mail-logo.svg';
-import { isNumber } from 'lodash';
 
 interface ShippingMethodProps {
     _id: string;
