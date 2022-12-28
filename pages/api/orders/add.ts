@@ -1,13 +1,14 @@
 import { DateTime } from 'luxon';
+import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { Fulfillment, Payment, Status } from '../../../enums/orders';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
+import { CartItem } from '../../../types/cart';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 
 const defaultErr = 'Order could not be added.';
-
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void> {
@@ -15,14 +16,16 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
         try {
             const { db } = await connectToDatabase();
             const collection = db.collection('orders');
+            const productsCollection = db.collection('products');
             const currentDate = DateTime.now().setZone('Europe/London');
+            const items: CartItem[] = req.body.items || [];
 
             const { insertedId } = await collection.insertOne({
                 email: safelyParse(req, 'body.email', parseAsString, null),
                 orderStatus: safelyParse(req, 'body.orderStatus', parseAsNumber, Status.Placed),
                 paymentStatus: safelyParse(req, 'body.paymentStatus', parseAsNumber, Payment.Unpaid),
                 fulfillmentStatus: safelyParse(req, 'body.fulfillmentStatus', parseAsNumber, Fulfillment.Unfulfilled),
-                items: req.body.items || [],
+                items,
                 created: currentDate.toISO(),
                 lastUpdated: currentDate.toISO(),
                 subTotal: safelyParse(req, 'body.subTotal', parseAsNumber, 0),
@@ -34,6 +37,14 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                 paymentId: safelyParse(req, 'body.paymentId', parseAsString, null),
                 paymentMethod: safelyParse(req, 'body.paymentMethod', parseAsNumber, null),
             });
+
+            // Reduce item stock counts.
+            for (const item of items) {
+                await productsCollection.findOneAndUpdate(
+                    { _id: new ObjectId(item._id) },
+                    { $inc: { quantity: -item.quantity } }
+                );
+            }
 
             // Wait 1 second for the trigger to finish.
             await delay(1000);
