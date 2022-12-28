@@ -20,8 +20,11 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
             const usersCollection = db.collection('users');
             const currentDate = DateTime.now().setZone('Europe/London');
             const items: CartItem[] = req.body.items || [];
-            const discount = safelyParse(req, 'body.discount', parseAsNumber, 0);
             const userId = safelyParse(req, 'body.userId', parseAsString, null);
+            const subTotal = safelyParse(req, 'body.subTotal', parseAsNumber, 0);
+            const shipping = safelyParse(req, 'body.shipping', parseAsNumber, null);
+            const discount = safelyParse(req, 'body.discount', parseAsNumber, 0);
+            const total = safelyParse(req, 'body.total', parseAsNumber, 0);
 
             const { insertedId } = await collection.insertOne({
                 userId,
@@ -32,10 +35,10 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                 items,
                 created: currentDate.toISO(),
                 lastUpdated: currentDate.toISO(),
-                subTotal: safelyParse(req, 'body.subTotal', parseAsNumber, 0),
+                subTotal,
                 discount,
-                shipping: safelyParse(req, 'body.shipping', parseAsString, null),
-                total: safelyParse(req, 'body.total', parseAsNumber, 0),
+                shipping,
+                total,
                 shippingAddress: safelyParse(req, 'body.shippingAddress', parseAsString, null),
                 billingAddress: safelyParse(req, 'body.billingAddress', parseAsString, null),
                 paymentId: safelyParse(req, 'body.paymentId', parseAsString, null),
@@ -68,7 +71,14 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
 
             const orderNumber = safelyParse(existingOrder, 'orderNumber', parseAsNumber, null);
 
-            res.status(200).json({ _id: existingOrder._id.toString(), orderNumber });
+            res.status(200).json({
+                _id: existingOrder._id.toString(),
+                orderNumber,
+                subTotal,
+                shipping,
+                discount,
+                total,
+            });
         } catch (err: unknown) {
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);
 

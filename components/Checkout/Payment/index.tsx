@@ -147,7 +147,14 @@ export const Payment: React.FC = () => {
         }
 
         // Place the order.
-        const { _id: orderId, orderNumber } = await placeOrder(paymentIntent.id, PaymentMethods.Stripe);
+        const {
+            _id: orderId,
+            orderNumber,
+            subTotal: orderSubTotal,
+            discount: orderDiscount,
+            shipping: orderShipping,
+            total: orderTotal,
+        } = await placeOrder(paymentIntent.id, PaymentMethods.Stripe);
 
         if (!orderId) {
             handleError('Failed to place your order, please contact support.');
@@ -157,10 +164,10 @@ export const Payment: React.FC = () => {
         // Set the confirmation data in the store.
         dispatch(
             setConfirmationData({
-                subTotal: getPrettyPrice(subTotal),
-                shipping: getPrettyPrice(shipping),
-                discount: getPrettyPrice(discount),
-                total: getPrettyPrice(total),
+                subTotal: getPrettyPrice(orderSubTotal),
+                shipping: getPrettyPrice(orderShipping),
+                discount: getPrettyPrice(orderDiscount),
+                total: getPrettyPrice(orderTotal),
                 orderNumber,
                 items,
                 customerDetails,
