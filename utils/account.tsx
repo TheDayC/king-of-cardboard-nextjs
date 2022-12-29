@@ -656,9 +656,9 @@ export async function requestPasswordReset(email: string): Promise<boolean | Res
     }
 }
 
-export function shouldResetPassword(lastSent: DateTime): boolean {
+export function shouldResetPassword(expires: string): boolean {
     const now = DateTime.now().setZone('Europe/London');
-    const expiry = lastSent.plus({ seconds: 180 });
+    const expiry = DateTime.fromISO(expires, { zone: 'Europe/London' });
 
     return now >= expiry;
 }

@@ -18,24 +18,37 @@ const filePath = path.resolve(process.cwd(), 'html', 'resetPassword.html');
 const defaultErr = 'Could not request a password reset.';
 const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.png'));
 
+// Function to get the reset id from the DB.
 async function getResetId(email: string, token: string, db: Db): Promise<string | null> {
+    // Find the password reset collection.
     const passwordResetsCollection = db.collection('passwordResets');
-    const foundReset = await passwordResetsCollection.findOne({ email });
-    const newDate = DateTime.now().setZone('Europe/London');
-    const expires = newDate.plus({ seconds: 180 });
 
+    // Find the expiry date.
+    const foundReset = await passwordResetsCollection.findOne({ email }, { projection: { expires: 1 } });
+
+    // If found an existing password reset item by email then execute validation.
     if (foundReset) {
-        const shouldReset = shouldResetPassword(DateTime.fromISO(foundReset.lastSent, { zone: 'Europe/London' }));
+        // Grab expiry date.
+        const expires = safelyParse(foundReset, 'expires', parseAsString, null);
+        if (!expires) return null;
 
+        // Test if current date has exceeded expiry.
+        const shouldReset = shouldResetPassword(expires);
         if (!shouldReset) return null;
     }
 
+    // If func passes expiry validation then create a new expiry date of 3 mins from now.
+    const expires = DateTime.now().setZone('Europe/London').plus({ seconds: 180 }).toISO();
+
+    // Find existing reset item and update with new token, expiry date and add lastReset as null.
+    // We'll update last reset in the future incase we require it for checks.
     const resetInsert = await passwordResetsCollection.findOneAndUpdate(
         { email },
-        { $set: { token, lastSent: newDate.toISO(), expires: expires.toISO() } },
+        { $set: { token, expires, lastReset: null } },
         { upsert: true, returnDocument: 'after', projection: { _id: 1 } }
     );
 
+    // Return the id to the main endpoint func.
     return resetInsert.value ? resetInsert.value._id.toString() : null;
 }
 
@@ -70,11 +83,10 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
                 return Promise.resolve();
             }
 
-            // Check for an existing request, if it exists check the time last requested.
-            //const foundReset = await passwordResetsCollection.findOneAndUpdate({ email }, {}, {upsert: true});
-
             // Create a reset token with nanoid
             const resetToken = nanoid();
+
+            // Create a reset id.
             const resetId = await getResetId(email, resetToken, db);
 
             if (!resetId) {
