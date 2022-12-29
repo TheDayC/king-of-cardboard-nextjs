@@ -141,7 +141,7 @@ async function passwordReset(req: NextApiRequest, res: NextApiResponse): Promise
             const passwordResetsCollection = db.collection('passwordResets');
             const usersCollection = db.collection('users');
 
-            // Parse email and check for errors.
+            // Parse email, token and password then check for errors.
             const email = safelyParse(req, 'body.email', parseAsString, null);
             const token = safelyParse(req, 'body.token', parseAsString, null);
             const password = safelyParse(req, 'body.password', parseAsString, null);
