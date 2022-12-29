@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { FieldValues, useForm } from 'react-hook-form';
 import { MdOutlineMailOutline } from 'react-icons/md';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
-import selector from './selector';
 import { requestPasswordReset } from '../../utils/account';
 import { addError, addSuccess } from '../../store/slices/alerts';
-
-interface Submit {
-    emailAddress?: string;
-}
+import { isBoolean } from '../../utils/typeguards';
 
 export const ResetPassword: React.FC = () => {
     const {
@@ -20,25 +16,26 @@ export const ResetPassword: React.FC = () => {
     } = useForm();
     const [loading, setLoading] = useState(false);
     const hasErrors = Object.keys(errors).length > 0;
-    const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
 
     const emailErr = safelyParse(errors, 'emailAddress.message', parseAsString, null);
 
-    const onSubmit = async (data: Submit) => {
+    const onSubmit = async (data: FieldValues) => {
         setLoading(true);
         const email = safelyParse(data, 'emailAddress', parseAsString, null);
 
-        if (!accessToken || !email) {
+        if (!email) {
+            dispatch(addError('Please enter a valid email address.'));
+            setLoading(false);
             return;
         }
 
-        const res = await requestPasswordReset(accessToken, email);
+        const res = await requestPasswordReset(email);
 
-        if (res) {
+        if (isBoolean(res)) {
             dispatch(addSuccess('A reset password link has been sent to your email!'));
         } else {
-            dispatch(addError('Failed to reset your password.'));
+            dispatch(addError(res.description));
         }
 
         setLoading(false);

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 import { DateTime } from 'luxon';
@@ -18,6 +18,7 @@ import { CommerceLayerResponse } from '../types/api';
 import { authClient } from './auth';
 import { errorHandler } from '../middleware/errors';
 import { SocialMedia } from '../types/profile';
+import { ResponseError } from '../types/errors';
 
 export async function getOrders(
     accessToken: string,
@@ -642,27 +643,22 @@ export async function editAddress(
     return false;
 }
 
-export async function requestPasswordReset(accessToken: string, email: string): Promise<boolean> {
+export async function requestPasswordReset(email: string): Promise<boolean | ResponseError> {
     try {
-        const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/account/requestPasswordReset`,
-            {
-                token: accessToken,
-                email,
-            }
-        );
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/account/requestPasswordReset`, {
+            email,
+        });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
+        return status === 201;
     } catch (error: unknown) {
-        errorHandler(error, 'We could not reset your password.');
+        return errorHandler(error, 'We could not reset your password.');
     }
-
-    return false;
 }
 
 export function shouldResetPassword(lastSent: DateTime): boolean {
     const now = DateTime.now().setZone('Europe/London');
-    const expiry = lastSent.plus({ seconds: 300 });
+    const expiry = lastSent.plus({ seconds: 180 });
 
     return now >= expiry;
 }
