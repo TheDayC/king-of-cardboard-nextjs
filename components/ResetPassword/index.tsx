@@ -7,6 +7,7 @@ import { parseAsString, safelyParse } from '../../utils/parsers';
 import { requestPasswordReset } from '../../utils/account';
 import { addError, addSuccess } from '../../store/slices/alerts';
 import { isBoolean } from '../../utils/typeguards';
+import { BiRefresh } from 'react-icons/bi';
 
 export const ResetPassword: React.FC = () => {
     const {
@@ -69,6 +70,7 @@ export const ResetPassword: React.FC = () => {
                     }`}
                 >
                     {loading ? '' : 'Reset Password'}
+                    <BiRefresh className="inline-block w-6 h-6 ml-2" />
                 </button>
             </div>
         </form>
