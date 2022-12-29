@@ -6,32 +6,35 @@ import ShortOrder from './ShortOrder';
 import Pagination from '../../Pagination';
 import { fetchOrders, setIsLoadingOrders } from '../../../store/slices/account';
 import Skeleton from './skeleton';
+import { useSession } from 'next-auth/react';
+import { parseAsString, safelyParse } from '../../../utils/parsers';
+import { getPrettyPrice } from '../../../utils/account/products';
 
 const PER_PAGE = 5;
 
 export const OrderHistory: React.FC = () => {
-    const { accessToken, orders, orderPageCount, userId, userToken, isLoadingOrders } = useSelector(selector);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [shouldFetch, setShouldFetch] = useState(true);
     const dispatch = useDispatch();
+    const { data: session } = useSession();
+    const { orders, orderCount, isLoadingOrders } = useSelector(selector);
+    const [currentPage, setCurrentPage] = useState(1);
+    const userId = safelyParse(session, 'user.id', parseAsString, null);
 
     const handlePageNumber = (nextPage: number) => {
-        if (accessToken && userId && userToken) {
+        if (userId) {
             const page = nextPage + 1;
 
             dispatch(setIsLoadingOrders(true));
-            dispatch(fetchOrders({ accessToken, userToken, userId, pageSize: PER_PAGE, page }));
+            dispatch(fetchOrders({ userId, size: PER_PAGE, page }));
             setCurrentPage(page);
         }
     };
 
     useEffect(() => {
-        if (accessToken && shouldFetch && userId && userToken) {
-            setShouldFetch(false);
+        if (userId) {
             dispatch(setIsLoadingOrders(true));
-            dispatch(fetchOrders({ accessToken, userToken, userId, pageSize: PER_PAGE, page: currentPage }));
+            dispatch(fetchOrders({ userId, size: PER_PAGE, page: currentPage }));
         }
-    }, [dispatch, accessToken, shouldFetch, currentPage, userId, userToken]);
+    }, [dispatch, currentPage, userId]);
 
     if (isLoadingOrders) {
         return <Skeleton />;
@@ -42,24 +45,23 @@ export const OrderHistory: React.FC = () => {
                     orders.map((order, i) => {
                         return (
                             <ShortOrder
-                                orderNumber={order.number}
-                                status={order.status}
-                                paymentStatus={order.payment_status}
-                                fulfillmentStatus={order.fulfillment_status}
-                                itemCount={order.skus_count}
-                                shipmentsCount={order.shipments_count}
-                                total={order.formatted_total_amount_with_taxes}
-                                placedAt={order.placed_at}
-                                updatedAt={order.updated_at}
-                                lineItems={order.lineItems}
+                                orderNumber={order.orderNumber}
+                                orderStatus={order.orderStatus}
+                                paymentStatus={order.paymentStatus}
+                                fulfillmentStatus={order.fulfillmentStatus}
+                                itemCount={order.items.length}
+                                total={getPrettyPrice(order.total)}
+                                created={order.created}
+                                lastUpdated={order.lastUpdated}
+                                lineItems={order.items}
                                 key={`order-${i}`}
                             />
                         );
                     })}
-                {orderPageCount > 1 && (
+                {orderCount > 1 && (
                     <Pagination
                         currentPage={currentPage - 1}
-                        pageCount={orderPageCount}
+                        pageCount={orderCount}
                         handlePageNumber={handlePageNumber}
                     />
                 )}

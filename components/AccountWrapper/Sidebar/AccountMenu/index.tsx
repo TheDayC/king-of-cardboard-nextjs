@@ -57,18 +57,11 @@ export const AccountMenu: React.FC = () => {
                 </li>
                 <li
                     className={`${
-                        slug === Slugs.OrderHistory ? 'bordered' : 'hover-bordered'
+                        router.pathname.includes('order-history') ? 'bordered' : 'hover-bordered'
                     } text-white hover:bg-neutral-focus`}
                     role="menuitem"
                 >
-                    <Link
-                        href={{
-                            pathname: '/account/[slug]',
-                            query: { slug: Slugs.OrderHistory },
-                        }}
-                    >
-                        Order History
-                    </Link>
+                    <Link href="/account/order-history">Order History</Link>
                 </li>
                 <li
                     className={`${

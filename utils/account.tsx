@@ -18,8 +18,9 @@ import { authClient } from './auth';
 import { errorHandler } from '../middleware/errors';
 import { SocialMedia } from '../types/profile';
 import { ResponseError } from '../types/errors';
+import { Fulfillment, Payment, Status } from '../enums/orders';
 
-export async function getOrders(
+export async function getOrdersOLD(
     accessToken: string,
     userToken: string,
     userId: string,
@@ -364,42 +365,82 @@ export async function getOrder(accessToken: string, orderNumber: string): Promis
     };
 }
 
-export function statusColour(status: string): string {
+export function getStatusColor(status: Status): string {
     switch (status) {
-        case 'approved':
+        case Status.Approved:
             return 'green';
-        case 'placed':
-        case 'pending':
+        case Status.Placed:
+        case Status.Pending:
             return 'yellow';
-        case 'cancelled':
+        case Status.Cancelled:
             return 'red';
         default:
             return 'gray';
     }
 }
 
-export function paymentStatusColour(status: string): string {
+export function getPaymentStatusColor(status: Payment): string {
     switch (status) {
-        case 'paid':
+        case Payment.Paid:
             return 'green';
-        case 'authorized':
+        case Payment.Authorised:
             return 'yellow';
-        case 'voided':
-        case 'refunded':
+        case Payment.Refunded:
             return 'red';
         default:
             return 'gray';
     }
 }
 
-export function fulfillmentStatusColour(status: string): string {
+export function getFulfillmentStatusColor(status: Fulfillment): string {
     switch (status) {
-        case 'fulfilled':
+        case Fulfillment.Fulfilled:
             return 'green';
-        case 'in_progress':
+        case Fulfillment.InProgress:
             return 'yellow';
         default:
             return 'gray';
+    }
+}
+
+export function getStatusTitle(status: Status): string {
+    switch (status) {
+        case Status.Approved:
+            return 'Approved';
+        case Status.Placed:
+            return 'Placed';
+        case Status.Pending:
+            return 'Pending';
+        case Status.Cancelled:
+            return 'Cancelled';
+        default:
+            return 'Unknown';
+    }
+}
+
+export function getPaymentStatusTitle(status: Payment): string {
+    switch (status) {
+        case Payment.Paid:
+            return 'Paid';
+        case Payment.Authorised:
+            return 'Authorised';
+        case Payment.Refunded:
+            return 'Refunded';
+        default:
+            return 'Unknown';
+    }
+}
+
+export function getFulfillmentStatusTitle(status: Fulfillment): string {
+    switch (status) {
+        case Fulfillment.Fulfilled:
+            return 'Fulfilled';
+        case Fulfillment.InProgress:
+            return 'InProgress';
+        case Fulfillment.Unfulfilled:
+            return 'Unfulfilled';
+        default:
+            return 'Unknown';
     }
 }
 

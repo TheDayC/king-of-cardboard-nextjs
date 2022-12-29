@@ -1,18 +1,5 @@
 import { Address } from './checkout';
 
-export interface Order {
-    number: number;
-    status: string;
-    payment_status: string;
-    fulfillment_status: string;
-    skus_count: number;
-    shipments_count: number;
-    formatted_total_amount_with_taxes: string;
-    placed_at: string;
-    updated_at: string;
-    lineItems: OrderLineItem[];
-}
-
 export interface SingleOrder {
     status: string;
     payment_status: string;
@@ -99,11 +86,6 @@ export interface SingleAddress {
     lastName: string;
     phone: string;
     postcode: string;
-}
-
-export interface GetOrders {
-    orders: Order[];
-    count: number;
 }
 
 export interface AccountAddress extends Address {

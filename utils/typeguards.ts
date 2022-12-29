@@ -13,7 +13,8 @@ import { ImageCollection, ImageItem, Repeater } from '../types/contentful';
 import { SocialMedia } from '../types/profile';
 import { Interest, Category, Configuration } from '../enums/products';
 import { Address, CustomerDetails } from '../types/checkout';
-import { AccountAddress } from '../types/account';
+import { AccountAddress, Order } from '../types/account';
+import { ListOrders } from '../types/orders';
 
 export function isString(candidate: unknown): candidate is string {
     return typeof candidate === 'string';
@@ -247,4 +248,12 @@ export function isAccountAddress(candidate: unknown): candidate is AccountAddres
 
 export function isArrayOfAccountAddresses(candidate: unknown): candidate is AccountAddress[] {
     return isArray(candidate) && isAccountAddress(candidate[0]);
+}
+
+export function isOrder(candidate: unknown): candidate is Order {
+    return isNotNullOrUndefined<object>(candidate) && 'orderNumber' in candidate;
+}
+
+export function isListOrders(candidate: unknown): candidate is ListOrders {
+    return isNotNullOrUndefined<object>(candidate) && 'orders' in candidate;
 }

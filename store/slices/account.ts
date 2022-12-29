@@ -3,7 +3,7 @@ import axios from 'axios';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { AccountAddress, GetOrders, SingleAddress, SingleOrder } from '../../types/account';
+import { AccountAddress, GetOrders, Order, SingleAddress, SingleOrder } from '../../types/account';
 import { SocialMedia } from '../../types/profile';
 import { getOrders, getOrder, getCurrentAddress, getSocialMedia } from '../../utils/account';
 import { parseAsAccountAddress, parseAsArrayOfAccountAddresses, parseAsNumber, safelyParse } from '../../utils/parsers';
@@ -17,16 +17,14 @@ interface EmailThunkInput {
 }
 
 interface FetchOrdersThunkInput {
-    accessToken: string;
-    userToken: string;
     userId: string;
-    pageSize: number;
+    size: number;
     page: number;
 }
 
 interface OrderThunkInput {
-    accessToken: string;
-    orderNumber: string;
+    userId: string;
+    orderNumber: number;
 }
 
 interface AddressThunkInput {
@@ -56,20 +54,35 @@ export const fetchCoins = createAsyncThunk('account/fetchCoins', async (userId: 
 export const fetchOrders = createAsyncThunk(
     'account/fetchOrders',
     async (data: FetchOrdersThunkInput): Promise<GetOrders> => {
-        const { accessToken, userToken, userId, pageSize, page } = data;
+        const { userId, size, page } = data;
 
-        return await getOrders(accessToken, userToken, userId, pageSize, page);
+        const res = await axios.get(`${URL}/api/orders/list`, {
+            params: {
+                userId,
+                size,
+                page,
+            },
+        });
+
+        return {
+            orders: res.data.orders as Order[],
+            count: safelyParse(res, 'data.count', parseAsNumber, 0),
+        };
     }
 );
 
-export const fetchCurrentOrder = createAsyncThunk(
-    'account/fetchCurrentOrder',
-    async (data: OrderThunkInput): Promise<SingleOrder> => {
-        const { accessToken, orderNumber } = data;
+export const fetchOrder = createAsyncThunk('account/fetchOrder', async (data: OrderThunkInput): Promise<Order> => {
+    const { userId, orderNumber } = data;
 
-        return await getOrder(accessToken, orderNumber);
-    }
-);
+    const res = await axios.get(`${URL}/api/orders/get`, {
+        params: {
+            userId,
+            orderNumber,
+        },
+    });
+
+    return res.data as Order;
+});
 
 export const addAddress = createAsyncThunk('account/addAddress', async (_id: string): Promise<boolean> => {
     const res = await axios.get(`${URL}/api/addresses/get`, { params: { _id } });
@@ -134,10 +147,10 @@ const accountSlice = createSlice({
                 const { orders, count } = action.payload;
 
                 state.orders = orders;
-                state.orderPageCount = count;
+                state.orderCount = count;
                 state.isLoadingOrders = false;
             }),
-            builder.addCase(fetchCurrentOrder.fulfilled, (state, action) => {
+            builder.addCase(fetchOrder.fulfilled, (state, action) => {
                 state.currentOrder = action.payload;
                 state.isLoadingOrder = false;
             }),

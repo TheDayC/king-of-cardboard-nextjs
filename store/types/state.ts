@@ -177,8 +177,8 @@ export interface AccountState {
     shouldFetchRewards: boolean;
     coins: number;
     orders: Order[];
-    orderPageCount: number;
-    currentOrder: SingleOrder;
+    orderCount: number;
+    currentOrder: Order;
     addresses: AccountAddress[];
     addressCount: number;
     isLoadingAddressBook: boolean;

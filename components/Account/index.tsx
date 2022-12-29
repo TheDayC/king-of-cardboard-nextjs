@@ -18,8 +18,6 @@ export const Account: React.FC<AccountProps> = ({ slug }) => {
             return <Details />;
         case Slugs.Profile:
             return <Profile />;
-        case Slugs.OrderHistory:
-            return <OrderHistory />;
         case Slugs.Achievements:
             return <AchievementList />;
         case Slugs.AddressBook:
