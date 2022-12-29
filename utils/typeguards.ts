@@ -13,8 +13,8 @@ import { ImageCollection, ImageItem, Repeater } from '../types/contentful';
 import { SocialMedia } from '../types/profile';
 import { Interest, Category, Configuration } from '../enums/products';
 import { Address, CustomerDetails } from '../types/checkout';
-import { AccountAddress, Order } from '../types/account';
-import { ListOrders } from '../types/orders';
+import { AccountAddress } from '../types/account';
+import { ListOrders, Order } from '../types/orders';
 
 export function isString(candidate: unknown): candidate is string {
     return typeof candidate === 'string';

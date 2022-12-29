@@ -1,5 +1,4 @@
 import { toNumber } from 'lodash';
-import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';

@@ -8,19 +8,18 @@ import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parser
 const defaultErr = 'Could not find any orders.';
 
 async function listOrders(req: NextApiRequest, res: NextApiResponse): Promise<void> {
-    if (req.method === 'GET') {
+    if (req.method === 'POST') {
         try {
             const { db } = await connectToDatabase();
 
             const collection = db.collection('orders');
-            const userId = safelyParse(req, 'query.userId', parseAsString, null);
-            console.log('🚀 ~ file: list.ts:17 ~ listOrders ~ userId', userId);
-            const count = toNumber(safelyParse(req, 'query.count', parseAsString, '10'));
-            const page = toNumber(safelyParse(req, 'query.page', parseAsString, '0'));
+            const userId = safelyParse(req, 'body.userId', parseAsString, null);
+            const count = safelyParse(req, 'body.count', parseAsNumber, 10);
+            const page = safelyParse(req, 'body.page', parseAsNumber, 0);
 
             if (!userId) {
                 res.status(400).json({ message: defaultErr });
-                return;
+                return Promise.resolve();
             }
 
             const orderCount = await collection.countDocuments();
@@ -28,7 +27,7 @@ async function listOrders(req: NextApiRequest, res: NextApiResponse): Promise<vo
 
             if (orderList.length === 0) {
                 res.status(404).json({ message: defaultErr });
-                return;
+                return Promise.resolve();
             }
 
             res.status(200).json({ orders: orderList, count: orderCount });

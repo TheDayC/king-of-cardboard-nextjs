@@ -17,10 +17,10 @@ import { fetchOrders, setIsLoadingOrders } from '../../../store/slices/account';
 import AccountWrapper from '../../../components/AccountWrapper';
 import crown from '../../../images/large-crown.png';
 
-const SIZE = 10;
-const PAGE = 10;
+const SIZE = 5;
+const PAGE = 0;
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const session = await unstable_getServerSession(req, res, authOptions);
 
     // If session hasn't been established redirect to the login page.
@@ -34,10 +34,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
     }
 
     const userId = safelyParse(session, 'user.id', parseAsString, '');
-    const orderNumber = safelyParse(query, 'orderNumber', parseAsString, '0');
-    const orderList = await listOrders(userId, SIZE, PAGE);
 
-    if (!orderNumber || !userId) {
+    if (!userId) {
         return {
             redirect: {
                 permanent: false,
@@ -45,6 +43,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
             },
         };
     }
+
+    const orderList = await listOrders(userId, SIZE, PAGE, true);
 
     if (!isListOrders(orderList)) {
         return {
@@ -58,38 +58,46 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
     // If we're signed in then decide whether we should show the page or 404.
     return {
         props: {
-            orders: orderList.orders,
-            count: orderList.count,
+            initialOrders: orderList.orders,
+            initialCount: orderList.count,
         },
     };
 };
 
 interface OrderHistoryPageProps {
-    orders: Order[];
-    count: number;
+    initialOrders: Order[];
+    initialCount: number;
 }
 
-export const OrderHistoryPage: React.FC<OrderHistoryPageProps> = ({ orders, count }) => {
+export const OrderHistoryPage: React.FC<OrderHistoryPageProps> = ({ initialOrders, initialCount }) => {
     const dispatch = useDispatch();
     const { data: session } = useSession();
-    const [currentPage, setCurrentPage] = useState(1);
+    const [orders, setOrders] = useState<Order[]>(initialOrders);
+    const [totalOrders, setTotalOrders] = useState(initialCount);
+    const [page, setPage] = useState(PAGE);
+    const [isLoading, setIsLoading] = useState(false);
     const userId = safelyParse(session, 'user.id', parseAsString, null);
-    const hasOrders = orders.length > 0;
+    const totalPageCount = totalOrders / SIZE;
 
-    const handlePageNumber = (nextPage: number) => {
-        if (userId) {
-            const page = nextPage + 1;
+    const handlePageNumber = async (nextPage: number) => {
+        setPage(nextPage);
 
-            dispatch(setIsLoadingOrders(true));
-            dispatch(fetchOrders({ userId, size: SIZE, page }));
-            setCurrentPage(page);
+        if (!userId) return;
+        setIsLoading(true);
+        const orderList = await listOrders(userId, SIZE, SIZE * nextPage);
+
+        if (isListOrders(orderList)) {
+            setOrders(orderList.orders);
+            setTotalOrders(orderList.count);
         }
+
+        setIsLoading(false);
     };
 
     return (
         <AccountWrapper title="Order History - Account - King of Cardboard" description="Your order history">
-            <div className="flex flex-col relative w-full px-2 py-0 md:px-4 md:px-8">
-                {hasOrders ? (
+            <div className="flex flex-col relative w-full p-4">
+                {orders.length > 0 ? (
                     orders.map((order, i) => {
                         return (
                             <ShortOrder
@@ -122,12 +130,8 @@ export const OrderHistoryPage: React.FC<OrderHistoryPageProps> = ({ orders, coun
                         </div>
                     </div>
                 )}
-                {count > 1 && hasOrders && (
-                    <Pagination
-                        currentPage={currentPage - 1}
-                        pageCount={count / 10}
-                        handlePageNumber={handlePageNumber}
-                    />
+                {totalPageCount > 1 && orders.length > 0 && (
+                    <Pagination currentPage={page} pageCount={totalPageCount} handlePageNumber={handlePageNumber} />
                 )}
             </div>
         </AccountWrapper>

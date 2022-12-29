@@ -44,6 +44,9 @@ export async function getOrder(userId: string, orderNumber: number): Promise<Ord
                 userId,
                 orderNumber,
             },
+            headers: {
+                'Accept-Encoding': 'application/json',
+            },
         });
 
         return res.data as Order;
@@ -52,21 +55,32 @@ export async function getOrder(userId: string, orderNumber: number): Promise<Ord
     }
 }
 
-export async function listOrders(userId: string, size: number, page: number): Promise<ListOrders | ResponseError> {
+export async function listOrders(
+    userId: string,
+    count: number,
+    page: number,
+    isServer: boolean = false
+): Promise<ListOrders | ResponseError> {
     try {
-        const res = await axios.get(`${URL}/api/orders/list`, {
-            params: {
+        const headers = isServer ? { 'Accept-Encoding': 'application/json' } : undefined;
+        const res = await axios.post(
+            `${URL}/api/orders/list`,
+            {
                 userId,
-                size,
+                count,
                 page,
             },
-        });
+            {
+                headers,
+            }
+        );
 
         return {
             orders: res.data.orders as Order[],
             count: safelyParse(res, 'data.count', parseAsNumber, 0),
         };
     } catch (error: unknown) {
+        console.log('🚀 ~ file: order.ts:69 ~ listOrders ~ error', error);
         return errorHandler(error, 'Could not list orders.');
     }
 }
