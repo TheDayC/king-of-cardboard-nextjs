@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 import { DateTime } from 'luxon';
@@ -12,12 +12,12 @@ import {
     parseAsString,
     parseAsNumber,
     parseAsCommerceResponse,
-    parseAsBoolean,
 } from './parsers';
 import { CommerceLayerResponse } from '../types/api';
 import { authClient } from './auth';
 import { errorHandler } from '../middleware/errors';
 import { SocialMedia } from '../types/profile';
+import { ResponseError } from '../types/errors';
 
 export async function getOrders(
     accessToken: string,
@@ -642,27 +642,22 @@ export async function editAddress(
     return false;
 }
 
-export async function requestPasswordReset(accessToken: string, email: string): Promise<boolean> {
+export async function requestPasswordReset(email: string): Promise<boolean | ResponseError> {
     try {
-        const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/account/requestPasswordReset`,
-            {
-                token: accessToken,
-                email,
-            }
-        );
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/account/password/reset`, {
+            email,
+        });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        return safelyParse(response, 'data.hasSent', parseAsBoolean, false);
+        return status === 201;
     } catch (error: unknown) {
-        errorHandler(error, 'We could not reset your password.');
+        return errorHandler(error, 'We could not reset your password.');
     }
-
-    return false;
 }
 
-export function shouldResetPassword(lastSent: DateTime): boolean {
+export function hasResetExpired(expires: string): boolean {
     const now = DateTime.now().setZone('Europe/London');
-    const expiry = lastSent.plus({ seconds: 300 });
+    const expiry = DateTime.fromISO(expires, { zone: 'Europe/London' });
 
     return now >= expiry;
 }
@@ -698,32 +693,19 @@ export async function updatePassword(accessToken: string, emailAddress: string, 
     return false;
 }
 
-export async function resetPassword(
-    accessToken: string,
-    password: string,
-    id: string,
-    resetToken: string
-): Promise<boolean> {
+export async function resetPassword(token: string, password: string, email: string): Promise<boolean | ResponseError> {
     try {
-        const cl = authClient(accessToken);
-        const res = await cl.patch(`/api/customer_password_resets/${id}`, {
-            data: {
-                type: 'customer_password_resets',
-                id: id,
-                attributes: {
-                    customer_password: password,
-                    _reset_password_token: resetToken,
-                },
-            },
+        const res = await axios.patch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/account/password/reset`, {
+            token,
+            password,
+            email,
         });
         const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        return status === 200;
+        return status === 201;
     } catch (error: unknown) {
-        errorHandler(error, 'We could not reset your password.');
+        return errorHandler(error, 'We could not reset your password.');
     }
-
-    return false;
 }
 
 export async function updateUsername(emailAddress: string, username: string): Promise<boolean> {

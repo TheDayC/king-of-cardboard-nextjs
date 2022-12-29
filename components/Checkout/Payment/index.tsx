@@ -92,6 +92,7 @@ export const Payment: React.FC = () => {
             discount,
             shipping,
             total,
+            customerDetails,
             shippingAddress,
             billingAddress,
             paymentId,
@@ -315,8 +316,12 @@ export const Payment: React.FC = () => {
                                     }`}
                                     role="button"
                                 >
-                                    {!isCheckoutLoading ? 'Checkout' : ''}
-                                    <BiExit className="inline-block w-6 h-6 ml-2" />
+                                    {!isCheckoutLoading && (
+                                        <React.Fragment>
+                                            Checkout
+                                            <BiExit className="inline-block w-6 h-6 ml-2" />
+                                        </React.Fragment>
+                                    )}
                                 </button>
                             )}
                         </div>

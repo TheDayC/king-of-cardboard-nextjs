@@ -12,6 +12,7 @@ import { Product as ProductType } from '../../../types/productsNew';
 import { getPrettyPrice, deleteProduct, editProduct } from '../../../utils/account/products';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import Loading from '../../Loading';
+import { isNumber } from '../../../utils/typeguards';
 
 interface ProductProps {
     product: ProductType;
@@ -91,7 +92,7 @@ export const Product: React.FC<ProductProps> = ({ product, updateProducts }) => 
                     <div className="flex flex-col space-y-2">
                         <h2 className="text-2xl">{title}</h2>
                         <p className="text-sm text-gray-400">SKU: {sku}</p>
-                        {quantity && <p className="text-sm text-gray-400">QTY: {quantity}</p>}
+                        {isNumber(quantity) && <p className="text-sm text-gray-400">QTY: {quantity}</p>}
                         <p className="text-sm text-gray-400">
                             Last updated: {lastUpdatedDate.toFormat('hh:ss')} - {lastUpdatedDate.toFormat('dd/MM/yyyy')}
                         </p>
