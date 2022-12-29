@@ -98,10 +98,8 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
         setValue,
         setError,
         reset,
-        getValues,
     } = useForm();
     const router = useRouter();
-    const { content } = getValues();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
     const [mainImageFileList, setMainImageFileList] = useState<FileList | null>(null);
