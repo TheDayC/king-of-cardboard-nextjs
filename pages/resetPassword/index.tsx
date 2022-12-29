@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Error from 'next/error';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';

@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
 import { MdOutlineMailOutline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
+import { BiRefresh } from 'react-icons/bi';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { requestPasswordReset } from '../../utils/account';
 import { addError, addSuccess } from '../../store/slices/alerts';
 import { isBoolean } from '../../utils/typeguards';
-import { BiRefresh } from 'react-icons/bi';
 
 export const ResetPassword: React.FC = () => {
     const {
