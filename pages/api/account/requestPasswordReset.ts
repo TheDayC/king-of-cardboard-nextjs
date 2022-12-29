@@ -21,7 +21,8 @@ const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.pn
 async function getResetId(email: string, token: string, db: Db): Promise<string | null> {
     const passwordResetsCollection = db.collection('passwordResets');
     const foundReset = await passwordResetsCollection.findOne({ email });
-    const newDate = DateTime.now().setZone('Europe/London').toISO();
+    const newDate = DateTime.now().setZone('Europe/London');
+    const expires = newDate.plus({ seconds: 180 });
 
     if (foundReset) {
         const shouldReset = shouldResetPassword(DateTime.fromISO(foundReset.lastSent, { zone: 'Europe/London' }));
@@ -31,7 +32,7 @@ async function getResetId(email: string, token: string, db: Db): Promise<string 
 
     const resetInsert = await passwordResetsCollection.findOneAndUpdate(
         { email },
-        { $set: { token, lastSent: newDate } },
+        { $set: { token, lastSent: newDate.toISO(), expires: expires.toISO() } },
         { upsert: true, returnDocument: 'after', projection: { _id: 1 } }
     );
 
