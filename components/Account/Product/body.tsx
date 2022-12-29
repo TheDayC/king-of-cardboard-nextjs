@@ -19,6 +19,7 @@ import { Category, Configuration, Interest, StockStatus } from '../../../enums/p
 import { addGalleryToBucket, addImageToBucket, addProduct, editProduct } from '../../../utils/account/products';
 import { addError, addSuccess } from '../../../store/slices/alerts';
 import ImageUpload from '../Fields/ImageUpload';
+import { isNumber } from '../../../utils/typeguards';
 
 const productCategory = [
     { key: 'Sports', value: Category.Sports },
@@ -227,10 +228,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
         register('content');
     }, [register]);
 
-    useEffect(() => {
-        setValue('content', existingContent);
-    }, [existingContent, setValue]);
-
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col space-y-4">
@@ -317,7 +314,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         error={qtyErr}
                         register={register}
                         Icon={FaBoxes}
-                        defaultValue={quantity || undefined}
+                        defaultValue={isNumber(quantity) ? quantity : undefined}
                         isRequired
                     />
                     <InputField
@@ -328,7 +325,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         error={priceErr}
                         register={register}
                         Icon={BsCurrencyPound}
-                        defaultValue={price || undefined}
+                        defaultValue={isNumber(price) ? price : undefined}
                         isRequired
                     />
                     <InputField
@@ -339,7 +336,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         error={salePriceErr}
                         register={register}
                         Icon={AiOutlinePoundCircle}
-                        defaultValue={salePrice || undefined}
+                        defaultValue={isNumber(salePrice) ? salePrice : undefined}
                         isRequired={false}
                     />
                 </div>
@@ -372,7 +369,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                     </div>
                 </div>
                 <div className="flex flex-col">
-                    <RichTextEditor placeholder="Content" onChange={handleRichContent} value={content as string} />
+                    <RichTextEditor placeholder="Content" onChange={handleRichContent} value={existingContent || ''} />
                 </div>
 
                 <div className="form-control">

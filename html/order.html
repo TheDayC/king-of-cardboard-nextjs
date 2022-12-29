@@ -148,8 +148,9 @@
             }
 
             h4.itemName {
-                margin-bottom: 2px;
+                margin-bottom: 8px;
                 font-size: 16px;
+                font-weight: bold;
             }
 
             p,
@@ -176,11 +177,13 @@
 
             p.skuCode,
             p.quantity {
-                margin-bottom: 2px;
+                margin-bottom: 4px;
                 font-size: 12px;
+                color: #9ca3af;
             }
 
             p.subTotal,
+            p.discount,
             p.shipping,
             p.total {
                 margin-bottom: 16px;
@@ -300,6 +303,11 @@
 
             .productImg {
                 width: 50px;
+                border-radius: 6px;
+            }
+
+            .orderNumber {
+                color: '#f6c467';
             }
 
             /* -------------------------------------
@@ -448,7 +456,7 @@
                                                     account menu to navigate to your order history.
                                                 </p>
                                                 <h1>Order Details</h1>
-                                                <h2><b>Order:</b> #{{orderNumber}}</h2>
+                                                <h2><b>Order:</b> <span class="orderNumber">{{orderNumber}}</span></h2>
                                                 <table
                                                     role="presentation"
                                                     border="0"
@@ -458,7 +466,9 @@
                                                 >
                                                     <thead>
                                                         <tr>
-                                                            <td><h2>Personal Details</h2></td>
+                                                            <td>
+                                                                <h2><b>Personal Details</b></h2>
+                                                            </td>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -601,6 +611,14 @@
                                                             <td align="right">
                                                                 <p class="subTotal">
                                                                     Subtotal: <span>{{subTotal}}</span>
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td align="right">
+                                                                <p class="discount">
+                                                                    Discount: <span>{{discount}}</span>
                                                                 </p>
                                                             </td>
                                                         </tr>
