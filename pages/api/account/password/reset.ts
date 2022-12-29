@@ -5,11 +5,12 @@ import sgMail from '@sendgrid/mail';
 import { DateTime } from 'luxon';
 import { nanoid } from 'nanoid';
 import { Db } from 'mongodb';
+import bcrypt from 'bcrypt';
 
-import { connectToDatabase } from '../../../middleware/database';
-import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
-import { shouldResetPassword } from '../../../utils/account';
-import { errorHandler } from '../../../middleware/errors';
+import { connectToDatabase } from '../../../../middleware/database';
+import { parseAsNumber, parseAsString, safelyParse } from '../../../../utils/parsers';
+import { hasResetExpired } from '../../../../utils/account';
+import { errorHandler } from '../../../../middleware/errors';
 
 // Setup SendGrid's mailer.
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
@@ -29,12 +30,16 @@ async function getResetId(email: string, token: string, db: Db): Promise<string 
     // If found an existing password reset item by email then execute validation.
     if (foundReset) {
         // Grab expiry date.
-        const expires = safelyParse(foundReset, 'expires', parseAsString, null);
-        if (!expires) return null;
+        const expires = safelyParse(
+            foundReset,
+            'expires',
+            parseAsString,
+            DateTime.now().setZone('Europe/London').toISO()
+        );
 
         // Test if current date has exceeded expiry.
-        const shouldReset = shouldResetPassword(expires);
-        if (!shouldReset) return null;
+        const hasExpired = hasResetExpired(expires);
+        if (!hasExpired) return null;
     }
 
     // If func passes expiry validation then create a new expiry date of 3 mins from now.
@@ -52,13 +57,12 @@ async function getResetId(email: string, token: string, db: Db): Promise<string 
     return resetInsert.value ? resetInsert.value._id.toString() : null;
 }
 
-async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+async function passwordReset(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         try {
             // Connect to Mongo and fetch collections.
             const { db } = await connectToDatabase();
             const userCollection = db.collection('users');
-            const passwordResetsCollection = db.collection('passwordResets');
 
             // Parse email and check for errors.
             const email = safelyParse(req, 'body.email', parseAsString, null);
@@ -97,9 +101,7 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
                 return Promise.resolve();
             }
 
-            const link = `${
-                process.env.NEXT_PUBLIC_SITE_URL || ''
-            }/resetPassword?token=${resetToken}&id=${resetId}&email=${email}`;
+            const link = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/resetPassword?token=${resetToken}&email=${email}`;
             const htmlData = fs.readFileSync(filePath, 'utf8');
             const html = htmlData
                 .replace('{{email}}', email)
@@ -130,9 +132,78 @@ async function requestPasswordReset(req: NextApiRequest, res: NextApiResponse): 
 
             res.status(status).json(errorHandler(err, defaultErr));
         }
-
-        return Promise.resolve();
     }
+
+    if (req.method === 'PATCH') {
+        try {
+            // Connect to Mongo and fetch collections.
+            const { db } = await connectToDatabase();
+            const passwordResetsCollection = db.collection('passwordResets');
+            const usersCollection = db.collection('users');
+
+            // Parse email and check for errors.
+            const email = safelyParse(req, 'body.email', parseAsString, null);
+            const token = safelyParse(req, 'body.token', parseAsString, null);
+            const password = safelyParse(req, 'body.password', parseAsString, null);
+
+            if (!email || !token || !password) {
+                res.status(400).json({
+                    message: 'Email, token or password is missing.',
+                });
+
+                return Promise.resolve();
+            }
+
+            const reset = await passwordResetsCollection.findOne({ email, token }, { projection: { expires: 1 } });
+            const expires = safelyParse(reset, 'expires', parseAsString, null);
+
+            if (!reset || !expires) {
+                res.status(400).json({
+                    message: 'Email, token or password is missing.',
+                });
+
+                return Promise.resolve();
+            }
+
+            const hasExpired = hasResetExpired(expires);
+
+            if (hasExpired) {
+                res.status(400).json({
+                    message: 'Reset token has expired, please request a new password reset from the login screen.',
+                });
+
+                return Promise.resolve();
+            }
+
+            // Encrypt and update the user's password.
+            const hashedPassword = await bcrypt.hash(password, process.env.SALT || 10);
+            const passwordDoc = await usersCollection.findOneAndUpdate(
+                { email },
+                { $set: { password: hashedPassword } }
+            );
+
+            if (!passwordDoc) {
+                res.status(404).json({
+                    message: 'Could not find user.',
+                });
+
+                return Promise.resolve();
+            }
+
+            await passwordResetsCollection.updateOne(
+                { _id: reset._id },
+                { $set: { expires: null, token: null, lastReset: DateTime.now().setZone('Europe/London').toISO() } }
+            );
+
+            res.status(201).end();
+        } catch (err: unknown) {
+            const status = safelyParse(err, 'response.status', parseAsNumber, 500);
+
+            res.status(status).json(errorHandler(err, defaultErr));
+        }
+    }
+
+    return Promise.resolve();
 }
 
-export default requestPasswordReset;
+export default passwordReset;

@@ -12,7 +12,6 @@ import {
     parseAsString,
     parseAsNumber,
     parseAsCommerceResponse,
-    parseAsBoolean,
 } from './parsers';
 import { CommerceLayerResponse } from '../types/api';
 import { authClient } from './auth';
@@ -645,7 +644,7 @@ export async function editAddress(
 
 export async function requestPasswordReset(email: string): Promise<boolean | ResponseError> {
     try {
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/account/requestPasswordReset`, {
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/account/password/reset`, {
             email,
         });
         const status = safelyParse(res, 'status', parseAsNumber, 500);
@@ -656,7 +655,7 @@ export async function requestPasswordReset(email: string): Promise<boolean | Res
     }
 }
 
-export function shouldResetPassword(expires: string): boolean {
+export function hasResetExpired(expires: string): boolean {
     const now = DateTime.now().setZone('Europe/London');
     const expiry = DateTime.fromISO(expires, { zone: 'Europe/London' });
 
@@ -694,32 +693,19 @@ export async function updatePassword(accessToken: string, emailAddress: string, 
     return false;
 }
 
-export async function resetPassword(
-    accessToken: string,
-    password: string,
-    id: string,
-    resetToken: string
-): Promise<boolean> {
+export async function resetPassword(token: string, password: string, email: string): Promise<boolean | ResponseError> {
     try {
-        const cl = authClient(accessToken);
-        const res = await cl.patch(`/api/customer_password_resets/${id}`, {
-            data: {
-                type: 'customer_password_resets',
-                id: id,
-                attributes: {
-                    customer_password: password,
-                    _reset_password_token: resetToken,
-                },
-            },
+        const res = await axios.patch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/account/password/reset`, {
+            token,
+            password,
+            email,
         });
         const status = safelyParse(res, 'status', parseAsNumber, 500);
 
-        return status === 200;
+        return status === 201;
     } catch (error: unknown) {
-        errorHandler(error, 'We could not reset your password.');
+        return errorHandler(error, 'We could not reset your password.');
     }
-
-    return false;
 }
 
 export async function updateUsername(emailAddress: string, username: string): Promise<boolean> {

@@ -69,8 +69,12 @@ export const ResetPassword: React.FC = () => {
                         loading ? ' loading btn-square' : ''
                     }`}
                 >
-                    {loading ? '' : 'Reset Password'}
-                    <BiRefresh className="inline-block w-6 h-6 ml-2" />
+                    {!loading && (
+                        <React.Fragment>
+                            Reset Password
+                            <BiRefresh className="inline-block w-6 h-6 ml-2" />
+                        </React.Fragment>
+                    )}
                 </button>
             </div>
         </form>
