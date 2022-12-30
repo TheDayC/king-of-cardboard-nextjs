@@ -48,6 +48,7 @@ export const Payment: React.FC = () => {
         items,
         billingAddress,
         shippingAddress,
+        chosenShippingMethodId: shippingMethodId,
         coins,
         shouldEnable,
     } = useSelector(selector);
@@ -97,6 +98,7 @@ export const Payment: React.FC = () => {
             billingAddress,
             paymentId,
             paymentMethod,
+            shippingMethodId,
             coins,
         });
 
