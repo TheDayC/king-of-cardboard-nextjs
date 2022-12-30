@@ -5,6 +5,7 @@ import { MdOutlineEmail, MdOutlineTitle } from 'react-icons/md';
 import { BiBuildings, BiCategory, BiSave } from 'react-icons/bi';
 import { useRouter } from 'next/router';
 import { toNumber } from 'lodash';
+import { useDispatch } from 'react-redux';
 
 import InputField from '../Fields/Input';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -16,6 +17,7 @@ import { CartItem } from '../../../types/cart';
 import RepeaterField from '../Fields/Repeater';
 import { addOrder, editOrder } from '../../../utils/account/order';
 import { AccountShippingMethod } from '../../../types/shipping';
+import { addSuccess } from '../../../store/slices/alerts';
 
 const orderStatuses = [
     { key: 'Approved', value: Status.Approved },
@@ -73,6 +75,7 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
     isNew,
     shippingMethods,
 }) => {
+    const dispatch = useDispatch();
     const {
         register,
         handleSubmit,
@@ -182,11 +185,13 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
 
         if (isNew) {
             await addOrder(payload);
+            dispatch(addSuccess('Order created!'));
 
             setIsLoading(false);
             router.push('/account/orders');
         } else if (_id) {
             await editOrder(_id, payload);
+            dispatch(addSuccess('Order saved!'));
 
             setIsLoading(false);
         }
