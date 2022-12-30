@@ -55,7 +55,7 @@ export const HistoricalOrderPage: React.FC<HistoricalOrderPageProps> = ({ order 
             title={`#${order.orderNumber} - Account - King of Cardboard`}
             description={`Your historical order #${order.orderNumber} details.`}
         >
-            <div className="flex flex-col relative w-full px-2 py-0 md:px-4 md:px-8">
+            <div className="flex flex-col relative w-full py-4 px-6">
                 <LongOrder
                     orderNumber={order.orderNumber}
                     orderStatus={order.orderStatus}

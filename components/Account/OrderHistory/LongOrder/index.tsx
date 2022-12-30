@@ -7,7 +7,6 @@ import {
     getStatusColor,
     getPaymentStatusColor,
     getFulfillmentStatusColor,
-    cardLogo,
     getStatusTitle,
     getPaymentStatusTitle,
     getFulfillmentStatusTitle,
@@ -19,6 +18,7 @@ import { Address } from '../../../../types/checkout';
 import { PaymentMethods } from '../../../../enums/checkout';
 import { getPrettyPrice } from '../../../../utils/account/products';
 import { formatOrderNumber } from '../../../../utils/checkout';
+import Badge from '../Badge';
 
 interface OrderProps {
     orderNumber: number;
@@ -69,7 +69,7 @@ export const LongOrder: React.FC<OrderProps> = ({
 
     return (
         <div className="flex w-full flex-col space-y-4">
-            <h1 className="text-3xl">Order {formatOrderNumber(orderNumber)}</h1>
+            <h1 className="text-5xl">Order {formatOrderNumber(orderNumber)}</h1>
             <div className="flex flex-row items-start justify-start space-x-4">
                 <p className="text-sm text-gray-400">
                     <BsCalendarDate className="w-5 h-5 inline mr-2 -mt-1" />
@@ -87,18 +87,17 @@ export const LongOrder: React.FC<OrderProps> = ({
             <div className="divider lightDivider"></div>
             <div className="flex flex-row w-full space-x-6">
                 <div className="flex flex-row justify-start items-center text-lg space-x-2">
-                    <div className={`rounded-full w-5 h-5 bg-${statusColor}-400`} />
+                    <Badge color={statusColor} />
                     <h3 className="font-bold">Order:</h3>
-
                     <p className="capitalize">{statusTitle}</p>
                 </div>
                 <div className="flex flex-row justify-start items-center text-lg space-x-2">
-                    <div className={`rounded-full w-5 h-5 bg-${paymentColor}-400`} />
+                    <Badge color={paymentColor} />
                     <h3 className="font-bold">Payment:</h3>
                     <p className="capitalize">{paymentTitle}</p>
                 </div>
                 <div className="flex flex-row justify-start items-center mr-0 text-lg space-x-2">
-                    <div className={`rounded-full w-5 h-5 bg-${fulfillmentColor}-400`} />
+                    <Badge color={fulfillmentColor} />
                     <h3 className="font-bold">Fulfillment:</h3>
                     <p className="capitalize">{fulfillmentTitle}</p>
                 </div>

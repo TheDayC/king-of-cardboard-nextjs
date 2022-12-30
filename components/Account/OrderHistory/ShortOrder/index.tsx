@@ -15,6 +15,7 @@ import {
 import { Status, Payment, Fulfillment } from '../../../../enums/orders';
 import { CartItem } from '../../../../types/cart';
 import { formatOrderNumber } from '../../../../utils/checkout';
+import Badge from '../Badge';
 
 interface OrderProps {
     orderNumber: number;
@@ -50,9 +51,9 @@ export const ShortOrder: React.FC<OrderProps> = ({
     const fulfillmentTitle = getFulfillmentStatusTitle(fulfillmentStatus);
 
     return (
-        <div className="card card-side bordered rounded-md mb-4">
+        <div className="card card-side bordered rounded-md w-full">
             <div className="card-body p-2 md:p-4">
-                <div className="flex flex-row justify-between items-center">
+                <div className="flex flex-row justify-between items-center space-x-4">
                     <div className="flex flex-col space-y-4">
                         {orderNumber > 0 && (
                             <Link
@@ -83,18 +84,18 @@ export const ShortOrder: React.FC<OrderProps> = ({
                         </div>
                         <div className="flex flex-row space-x-4">
                             <div className="flex flex-row justify-start items-center text-lg space-x-2">
-                                <div className={`rounded-full w-3 h-3 bg-${statusColor}-400`} />
+                                <Badge color={statusColor} />
                                 <h3 className="font-bold">Order:</h3>
 
                                 <p className="capitalize">{statusTitle}</p>
                             </div>
                             <div className="flex flex-row justify-start items-center text-lg space-x-2">
-                                <div className={`rounded-full w-3 h-3 bg-${paymentColor}-400`} />
+                                <Badge color={paymentColor} />
                                 <h3 className="font-bold">Payment:</h3>
                                 <p className="capitalize">{paymentTitle}</p>
                             </div>
                             <div className="flex flex-row justify-start items-center mr-0 text-lg space-x-2">
-                                <div className={`rounded-full w-3 h-3 bg-${fulfillmentColor}-400`} />
+                                <Badge color={fulfillmentColor} />
                                 <h3 className="font-bold">Fulfillment:</h3>
                                 <p className="capitalize">{fulfillmentTitle}</p>
                             </div>

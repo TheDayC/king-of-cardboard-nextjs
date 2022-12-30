@@ -96,27 +96,32 @@ export const OrderHistoryPage: React.FC<OrderHistoryPageProps> = ({ initialOrder
 
     return (
         <AccountWrapper title="Order History - Account - King of Cardboard" description="Your order history">
-            <div className="flex flex-col relative w-full p-4">
+            <div className="flex flex-col relative w-full py-4 px-6">
                 {orders.length > 0 ? (
-                    orders.map((order, i) => {
-                        return (
-                            <ShortOrder
-                                orderNumber={order.orderNumber}
-                                orderStatus={order.orderStatus}
-                                paymentStatus={order.paymentStatus}
-                                fulfillmentStatus={order.fulfillmentStatus}
-                                itemCount={order.items.length}
-                                total={getPrettyPrice(order.total)}
-                                created={order.created}
-                                lastUpdated={order.lastUpdated}
-                                lineItems={order.items}
-                                key={`order-${i}`}
-                            />
-                        );
-                    })
+                    <div className="flex flex-col relative w-full p-4 space-y-6">
+                        <h1 className="text-5xl">Order History</h1>
+                        <div className="flex flex-col items-start w-full space-y-6">
+                            {orders.map((order, i) => {
+                                return (
+                                    <ShortOrder
+                                        orderNumber={order.orderNumber}
+                                        orderStatus={order.orderStatus}
+                                        paymentStatus={order.paymentStatus}
+                                        fulfillmentStatus={order.fulfillmentStatus}
+                                        itemCount={order.items.length}
+                                        total={getPrettyPrice(order.total)}
+                                        created={order.created}
+                                        lastUpdated={order.lastUpdated}
+                                        lineItems={order.items}
+                                        key={`order-${i}`}
+                                    />
+                                );
+                            })}
+                        </div>
+                    </div>
                 ) : (
                     <div className="flex flex-col relative w-full p-4 space-y-6">
-                        <h1 className="text-3xl">Order History</h1>
+                        <h1 className="text-5xl">Order History</h1>
                         <div className="flex flex-col items-center w-full space-y-6">
                             <Image
                                 src={crown}
