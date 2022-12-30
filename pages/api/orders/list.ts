@@ -1,4 +1,3 @@
-import { toNumber } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';

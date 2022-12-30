@@ -2,7 +2,6 @@ import React from 'react';
 
 import Details from './Details';
 import Profile from './Profile';
-import OrderHistory from './OrderHistory';
 import AchievementList from './AchievementList';
 import AddressBook from './AddressBook';
 import Fields from './AddressBook/Fields';

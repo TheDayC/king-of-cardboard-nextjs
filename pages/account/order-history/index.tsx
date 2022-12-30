@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { authOptions } from '../../api/auth/[...nextauth]';
@@ -11,11 +12,9 @@ import { Order } from '../../../types/orders';
 import { getPrettyPrice } from '../../../utils/account/products';
 import ShortOrder from '../../../components/Account/OrderHistory/ShortOrder';
 import Pagination from '../../../components/Pagination';
-import { useDispatch } from 'react-redux';
-import { useSession } from 'next-auth/react';
-import { fetchOrders, setIsLoadingOrders } from '../../../store/slices/account';
 import AccountWrapper from '../../../components/AccountWrapper';
 import crown from '../../../images/large-crown.png';
+import Loading from '../../../components/Loading';
 
 const SIZE = 5;
 const PAGE = 0;
@@ -70,7 +69,6 @@ interface OrderHistoryPageProps {
 }
 
 export const OrderHistoryPage: React.FC<OrderHistoryPageProps> = ({ initialOrders, initialCount }) => {
-    const dispatch = useDispatch();
     const { data: session } = useSession();
     const [orders, setOrders] = useState<Order[]>(initialOrders);
     const [totalOrders, setTotalOrders] = useState(initialCount);
@@ -97,6 +95,7 @@ export const OrderHistoryPage: React.FC<OrderHistoryPageProps> = ({ initialOrder
     return (
         <AccountWrapper title="Order History - Account - King of Cardboard" description="Your order history">
             <div className="flex flex-col relative w-full py-4 px-6">
+                <Loading show={isLoading} />
                 {orders.length > 0 ? (
                     <div className="flex flex-col relative w-full p-4 space-y-6">
                         <h1 className="text-5xl">Order History</h1>
@@ -130,7 +129,7 @@ export const OrderHistoryPage: React.FC<OrderHistoryPageProps> = ({ initialOrder
                                 width={300}
                                 height={300}
                             />
-                            <p className="text-xl">There's nothing here...</p>
+                            <p className="text-xl">There is nothing here...</p>
                             <p className="text-xl">Place an order to popular your order history!</p>
                         </div>
                     </div>

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useSession } from 'next-auth/react';
 
 import selector from './selector';
 import ShortOrder from './ShortOrder';
 import Pagination from '../../Pagination';
 import { fetchOrders, setIsLoadingOrders } from '../../../store/slices/account';
 import Skeleton from './skeleton';
-import { useSession } from 'next-auth/react';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { getPrettyPrice } from '../../../utils/account/products';
 
