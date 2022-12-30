@@ -2,11 +2,8 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Head from 'next/head';
-import { useSelector } from 'react-redux';
 
 import * as ga from '../../lib/ga';
-import selector from './selector';
-import Loading from '../Loading';
 import Sidebar from './Sidebar';
 
 const DEFAULT_IMAGE =
@@ -22,7 +19,6 @@ interface AccountWrapperProps {
 export const AccountWrapper: React.FC<AccountWrapperProps> = ({ title, description, image, children }) => {
     const router = useRouter();
     const cookieConsent = Boolean(Cookies.get('cookieConsent'));
-    const { isFetchingToken } = useSelector(selector);
     const imageURL = image ? image : DEFAULT_IMAGE;
 
     // Some GA subscribers.
@@ -60,16 +56,12 @@ export const AccountWrapper: React.FC<AccountWrapperProps> = ({ title, descripti
                 <meta name="twitter:description" content={description} />
                 <meta name="twitter:image" content={imageURL} />
             </Head>
-            {isFetchingToken ? (
-                <Loading show />
-            ) : (
-                <div className="flex flex-row justify-start items-stretch bg-primary-content h-screen overflow-y-auto">
-                    <div className="w-80 bg-neutral py-2 h-full">
-                        <Sidebar />
-                    </div>
-                    <div className="w-full">{children}</div>
+            <div className="flex flex-row justify-start items-stretch bg-primary-content h-screen overflow-y-auto">
+                <div className="w-80 bg-neutral py-2 h-full">
+                    <Sidebar />
                 </div>
-            )}
+                <div className="w-full">{children}</div>
+            </div>
         </React.Fragment>
     );
 };

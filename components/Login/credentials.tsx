@@ -5,7 +5,6 @@ import { RiLockPasswordLine } from 'react-icons/ri';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { BiErrorCircle } from 'react-icons/bi';
-import { useDispatch } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
 
@@ -30,7 +29,6 @@ export const Credentials: React.FC<CredentialsProps> = ({ shouldRedirect }) => {
     const hasErrors = Object.keys(errors).length > 0;
     const emailErr = safelyParse(errors, 'emailAddress.message', parseAsString, null);
     const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
-    const dispatch = useDispatch();
     const btnErrClass = hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary';
     const btnLoadingClass = loading ? ' loading btn-square' : '';
 

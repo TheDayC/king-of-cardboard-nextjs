@@ -32,13 +32,6 @@ export interface Hero {
     link_title?: string;
 }
 
-export interface ServerSideRedirectProps {
-    redirect: {
-        permanent: boolean;
-        destination: string;
-    };
-}
-
 export interface PageWithHero {
     content: Document[] | null;
     heroes: Hero[] | null;

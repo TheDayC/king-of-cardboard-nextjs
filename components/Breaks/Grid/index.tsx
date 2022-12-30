@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ceil, divide } from 'lodash';
 
 import Pagination from '../../Pagination';
-import { fetchBreaks, setIsLoadingBreaks } from '../../../store/slices/breaks';
+import { setIsLoadingBreaks } from '../../../store/slices/breaks';
 import BreakCard from './BreakCard';
 import selector from './selector';
 import Skeleton from './skeleton';
@@ -12,31 +12,17 @@ import Filters from './Filters';
 const PER_PAGE = 8;
 
 export const Grid: React.FC = () => {
-    const { accessToken, breaks, breaksTotal, isLoadingBreaks, order } = useSelector(selector);
+    const { breaks, breaksTotal, isLoadingBreaks } = useSelector(selector);
     const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(0);
 
     const productPageCount = ceil(divide(breaksTotal, PER_PAGE));
 
     // Handle the page number and set it in local state.
-    const handlePageNumber = useCallback(
-        (pageNumber: number) => {
-            if (accessToken) {
-                dispatch(setIsLoadingBreaks(true));
-                setCurrentPage(pageNumber);
-                dispatch(fetchBreaks({ accessToken, limit: PER_PAGE, skip: pageNumber * PER_PAGE, order }));
-            }
-        },
-        [accessToken, dispatch, order]
-    );
-
-    // Fetch all breaks on page load.
-    useEffect(() => {
-        if (accessToken) {
-            dispatch(setIsLoadingBreaks(true));
-            dispatch(fetchBreaks({ accessToken, limit: PER_PAGE, skip: 0, order }));
-        }
-    }, [dispatch, accessToken, order]);
+    const handlePageNumber = (pageNumber: number) => {
+        dispatch(setIsLoadingBreaks(true));
+        setCurrentPage(pageNumber);
+    };
 
     if (isLoadingBreaks) {
         return <Skeleton />;

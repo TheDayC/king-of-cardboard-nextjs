@@ -2,9 +2,7 @@ import * as contentful from 'contentful';
 
 import { errorHandler } from '../middleware/errors';
 import { ContentfulPage, PageWithHero } from '../types/pages';
-import { fetchContent } from './content';
 import {
-    parseAsArrayOfContentfulPages,
     parseAsArrayOfDocuments,
     parseAsArrayOfHeroes,
     parseAsArrayOfSliderImages,
@@ -89,10 +87,4 @@ export async function pageWithHeroBySlug(slug: string, path: string): Promise<Pa
         heroes: safelyParse(pageItems, 'fields.hero', parseAsArrayOfHeroes, null),
         sliderImages: safelyParse(pageItems, 'fields.sliderCollection.items', parseAsArrayOfSliderImages, []),
     };
-}
-
-export async function fetchPageCollection(query: string): Promise<ContentfulPage[] | null> {
-    const pages = await fetchContent(query);
-
-    return safelyParse(pages, 'data.content.pagesCollection.items', parseAsArrayOfContentfulPages, null);
 }

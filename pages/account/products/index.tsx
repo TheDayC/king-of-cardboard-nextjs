@@ -9,7 +9,7 @@ import { authOptions } from '../../api/auth/[...nextauth]';
 import { listProducts } from '../../../utils/account/products';
 import { parseAsRole, safelyParse } from '../../../utils/parsers';
 import { Roles } from '../../../enums/auth';
-import { Product as ProductType } from '../../../types/productsNew';
+import { Product as ProductType } from '../../../types/products';
 import Product from '../../../components/Account/Product';
 import Loading from '../../../components/Loading';
 import Pagination from '../../../components/Pagination';

@@ -1,6 +1,3 @@
-import { chunk, join } from 'lodash';
-import CommerceLayer from '@commercelayer/sdk';
-
 import { BreakStatuses } from '../types/breaks';
 import { fetchContent } from './content';
 import { parseAsArrayOfContentfulBreaks, safelyParse, parseAsBoolean } from './parsers';

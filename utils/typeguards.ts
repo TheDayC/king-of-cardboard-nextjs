@@ -1,18 +1,10 @@
 import { Document } from '@contentful/rich-text-types';
 
-import { CustomerAddress } from '../store/types/state';
 import { Achievement, Objective } from '../types/achievements';
-import { CommerceLayerError, CommerceLayerLineItemRelationship, CommerceLayerResponse } from '../types/api';
-import { BreakSlot, BreakSlotsCollection, BreakTypeItem, ContentfulBreak } from '../types/breaks';
-import { CartItem } from '../types/cart';
-import { SkuInventory, SkuOption } from '../types/commerce';
-import { ContentfulPage, Hero, SliderImage } from '../types/pages';
+import { CommerceLayerError } from '../types/api';
+import { ContentfulBreak } from '../types/breaks';
+import { Hero, SliderImage } from '../types/pages';
 import { ITypeGuard } from '../types/parsers';
-import { ContentfulProduct } from '../types/products';
-import { ImageCollection, ImageItem, Repeater } from '../types/contentful';
-import { SocialMedia } from '../types/profile';
-import { Interest, Category, Configuration } from '../enums/products';
-import { Address, CustomerDetails } from '../types/checkout';
 import { AccountAddress } from '../types/account';
 import { ListOrders, Order } from '../types/orders';
 
@@ -56,32 +48,12 @@ export function isEnumMember<E extends { [s: string]: unknown }>(enumToTest: E):
     };
 }
 
-export function isSocialMedia(candidate: unknown): candidate is SocialMedia {
-    return isNotNullOrUndefined<object>(candidate) && 'instagram' in candidate;
-}
-
-export function isCommerceResponse(candidate: unknown): candidate is CommerceLayerResponse {
-    return isNotNullOrUndefined<object>(candidate) && 'type' in candidate;
-}
-
-export function isCommerceResponseArray(candidate: unknown): candidate is CommerceLayerResponse[] {
-    return isArray(candidate) && isCommerceResponse(candidate[0]);
-}
-
 export function isArrayOfStrings(candidate: unknown): candidate is string[] {
     return isArray(candidate) && typeof candidate[0] === 'string';
 }
 
 export function isArrayOfNumbers(candidate: unknown): candidate is number[] {
     return isArray(candidate) && typeof candidate[0] === 'number';
-}
-
-export function isLineItemRelationship(candidate: unknown): candidate is CommerceLayerLineItemRelationship {
-    return isNotNullOrUndefined<object>(candidate) && 'id' in candidate;
-}
-
-export function isArrayOfLineItemRelationships(candidate: unknown): candidate is CommerceLayerLineItemRelationship[] {
-    return isArray(candidate) && isLineItemRelationship(candidate[0]);
 }
 
 export function isObjective(candidate: unknown): candidate is Objective {
@@ -108,80 +80,12 @@ export function isArrayofCommerceLayerErrors(candidate: unknown): candidate is C
     return isArray(candidate) && isCommerceLayerError(candidate[0]);
 }
 
-export function isImageCollection(candidate: unknown): candidate is ImageCollection {
-    return isNotNullOrUndefined<object>(candidate) && 'items' in candidate;
-}
-
-export function isBreakSlotsCollection(candidate: unknown): candidate is BreakSlotsCollection {
-    return isNotNullOrUndefined<object>(candidate) && 'items' in candidate;
-}
-
-export function isImageItem(candidate: unknown): candidate is ImageItem {
-    return isNotNullOrUndefined<object>(candidate) && 'url' in candidate;
-}
-
-export function isSkuInventory(candidate: unknown): candidate is SkuInventory {
-    return isNotNullOrUndefined<object>(candidate) && 'available' in candidate;
-}
-
-export function isSkuOption(candidate: unknown): candidate is SkuOption {
-    return isNotNullOrUndefined<object>(candidate) && 'sku_code_regex' in candidate;
-}
-
-export function isArrayofSkuOptions(candidate: unknown): candidate is SkuOption[] {
-    return isArray(candidate) && isSkuOption(candidate[0]);
-}
-
-export function isItem(candidate: unknown): candidate is CartItem {
-    return isNotNullOrUndefined<object>(candidate) && 'quantity' in candidate;
-}
-
-export function isArrayofItems(candidate: unknown): candidate is CartItem[] {
-    return isArray(candidate) && isItem(candidate[0]);
-}
-
-export function isCustomerDetails(candidate: unknown): candidate is CustomerDetails {
-    return isNotNullOrUndefined<object>(candidate) && 'firstName' in candidate;
-}
-
-export function isCustomerAddress(candidate: unknown): candidate is CustomerAddress {
-    return isNotNullOrUndefined<object>(candidate) && 'line_1' in candidate;
-}
-
 export function isContentfulBreak(candidate: unknown): candidate is ContentfulBreak {
     return isNotNullOrUndefined<object>(candidate) && 'slug' in candidate;
 }
 
 export function isArrayOfContentfulBreaks(candidate: unknown): candidate is ContentfulBreak[] {
     return isArray(candidate) && isContentfulBreak(candidate[0]);
-}
-
-export function isBreakTypeItem(candidate: unknown): candidate is BreakTypeItem {
-    return isNotNullOrUndefined<object>(candidate) && 'title' in candidate;
-}
-
-export function isContentfulPage(candidate: unknown): candidate is ContentfulPage {
-    return isNotNullOrUndefined<object>(candidate) && 'content' in candidate;
-}
-
-export function isArrayOfContentfulPages(candidate: unknown): candidate is ContentfulPage[] {
-    return isArray(candidate) && isContentfulPage(candidate[0]);
-}
-
-export function isContentfulProduct(candidate: unknown): candidate is ContentfulProduct {
-    return isNotNullOrUndefined<object>(candidate) && 'productLink' in candidate;
-}
-
-export function isArrayOfContentfulProducts(candidate: unknown): candidate is ContentfulProduct[] {
-    return isArray(candidate) && isContentfulProduct(candidate[0]);
-}
-
-export function isBreakSlot(candidate: unknown): candidate is BreakSlot {
-    return isNotNullOrUndefined<object>(candidate) && 'productLink' in candidate;
-}
-
-export function isArrayOfBreakSlots(candidate: unknown): candidate is BreakSlot[] {
-    return isArray(candidate) && isBreakSlot(candidate[0]);
 }
 
 export function isDocument(candidate: unknown): candidate is Document {
@@ -208,38 +112,6 @@ export function isSliderImage(candidate: unknown): candidate is SliderImage {
 
 export function isArrayOfSliderImages(candidate: unknown): candidate is SliderImage[] {
     return isArray(candidate) && isSliderImage(candidate[0]);
-}
-
-export function isRepeater(candidate: unknown): candidate is Repeater {
-    return isNotNullOrUndefined<object>(candidate) && 'key' in candidate && 'value' in candidate;
-}
-
-export function isArrayOfRepeater(candidate: unknown): candidate is Repeater[] {
-    return isArray(candidate) && isRepeater(candidate[0]);
-}
-
-export function isInterest(candidate: unknown): candidate is Interest {
-    return isEnumMember(Interest)(candidate);
-}
-
-export function isCategory(candidate: unknown): candidate is Category {
-    return isEnumMember(Category)(candidate);
-}
-
-export function isConfiguration(candidate: unknown): candidate is Configuration {
-    return isEnumMember(Configuration)(candidate);
-}
-
-export function isArrayOfInterests(candidate: unknown): candidate is Interest[] {
-    return isArray(candidate) && isInterest(candidate[0]);
-}
-
-export function isArrayOfCategories(candidate: unknown): candidate is Category[] {
-    return isArray(candidate) && isCategory(candidate[0]);
-}
-
-export function isArrayOfConfigurations(candidate: unknown): candidate is Configuration[] {
-    return isArray(candidate) && isConfiguration(candidate[0]);
 }
 
 export function isAccountAddress(candidate: unknown): candidate is AccountAddress {

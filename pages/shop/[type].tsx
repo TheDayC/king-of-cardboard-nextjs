@@ -14,7 +14,7 @@ import Content from '../../components/Content';
 import { setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
 import { getInterestBySlug, listProducts } from '../../utils/account/products';
 import { Category, Configuration, Interest } from '../../enums/products';
-import { Product } from '../../types/productsNew';
+import { Product } from '../../types/products';
 import { isNumber } from '../../utils/typeguards';
 
 const LIMIT = 8;

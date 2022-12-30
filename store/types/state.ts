@@ -2,14 +2,13 @@ import { DateTime } from 'luxon';
 import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
 
 import { AlertLevel } from '../../enums/system';
-import { AccountAddress, SingleAddress } from '../../types/account';
+import { AccountAddress } from '../../types/account';
 import { Break, SingleBreak } from '../../types/breaks';
 import { CartItem } from '../../types/cart';
 import { Address, CustomerDetails } from '../../types/checkout';
 import { Order } from '../../types/orders';
 import { ContentfulPage } from '../../types/pages';
-import { SingleProduct } from '../../types/products';
-import { Product } from '../../types/productsNew';
+import { Product } from '../../types/products';
 import { SocialMedia } from '../../types/profile';
 import { AccountShippingMethod } from '../../types/shipping';
 
@@ -51,10 +50,6 @@ export interface Filters {
 
 export interface Global {
     checkoutLoading: boolean;
-    accessToken: string | null;
-    userToken: string | null;
-    userTokenExpiry: string | null;
-    isFetchingToken: boolean;
     userId: string | null;
     expires: string | null;
     hasRejected: boolean;
@@ -183,7 +178,6 @@ export interface AccountState {
     addresses: AccountAddress[];
     addressCount: number;
     isLoadingAddressBook: boolean;
-    currentAddress: SingleAddress;
     isLoadingOrder: boolean;
     isLoadingOrders: boolean;
 }
@@ -199,15 +193,8 @@ export interface CustomAlert {
     timestamp: DateTime;
 }
 
-export interface CommonThunkInput {
-    accessToken: string;
-    orderId: string;
-    isImport?: boolean;
-}
-
 export interface ProductsState {
     products: Product[];
     productsTotal: number;
     isLoadingProducts: boolean;
-    currentProduct: SingleProduct;
 }

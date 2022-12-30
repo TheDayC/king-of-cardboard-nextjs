@@ -2,10 +2,8 @@ import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { SingleProduct } from '../../types/products';
-import { ListProducts } from '../../types/productsNew';
+import { ListProducts } from '../../types/products';
 import { listProducts } from '../../utils/account/products';
-import { getSingleProduct } from '../../utils/products';
 import productsInitialState from '../state/products';
 import { AppStateShape } from '../types/state';
 
@@ -16,11 +14,6 @@ interface ProductsThunkInput {
     skip: number;
 }
 
-interface SingleProductThunkInput {
-    accessToken: string;
-    slug: string;
-}
-
 export const fetchProducts = createAsyncThunk(
     'products/fetchProducts',
     async (data: ProductsThunkInput, { getState }): Promise<ListProducts> => {
@@ -29,15 +22,6 @@ export const fetchProducts = createAsyncThunk(
         const { categories, configurations, interests, stockStatus } = state.filters;
 
         return await listProducts(limit, skip, categories, configurations, interests, stockStatus);
-    }
-);
-
-export const fetchSingleProduct = createAsyncThunk(
-    'products/fetchSingleProduct',
-    async (data: SingleProductThunkInput): Promise<SingleProduct> => {
-        const { accessToken, slug } = data;
-
-        return await getSingleProduct(accessToken, slug);
     }
 );
 
@@ -52,34 +36,6 @@ const productsSlice = createSlice({
             state.productsTotal = count;
             state.isLoadingProducts = false;
         },
-        clearCurrentProduct(state) {
-            state.currentProduct = {
-                id: '',
-                name: '',
-                slug: '',
-                sku_code: '',
-                description: null,
-                types: [],
-                categories: [],
-                images: {
-                    items: [],
-                },
-                cardImage: {
-                    title: '',
-                    description: '',
-                    url: '',
-                },
-                tags: [],
-                amount: '',
-                compare_amount: '',
-                inventory: {
-                    available: false,
-                    quantity: 0,
-                    levels: [],
-                },
-                skuOptions: [],
-            };
-        },
         setIsLoadingProducts(state, action) {
             state.isLoadingProducts = action.payload;
         },
@@ -92,9 +48,6 @@ const productsSlice = createSlice({
             state.productsTotal = count;
             state.isLoadingProducts = false;
         }),
-            builder.addCase(fetchSingleProduct.fulfilled, (state, action) => {
-                state.currentProduct = action.payload;
-            }),
             builder.addCase(hydrate, (state, action) => ({
                 ...state,
                 ...action.payload[productsSlice.name],
@@ -102,6 +55,6 @@ const productsSlice = createSlice({
     },
 });
 
-export const { clearCurrentProduct, setIsLoadingProducts, setProductsAndCount } = productsSlice.actions;
+export const { setIsLoadingProducts, setProductsAndCount } = productsSlice.actions;
 
 export default productsSlice.reducer;

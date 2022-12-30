@@ -12,15 +12,6 @@ const globalSlice = createSlice({
     name: 'global',
     initialState: globalInitialState,
     reducers: {
-        setAccessToken(state, action) {
-            state.accessToken = action.payload;
-        },
-        setUserToken(state, action) {
-            state.userToken = action.payload;
-        },
-        setUserTokenExpiry(state, action) {
-            state.userTokenExpiry = action.payload;
-        },
         setUserId(state, action) {
             state.userId = action.payload;
         },
@@ -55,13 +46,10 @@ const globalSlice = createSlice({
 });
 
 export const {
-    setAccessToken,
     setExpires,
     setCheckoutLoading,
     setHasRejected,
     setSessionEmail,
-    setUserToken,
-    setUserTokenExpiry,
     setUserId,
     setIsDrawerOpen,
     setTokenExpiry,

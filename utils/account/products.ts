@@ -4,7 +4,7 @@ import { round } from 'lodash';
 
 import { s3Client } from '../../lib/aws';
 import { errorHandler } from '../../middleware/errors';
-import { ListProducts, Product } from '../../types/productsNew';
+import { ListProducts, Product } from '../../types/products';
 import { parseAsNumber, safelyParse } from '../parsers';
 import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
 

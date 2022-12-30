@@ -1,10 +1,8 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
-import { useSelector } from 'react-redux';
 import { unstable_getServerSession } from 'next-auth';
 
 import { parseAsString, safelyParse } from '../../../utils/parsers';
-import selector from './selector';
 import Fields from '../../../components/Account/AddressBook/Fields';
 import PageWrapper from '../../../components/PageWrapper';
 import Custom404Page from '../../404';
@@ -39,8 +37,6 @@ interface OrderProps {
 }
 
 export const EditAddressPage: React.FC<OrderProps> = ({ errorCode }) => {
-    const { currentAddress } = useSelector(selector);
-
     if (errorCode) {
         return <Custom404Page />;
     }
@@ -52,16 +48,15 @@ export const EditAddressPage: React.FC<OrderProps> = ({ errorCode }) => {
         >
             <div className="flex flex-col md:flex-row w-full justify-start items-start">
                 <div className="flex flex-col md:px-4 w-full relative">
-                    {/*  <Loading show={isLoading} /> */}
                     <Fields
-                        id={currentAddress.id}
-                        title={currentAddress.name}
-                        addressId={currentAddress.addressId}
-                        lineOne={currentAddress.addressLineOne}
-                        lineTwo={currentAddress.addressLineTwo}
-                        city={currentAddress.city}
-                        company={currentAddress.company}
-                        county={currentAddress.county}
+                        id={''}
+                        title={''}
+                        addressId={''}
+                        lineOne={''}
+                        lineTwo={''}
+                        city={''}
+                        company={''}
+                        county={''}
                     />
                 </div>
             </div>

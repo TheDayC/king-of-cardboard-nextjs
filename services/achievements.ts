@@ -17,50 +17,6 @@ function hasExceededMaxThreshold(current: number, max: number): boolean {
     return current > max;
 }
 
-export function getCategoriesAndTypes(items: LineItem[]): CategoriesAndTypes {
-    const categories: string[] = [];
-    const types: string[] = [];
-
-    items.forEach((item) => {
-        const cats = safelyParse(item, 'metadata.categories', parseAsArrayOfStrings, null);
-        const tempTypes = safelyParse(item, 'metadata.types', parseAsArrayOfStrings, null);
-
-        if (cats) {
-            cats.forEach((cat) => categories.push(cat));
-        }
-
-        if (tempTypes) {
-            tempTypes.forEach((type) => types.push(type));
-        }
-    });
-
-    return { categories, types };
-}
-
-export function createInitialAchievements(objectives: Objective[]): RecalculateAchievements {
-    const points = objectives
-        .map((objective) => {
-            const current = 1;
-            const { min, milestone, reward, milestoneMultiplier: multiplier } = objective;
-            const milestoneReward = reward * multiplier;
-            const shouldGetMilestoneReward =
-                hasReachedMinThreshold(current, min) || hasReachedMilestone(current, milestone);
-
-            // Check to see if we've hit our min threshold.
-            if (shouldGetMilestoneReward) {
-                return milestoneReward;
-            }
-
-            return reward;
-        })
-        .reduce((previous, current) => previous + current);
-
-    return {
-        points,
-        achievements: objectives.map((objective) => ({ id: objective._id, current: 1 })),
-    };
-}
-
 export function calculateAchievements(objectives: Objective[], achievements: Achievement[]): RecalculateAchievements {
     const points = objectives
         .map((objective) => {

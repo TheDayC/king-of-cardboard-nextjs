@@ -8,7 +8,7 @@ import { parseAsRole, parseAsString, safelyParse } from '../../../../utils/parse
 import { Roles } from '../../../../enums/auth';
 import ProductBody from '../../../../components/Account/Product/body';
 import { getProduct } from '../../../../utils/account/products';
-import { Product } from '../../../../types/productsNew';
+import { Product } from '../../../../types/products';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
     const session = await unstable_getServerSession(req, res, authOptions);

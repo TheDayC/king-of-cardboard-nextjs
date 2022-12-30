@@ -15,35 +15,6 @@ export interface ErrorResponse {
     description: string;
 }
 
-export interface CommerceLayerResponse {
-    id: string;
-    type: string;
-    links: CommerceLayerObject;
-    meta: CommerceLayerObject;
-    attributes: CommerceLayerObject;
-    relationships: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-}
-
-export interface CommerceLayerObject {
-    [key: string]: unknown;
-}
-
-export interface CommerceLayerMeta {
-    record_count: number;
-    page_count: number;
-}
-
-export interface CommerceLayerLineItemRelationship {
-    id: string;
-    type: string;
-}
-
-export interface PaymentSourceResponse {
-    paymentId: string | null;
-    clientSecret: string | null;
-    approvalUrl: string | null;
-}
-
 export interface CommerceLayerError {
     title: string;
     detail: string;
