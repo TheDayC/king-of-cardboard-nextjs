@@ -11,7 +11,7 @@ const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
 export async function addOrder(options: any): Promise<AddOrderResponse> {
     try {
-        const res = await axios.post(`${URL}/api/account/orders/add`, {
+        const res = await axios.post(`${URL}/api/orders/add`, {
             ...options,
         });
 
@@ -39,7 +39,7 @@ export async function addOrder(options: any): Promise<AddOrderResponse> {
 
 export async function getOrder(userId: string, orderNumber: number): Promise<Order | ResponseError> {
     try {
-        const res = await axios.get(`${URL}/api/account/orders/get`, {
+        const res = await axios.get(`${URL}/api/orders/get`, {
             params: {
                 userId,
                 orderNumber,
@@ -57,7 +57,7 @@ export async function getOrder(userId: string, orderNumber: number): Promise<Ord
 
 export async function getOrderById(id: string): Promise<Order | ResponseError> {
     try {
-        const res = await axios.get(`${URL}/api/account/orders/getById`, {
+        const res = await axios.get(`${URL}/api/orders/getById`, {
             params: {
                 id,
             },
@@ -82,7 +82,7 @@ export async function listOrders(
     try {
         const headers = isServer ? { 'Accept-Encoding': 'application/json' } : undefined;
         const res = await axios.post(
-            `${URL}/api/account/orders/list`,
+            `${URL}/api/orders/list`,
             {
                 userId,
                 count,
@@ -110,7 +110,7 @@ export async function listAllOrders(
 ): Promise<ListOrders | ResponseError> {
     try {
         const headers = isServer ? { 'Accept-Encoding': 'application/json' } : undefined;
-        const res = await axios.get(`${URL}/api/account/orders/listAll`, {
+        const res = await axios.get(`${URL}/api/orders/listAll`, {
             params: {
                 limit,
                 skip,
@@ -129,7 +129,7 @@ export async function listAllOrders(
 
 export async function editOrder(id: string, options: any): Promise<boolean> {
     try {
-        const res = await axios.put(`${URL}/api/account/orders/edit`, {
+        const res = await axios.put(`${URL}/api/orders/edit`, {
             ...options,
             id,
         });
