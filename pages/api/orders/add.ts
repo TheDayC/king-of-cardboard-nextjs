@@ -4,17 +4,21 @@ import { DateTime } from 'luxon';
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 import sgMail, { MailDataRequired } from '@sendgrid/mail';
+import { toNumber } from 'lodash';
+import axios from 'axios';
 
 import { Fulfillment, Payment, Status } from '../../../enums/orders';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { CartItem } from '../../../types/cart';
-import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
+import { parseAsBoolean, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 import { AttachmentData } from '../../../types/webhooks';
 import { parseImgData } from '../../../utils/webhooks';
 import { Address, CustomerDetails } from '../../../types/checkout';
 import { getPrettyPrice } from '../../../utils/account/products';
 import { formatOrderNumber } from '../../../utils/checkout';
+import { RepeaterItem } from '../../../types/orders';
+import { Category, Configuration, Interest } from '../../../enums/products';
 
 const defaultErr = 'Order could not be added.';
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -244,17 +248,71 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                 parseAsNumber,
                 Fulfillment.Unfulfilled
             );
-            const items: CartItem[] = req.body.items || [];
+            let items: CartItem[] = req.body.items || [];
+            let subTotal = safelyParse(req, 'body.subTotal', parseAsNumber, 0);
+            let shipping = safelyParse(req, 'body.shipping', parseAsNumber, 0);
+            let discount = safelyParse(req, 'body.discount', parseAsNumber, 0);
+            let total = safelyParse(req, 'body.total', parseAsNumber, 0);
             const userId = safelyParse(req, 'body.userId', parseAsString, null);
-            const subTotal = safelyParse(req, 'body.subTotal', parseAsNumber, 0);
-            const shipping = safelyParse(req, 'body.shipping', parseAsNumber, 0);
-            const discount = safelyParse(req, 'body.discount', parseAsNumber, 0);
-            const total = safelyParse(req, 'body.total', parseAsNumber, 0);
             const customerDetails = req.body.customerDetails as CustomerDetails;
             const shippingAddress = req.body.shippingAddress as Address;
             const billingAddress = req.body.billingAddress as Address;
             const paymentId = safelyParse(req, 'body.paymentId', parseAsString, null);
             const paymentMethod = safelyParse(req, 'body.paymentMethod', parseAsNumber, null);
+            const shouldFindItems = safelyParse(req, 'body.shouldFindItems', parseAsBoolean, false);
+            const shippingMethodId = safelyParse(req, 'body.shippingMethodId', parseAsString, '');
+
+            // If adding items from admin panel we need to find items based on their SKUs
+            if (shouldFindItems) {
+                const repeaterItems: RepeaterItem[] = req.body.repeaterItems || [];
+
+                const foundItems = await productsCollection
+                    .find({ sku: { $in: repeaterItems.map((item) => item.sku) } })
+                    .toArray();
+
+                items = repeaterItems.map((item) => {
+                    const matchingItem = foundItems.find((fI) => fI.sku === item.sku);
+                    const title = safelyParse(matchingItem, 'title', parseAsString, '');
+                    const mainImage = safelyParse(matchingItem, 'mainImage', parseAsString, '');
+
+                    return {
+                        _id: matchingItem ? matchingItem._id.toString() : '',
+                        sku: safelyParse(matchingItem, 'sku', parseAsString, ''),
+                        title,
+                        slug: safelyParse(matchingItem, 'slug', parseAsString, ''),
+                        category: safelyParse(matchingItem, 'category', parseAsNumber, Category.Other),
+                        configuration: safelyParse(matchingItem, 'configuration', parseAsNumber, Configuration.Other),
+                        interest: safelyParse(matchingItem, 'interest', parseAsNumber, Interest.Other),
+                        quantity: toNumber(item.quantity),
+                        price: safelyParse(matchingItem, 'price', parseAsNumber, Interest.Other),
+                        salePrice: safelyParse(matchingItem, 'salePrice', parseAsNumber, Interest.Other),
+                        mainImage: {
+                            title: `${title} main image`,
+                            description: `${title} main image`,
+                            url: `${process.env.NEXT_PUBLIC_AWS_S3_URL}${mainImage}`,
+                        },
+                        stock: safelyParse(matchingItem, 'stock', parseAsNumber, 0),
+                        cartQty: safelyParse(matchingItem, 'cartQty', parseAsNumber, 0),
+                    };
+                });
+
+                // As we're adding short items via the admin panel we need to calc the totals.
+                const data = {
+                    items: items.map((item) => ({ id: item._id.toString(), quantity: toNumber(item.quantity) })),
+                    coins: 0,
+                    shippingMethodId,
+                };
+
+                const totalsRes = await axios.post(
+                    `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/cart/calculateTotals`,
+                    data
+                );
+
+                subTotal = safelyParse(totalsRes, 'data.subTotal', parseAsNumber, 0);
+                shipping = safelyParse(totalsRes, 'data.shipping', parseAsNumber, 0);
+                discount = safelyParse(totalsRes, 'data.discount', parseAsNumber, 0);
+                total = safelyParse(totalsRes, 'data.total', parseAsNumber, 0);
+            }
 
             const { insertedId } = await collection.insertOne({
                 userId,
@@ -274,6 +332,7 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                 billingAddress,
                 paymentId,
                 paymentMethod,
+                shippingMethodId,
             });
 
             // Reduce item stock counts.

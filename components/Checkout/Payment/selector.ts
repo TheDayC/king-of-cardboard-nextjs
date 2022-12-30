@@ -13,6 +13,7 @@ const selector = createSelector([selectCheckoutData, selectCartData, selectAccou
     items: cart.items,
     billingAddress: checkout.billingAddress,
     shippingAddress: checkout.shippingAddress,
+    chosenShippingMethodId: checkout.chosenShippingMethodId,
     coins: account.coins,
     shouldEnable:
         checkout.billingAddress.lineOne.length &&

@@ -19,7 +19,7 @@ import { parseAsString, safelyParse } from '../../../utils/parsers';
 import UseCoins from '../../UseCoins';
 import { gaEvent } from '../../../utils/ga';
 import { PaymentMethods } from '../../../enums/checkout';
-import { addOrder } from '../../../utils/order';
+import { addOrder } from '../../../utils/account/order';
 import { Status, Payment as PaymentStatus, Fulfillment } from '../../../enums/orders';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import { getPrettyPrice } from '../../../utils/account/products';
@@ -48,6 +48,7 @@ export const Payment: React.FC = () => {
         items,
         billingAddress,
         shippingAddress,
+        chosenShippingMethodId: shippingMethodId,
         coins,
         shouldEnable,
     } = useSelector(selector);
@@ -97,6 +98,7 @@ export const Payment: React.FC = () => {
             billingAddress,
             paymentId,
             paymentMethod,
+            shippingMethodId,
             coins,
         });
 

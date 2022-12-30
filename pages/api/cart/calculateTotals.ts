@@ -5,10 +5,10 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { FetchCartItems } from '../../../types/cart';
-import { calculateExcessCoinSpend } from '../../../utils/order';
+import { calculateExcessCoinSpend } from '../../../utils/account/order';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 
-const defaultErr = 'Error in cart.';
+const defaultErr = 'Error calculating totals.';
 
 async function getShippingPrice(methodId: string | null, db: Db): Promise<number> {
     if (!methodId) return 0;

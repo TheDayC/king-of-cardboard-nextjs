@@ -1,5 +1,5 @@
 import React from 'react';
-import { FieldValues, UseFormRegister } from 'react-hook-form';
+import { UseFormRegister } from 'react-hook-form';
 import { IconType } from 'react-icons/lib';
 
 interface Options {
@@ -13,9 +13,9 @@ interface SelectFieldProps {
     fieldName: string;
     error: string | null;
     options: Options[];
-    register: UseFormRegister<FieldValues>;
+    register: UseFormRegister<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
     Icon: IconType;
-    defaultValue?: number;
+    defaultValue?: string | number;
 }
 
 export const SelectField: React.FC<SelectFieldProps> = ({

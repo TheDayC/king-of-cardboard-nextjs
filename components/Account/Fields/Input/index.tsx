@@ -1,5 +1,5 @@
 import React from 'react';
-import { FieldValues, UseFormRegister } from 'react-hook-form';
+import { UseFormRegister } from 'react-hook-form';
 import { IconType } from 'react-icons/lib';
 
 interface InputFieldProps {
@@ -8,7 +8,7 @@ interface InputFieldProps {
     fieldName: string;
     fieldType?: string;
     error: string | null;
-    register: UseFormRegister<FieldValues>;
+    register: UseFormRegister<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
     Icon: IconType;
     isRequired: boolean;
     defaultValue?: string | number;

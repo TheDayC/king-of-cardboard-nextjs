@@ -18,7 +18,7 @@ import { Address } from '../../../../types/checkout';
 import { PaymentMethods } from '../../../../enums/checkout';
 import { getPrettyPrice } from '../../../../utils/account/products';
 import { formatOrderNumber } from '../../../../utils/checkout';
-import Badge from '../Badge';
+import Badge from '../../Badge';
 
 interface OrderProps {
     orderNumber: number;

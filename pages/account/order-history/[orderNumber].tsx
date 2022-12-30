@@ -7,7 +7,7 @@ import { parseAsString, safelyParse } from '../../../utils/parsers';
 import LongOrder from '../../../components/Account/OrderHistory/LongOrder';
 import { authOptions } from '../../api/auth/[...nextauth]';
 import { isOrder } from '../../../utils/typeguards';
-import { getOrder } from '../../../utils/order';
+import { getOrder } from '../../../utils/account/order';
 import { Order } from '../../../types/orders';
 import AccountWrapper from '../../../components/AccountWrapper';
 import { formatOrderNumber } from '../../../utils/checkout';
@@ -69,7 +69,9 @@ export const HistoricalOrderPage: React.FC<HistoricalOrderPageProps> = ({ order 
                     created={order.created}
                     lastUpdated={order.lastUpdated}
                     items={order.items}
-                    itemCount={order.items.length}
+                    itemCount={order.items
+                        .map((item) => item.quantity)
+                        .reduce((accumulator, currentValue) => accumulator + currentValue)}
                     shippingAddress={order.shippingAddress}
                     billingAddress={order.billingAddress}
                     paymentId={order.paymentId}

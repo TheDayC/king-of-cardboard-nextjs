@@ -23,9 +23,15 @@ export interface Order {
     paymentId: string;
     paymentMethod: PaymentMethods;
     orderNumber: number;
+    shippingMethodId: string;
 }
 
 export interface ListOrders {
     orders: Order[];
     count: number;
+}
+
+export interface RepeaterItem {
+    sku: string;
+    quantity: number;
 }

@@ -1,3 +1,4 @@
+import { toNumber } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';
@@ -6,23 +7,17 @@ import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parser
 
 const defaultErr = 'Could not find any orders.';
 
-async function listOrders(req: NextApiRequest, res: NextApiResponse): Promise<void> {
-    if (req.method === 'POST') {
+async function listAllOrders(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+    if (req.method === 'GET') {
         try {
             const { db } = await connectToDatabase();
 
             const collection = db.collection('orders');
-            const userId = safelyParse(req, 'body.userId', parseAsString, null);
-            const count = safelyParse(req, 'body.count', parseAsNumber, 10);
-            const page = safelyParse(req, 'body.page', parseAsNumber, 0);
+            const limit = toNumber(safelyParse(req, 'query.limit', parseAsString, 10));
+            const skip = toNumber(safelyParse(req, 'query.skip', parseAsString, 0));
 
-            if (!userId) {
-                res.status(400).json({ message: defaultErr });
-                return Promise.resolve();
-            }
-
-            const orderCount = await collection.countDocuments({ userId });
-            const orderList = await collection.find({ userId }, { skip: page, limit: count }).toArray();
+            const orderCount = await collection.countDocuments();
+            const orderList = await collection.find({}, { skip, limit }).toArray();
 
             if (orderList.length === 0) {
                 res.status(404).json({ message: defaultErr });
@@ -40,4 +35,4 @@ async function listOrders(req: NextApiRequest, res: NextApiResponse): Promise<vo
     }
 }
 
-export default listOrders;
+export default listAllOrders;

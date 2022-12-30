@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 import Link from 'next/link';
@@ -54,7 +54,7 @@ export const ShippingPage: React.FC<ProductsPageProps> = ({ initialShippingMetho
     const [isLoading, setIsLoading] = useState(false);
     const pageCount = total / LIMIT;
 
-    const handleUpdate = useCallback(async () => {
+    const handleUpdate = async () => {
         setIsLoading(true);
         const { shippingMethods: newShippingMethods, count: newTotal } = await listShippingMethods(count, page);
 
@@ -62,7 +62,7 @@ export const ShippingPage: React.FC<ProductsPageProps> = ({ initialShippingMetho
         setTotal(newTotal);
 
         setIsLoading(false);
-    }, [count, page, setIsLoading]);
+    };
 
     const handlePageNumber = (nextPage: number) => {
         setPage(nextPage);
@@ -92,7 +92,7 @@ export const ShippingPage: React.FC<ProductsPageProps> = ({ initialShippingMetho
                             />
                         ))}
                     {pageCount > 1 && (
-                        <Pagination currentPage={page - 1} pageCount={pageCount} handlePageNumber={handlePageNumber} />
+                        <Pagination currentPage={page} pageCount={pageCount} handlePageNumber={handlePageNumber} />
                     )}
                 </div>
             </div>
