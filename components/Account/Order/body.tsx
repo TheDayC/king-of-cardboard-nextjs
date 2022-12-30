@@ -3,7 +3,8 @@ import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { BsBoxSeam, BsFillPinMapFill, BsInputCursorText, BsPhone } from 'react-icons/bs';
 import { MdOutlineEmail, MdOutlineTitle } from 'react-icons/md';
 import { BiBuildings, BiCategory, BiSave } from 'react-icons/bi';
-import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { toNumber } from 'lodash';
 
 import InputField from '../Fields/Input';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -14,10 +15,7 @@ import { RepeaterItem } from '../../../types/orders';
 import { CartItem } from '../../../types/cart';
 import RepeaterField from '../Fields/Repeater';
 import { addOrder, editOrder } from '../../../utils/account/order';
-import { toNumber } from 'lodash';
 import { AccountShippingMethod } from '../../../types/shipping';
-import { useRouter } from 'next/router';
-import { Supplier } from '../../../enums/shipping';
 
 const orderStatuses = [
     { key: 'Approved', value: Status.Approved },
@@ -403,8 +401,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                     <div className="flex flex-col space-y-4 items-start justify-start">
                         {repeaterItems.map((item, i) => (
                             <RepeaterField
-                                sku={item.sku}
-                                quantity={item.quantity}
                                 rowCount={i}
                                 register={register}
                                 isLastRow={i === repeaterItems.length - 1}

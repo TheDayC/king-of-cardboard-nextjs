@@ -1,5 +1,5 @@
 import React from 'react';
-import { FieldValues, UseFormRegister } from 'react-hook-form';
+import { UseFormRegister } from 'react-hook-form';
 import { BsBoxSeam, BsCartFill, BsDashCircleFill, BsFillPlusCircleFill } from 'react-icons/bs';
 
 interface RepeaterFieldProps {
@@ -13,8 +13,6 @@ interface RepeaterFieldProps {
 }
 
 export const RepeaterField: React.FC<RepeaterFieldProps> = ({
-    sku,
-    quantity,
     rowCount,
     register,
     isLastRow,
@@ -41,7 +39,6 @@ export const RepeaterField: React.FC<RepeaterFieldProps> = ({
                             required: false,
                         })}
                         className="input input-md input-bordered w-full"
-                        defaultValue={sku}
                     />
                 </label>
             </div>
