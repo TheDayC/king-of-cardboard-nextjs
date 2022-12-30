@@ -170,14 +170,14 @@ export const LongOrder: React.FC<OrderProps> = ({
                         </React.Fragment>
                     ))}
             </div>
-            <div className="flex flex-col justify-end items-end">
-                <p className="text-2xl mb-2">
+            <div className="flex flex-col justify-end items-end space-y-4">
+                <p className="text-2xl border-b border-gray-400 pb-4 w-1/4 text-right">
                     <b>Shipping:</b> {getPrettyPrice(shipping)}
                 </p>
-                <p className="text-2xl mb-2">
+                <p className="text-2xl border-b border-gray-400 pb-4 w-1/4 text-right">
                     <b>Discount:</b> {getPrettyPrice(discount)}
                 </p>
-                <p className="text-2xl mb-4">
+                <p className="text-2xl border-b border-gray-400 pb-4 w-1/4 text-right">
                     <b>Subtotal:</b> {getPrettyPrice(subTotal)}
                 </p>
                 <p className="text-5xl">
