@@ -32,15 +32,15 @@ const defaultUserDetails = {
     coins: 0,
 };
 
-async function setUpUserExtras(email: string): Promise<void> {
+async function setUpUserExtras(userId: string): Promise<void> {
     const { db } = await connectToDatabase();
     const achievementsCollection = db.collection('achievements');
 
     // Set up achievements document if the user hasn't logged in before.
-    const achievements = await achievementsCollection.findOne({ email });
+    const achievements = await achievementsCollection.findOne({ userId });
     if (!achievements) {
         await achievementsCollection.insertOne({
-            email,
+            userId,
             achievements: [],
         });
     }
@@ -138,14 +138,15 @@ export const authOptions: NextAuthOptions = {
                         };
 
                         const newUser = await userCollection.insertOne(userDocument);
+                        const userId = newUser.insertedId.toString();
 
                         // Build other user related items in the DB on register.
-                        await setUpUserExtras(email);
+                        await setUpUserExtras(userId);
 
                         gaEvent('registration', { email });
 
                         return {
-                            id: newUser.insertedId.toString(),
+                            id: userId,
                             email,
                             password,
                             ...defaultUserDetails,
@@ -164,9 +165,14 @@ export const authOptions: NextAuthOptions = {
                 const { role, instagram, twitter, twitch, youtube, ebay, coins, registrationDate, lastLoggedIn } =
                     defaultUserDetails;
                 const email = safelyParse(profile, 'email', parseAsString, '');
+                const { db } = await connectToDatabase();
+                const userCollection = db.collection('users');
+                const existingUser = await userCollection.findOne({ email });
 
                 // Build other user related items in the DB on register.
-                await setUpUserExtras(email);
+                if (existingUser) {
+                    await setUpUserExtras(existingUser._id.toString());
+                }
 
                 return {
                     id: profile.sub,

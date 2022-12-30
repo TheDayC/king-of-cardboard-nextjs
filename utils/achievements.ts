@@ -1,31 +1,33 @@
 import { round } from 'lodash';
 
+const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
+
 export function progressColour(max: number, current: number): string {
     const quarter = round(max * 0.25, 2);
     const half = round(max * 0.5, 2);
     const threeQuarters = round(max * 0.75, 2);
 
     if (current <= 0 || current < quarter) {
-        return 'yellow-600';
+        return 'rgb(202 138 4)';
     }
 
     if (current >= quarter && current < half) {
-        return 'gray-400';
+        return 'rgb(156 163 175)';
     }
 
     if (current >= half && current < threeQuarters) {
-        return 'primary';
+        return '#f6c467';
     }
 
     if (current >= threeQuarters && current < max) {
-        return 'secondary';
+        return '#60c7f2';
     }
 
     if (current >= max) {
-        return 'accent';
+        return '#C365F6';
     }
 
-    return 'error';
+    return '#ff5724';
 }
 
 export function nextMilestone(milestone: number, max: number, current: number): number {
