@@ -49,6 +49,7 @@ const accountInitialState: AccountState = {
         billingAddress: defaultAddress,
         paymentId: '',
         paymentMethod: PaymentMethods.Unknown,
+        shippingMethodId: '',
         orderNumber: 0,
     },
     addresses: [],
