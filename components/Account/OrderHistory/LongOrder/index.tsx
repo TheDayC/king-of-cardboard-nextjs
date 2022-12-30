@@ -160,6 +160,7 @@ export const LongOrder: React.FC<OrderProps> = ({
                         <React.Fragment key={lineItem._id}>
                             <LineItem
                                 name={lineItem.title}
+                                slug={lineItem.slug}
                                 imageUrl={lineItem.mainImage.url}
                                 skuCode={lineItem.sku}
                                 quantity={lineItem.quantity}
