@@ -60,7 +60,22 @@ export const EditOrderPage: React.FC<EditProductPageProps> = ({ order, shippingM
         <div className="flex flex-col w-full justify-start items-start p-2 md:p-4 md:p-8 md:flex-row">
             <div className="flex flex-col relative w-full space-y-4" data-testid="content">
                 <h1 className="text-5xl border-b border-gray-400 pb-4">Edit order</h1>
-                <OrderBody shippingMethods={shippingMethods} isNew />
+                <OrderBody
+                    _id={order._id}
+                    firstName={order.customerDetails.firstName}
+                    lastName={order.customerDetails.lastName}
+                    email={order.customerDetails.email}
+                    phone={order.customerDetails.phone}
+                    billingAddress={order.billingAddress}
+                    shippingAddress={order.shippingAddress}
+                    orderStatus={order.orderStatus}
+                    paymentStatus={order.paymentStatus}
+                    fulfillmentStatus={order.fulfillmentStatus}
+                    shippingMethodId={order.shippingMethodId}
+                    items={order.items}
+                    shippingMethods={shippingMethods}
+                    isNew={false}
+                />
             </div>
         </div>
     </AccountWrapper>

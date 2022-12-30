@@ -103,6 +103,46 @@ export async function listOrders(
     }
 }
 
+export async function listAllOrders(
+    limit: number,
+    skip: number,
+    isServer: boolean = false
+): Promise<ListOrders | ResponseError> {
+    try {
+        const headers = isServer ? { 'Accept-Encoding': 'application/json' } : undefined;
+        const res = await axios.get(`${URL}/api/account/orders/listAll`, {
+            params: {
+                limit,
+                skip,
+            },
+            headers,
+        });
+
+        return {
+            orders: res.data.orders as Order[],
+            count: safelyParse(res, 'data.count', parseAsNumber, 0),
+        };
+    } catch (error: unknown) {
+        return errorHandler(error, 'Could not list orders.');
+    }
+}
+
+export async function editOrder(id: string, options: any): Promise<boolean> {
+    try {
+        const res = await axios.put(`${URL}/api/account/orders/edit`, {
+            ...options,
+            id,
+        });
+        const status = safelyParse(res, 'status', parseAsNumber, 500);
+
+        return status === 204;
+    } catch (error: unknown) {
+        errorHandler(error, 'Could not edit order.');
+    }
+
+    return false;
+}
+
 export function calculateExcessCoinSpend(coins: number, subTotal: number): number {
     const calc = subTotal - coins;
 

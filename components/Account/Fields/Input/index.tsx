@@ -8,7 +8,7 @@ interface InputFieldProps {
     fieldName: string;
     fieldType?: string;
     error: string | null;
-    register: UseFormRegister<FieldValues>;
+    register: UseFormRegister<any>;
     Icon: IconType;
     isRequired: boolean;
     defaultValue?: string | number;

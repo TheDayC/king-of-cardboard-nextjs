@@ -6,7 +6,7 @@ interface RepeaterFieldProps {
     sku?: string;
     quantity?: number;
     rowCount: number;
-    register: UseFormRegister<FieldValues>;
+    register: UseFormRegister<any>;
     isLastRow: boolean;
     addRepeaterRow: (e: React.MouseEvent<HTMLButtonElement>) => void;
     removeRepeaterRow: (rowCount: number) => void;
@@ -57,7 +57,6 @@ export const RepeaterField: React.FC<RepeaterFieldProps> = ({
                             required: false,
                         })}
                         className="input input-md input-bordered w-full"
-                        defaultValue={quantity}
                     />
                 </label>
             </div>

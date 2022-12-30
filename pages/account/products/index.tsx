@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 import Link from 'next/link';
@@ -54,7 +54,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
     const [isLoading, setIsLoading] = useState(false);
     const pageCount = totalProducts / LIMIT;
 
-    const handleUpdateProducts = useCallback(async () => {
+    const handleUpdateProducts = async () => {
         setIsLoading(true);
         const { products: newProducts, count: newTotalProducts } = await listProducts(count, page);
 
@@ -62,7 +62,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
         setTotalProducts(newTotalProducts);
 
         setIsLoading(false);
-    }, [count, page, setIsLoading]);
+    };
 
     const handlePageNumber = (nextPage: number) => {
         setPage(nextPage);

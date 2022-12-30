@@ -33,6 +33,10 @@ export const Order: React.FC<OrderProps> = ({ order }) => {
     const paymentTitle = getPaymentStatusTitle(paymentStatus);
     const fulfillmentColor = getFulfillmentStatusColor(fulfillmentStatus);
     const fulfillmentTitle = getFulfillmentStatusTitle(fulfillmentStatus);
+    const itemCount =
+        items.length > 0
+            ? items.map((item) => item.quantity).reduce((accumulator, currentValue) => accumulator + currentValue)
+            : 0;
 
     return (
         <div className="card card-side bg-base-100 shadow-xl">
@@ -50,7 +54,7 @@ export const Order: React.FC<OrderProps> = ({ order }) => {
                         </p>
                         <p className="text-sm text-gray-400">
                             <BsBoxSeam className="w-5 h-5 inline mr-2 -mt-1" />
-                            Items: {items.length}
+                            Items: {itemCount}
                         </p>
                     </div>
                 </div>

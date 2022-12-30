@@ -13,9 +13,11 @@ import { Status, Payment, Fulfillment } from '../../../enums/orders';
 import { RepeaterItem } from '../../../types/orders';
 import { CartItem } from '../../../types/cart';
 import RepeaterField from '../Fields/Repeater';
-import { addOrder } from '../../../utils/account/order';
+import { addOrder, editOrder } from '../../../utils/account/order';
 import { toNumber } from 'lodash';
 import { AccountShippingMethod } from '../../../types/shipping';
+import { useRouter } from 'next/router';
+import { Supplier } from '../../../enums/shipping';
 
 const orderStatuses = [
     { key: 'Approved', value: Status.Approved },
@@ -41,6 +43,7 @@ const fulfillmentStatuses = [
 const defaultRepeateritem = { sku: '', quantity: 0 };
 
 interface OrderBodyProps {
+    _id?: string;
     firstName?: string;
     lastName?: string;
     email?: string;
@@ -57,6 +60,7 @@ interface OrderBodyProps {
 }
 
 export const OrderBody: React.FC<OrderBodyProps> = ({
+    _id,
     firstName,
     lastName,
     email,
@@ -75,7 +79,31 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm();
+    } = useForm({
+        defaultValues: {
+            firstName,
+            lastName,
+            email,
+            phone,
+            billingLineOne: billingAddress ? billingAddress.lineOne : '',
+            billingLineTwo: billingAddress ? billingAddress.lineTwo : '',
+            billingCity: billingAddress ? billingAddress.city : '',
+            billingPostcode: billingAddress ? billingAddress.postcode : '',
+            billingCounty: billingAddress ? billingAddress.county : '',
+            shippingLineOne: shippingAddress ? shippingAddress.lineOne : '',
+            shippingLineTwo: shippingAddress ? shippingAddress.lineTwo : '',
+            shippingCity: shippingAddress ? shippingAddress.city : '',
+            shippingPostcode: shippingAddress ? shippingAddress.postcode : '',
+            shippingCounty: shippingAddress ? shippingAddress.county : '',
+            orderStatus,
+            paymentStatus,
+            fulfillmentStatus,
+            shippingMethodId,
+            sku: items && items.length ? items.map((item) => item.sku) : [],
+            quantity: items && items.length ? items.map((item) => item.quantity) : [],
+        },
+    });
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [repeaterItems, setRepeaterItems] = useState<RepeaterItem[]>([defaultRepeateritem]);
 
@@ -151,11 +179,19 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
             },
             shouldFindItems: true,
             shouldCalculateTotals: true,
+            shippingMethodId: data.shippingMethodId,
         };
 
-        const { _id: orderId } = await addOrder(payload);
+        if (isNew) {
+            await addOrder(payload);
 
-        setIsLoading(false);
+            setIsLoading(false);
+            router.push('/account/orders');
+        } else if (_id) {
+            await editOrder(_id, payload);
+
+            setIsLoading(false);
+        }
     };
 
     const addRepeaterRow = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -188,7 +224,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             error={firstNameErr}
                             register={register}
                             Icon={MdOutlineTitle}
-                            defaultValue={firstName}
                             isRequired
                         />
                         <InputField
@@ -198,7 +233,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             error={lastNameErr}
                             register={register}
                             Icon={MdOutlineTitle}
-                            defaultValue={lastName}
                             isRequired
                         />
                         <InputField
@@ -208,7 +242,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             error={emailErr}
                             register={register}
                             Icon={MdOutlineEmail}
-                            defaultValue={email}
                             isRequired
                         />
                         <InputField
@@ -218,7 +251,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             error={phoneErr}
                             register={register}
                             Icon={BsPhone}
-                            defaultValue={phone}
                             isRequired
                         />
                     </div>
@@ -233,7 +265,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             error={billingErrs.lineOne}
                             register={register}
                             Icon={MdOutlineTitle}
-                            defaultValue={billingAddress ? billingAddress.lineOne : undefined}
                             isRequired
                         />
                         <InputField
@@ -243,7 +274,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             error={billingErrs.lineTwo}
                             register={register}
                             Icon={MdOutlineTitle}
-                            defaultValue={billingAddress ? billingAddress.lineTwo : undefined}
                             isRequired={false}
                         />
                         <InputField
@@ -253,7 +283,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             error={billingErrs.city}
                             register={register}
                             Icon={BiBuildings}
-                            defaultValue={billingAddress ? billingAddress.city : undefined}
                             isRequired
                         />
                         <InputField
@@ -263,7 +292,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             error={billingErrs.postcode}
                             register={register}
                             Icon={BsInputCursorText}
-                            defaultValue={billingAddress ? billingAddress.postcode : undefined}
                             isRequired
                         />
                         <InputField
@@ -273,7 +301,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             error={billingErrs.county}
                             register={register}
                             Icon={BsFillPinMapFill}
-                            defaultValue={billingAddress ? billingAddress.county : undefined}
                             isRequired
                         />
                     </div>
@@ -289,7 +316,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             error={shippingErrs.lineOne}
                             register={register}
                             Icon={MdOutlineTitle}
-                            defaultValue={shippingAddress ? shippingAddress.lineOne : undefined}
                             isRequired
                         />
                         <InputField
@@ -299,7 +325,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             error={shippingErrs.lineTwo}
                             register={register}
                             Icon={MdOutlineTitle}
-                            defaultValue={shippingAddress ? shippingAddress.lineTwo : undefined}
                             isRequired={false}
                         />
                         <InputField
@@ -309,7 +334,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             error={shippingErrs.city}
                             register={register}
                             Icon={BiBuildings}
-                            defaultValue={shippingAddress ? shippingAddress.city : undefined}
                             isRequired
                         />
                         <InputField
@@ -319,7 +343,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             error={shippingErrs.postcode}
                             register={register}
                             Icon={BsInputCursorText}
-                            defaultValue={shippingAddress ? shippingAddress.postcode : undefined}
                             isRequired
                         />
                         <InputField
@@ -329,7 +352,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             error={shippingErrs.county}
                             register={register}
                             Icon={BsFillPinMapFill}
-                            defaultValue={shippingAddress ? shippingAddress.county : undefined}
                             isRequired
                         />
                     </div>
@@ -344,7 +366,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             options={orderStatuses}
                             error={statusErrs.order}
                             register={register}
-                            defaultValue={orderStatus}
                             Icon={BiCategory}
                         />
                         <SelectField
@@ -354,7 +375,6 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             options={paymentStatuses}
                             error={statusErrs.payment}
                             register={register}
-                            defaultValue={paymentStatus}
                             Icon={BiCategory}
                         />
                         <SelectField
@@ -364,17 +384,15 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             options={fulfillmentStatuses}
                             error={statusErrs.fulfillment}
                             register={register}
-                            defaultValue={fulfillmentStatus}
                             Icon={BiCategory}
                         />
                         <SelectField
                             placeholder="Shipping method"
-                            fieldName="shippingMethod"
+                            fieldName="shippingMethodId"
                             instruction="Fulfillment status is required."
                             options={reducedShippingMethods}
                             error={shippingMethodErr}
                             register={register}
-                            defaultValue={shippingMethodId}
                             Icon={BiCategory}
                         />
                     </div>
@@ -385,7 +403,8 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                     <div className="flex flex-col space-y-4 items-start justify-start">
                         {repeaterItems.map((item, i) => (
                             <RepeaterField
-                                {...item}
+                                sku={item.sku}
+                                quantity={item.quantity}
                                 rowCount={i}
                                 register={register}
                                 isLastRow={i === repeaterItems.length - 1}

@@ -23,6 +23,7 @@ export interface Order {
     paymentId: string;
     paymentMethod: PaymentMethods;
     orderNumber: number;
+    shippingMethodId: string;
 }
 
 export interface ListOrders {

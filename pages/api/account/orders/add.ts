@@ -260,11 +260,11 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
             const paymentId = safelyParse(req, 'body.paymentId', parseAsString, null);
             const paymentMethod = safelyParse(req, 'body.paymentMethod', parseAsNumber, null);
             const shouldFindItems = safelyParse(req, 'body.shouldFindItems', parseAsBoolean, false);
+            const shippingMethodId = safelyParse(req, 'body.shippingMethodId', parseAsString, '');
 
             // If adding items from admin panel we need to find items based on their SKUs
             if (shouldFindItems) {
                 const repeaterItems: RepeaterItem[] = req.body.repeaterItems || [];
-                const shippingMethodId = safelyParse(req, 'body.shippingMethodId', parseAsString, '');
 
                 const foundItems = await productsCollection
                     .find({ sku: { $in: repeaterItems.map((item) => item.sku) } })
@@ -303,15 +303,15 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                     shippingMethodId,
                 };
 
-                const res = await axios.post(
+                const totalsRes = await axios.post(
                     `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/cart/calculateTotals`,
                     data
                 );
 
-                subTotal = safelyParse(res, 'data.subTotal', parseAsNumber, 0);
-                shipping = safelyParse(res, 'data.shipping', parseAsNumber, 0);
-                discount = safelyParse(res, 'data.discount', parseAsNumber, 0);
-                total = safelyParse(res, 'data.total', parseAsNumber, 0);
+                subTotal = safelyParse(totalsRes, 'data.subTotal', parseAsNumber, 0);
+                shipping = safelyParse(totalsRes, 'data.shipping', parseAsNumber, 0);
+                discount = safelyParse(totalsRes, 'data.discount', parseAsNumber, 0);
+                total = safelyParse(totalsRes, 'data.total', parseAsNumber, 0);
             }
 
             const { insertedId } = await collection.insertOne({
@@ -332,6 +332,7 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                 billingAddress,
                 paymentId,
                 paymentMethod,
+                shippingMethodId,
             });
 
             // Reduce item stock counts.

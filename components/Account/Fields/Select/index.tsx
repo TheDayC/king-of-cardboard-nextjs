@@ -13,7 +13,7 @@ interface SelectFieldProps {
     fieldName: string;
     error: string | null;
     options: Options[];
-    register: UseFormRegister<FieldValues>;
+    register: UseFormRegister<any>;
     Icon: IconType;
     defaultValue?: string | number;
 }

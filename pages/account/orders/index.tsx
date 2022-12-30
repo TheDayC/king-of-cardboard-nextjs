@@ -1,7 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { MdAddCircleOutline } from 'react-icons/md';
 
 import AccountWrapper from '../../../components/AccountWrapper';
@@ -11,10 +12,9 @@ import { Roles } from '../../../enums/auth';
 import OrderComponent from '../../../components/Account/Order';
 import Loading from '../../../components/Loading';
 import Pagination from '../../../components/Pagination';
-import { listOrders } from '../../../utils/account/order';
+import { listAllOrders } from '../../../utils/account/order';
 import { isListOrders } from '../../../utils/typeguards';
 import { Order } from '../../../types/orders';
-import { useSession } from 'next-auth/react';
 
 const LIMIT = 10;
 const PAGE = 0;
@@ -34,7 +34,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
         };
     }
 
-    const ordersList = await listOrders(userId, LIMIT, PAGE, true, isAdmin);
+    const ordersList = await listAllOrders(LIMIT, PAGE, true);
 
     if (!isListOrders(ordersList)) {
         return {
@@ -71,11 +71,11 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ initialOrders, initialTo
     const role = safelyParse(session, 'user.role', parseAsRole, Roles.User);
     const isAdmin = role === Roles.Admin;
 
-    const handleUpdateProducts = useCallback(async () => {
+    const handleUpdateProducts = async (nextPage: number) => {
         if (!userId || !isAdmin) return;
 
         setIsLoading(true);
-        const ordersList = await listOrders(userId, LIMIT, PAGE, true, isAdmin);
+        const ordersList = await listAllOrders(LIMIT, LIMIT * nextPage, false);
 
         if (isListOrders(ordersList)) {
             setOrders(ordersList.orders);
@@ -83,11 +83,11 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ initialOrders, initialTo
         }
 
         setIsLoading(false);
-    }, [count, page, setIsLoading]);
+    };
 
     const handlePageNumber = (nextPage: number) => {
         setPage(nextPage);
-        handleUpdateProducts();
+        handleUpdateProducts(nextPage);
     };
 
     return (
@@ -107,7 +107,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ initialOrders, initialTo
                     {orders.length > 0 &&
                         orders.map((order) => <OrderComponent order={order} key={`order-${order._id}`} />)}
                     {pageCount > 1 && (
-                        <Pagination currentPage={page - 1} pageCount={pageCount} handlePageNumber={handlePageNumber} />
+                        <Pagination currentPage={page} pageCount={pageCount} handlePageNumber={handlePageNumber} />
                     )}
                 </div>
             </div>
