@@ -13,6 +13,9 @@ import { Status, Payment, Fulfillment } from '../../../enums/orders';
 import { RepeaterItem } from '../../../types/orders';
 import { CartItem } from '../../../types/cart';
 import RepeaterField from '../Fields/Repeater';
+import { addOrder } from '../../../utils/account/order';
+import { toNumber } from 'lodash';
+import { AccountShippingMethod } from '../../../types/shipping';
 
 const orderStatuses = [
     { key: 'Approved', value: Status.Approved },
@@ -37,7 +40,7 @@ const fulfillmentStatuses = [
 
 const defaultRepeateritem = { sku: '', quantity: 0 };
 
-interface ProductBodyProps {
+interface OrderBodyProps {
     firstName?: string;
     lastName?: string;
     email?: string;
@@ -47,11 +50,13 @@ interface ProductBodyProps {
     orderStatus?: Status;
     paymentStatus?: Payment;
     fulfillmentStatus?: Fulfillment;
+    shippingMethodId?: string;
     items?: CartItem[];
     isNew: boolean;
+    shippingMethods: AccountShippingMethod[];
 }
 
-export const OrderBody: React.FC<ProductBodyProps> = ({
+export const OrderBody: React.FC<OrderBodyProps> = ({
     firstName,
     lastName,
     email,
@@ -61,17 +66,15 @@ export const OrderBody: React.FC<ProductBodyProps> = ({
     orderStatus,
     paymentStatus,
     fulfillmentStatus,
+    shippingMethodId,
     items,
     isNew,
+    shippingMethods,
 }) => {
-    const { data: session } = useSession();
     const {
         register,
         handleSubmit,
         formState: { errors },
-        setValue,
-        setError,
-        reset,
     } = useForm();
     const [isLoading, setIsLoading] = useState(false);
     const [repeaterItems, setRepeaterItems] = useState<RepeaterItem[]>([defaultRepeateritem]);
@@ -101,6 +104,12 @@ export const OrderBody: React.FC<ProductBodyProps> = ({
         payment: safelyParse(errors, 'paymentStatus.message', parseAsString, null),
         fulfillment: safelyParse(errors, 'fulfillmentStatus.message', parseAsString, null),
     };
+    const shippingMethodErr = safelyParse(errors, 'shippingMethod.message', parseAsString, null);
+
+    const reducedShippingMethods = shippingMethods.map((method) => ({
+        key: method.title,
+        value: method._id,
+    }));
 
     const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         if (hasErrors || isLoading) {
@@ -108,6 +117,43 @@ export const OrderBody: React.FC<ProductBodyProps> = ({
         }
 
         setIsLoading(true);
+
+        const payload = {
+            userId: null,
+            email: data.email,
+            orderStatus: toNumber(data.orderStatus),
+            paymentStatus: toNumber(data.paymentStatus),
+            fulfillmentStatus: toNumber(data.fulfillmentStatus),
+            repeaterItems: data.sku.map((sku: string, i: number) => ({ sku, quantity: data.quantity[i] })),
+            customerDetails: {
+                firstName: data.firstName,
+                lastName: data.lastName,
+                email: data.email,
+                phone: data.phone,
+            },
+            shippingAddress: {
+                lineOne: data.shippingLineOne,
+                lineTwo: data.shippingLineTwo,
+                company: '',
+                city: data.shippingCity,
+                postcode: data.shippingPostcode,
+                county: data.shippingCounty,
+                country: 'GB',
+            },
+            billingAddress: {
+                lineOne: data.billingLineOne,
+                lineTwo: data.billingLineTwo,
+                company: '',
+                city: data.billingCity,
+                postcode: data.billingPostcode,
+                county: data.billingCounty,
+                country: 'GB',
+            },
+            shouldFindItems: true,
+            shouldCalculateTotals: true,
+        };
+
+        const { _id: orderId } = await addOrder(payload);
 
         setIsLoading(false);
     };
@@ -119,7 +165,6 @@ export const OrderBody: React.FC<ProductBodyProps> = ({
     };
 
     const removeRepeaterRow = (rowCount: number) => {
-        console.log('🚀 ~ file: body.tsx:122 ~ removeRepeaterRow ~ rowCount', rowCount);
         setRepeaterItems([...repeaterItems.filter((item, i) => i !== rowCount)]);
     };
 
@@ -199,7 +244,7 @@ export const OrderBody: React.FC<ProductBodyProps> = ({
                             register={register}
                             Icon={MdOutlineTitle}
                             defaultValue={billingAddress ? billingAddress.lineTwo : undefined}
-                            isRequired
+                            isRequired={false}
                         />
                         <InputField
                             placeholder="City"
@@ -255,7 +300,7 @@ export const OrderBody: React.FC<ProductBodyProps> = ({
                             register={register}
                             Icon={MdOutlineTitle}
                             defaultValue={shippingAddress ? shippingAddress.lineTwo : undefined}
-                            isRequired
+                            isRequired={false}
                         />
                         <InputField
                             placeholder="City"
@@ -320,6 +365,16 @@ export const OrderBody: React.FC<ProductBodyProps> = ({
                             error={statusErrs.fulfillment}
                             register={register}
                             defaultValue={fulfillmentStatus}
+                            Icon={BiCategory}
+                        />
+                        <SelectField
+                            placeholder="Shipping method"
+                            fieldName="shippingMethod"
+                            instruction="Fulfillment status is required."
+                            options={reducedShippingMethods}
+                            error={shippingMethodErr}
+                            register={register}
+                            defaultValue={shippingMethodId}
                             Icon={BiCategory}
                         />
                     </div>

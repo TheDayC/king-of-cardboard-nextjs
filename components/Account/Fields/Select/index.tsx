@@ -15,7 +15,7 @@ interface SelectFieldProps {
     options: Options[];
     register: UseFormRegister<FieldValues>;
     Icon: IconType;
-    defaultValue?: number;
+    defaultValue?: string | number;
 }
 
 export const SelectField: React.FC<SelectFieldProps> = ({

@@ -16,7 +16,7 @@ export interface CreateOrder {
 }
 
 export interface CartItem
-    extends Omit<Product, 'created' | 'lastUpdated' | 'userId' | 'content' | 'mainImage' | 'gallery'> {
+    extends Omit<Product, 'created' | 'lastUpdated' | 'userId' | 'content' | 'mainImage' | 'gallery' | 'isInfinite'> {
     mainImage: ImageItem;
     stock: number;
     cartQty: number;

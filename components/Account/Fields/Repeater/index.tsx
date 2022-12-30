@@ -51,7 +51,7 @@ export const RepeaterField: React.FC<RepeaterFieldProps> = ({
                         <BsCartFill className="w-5 h-5" />
                     </span>
                     <input
-                        type="text"
+                        type="number"
                         placeholder="Quantity"
                         {...register(`quantity.${rowCount}`, {
                             required: false,
