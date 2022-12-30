@@ -4,11 +4,8 @@ import { unstable_getServerSession } from 'next-auth';
 
 import AccountWrapper from '../../../components/AccountWrapper';
 import { authOptions } from '../../api/auth/[...nextauth]';
-import { parseAsRole, parseAsString, safelyParse } from '../../../utils/parsers';
+import { parseAsRole, safelyParse } from '../../../utils/parsers';
 import { Roles } from '../../../enums/auth';
-import { Order } from '../../../types/orders';
-import { getOrderById } from '../../../utils/account/order';
-import { isOrder } from '../../../utils/typeguards';
 import OrderBody from '../../../components/Account/Order/body';
 import { listShippingMethods } from '../../../utils/account/shipping';
 import { AccountShippingMethod } from '../../../types/shipping';
@@ -16,7 +13,7 @@ import { AccountShippingMethod } from '../../../types/shipping';
 const LIMIT = 10;
 const PAGE = 0;
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const session = await unstable_getServerSession(req, res, authOptions);
     const role = safelyParse(session, 'user.role', parseAsRole, Roles.User);
     const isAdmin = role === Roles.Admin;

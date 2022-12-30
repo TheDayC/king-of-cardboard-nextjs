@@ -6,7 +6,7 @@ interface RepeaterFieldProps {
     sku?: string;
     quantity?: number;
     rowCount: number;
-    register: UseFormRegister<any>;
+    register: UseFormRegister<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
     isLastRow: boolean;
     addRepeaterRow: (e: React.MouseEvent<HTMLButtonElement>) => void;
     removeRepeaterRow: (rowCount: number) => void;

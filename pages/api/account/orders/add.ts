@@ -4,6 +4,8 @@ import { DateTime } from 'luxon';
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 import sgMail, { MailDataRequired } from '@sendgrid/mail';
+import { toNumber } from 'lodash';
+import axios from 'axios';
 
 import { Fulfillment, Payment, Status } from '../../../../enums/orders';
 import { connectToDatabase } from '../../../../middleware/database';
@@ -17,8 +19,6 @@ import { getPrettyPrice } from '../../../../utils/account/products';
 import { formatOrderNumber } from '../../../../utils/checkout';
 import { RepeaterItem } from '../../../../types/orders';
 import { Category, Configuration, Interest } from '../../../../enums/products';
-import { toNumber } from 'lodash';
-import axios from 'axios';
 
 const defaultErr = 'Order could not be added.';
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
