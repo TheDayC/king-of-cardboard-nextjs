@@ -2,10 +2,11 @@ import { DateTime } from 'luxon';
 import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
 
 import { AlertLevel } from '../../enums/system';
-import { AccountAddress, Order, SingleAddress, SingleOrder } from '../../types/account';
+import { AccountAddress, SingleAddress } from '../../types/account';
 import { Break, SingleBreak } from '../../types/breaks';
 import { CartItem } from '../../types/cart';
-import { Address, CustomerDetails, Shipment } from '../../types/checkout';
+import { Address, CustomerDetails } from '../../types/checkout';
+import { Order } from '../../types/orders';
 import { ContentfulPage } from '../../types/pages';
 import { SingleProduct } from '../../types/products';
 import { Product } from '../../types/productsNew';

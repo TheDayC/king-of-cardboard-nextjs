@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { errorHandler } from '../middleware/errors';
-import { Order } from '../types/account';
+import { Order } from '../types/orders';
 import { AddOrderResponse } from '../types/checkout';
 import { ResponseError } from '../types/errors';
 import { ListOrders } from '../types/orders';
