@@ -4,5 +4,4 @@ export enum Slugs {
     Profile = 'profile',
     AddressBook = 'address-book',
     AddAddress = 'add-address',
-    Achievements = 'achievements',
 }
