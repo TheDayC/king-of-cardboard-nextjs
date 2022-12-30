@@ -1,32 +1,17 @@
-import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAction, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 import { PURGE } from 'redux-persist';
 
 import { AppState } from '..';
-import { CreateToken } from '../../types/commerce';
-import { createToken } from '../../utils/auth';
 import globalInitialState from '../state/global';
 
 const hydrate = createAction<AppState>(HYDRATE);
 const purge = createAction<AppState>(PURGE);
 
-export const fetchToken = createAsyncThunk('global/fetchToken', async (): Promise<CreateToken> => {
-    return await createToken();
-});
-
 const globalSlice = createSlice({
     name: 'global',
     initialState: globalInitialState,
     reducers: {
-        setAccessToken(state, action) {
-            state.accessToken = action.payload;
-        },
-        setUserToken(state, action) {
-            state.userToken = action.payload;
-        },
-        setUserTokenExpiry(state, action) {
-            state.userTokenExpiry = action.payload;
-        },
         setUserId(state, action) {
             state.userId = action.payload;
         },
@@ -50,23 +35,10 @@ const globalSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        builder.addCase(fetchToken.pending, (state) => {
-            state.isFetchingToken = true;
-        }),
-            builder.addCase(fetchToken.rejected, (state) => {
-                state.isFetchingToken = false;
-            }),
-            builder.addCase(fetchToken.fulfilled, (state, action) => {
-                const { token, expires } = action.payload;
-
-                state.accessToken = token;
-                state.expires = expires;
-                state.isFetchingToken = false;
-            }),
-            builder.addCase(hydrate, (state, action) => ({
-                ...state,
-                ...action.payload[globalSlice.name],
-            })),
+        builder.addCase(hydrate, (state, action) => ({
+            ...state,
+            ...action.payload[globalSlice.name],
+        })),
             builder.addCase(purge, () => {
                 return globalInitialState;
             });
@@ -74,13 +46,10 @@ const globalSlice = createSlice({
 });
 
 export const {
-    setAccessToken,
     setExpires,
     setCheckoutLoading,
     setHasRejected,
     setSessionEmail,
-    setUserToken,
-    setUserTokenExpiry,
     setUserId,
     setIsDrawerOpen,
     setTokenExpiry,

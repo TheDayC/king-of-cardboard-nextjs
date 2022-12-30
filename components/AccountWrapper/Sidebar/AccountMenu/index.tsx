@@ -7,7 +7,7 @@ import { MdOutlineAccountCircle } from 'react-icons/md';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import { Slugs } from '../../../../enums/account';
-import { setUserId, setUserToken } from '../../../../store/slices/global';
+import { setUserId } from '../../../../store/slices/global';
 import Title from '../Title';
 
 export const AccountMenu: React.FC = () => {
@@ -16,7 +16,6 @@ export const AccountMenu: React.FC = () => {
     const slug = safelyParse(router, 'query.slug', parseAsString, null);
 
     const handleLogout = () => {
-        dispatch(setUserToken(null));
         dispatch(setUserId(null));
         signOut();
     };

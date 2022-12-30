@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 
 import selector from './selector';
 import Images from './Images';
 import Details from './Details';
 import Slots from './Slots';
-import { fetchSingleBreak, setIsLoadingBreak } from '../../store/slices/breaks';
 import Legend from './Legend';
 import Skeleton from './Skeleton';
 import Content from '../Content';
@@ -14,19 +13,9 @@ interface BreakProps {
     slug: string;
 }
 
-export const Break: React.FC<BreakProps> = ({ slug }) => {
-    const { accessToken, currentBreak, isLoadingBreak } = useSelector(selector);
-    const [shouldFetch, setShouldFetch] = useState(true);
-    const dispatch = useDispatch();
+export const Break: React.FC<BreakProps> = () => {
+    const { currentBreak, isLoadingBreak } = useSelector(selector);
     const { title, cardImage, images, tags, description } = currentBreak;
-
-    useEffect(() => {
-        if (accessToken && shouldFetch && slug) {
-            setShouldFetch(false);
-            dispatch(setIsLoadingBreak(true));
-            dispatch(fetchSingleBreak({ accessToken, slug }));
-        }
-    }, [accessToken, slug, dispatch, shouldFetch]);
 
     if (isLoadingBreak) {
         return <Skeleton />;

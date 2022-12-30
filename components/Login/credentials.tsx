@@ -5,11 +5,8 @@ import { RiLockPasswordLine } from 'react-icons/ri';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { BiErrorCircle } from 'react-icons/bi';
-import { useDispatch } from 'react-redux';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
-import { createUserToken } from '../../utils/auth';
-import { setUserId, setUserToken, setUserTokenExpiry } from '../../store/slices/global';
 
 interface Submit {
     emailAddress?: string;
@@ -32,7 +29,6 @@ export const Credentials: React.FC<CredentialsProps> = ({ shouldRedirect }) => {
     const hasErrors = Object.keys(errors).length > 0;
     const emailErr = safelyParse(errors, 'emailAddress.message', parseAsString, null);
     const passwordErr = safelyParse(errors, 'password.message', parseAsString, null);
-    const dispatch = useDispatch();
     const btnErrClass = hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary';
     const btnLoadingClass = loading ? ' loading btn-square' : '';
 
@@ -45,18 +41,8 @@ export const Credentials: React.FC<CredentialsProps> = ({ shouldRedirect }) => {
         const formErr = safelyParse(hasSignedIn, 'error', parseAsString, null);
         setError(formErr ? 'Log in details incorrect.' : null);
 
-        if (!formErr) {
-            if (emailAddress && password) {
-                const { token, id, expiry } = await createUserToken(emailAddress, password);
-
-                dispatch(setUserToken(token));
-                dispatch(setUserTokenExpiry(expiry));
-                dispatch(setUserId(id));
-            }
-
-            if (shouldRedirect) {
-                router.push('/account');
-            }
+        if (!formErr && shouldRedirect) {
+            router.push('/account');
         }
 
         setLoading(false);

@@ -5,16 +5,11 @@ import { HYDRATE } from 'next-redux-wrapper';
 import { AppState } from '..';
 import { AccountAddress } from '../../types/account';
 import { SocialMedia } from '../../types/profile';
-import { getCurrentAddress, getSocialMedia } from '../../utils/account';
+import { getSocialMedia } from '../../utils/account';
 import { parseAsArrayOfAccountAddresses, parseAsNumber, safelyParse } from '../../utils/parsers';
 import accountInitialState from '../state/account';
 
 const hydrate = createAction<AppState>(HYDRATE);
-
-interface AddressThunkInput {
-    accessToken: string;
-    id: string;
-}
 
 interface ListAddressInput {
     userId: string;

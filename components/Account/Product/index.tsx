@@ -8,7 +8,7 @@ import { toNumber } from 'lodash';
 import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
 
 import { addError, addSuccess } from '../../../store/slices/alerts';
-import { Product as ProductType } from '../../../types/productsNew';
+import { Product as ProductType } from '../../../types/products';
 import { getPrettyPrice, deleteProduct, editProduct } from '../../../utils/account/products';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import Loading from '../../Loading';

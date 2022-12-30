@@ -1,6 +1,6 @@
 import { Supplier } from '../enums/shipping';
 
-export interface ShippingMethod {
+interface ShippingMethod {
     title: string;
     slug: string;
     content: string;

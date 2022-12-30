@@ -13,7 +13,7 @@ import Rewards from './Rewards';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import NavBar from './Navbar';
 import CartIcon from './CartIcon';
-import { setIsDrawerOpen, setUserId, setUserToken } from '../../store/slices/global';
+import { setIsDrawerOpen, setUserId } from '../../store/slices/global';
 import { Slugs } from '../../enums/account';
 //import IssueBanner from './IssueBanner';
 
@@ -26,7 +26,6 @@ export const Header: React.FC = () => {
     const slug = safelyParse(router, 'query.slug', parseAsString, null);
 
     const handleLogout = () => {
-        dispatch(setUserToken(null));
         dispatch(setUserId(null));
         signOut();
     };

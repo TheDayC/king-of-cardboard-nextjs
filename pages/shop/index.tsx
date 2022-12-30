@@ -17,7 +17,7 @@ import Content from '../../components/Content';
 import selector from './selector';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
 import { Category, Configuration, Interest } from '../../enums/products';
-import { Product } from '../../types/productsNew';
+import { Product } from '../../types/products';
 import { listProducts } from '../../utils/account/products';
 import { setProductsAndCount } from '../../store/slices/products';
 
