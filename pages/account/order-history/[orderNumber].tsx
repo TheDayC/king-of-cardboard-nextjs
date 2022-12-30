@@ -7,7 +7,7 @@ import { parseAsString, safelyParse } from '../../../utils/parsers';
 import LongOrder from '../../../components/Account/OrderHistory/LongOrder';
 import { authOptions } from '../../api/auth/[...nextauth]';
 import { isOrder } from '../../../utils/typeguards';
-import { getOrder } from '../../../utils/order';
+import { getOrder } from '../../../utils/account/order';
 import { Order } from '../../../types/orders';
 import AccountWrapper from '../../../components/AccountWrapper';
 import { formatOrderNumber } from '../../../utils/checkout';

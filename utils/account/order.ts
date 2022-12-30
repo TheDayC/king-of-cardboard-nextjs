@@ -1,11 +1,11 @@
 import axios from 'axios';
-import { errorHandler } from '../middleware/errors';
-import { Order } from '../types/orders';
-import { AddOrderResponse } from '../types/checkout';
-import { ResponseError } from '../types/errors';
-import { ListOrders } from '../types/orders';
+import { errorHandler } from '../../middleware/errors';
+import { Order } from '../../types/orders';
+import { AddOrderResponse } from '../../types/checkout';
+import { ResponseError } from '../../types/errors';
+import { ListOrders } from '../../types/orders';
 
-import { parseAsNumber, parseAsString, safelyParse } from './parsers';
+import { parseAsNumber, parseAsString, safelyParse } from '../parsers';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 

@@ -19,7 +19,7 @@ import { parseAsString, safelyParse } from '../../../utils/parsers';
 import UseCoins from '../../UseCoins';
 import { gaEvent } from '../../../utils/ga';
 import { PaymentMethods } from '../../../enums/checkout';
-import { addOrder } from '../../../utils/order';
+import { addOrder } from '../../../utils/account/order';
 import { Status, Payment as PaymentStatus, Fulfillment } from '../../../enums/orders';
 import { setConfirmationData } from '../../../store/slices/confirmation';
 import { getPrettyPrice } from '../../../utils/account/products';

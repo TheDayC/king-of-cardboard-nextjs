@@ -5,7 +5,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { FetchCartItems } from '../../../types/cart';
-import { calculateExcessCoinSpend } from '../../../utils/order';
+import { calculateExcessCoinSpend } from '../../../utils/account/order';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 
 const defaultErr = 'Error in cart.';

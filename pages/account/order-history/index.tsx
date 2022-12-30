@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { authOptions } from '../../api/auth/[...nextauth]';
 import { isListOrders } from '../../../utils/typeguards';
-import { listOrders } from '../../../utils/order';
+import { listOrders } from '../../../utils/account/order';
 import { Order } from '../../../types/orders';
 import { getPrettyPrice } from '../../../utils/account/products';
 import ShortOrder from '../../../components/Account/OrderHistory/ShortOrder';
