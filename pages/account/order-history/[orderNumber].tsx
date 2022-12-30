@@ -10,6 +10,7 @@ import { isOrder } from '../../../utils/typeguards';
 import { getOrder } from '../../../utils/order';
 import { Order } from '../../../types/orders';
 import AccountWrapper from '../../../components/AccountWrapper';
+import { formatOrderNumber } from '../../../utils/checkout';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
     const session = await unstable_getServerSession(req, res, authOptions);
@@ -52,7 +53,7 @@ interface HistoricalOrderPageProps {
 export const HistoricalOrderPage: React.FC<HistoricalOrderPageProps> = ({ order }) => {
     return (
         <AccountWrapper
-            title={`#${order.orderNumber} - Account - King of Cardboard`}
+            title={`Order ${formatOrderNumber(order.orderNumber)} - Account - King of Cardboard`}
             description={`Your historical order #${order.orderNumber} details.`}
         >
             <div className="flex flex-col relative w-full py-4 px-6">
