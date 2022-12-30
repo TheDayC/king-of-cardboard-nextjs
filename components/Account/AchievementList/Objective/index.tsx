@@ -8,7 +8,7 @@ import { AiFillFire } from 'react-icons/ai';
 import { ObjectId } from '../../../../types/achievements';
 import { nextMilestone, progressColour } from '../../../../utils/achievements';
 import Progress from '../../../Progress';
-import Award from '../../Award';
+import Award from '../Award';
 
 interface ObjectiveProps {
     id: ObjectId;
