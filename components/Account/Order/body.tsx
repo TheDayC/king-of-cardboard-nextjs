@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { BsBoxSeam, BsFillPinMapFill, BsInputCursorText, BsPhone } from 'react-icons/bs';
 import { MdOutlineEmail, MdOutlineTitle } from 'react-icons/md';
@@ -10,6 +10,9 @@ import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { Address } from '../../../types/checkout';
 import SelectField from '../Fields/Select';
 import { Status, Payment, Fulfillment } from '../../../enums/orders';
+import { RepeaterItem } from '../../../types/orders';
+import { CartItem } from '../../../types/cart';
+import RepeaterField from '../Fields/Repeater';
 
 const orderStatuses = [
     { key: 'Approved', value: Status.Approved },
@@ -32,6 +35,8 @@ const fulfillmentStatuses = [
     { key: 'Unfulfilled', value: Fulfillment.Unfulfilled },
 ];
 
+const defaultRepeateritem = { sku: '', quantity: 0 };
+
 interface ProductBodyProps {
     firstName?: string;
     lastName?: string;
@@ -42,6 +47,7 @@ interface ProductBodyProps {
     orderStatus?: Status;
     paymentStatus?: Payment;
     fulfillmentStatus?: Fulfillment;
+    items?: CartItem[];
     isNew: boolean;
 }
 
@@ -55,6 +61,7 @@ export const OrderBody: React.FC<ProductBodyProps> = ({
     orderStatus,
     paymentStatus,
     fulfillmentStatus,
+    items,
     isNew,
 }) => {
     const { data: session } = useSession();
@@ -67,6 +74,7 @@ export const OrderBody: React.FC<ProductBodyProps> = ({
         reset,
     } = useForm();
     const [isLoading, setIsLoading] = useState(false);
+    const [repeaterItems, setRepeaterItems] = useState<RepeaterItem[]>([defaultRepeateritem]);
 
     // Errors
     const hasErrors = Object.keys(errors).length > 0;
@@ -103,6 +111,24 @@ export const OrderBody: React.FC<ProductBodyProps> = ({
 
         setIsLoading(false);
     };
+
+    const addRepeaterRow = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+
+        setRepeaterItems([...repeaterItems, defaultRepeateritem]);
+    };
+
+    const removeRepeaterRow = (rowCount: number) => {
+        console.log('🚀 ~ file: body.tsx:122 ~ removeRepeaterRow ~ rowCount', rowCount);
+        setRepeaterItems([...repeaterItems.filter((item, i) => i !== rowCount)]);
+    };
+
+    useEffect(() => {
+        if (items) {
+            const mappedRepeaterItems: RepeaterItem[] = items.map(({ sku, quantity }) => ({ sku, quantity }));
+            setRepeaterItems(mappedRepeaterItems);
+        }
+    }, [items]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -296,6 +322,23 @@ export const OrderBody: React.FC<ProductBodyProps> = ({
                             defaultValue={fulfillmentStatus}
                             Icon={BiCategory}
                         />
+                    </div>
+                </div>
+
+                <div className="flex flex-col space-y-4">
+                    <h3 className="text-2xl">Items</h3>
+                    <div className="flex flex-col space-y-4 items-start justify-start">
+                        {repeaterItems.map((item, i) => (
+                            <RepeaterField
+                                {...item}
+                                rowCount={i}
+                                register={register}
+                                isLastRow={i === repeaterItems.length - 1}
+                                addRepeaterRow={addRepeaterRow}
+                                removeRepeaterRow={removeRepeaterRow}
+                                key={`item-${i}`}
+                            />
+                        ))}
                     </div>
                 </div>
 
