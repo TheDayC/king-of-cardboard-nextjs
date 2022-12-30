@@ -24,7 +24,6 @@ export const Header: React.FC = () => {
     const email = safelyParse(session, 'user.email', parseAsString, null);
     const router = useRouter();
     const slug = safelyParse(router, 'query.slug', parseAsString, null);
-    const orderNumber = safelyParse(router, 'query.orderNumber', parseAsString, null);
 
     const handleLogout = () => {
         dispatch(setUserToken(null));
@@ -87,47 +86,6 @@ export const Header: React.FC = () => {
                                         }}
                                     >
                                         Profile
-                                    </Link>
-                                </li>
-                                <li
-                                    className={`${slug === Slugs.AddressBook ? 'bordered' : 'hover-bordered'}`}
-                                    role="menuitem"
-                                >
-                                    <Link
-                                        href={{
-                                            pathname: '/account/[slug]',
-                                            query: { slug: Slugs.AddressBook },
-                                        }}
-                                    >
-                                        Address Book
-                                    </Link>
-                                </li>
-                                <li
-                                    className={`${
-                                        slug === 'order-history' || orderNumber ? 'bordered' : 'hover-bordered'
-                                    }`}
-                                    role="menuitem"
-                                >
-                                    <Link
-                                        href={{
-                                            pathname: '/account/[slug]',
-                                            query: { slug: 'order-history' },
-                                        }}
-                                    >
-                                        Order History
-                                    </Link>
-                                </li>
-                                <li
-                                    className={`${slug === Slugs.Achievements ? 'bordered' : 'hover-bordered'}`}
-                                    role="menuitem"
-                                >
-                                    <Link
-                                        href={{
-                                            pathname: '/account/[slug]',
-                                            query: { slug: Slugs.Achievements },
-                                        }}
-                                    >
-                                        Achievements
                                     </Link>
                                 </li>
                                 <li role="menuitem">

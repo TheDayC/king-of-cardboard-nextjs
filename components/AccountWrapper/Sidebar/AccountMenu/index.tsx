@@ -71,12 +71,7 @@ export const AccountMenu: React.FC = () => {
                 >
                     <Link href="/account/achievements">Achievements</Link>
                 </li>
-                <li
-                    className={`${
-                        slug === Slugs.Achievements ? 'bordered' : 'hover-bordered'
-                    } text-white hover:bg-neutral-focus`}
-                    role="menuitem"
-                >
+                <li className="hover-bordered text-white hover:bg-neutral-focus" role="menuitem">
                     <a onClick={handleLogout} data-testid="logout">
                         Log Out
                     </a>
