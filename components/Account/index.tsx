@@ -2,7 +2,6 @@ import React from 'react';
 
 import Details from './Details';
 import Profile from './Profile';
-import OrderHistory from './OrderHistory';
 import AchievementList from './AchievementList';
 import AddressBook from './AddressBook';
 import Fields from './AddressBook/Fields';
@@ -18,8 +17,6 @@ export const Account: React.FC<AccountProps> = ({ slug }) => {
             return <Details />;
         case Slugs.Profile:
             return <Profile />;
-        case Slugs.OrderHistory:
-            return <OrderHistory />;
         case Slugs.Achievements:
             return <AchievementList />;
         case Slugs.AddressBook:

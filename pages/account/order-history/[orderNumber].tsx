@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { GetServerSideProps } from 'next';
-import { useDispatch, useSelector } from 'react-redux';
-import { getSession } from 'next-auth/react';
+import { unstable_getServerSession } from 'next-auth';
+import { toNumber } from 'lodash';
 
-import PageWrapper from '../../../components/PageWrapper';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
-import selector from './selector';
 import LongOrder from '../../../components/Account/OrderHistory/LongOrder';
-import { fetchCurrentOrder, setIsLoadingOrder } from '../../../store/slices/account';
-import Custom404Page from '../../404';
-import Skeleton from './skeleton';
+import { authOptions } from '../../api/auth/[...nextauth]';
+import { isOrder } from '../../../utils/typeguards';
+import { getOrder } from '../../../utils/order';
+import { Order } from '../../../types/orders';
+import AccountWrapper from '../../../components/AccountWrapper';
+import { formatOrderNumber } from '../../../utils/checkout';
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await getSession(context);
-    const orderNumber = safelyParse(context, 'query.orderNumber', parseAsString, null);
+export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+    const session = await unstable_getServerSession(req, res, authOptions);
 
     // If session hasn't been established redirect to the login page.
     if (!session) {
@@ -25,69 +25,58 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         };
     }
 
+    const userId = safelyParse(session, 'user.id', parseAsString, '');
+    const orderNumber = safelyParse(query, 'orderNumber', parseAsString, '0');
+    const order = await getOrder(userId, toNumber(orderNumber));
+
+    if (!orderNumber || !userId || !isOrder(order)) {
+        return {
+            redirect: {
+                permanent: false,
+                destination: '/account/order-history',
+            },
+        };
+    }
+
     // If we're signed in then decide whether we should show the page or 404.
     return {
         props: {
-            errorCode: !orderNumber ? 404 : null,
-            orderNumber,
+            order,
         },
     };
 };
 
-interface OrderProps {
-    errorCode: number | boolean;
-    orderNumber: string | null;
+interface HistoricalOrderPageProps {
+    order: Order;
 }
 
-export const HistoricalOrderPage: React.FC<OrderProps> = ({ errorCode, orderNumber }) => {
-    const { accessToken, order, isLoadingOrder } = useSelector(selector);
-    const [shouldFetch, setShouldFetch] = useState(true);
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        if (accessToken && orderNumber && shouldFetch) {
-            setShouldFetch(false);
-            dispatch(setIsLoadingOrder(true));
-            dispatch(fetchCurrentOrder({ accessToken, orderNumber }));
-        }
-    }, [dispatch, accessToken, orderNumber, shouldFetch]);
-
-    if (errorCode) {
-        return <Custom404Page />;
-    }
-
+export const HistoricalOrderPage: React.FC<HistoricalOrderPageProps> = ({ order }) => {
     return (
-        <PageWrapper
-            title={`#${orderNumber} - Account - King of Cardboard`}
-            description={`Your historical order #${orderNumber} details.`}
+        <AccountWrapper
+            title={`Order ${formatOrderNumber(order.orderNumber)} - Account - King of Cardboard`}
+            description={`Your historical order #${order.orderNumber} details.`}
         >
-            <div className="flex flex-row w-full justify-start items-start">
-                <div className="flex flex-col relative w-full px-2 py-0 md:px-4 md:px-8">
-                    {isLoadingOrder ? (
-                        <Skeleton />
-                    ) : (
-                        <LongOrder
-                            orderNumber={orderNumber}
-                            status={order.status}
-                            paymentStatus={order.payment_status}
-                            fulfillmentStatus={order.fulfillment_status}
-                            itemCount={order.skus_count}
-                            shipmentsCount={order.shipments_count}
-                            subTotal={order.formatted_subtotal_amount}
-                            shippingTotal={order.formatted_shipping_amount}
-                            discountTotal={order.formatted_discount_amount}
-                            total={order.formatted_total_amount}
-                            placedAt={order.placed_at}
-                            updatedAt={order.updated_at}
-                            lineItems={order.lineItems}
-                            shippingAddress={order.shipping_address}
-                            billingAddress={order.billing_address}
-                            paymentMethodDetails={order.payment_method_details}
-                        />
-                    )}
-                </div>
+            <div className="flex flex-col relative w-full py-4 px-6">
+                <LongOrder
+                    orderNumber={order.orderNumber}
+                    orderStatus={order.orderStatus}
+                    paymentStatus={order.paymentStatus}
+                    fulfillmentStatus={order.fulfillmentStatus}
+                    subTotal={order.subTotal}
+                    shipping={order.shipping}
+                    discount={order.discount}
+                    total={order.total}
+                    created={order.created}
+                    lastUpdated={order.lastUpdated}
+                    items={order.items}
+                    itemCount={order.items.length}
+                    shippingAddress={order.shippingAddress}
+                    billingAddress={order.billingAddress}
+                    paymentId={order.paymentId}
+                    paymentMethod={order.paymentMethod}
+                />
             </div>
-        </PageWrapper>
+        </AccountWrapper>
     );
 };
 

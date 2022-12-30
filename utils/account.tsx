@@ -1,11 +1,10 @@
-import axios, { isAxiosError } from 'axios';
+import axios from 'axios';
 import { FaCcVisa, FaCcMastercard, FaCcPaypal } from 'react-icons/fa';
 import { AiFillCreditCard } from 'react-icons/ai';
 import { DateTime } from 'luxon';
-import { join, values } from 'lodash';
 import CommerceLayer from '@commercelayer/sdk';
 
-import { GetOrders, GiftCard, SingleAddress, SingleOrder } from '../types/account';
+import { GiftCard, SingleAddress, SingleOrder } from '../types/account';
 import {
     parseAsArrayOfCommerceResponse,
     safelyParse,
@@ -18,106 +17,7 @@ import { authClient } from './auth';
 import { errorHandler } from '../middleware/errors';
 import { SocialMedia } from '../types/profile';
 import { ResponseError } from '../types/errors';
-
-export async function getOrders(
-    accessToken: string,
-    userToken: string,
-    userId: string,
-    pageSize: number,
-    pageNumber: number
-): Promise<GetOrders> {
-    try {
-        const cl = CommerceLayer({
-            organization: process.env.NEXT_PUBLIC_ECOM_SLUG || '',
-            accessToken: userToken,
-        });
-
-        const customer = await cl.customers.retrieve(userId, {
-            fields: { customers: ['id', 'orders'], orders: ['id'] },
-            include: ['orders'],
-        });
-
-        if (!customer.orders) {
-            return {
-                orders: [],
-                count: 1,
-            };
-        }
-
-        const orderIds = customer.orders.map((order) => order.id);
-
-        if (orderIds.length <= 0) {
-            return {
-                orders: [],
-                count: 0,
-            };
-        }
-
-        const orderRes = await cl.orders.list(
-            {
-                filters: {
-                    id_in: join(orderIds, ','),
-                    status_not_eq: 'draft',
-                },
-                fields: {
-                    orders: [
-                        'id',
-                        'number',
-                        'status',
-                        'payment_status',
-                        'fulfillment_status',
-                        'skus_count',
-                        'shipments_count',
-                        'formatted_total_amount_with_taxes',
-                        'placed_at',
-                        'updated_at',
-                    ],
-                },
-                sort: {
-                    created_at: 'desc',
-                    number: 'desc',
-                },
-                pageNumber,
-                pageSize,
-            },
-            {
-                organization: process.env.NEXT_PUBLIC_ECOM_SLUG || '',
-                accessToken,
-            }
-        );
-
-        const { meta, ...ordersAsObj } = orderRes;
-        const orders = values(ordersAsObj);
-
-        return {
-            orders: orders.map((order) => ({
-                number: safelyParse(order, 'number', parseAsNumber, 0),
-                status: safelyParse(order, 'status', parseAsString, 'draft'),
-                payment_status: safelyParse(order, 'payment_status', parseAsString, 'unpaid'),
-                fulfillment_status: safelyParse(order, 'fulfillment_status', parseAsString, 'unfulfilled'),
-                skus_count: safelyParse(order, 'skus_count', parseAsNumber, 0),
-                shipments_count: safelyParse(order, 'attributes.shipments_count', parseAsNumber, 0),
-                formatted_total_amount_with_taxes: safelyParse(
-                    order,
-                    'formatted_total_amount_with_taxes',
-                    parseAsString,
-                    ''
-                ),
-                placed_at: safelyParse(order, 'placed_at', parseAsString, ''),
-                updated_at: safelyParse(order, 'updated_at', parseAsString, ''),
-                lineItems: [],
-            })),
-            count: meta.pageCount,
-        };
-    } catch (error: unknown) {
-        errorHandler(error, 'We could not get historical orders.');
-    }
-
-    return {
-        orders: [],
-        count: 1,
-    };
-}
+import { Fulfillment, Payment, Status } from '../enums/orders';
 
 export async function getOrderPageCount(accessToken: string, emailAddress: string): Promise<number> {
     try {
@@ -364,42 +264,82 @@ export async function getOrder(accessToken: string, orderNumber: string): Promis
     };
 }
 
-export function statusColour(status: string): string {
+export function getStatusColor(status: Status): string {
     switch (status) {
-        case 'approved':
+        case Status.Approved:
             return 'green';
-        case 'placed':
-        case 'pending':
+        case Status.Placed:
+        case Status.Pending:
             return 'yellow';
-        case 'cancelled':
+        case Status.Cancelled:
             return 'red';
         default:
             return 'gray';
     }
 }
 
-export function paymentStatusColour(status: string): string {
+export function getPaymentStatusColor(status: Payment): string {
     switch (status) {
-        case 'paid':
+        case Payment.Paid:
             return 'green';
-        case 'authorized':
+        case Payment.Authorised:
             return 'yellow';
-        case 'voided':
-        case 'refunded':
+        case Payment.Refunded:
             return 'red';
         default:
             return 'gray';
     }
 }
 
-export function fulfillmentStatusColour(status: string): string {
+export function getFulfillmentStatusColor(status: Fulfillment): string {
     switch (status) {
-        case 'fulfilled':
+        case Fulfillment.Fulfilled:
             return 'green';
-        case 'in_progress':
+        case Fulfillment.InProgress:
             return 'yellow';
         default:
             return 'gray';
+    }
+}
+
+export function getStatusTitle(status: Status): string {
+    switch (status) {
+        case Status.Approved:
+            return 'Approved';
+        case Status.Placed:
+            return 'Placed';
+        case Status.Pending:
+            return 'Pending';
+        case Status.Cancelled:
+            return 'Cancelled';
+        default:
+            return 'Unknown';
+    }
+}
+
+export function getPaymentStatusTitle(status: Payment): string {
+    switch (status) {
+        case Payment.Paid:
+            return 'Paid';
+        case Payment.Authorised:
+            return 'Authorised';
+        case Payment.Refunded:
+            return 'Refunded';
+        default:
+            return 'Unknown';
+    }
+}
+
+export function getFulfillmentStatusTitle(status: Fulfillment): string {
+    switch (status) {
+        case Fulfillment.Fulfilled:
+            return 'Fulfilled';
+        case Fulfillment.InProgress:
+            return 'InProgress';
+        case Fulfillment.Unfulfilled:
+            return 'Unfulfilled';
+        default:
+            return 'Unknown';
     }
 }
 

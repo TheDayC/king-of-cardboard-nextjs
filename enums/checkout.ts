@@ -109,4 +109,5 @@ export enum ShippingAddressChoice {
 export enum PaymentMethods {
     Stripe,
     PayPal,
+    Unknown,
 }

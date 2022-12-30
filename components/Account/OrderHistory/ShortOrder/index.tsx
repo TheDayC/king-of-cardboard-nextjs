@@ -2,96 +2,102 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { DateTime } from 'luxon';
+import { BsBoxSeam, BsCalendarCheck, BsCalendarDate } from 'react-icons/bs';
 
-import { statusColour, paymentStatusColour, fulfillmentStatusColour } from '../../../../utils/account';
-import { OrderLineItem } from '../../../../types/account';
+import {
+    getStatusColor,
+    getStatusTitle,
+    getPaymentStatusColor,
+    getPaymentStatusTitle,
+    getFulfillmentStatusColor,
+    getFulfillmentStatusTitle,
+} from '../../../../utils/account';
+import { Status, Payment, Fulfillment } from '../../../../enums/orders';
+import { CartItem } from '../../../../types/cart';
+import { formatOrderNumber } from '../../../../utils/checkout';
+import Badge from '../Badge';
 
 interface OrderProps {
     orderNumber: number;
-    status: string;
-    paymentStatus: string;
-    fulfillmentStatus: string;
-    itemCount: number;
-    shipmentsCount: number;
+    orderStatus: Status;
+    paymentStatus: Payment;
+    fulfillmentStatus: Fulfillment;
     total: string;
-    placedAt: string;
-    updatedAt: string;
-    lineItems: OrderLineItem[];
+    created: string;
+    lastUpdated: string;
+    lineItems: CartItem[];
+    itemCount: number;
 }
 
 export const ShortOrder: React.FC<OrderProps> = ({
     orderNumber,
-    status,
+    orderStatus,
     paymentStatus,
     fulfillmentStatus,
-    itemCount,
-    shipmentsCount,
     total,
-    placedAt,
-    updatedAt,
+    created,
+    lastUpdated,
     lineItems,
+    itemCount,
 }) => {
-    const placedAtDate = DateTime.fromISO(placedAt, { zone: 'Europe/London' });
-    const updatedAtDate = DateTime.fromISO(updatedAt, { zone: 'Europe/London' });
+    const createdDate = DateTime.fromISO(created, { zone: 'Europe/London' });
+    const lastUpdatedDate = DateTime.fromISO(lastUpdated, { zone: 'Europe/London' });
+
+    const statusColor = getStatusColor(orderStatus);
+    const statusTitle = getStatusTitle(orderStatus);
+    const paymentColor = getPaymentStatusColor(paymentStatus);
+    const paymentTitle = getPaymentStatusTitle(paymentStatus);
+    const fulfillmentColor = getFulfillmentStatusColor(fulfillmentStatus);
+    const fulfillmentTitle = getFulfillmentStatusTitle(fulfillmentStatus);
 
     return (
-        <div className="card card-side bordered rounded-md mb-2">
+        <div className="card card-side bordered rounded-md w-full">
             <div className="card-body p-2 md:p-4">
-                <div className="flex flex-row justify-between items-center">
-                    <div className="flex flex-col">
-                        <h3 className="card-title text-sm md:text-xl mb-2">
-                            {orderNumber > 0 && (
-                                <Link
-                                    href={{
-                                        pathname: '/account/order-history/[orderNumber]',
-                                        query: { orderNumber },
-                                    }}
-                                >{`Order #${orderNumber}`}</Link>
-                            )}
-                        </h3>
-                        <div className="flex flex-col mb-4 md:flex-row">
-                            <p className="text-xs text-gray-400 mb-1 md:mb-0">
-                                Placed on: {placedAtDate.toFormat('MMM dd, y')}
+                <div className="flex flex-row justify-between items-center space-x-4">
+                    <div className="flex flex-col space-y-4">
+                        {orderNumber > 0 && (
+                            <Link
+                                href={{
+                                    pathname: '/account/order-history/[orderNumber]',
+                                    query: { orderNumber },
+                                }}
+                                passHref
+                            >
+                                <h3 className="card-title text-xl hover:underline">
+                                    Order {formatOrderNumber(orderNumber)}
+                                </h3>
+                            </Link>
+                        )}
+                        <div className="flex flex-row items-start justify-start space-x-4">
+                            <p className="text-sm text-gray-400">
+                                <BsCalendarDate className="w-5 h-5 inline mr-2 -mt-1" />
+                                Placed on: {createdDate.toFormat('MMM dd, y')}
                             </p>
-                            <p className="text-xs text-gray-400 md:ml-2">
-                                Updated on: {updatedAtDate.toFormat('MMM dd, y')}
+                            <p className="text-sm text-gray-400">
+                                <BsCalendarCheck className="w-5 h-5 inline mr-2 -mt-1" />
+                                Last updated on: {lastUpdatedDate.toFormat('MMM dd, y')}
+                            </p>
+                            <p className="text-sm text-gray-400">
+                                <BsBoxSeam className="w-5 h-5 inline mr-2 -mt-1" />
+                                Items: {itemCount}
                             </p>
                         </div>
-                        <div className="flex flex-row mb-4">
-                            <p className="text-xs text-gray-400 mr-2">
-                                <b>Items:</b> {itemCount}
-                            </p>
-                            <p className="text-xs text-gray-400">
-                                <b>Shipments:</b> {shipmentsCount}
-                            </p>
-                        </div>
-                        <div className="flex flex-col lg:flex-row mb-2">
-                            <div className="flex flex-row justify-start items-center text-md lg:text-lg lg:justify-center lg:items-center lg:mr-6">
-                                <h3 className="mr-2">Order:</h3>
-                                <div
-                                    className={`rounded-full w-2.5 h-2.5 md:w-3 md:h-3 bg-${statusColour(
-                                        status
-                                    )}-400 mr-2`}
-                                ></div>
-                                <p className="capitalize">{status}</p>
+                        <div className="flex flex-row space-x-4">
+                            <div className="flex flex-row justify-start items-center text-lg space-x-2">
+                                <Badge color={statusColor} />
+                                <h3 className="font-bold">Order:</h3>
+
+                                <p className="capitalize">{statusTitle}</p>
                             </div>
-                            <div className="flex flex-row justify-start items-center text-md lg:text-lg lg:justify-center lg:items-center lg:mr-6">
-                                <h3 className="mr-2">Payment:</h3>
-                                <div
-                                    className={`rounded-full w-2.5 h-2.5 md:w-3 md:h-3 bg-${paymentStatusColour(
-                                        paymentStatus
-                                    )}-400 mr-2`}
-                                ></div>
-                                <p className="capitalize">{paymentStatus}</p>
+                            <div className="flex flex-row justify-start items-center text-lg space-x-2">
+                                <Badge color={paymentColor} />
+                                <h3 className="font-bold">Payment:</h3>
+                                <p className="capitalize">{paymentTitle}</p>
                             </div>
-                            <div className="flex flex-row justify-start items-center text-md mr-0 lg:text-lg lg:justify-center lg:items-center">
-                                <h3 className="mr-2">Fulfillment:</h3>
-                                <div
-                                    className={`rounded-full w-2.5 h-2.5 md:w-3 md:h-3 bg-${fulfillmentStatusColour(
-                                        fulfillmentStatus
-                                    )}-400 mr-2`}
-                                ></div>
-                                <p className="capitalize">{fulfillmentStatus}</p>
+                            <div className="flex flex-row justify-start items-center mr-0 text-lg space-x-2">
+                                <Badge color={fulfillmentColor} />
+                                <h3 className="font-bold">Fulfillment:</h3>
+                                <p className="capitalize">{fulfillmentTitle}</p>
                             </div>
                         </div>
                         <div className="flex flex-row">
@@ -104,14 +110,14 @@ export const ShortOrder: React.FC<OrderProps> = ({
                         <div className="flex">
                             <div className="stack">
                                 {lineItems
-                                    .filter((item) => item.sku_code)
+                                    .filter((item) => item.sku)
                                     .map((lineItem) => (
-                                        <div className="relative w-32 h-32" key={lineItem.id}>
+                                        <div className="relative w-32 h-32" key={lineItem._id}>
                                             <Image
-                                                src={lineItem.image_url || 'http://placeimg.com/128/128/tech'}
+                                                src={lineItem.mainImage.url || 'http://placeimg.com/128/128/tech'}
                                                 alt="order item image"
-                                                layout="fill"
-                                                objectFit="contain"
+                                                width={128}
+                                                height={128}
                                             />
                                         </div>
                                     ))}

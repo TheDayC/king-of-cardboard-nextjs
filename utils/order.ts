@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { errorHandler } from '../middleware/errors';
+import { Order } from '../types/orders';
 import { AddOrderResponse } from '../types/checkout';
+import { ResponseError } from '../types/errors';
+import { ListOrders } from '../types/orders';
 
 import { parseAsNumber, parseAsString, safelyParse } from './parsers';
 
@@ -32,6 +35,54 @@ export async function addOrder(options: any): Promise<AddOrderResponse> {
         shipping: 0,
         total: 0,
     };
+}
+
+export async function getOrder(userId: string, orderNumber: number): Promise<Order | ResponseError> {
+    try {
+        const res = await axios.get(`${URL}/api/orders/get`, {
+            params: {
+                userId,
+                orderNumber,
+            },
+            headers: {
+                'Accept-Encoding': 'application/json',
+            },
+        });
+
+        return res.data as Order;
+    } catch (error: unknown) {
+        return errorHandler(error, 'Could not get order.');
+    }
+}
+
+export async function listOrders(
+    userId: string,
+    count: number,
+    page: number,
+    isServer: boolean = false
+): Promise<ListOrders | ResponseError> {
+    try {
+        const headers = isServer ? { 'Accept-Encoding': 'application/json' } : undefined;
+        const res = await axios.post(
+            `${URL}/api/orders/list`,
+            {
+                userId,
+                count,
+                page,
+            },
+            {
+                headers,
+            }
+        );
+
+        return {
+            orders: res.data.orders as Order[],
+            count: safelyParse(res, 'data.count', parseAsNumber, 0),
+        };
+    } catch (error: unknown) {
+        console.log('🚀 ~ file: order.ts:69 ~ listOrders ~ error', error);
+        return errorHandler(error, 'Could not list orders.');
+    }
 }
 
 export function calculateExcessCoinSpend(coins: number, subTotal: number): number {

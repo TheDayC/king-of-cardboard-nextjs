@@ -104,14 +104,14 @@ export const Header: React.FC = () => {
                                 </li>
                                 <li
                                     className={`${
-                                        slug === Slugs.OrderHistory || orderNumber ? 'bordered' : 'hover-bordered'
+                                        slug === 'order-history' || orderNumber ? 'bordered' : 'hover-bordered'
                                     }`}
                                     role="menuitem"
                                 >
                                     <Link
                                         href={{
                                             pathname: '/account/[slug]',
-                                            query: { slug: Slugs.OrderHistory },
+                                            query: { slug: 'order-history' },
                                         }}
                                     >
                                         Order History
