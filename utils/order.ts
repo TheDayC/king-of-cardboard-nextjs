@@ -11,7 +11,7 @@ const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
 export async function addOrder(options: any): Promise<AddOrderResponse> {
     try {
-        const res = await axios.post(`${URL}/api/orders/add`, {
+        const res = await axios.post(`${URL}/api/account/orders/add`, {
             ...options,
         });
 
@@ -39,7 +39,7 @@ export async function addOrder(options: any): Promise<AddOrderResponse> {
 
 export async function getOrder(userId: string, orderNumber: number): Promise<Order | ResponseError> {
     try {
-        const res = await axios.get(`${URL}/api/orders/get`, {
+        const res = await axios.get(`${URL}/api/account/orders/get`, {
             params: {
                 userId,
                 orderNumber,
@@ -64,7 +64,7 @@ export async function listOrders(
     try {
         const headers = isServer ? { 'Accept-Encoding': 'application/json' } : undefined;
         const res = await axios.post(
-            `${URL}/api/orders/list`,
+            `${URL}/api/account/orders/list`,
             {
                 userId,
                 count,
@@ -80,7 +80,6 @@ export async function listOrders(
             count: safelyParse(res, 'data.count', parseAsNumber, 0),
         };
     } catch (error: unknown) {
-        console.log('🚀 ~ file: order.ts:69 ~ listOrders ~ error', error);
         return errorHandler(error, 'Could not list orders.');
     }
 }
