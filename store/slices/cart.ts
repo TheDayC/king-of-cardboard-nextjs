@@ -4,30 +4,14 @@ import { HYDRATE } from 'next-redux-wrapper';
 import { PURGE } from 'redux-persist';
 
 import { AppState } from '..';
-import { CreateOrder, FetchOrder, Totals } from '../../types/cart';
-import { createOrder } from '../../utils/commerce';
+import { Totals } from '../../types/cart';
 import { parseAsNumber, safelyParse } from '../../utils/parsers';
 import cartInitialState from '../state/cart';
 import { AppStateShape } from '../types/state';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
-
-interface CreateOrderInput {
-    accessToken: string;
-    isGuest: boolean;
-}
-
 const hydrate = createAction<AppState>(HYDRATE);
 const purge = createAction<AppState>(PURGE);
-
-export const createCLOrder = createAsyncThunk(
-    'cart/createCLOrder',
-    async (data: CreateOrderInput): Promise<CreateOrder> => {
-        const { accessToken, isGuest } = data;
-
-        return await createOrder(accessToken, isGuest);
-    }
-);
 
 export const fetchCartTotals = createAsyncThunk(
     'cart/fetchCartTotals',

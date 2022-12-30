@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { DateTime } from 'luxon';
 
-import { parseAsArrayOfCommerceResponse, safelyParse, parseAsString, parseAsNumber } from './parsers';
-import { authClient } from './auth';
+import { safelyParse, parseAsString, parseAsNumber } from './parsers';
 import { errorHandler } from '../middleware/errors';
 import { SocialMedia } from '../types/profile';
 import { ResponseError } from '../types/errors';
@@ -118,37 +117,6 @@ export function hasResetExpired(expires: string): boolean {
     const expiry = DateTime.fromISO(expires, { zone: 'Europe/London' });
 
     return now >= expiry;
-}
-
-export async function updatePassword(accessToken: string, emailAddress: string, password: string): Promise<boolean> {
-    try {
-        const cl = authClient(accessToken);
-        const customer = await cl.get(`/api/customers/?filter[q][email_eq]=${emailAddress}`);
-        const customerRes = safelyParse(customer, 'data.data', parseAsArrayOfCommerceResponse, null);
-
-        if (!customerRes) {
-            return false;
-        }
-
-        const customerId = customerRes[0].id;
-
-        const res = await cl.patch(`/api/customers/${customerId}`, {
-            data: {
-                type: 'customers',
-                id: customerId,
-                attributes: {
-                    password,
-                },
-            },
-        });
-        const status = safelyParse(res, 'status', parseAsNumber, 500);
-
-        return status === 200;
-    } catch (error: unknown) {
-        errorHandler(error, 'We could not update your password.');
-    }
-
-    return false;
 }
 
 export async function resetPassword(token: string, password: string, email: string): Promise<boolean | ResponseError> {

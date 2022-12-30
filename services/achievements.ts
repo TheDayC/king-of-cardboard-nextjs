@@ -1,23 +1,7 @@
 import { LineItem } from '@commercelayer/sdk';
-import axios from 'axios';
 
-import {
-    Achievement,
-    CategoriesAndTypes,
-    RecalculateAchievements,
-    FetchAchievements,
-    FetchObjectives,
-    Objective,
-} from '../types/achievements';
-import { authClient } from '../utils/auth';
-import {
-    parseAsArrayOfAchievements,
-    parseAsArrayOfObjectives,
-    parseAsArrayOfStrings,
-    parseAsNumber,
-    parseAsString,
-    safelyParse,
-} from '../utils/parsers';
+import { Achievement, CategoriesAndTypes, RecalculateAchievements, Objective } from '../types/achievements';
+import { parseAsArrayOfStrings, safelyParse } from '../utils/parsers';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
@@ -31,57 +15,6 @@ function hasReachedMilestone(current: number, milestone: number): boolean {
 
 function hasExceededMaxThreshold(current: number, max: number): boolean {
     return current > max;
-}
-
-export async function updateAchievements(
-    accessToken: string,
-    giftCardId: string,
-    emailAddress: string,
-    achievements: Achievement[],
-    points: number
-): Promise<void> {
-    const cl = authClient(accessToken);
-
-    await cl.patch(`/api/gift_cards/${giftCardId}`, {
-        data: {
-            type: 'gift_cards',
-            id: giftCardId,
-            attributes: {
-                _balance_change_cents: points,
-            },
-        },
-    });
-
-    await axios.post(`${SITE_URL}/api/achievements/updateAchievements`, {
-        emailAddress,
-        achievements,
-    });
-}
-
-export async function fetchAchievements(emailAddress: string, accessToken: string): Promise<FetchAchievements> {
-    const response = await axios.post(`${SITE_URL}/api/achievements/getAchievements`, { emailAddress, accessToken });
-
-    return {
-        giftCardId: safelyParse(response, 'data.giftCardId', parseAsString, null),
-        achievements: safelyParse(response, 'data.achievements', parseAsArrayOfAchievements, null),
-    };
-}
-
-export async function fetchObjectives(
-    categories: string[] | null,
-    types: string[] | null,
-    page: number = 0
-): Promise<FetchObjectives> {
-    const response = await axios.post(`${SITE_URL}/api/achievements/getObjectives`, {
-        categories,
-        types,
-        page,
-    });
-
-    return {
-        objectives: safelyParse(response, 'data.objectives', parseAsArrayOfObjectives, [] as Objective[]),
-        count: safelyParse(response, 'data.count', parseAsNumber, 0),
-    };
 }
 
 export function getCategoriesAndTypes(items: LineItem[]): CategoriesAndTypes {
