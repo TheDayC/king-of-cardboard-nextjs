@@ -15,7 +15,7 @@ import {
 import { Status, Payment, Fulfillment } from '../../../../enums/orders';
 import { CartItem } from '../../../../types/cart';
 import { formatOrderNumber } from '../../../../utils/checkout';
-import Badge from '../Badge';
+import Badge from '../../Badge';
 
 interface OrderProps {
     orderNumber: number;

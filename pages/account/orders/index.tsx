@@ -6,13 +6,15 @@ import { MdAddCircleOutline } from 'react-icons/md';
 
 import AccountWrapper from '../../../components/AccountWrapper';
 import { authOptions } from '../../api/auth/[...nextauth]';
-import { listProducts } from '../../../utils/account/products';
-import { parseAsRole, safelyParse } from '../../../utils/parsers';
+import { parseAsRole, parseAsString, safelyParse } from '../../../utils/parsers';
 import { Roles } from '../../../enums/auth';
-import { Product as ProductType } from '../../../types/productsNew';
-import Product from '../../../components/Account/Product';
+import OrderComponent from '../../../components/Account/Order';
 import Loading from '../../../components/Loading';
 import Pagination from '../../../components/Pagination';
+import { listOrders } from '../../../utils/account/order';
+import { isListOrders } from '../../../utils/typeguards';
+import { Order } from '../../../types/orders';
+import { useSession } from 'next-auth/react';
 
 const LIMIT = 10;
 const PAGE = 0;
@@ -20,10 +22,10 @@ const PAGE = 0;
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const session = await unstable_getServerSession(req, res, authOptions);
     const role = safelyParse(session, 'user.role', parseAsRole, Roles.User);
+    const userId = safelyParse(session, 'user.id', parseAsString, null);
     const isAdmin = role === Roles.Admin;
-    const { products, count } = await listProducts(LIMIT, PAGE);
 
-    if (!session || !isAdmin) {
+    if (!session || !isAdmin || !userId) {
         return {
             redirect: {
                 permanent: false,
@@ -32,34 +34,53 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
         };
     }
 
+    const ordersList = await listOrders(userId, LIMIT, PAGE, true, isAdmin);
+
+    if (!isListOrders(ordersList)) {
+        return {
+            props: {
+                initialOrders: [],
+                initialTotalProducts: 0,
+            },
+        };
+    }
+
     return {
         props: {
-            initialProducts: products,
-            initialTotalProducts: count,
+            initialOrders: ordersList.orders,
+            initialTotalProducts: ordersList.count,
         },
     };
 };
 
 interface OrdersPageProps {
-    initialProducts: ProductType[];
+    initialOrders: Order[];
     initialTotalProducts: number;
 }
 
-export const OrdersPage: React.FC<OrdersPageProps> = ({ initialProducts, initialTotalProducts }) => {
-    const [products, setProducts] = useState<ProductType[]>(initialProducts);
+export const OrdersPage: React.FC<OrdersPageProps> = ({ initialOrders, initialTotalProducts }) => {
+    const { data: session } = useSession();
+    const [orders, setOrders] = useState<Order[]>(initialOrders);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [count, setCount] = useState(LIMIT);
     const [page, setPage] = useState(PAGE);
     const [totalProducts, setTotalProducts] = useState(initialTotalProducts);
     const [isLoading, setIsLoading] = useState(false);
     const pageCount = totalProducts / LIMIT;
+    const userId = safelyParse(session, 'user.id', parseAsString, null);
+    const role = safelyParse(session, 'user.role', parseAsRole, Roles.User);
+    const isAdmin = role === Roles.Admin;
 
     const handleUpdateProducts = useCallback(async () => {
-        setIsLoading(true);
-        const { products: newProducts, count: newTotalProducts } = await listProducts(count, page);
+        if (!userId || !isAdmin) return;
 
-        setProducts(newProducts);
-        setTotalProducts(newTotalProducts);
+        setIsLoading(true);
+        const ordersList = await listOrders(userId, LIMIT, PAGE, true, isAdmin);
+
+        if (isListOrders(ordersList)) {
+            setOrders(ordersList.orders);
+            setTotalProducts(ordersList.count);
+        }
 
         setIsLoading(false);
     }, [count, page, setIsLoading]);
@@ -83,14 +104,8 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ initialProducts, initial
                             </button>
                         </Link>
                     </div>
-                    {products.length > 0 &&
-                        products.map((product) => (
-                            <Product
-                                product={product}
-                                key={`product-${product._id}`}
-                                updateProducts={handleUpdateProducts}
-                            />
-                        ))}
+                    {orders.length > 0 &&
+                        orders.map((order) => <OrderComponent order={order} key={`order-${order._id}`} />)}
                     {pageCount > 1 && (
                         <Pagination currentPage={page - 1} pageCount={pageCount} handlePageNumber={handlePageNumber} />
                     )}

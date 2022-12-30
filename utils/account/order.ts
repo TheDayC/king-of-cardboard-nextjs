@@ -55,11 +55,29 @@ export async function getOrder(userId: string, orderNumber: number): Promise<Ord
     }
 }
 
+export async function getOrderById(id: string): Promise<Order | ResponseError> {
+    try {
+        const res = await axios.get(`${URL}/api/account/orders/getById`, {
+            params: {
+                id,
+            },
+            headers: {
+                'Accept-Encoding': 'application/json',
+            },
+        });
+
+        return res.data as Order;
+    } catch (error: unknown) {
+        return errorHandler(error, 'Could not get order.');
+    }
+}
+
 export async function listOrders(
     userId: string,
     count: number,
     page: number,
-    isServer: boolean = false
+    isServer: boolean = false,
+    isAdmin: boolean = false
 ): Promise<ListOrders | ResponseError> {
     try {
         const headers = isServer ? { 'Accept-Encoding': 'application/json' } : undefined;
@@ -69,6 +87,7 @@ export async function listOrders(
                 userId,
                 count,
                 page,
+                isAdmin,
             },
             {
                 headers,
