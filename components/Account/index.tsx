@@ -2,7 +2,6 @@ import React from 'react';
 
 import Details from './Details';
 import Profile from './Profile';
-import AchievementList from './AchievementList';
 import AddressBook from './AddressBook';
 import Fields from './AddressBook/Fields';
 import { Slugs } from '../../enums/account';
@@ -17,8 +16,6 @@ export const Account: React.FC<AccountProps> = ({ slug }) => {
             return <Details />;
         case Slugs.Profile:
             return <Profile />;
-        case Slugs.Achievements:
-            return <AchievementList />;
         case Slugs.AddressBook:
             return <AddressBook />;
         case Slugs.AddAddress:
