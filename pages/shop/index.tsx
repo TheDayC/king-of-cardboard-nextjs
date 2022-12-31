@@ -7,6 +7,7 @@ import PageWrapper from '../../components/PageWrapper';
 import Filters from '../../components/Shop/Filters';
 import Grid from '../../components/Shop/Grid';
 import {
+    addStockStatus,
     removeAllCategories,
     removeAllConfigurations,
     removeAllInterests,
@@ -15,16 +16,17 @@ import {
 import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
-import { Category, Configuration, Interest } from '../../enums/products';
+import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
 import { Product } from '../../types/products';
 import { listProducts } from '../../utils/account/products';
-import { setProductsAndCount } from '../../store/slices/products';
+import { setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
 import selector from './selector';
 
 const LIMIT = 4;
 const SKIP = 0;
 const CATEGORIES: Category[] = [];
 const CONFIGURATIONS: Configuration[] = [];
+const STOCK_STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.Import, StockStatus.PreOrder];
 
 export const getServerSideProps: GetServerSideProps = async () => {
     const { content } = await getPageBySlug('shop', '');
@@ -34,41 +36,63 @@ export const getServerSideProps: GetServerSideProps = async () => {
         SKIP,
         CATEGORIES,
         CONFIGURATIONS,
-        [Interest.Baseball]
+        [Interest.Baseball],
+        STOCK_STATUSES,
+        true
     );
     const { products: basketballProducts, count: basketballCount } = await listProducts(
         LIMIT,
         SKIP,
         CATEGORIES,
         CONFIGURATIONS,
-        [Interest.Basketball]
+        [Interest.Basketball],
+        STOCK_STATUSES,
+        true
     );
     const { products: footballProducts, count: footballCount } = await listProducts(
         LIMIT,
         SKIP,
         CATEGORIES,
         CONFIGURATIONS,
-        [Interest.Football]
+        [Interest.Football],
+        STOCK_STATUSES,
+        true
     );
     const { products: soccerProducts, count: soccerCount } = await listProducts(
         LIMIT,
         SKIP,
         CATEGORIES,
         CONFIGURATIONS,
-        [Interest.Soccer]
+        [Interest.Soccer],
+        STOCK_STATUSES,
+        true
     );
-    const { products: ufcProducts, count: ufcCount } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [
-        Interest.UFC,
-    ]);
-    const { products: wweProducts, count: wweCount } = await listProducts(LIMIT, SKIP, CATEGORIES, CONFIGURATIONS, [
-        Interest.Wrestling,
-    ]);
+    const { products: ufcProducts, count: ufcCount } = await listProducts(
+        LIMIT,
+        SKIP,
+        CATEGORIES,
+        CONFIGURATIONS,
+        [Interest.UFC],
+        STOCK_STATUSES,
+        true
+    );
+    const { products: wweProducts, count: wweCount } = await listProducts(
+        LIMIT,
+        SKIP,
+        CATEGORIES,
+        CONFIGURATIONS,
+        [Interest.Wrestling],
+        STOCK_STATUSES,
+        true
+    );
     const { products: pokemonProducts, count: pokemonCount } = await listProducts(
         LIMIT,
         SKIP,
         CATEGORIES,
         CONFIGURATIONS,
-        [Interest.Pokemon]
+        [Interest.Pokemon],
+        STOCK_STATUSES,
+        true
     );
 
     return {
@@ -108,11 +132,18 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount
     const { shouldShowRows } = useSelector(selector);
 
     useEffect(() => {
+        dispatch(setIsLoadingProducts(true));
+
         // Reset the shop.
         dispatch(removeAllCategories());
         dispatch(removeAllConfigurations());
         dispatch(removeAllInterests());
         dispatch(removeAllStockStatuses());
+
+        // Add default stock statuses
+        STOCK_STATUSES.forEach((status) => {
+            dispatch(addStockStatus(status));
+        });
 
         // Update the shop products.
         dispatch(

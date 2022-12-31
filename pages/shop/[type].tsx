@@ -25,14 +25,22 @@ import { Product } from '../../types/products';
 const LIMIT = 8;
 const SKIP = 0;
 const CONFIGURATIONS: Configuration[] = [];
-const STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.Import, StockStatus.PreOrder];
+const STOCK_STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.Import, StockStatus.PreOrder];
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const staticInterest = safelyParse(context, 'query.type', parseAsString, '');
     const interest = getInterestBySlug(staticInterest);
     const category = getCategoryByInterest(interest);
     const { content } = await getPageBySlug(staticInterest, 'shop/');
-    const { products, count } = await listProducts(LIMIT, SKIP, [category], CONFIGURATIONS, [interest], STATUSES, true);
+    const { products, count } = await listProducts(
+        LIMIT,
+        SKIP,
+        [category],
+        CONFIGURATIONS,
+        [interest],
+        STOCK_STATUSES,
+        true
+    );
 
     return {
         props: {
@@ -72,7 +80,7 @@ export const ShopType: React.FC<ShopTypeProps> = ({ interest, staticInterest, ca
         dispatch(setIsLoadingProducts(true));
         dispatch(addCategory(category));
         dispatch(addInterest(interest));
-        STATUSES.forEach((status) => {
+        STOCK_STATUSES.forEach((status) => {
             dispatch(addStockStatus(status));
         });
         dispatch(setProductsAndCount({ products, count }));
