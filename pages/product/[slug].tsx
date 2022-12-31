@@ -64,7 +64,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             gallery: [],
             price: price,
             salePrice: salePrice,
-            isAvailable: quantity && quantity > 0,
+            isAvailable: quantity > 0,
             stock: quantity,
             tags: [],
             interest,
