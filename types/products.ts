@@ -34,5 +34,5 @@ export interface SelectOptions {
 
 export interface PriceHistory {
     timestamp: string;
-    price: string;
+    price: number;
 }

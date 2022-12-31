@@ -12,6 +12,8 @@ import { addItem, setUpdatingCart } from '../../store/slices/cart';
 import { gaEvent } from '../../utils/ga';
 import { addSuccess } from '../../store/slices/alerts';
 import { getPrettyPrice } from '../../utils/account/products';
+import { PriceHistory } from '../../types/products';
+import PriceHistoryChart from '../PriceHistoryChart';
 
 interface ImportProps {
     id: string;
@@ -29,6 +31,7 @@ interface ImportProps {
     interest: Interest;
     category: Category;
     configuration: Configuration;
+    priceHistory: PriceHistory[];
     shouldShowCompare: boolean;
 }
 
@@ -48,6 +51,7 @@ export const Product: React.FC<ImportProps> = ({
     interest,
     category,
     configuration,
+    priceHistory,
     shouldShowCompare,
 }) => {
     const dispatch = useDispatch();
@@ -178,6 +182,7 @@ export const Product: React.FC<ImportProps> = ({
                             </form>
                         </div>
                     )}
+                    <PriceHistoryChart priceHistory={priceHistory} />
                 </div>
             </div>
         </div>

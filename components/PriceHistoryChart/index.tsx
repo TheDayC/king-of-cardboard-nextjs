@@ -12,9 +12,10 @@ import {
 } from 'chart.js';
 import { toNumber } from 'lodash';
 import { MdOutlineTrendingUp, MdTrendingDown, MdTrendingFlat } from 'react-icons/md';
+import { DateTime } from 'luxon';
 
-import { PriceHistory } from '../../types/imports';
-import { getPercentageChange } from '../../utils/imports';
+import { PriceHistory } from '../../types/products';
+import { getPercentageChange } from '../../utils/account/products';
 
 const CONFIG = {
     responsive: true,
@@ -51,17 +52,17 @@ export const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ priceHisto
     const isGreaterThanOne = priceHistory.length > 1;
     const percentageChange = isGreaterThanOne
         ? getPercentageChange(
-              toNumber(priceHistory[priceHistory.length - 2].amount),
-              toNumber(priceHistory[priceHistory.length - 1].amount)
+              toNumber(priceHistory[priceHistory.length - 2].price),
+              toNumber(priceHistory[priceHistory.length - 1].price)
           )
         : 0;
 
     const data = {
-        labels: priceHistory.map(({ timestamp }) => timestamp),
+        labels: priceHistory.map(({ timestamp }) => DateTime.fromISO(timestamp).toFormat('dd/MM/yyyy')),
         datasets: [
             {
                 label: 'Market Price',
-                data: priceHistory.map(({ amount }) => amount),
+                data: priceHistory.map(({ price }) => (price / 100).toFixed(2)),
                 borderColor: 'rgb(195, 101, 246)',
                 backgroundColor: 'rgb(195, 101, 246, 0.5)',
             },
