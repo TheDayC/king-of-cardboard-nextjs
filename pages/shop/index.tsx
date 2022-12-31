@@ -131,7 +131,10 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount
             <div className="flex flex-col w-full relative">
                 <div className="block w-full mb-10">{content && <Content content={[content]} />}</div>
                 {shouldShowRows ? (
-                    <LatestProductRows />
+                    <div className="flex flex-col w-full relative md:flex-row">
+                        <Filters />
+                        <LatestProductRows />
+                    </div>
                 ) : (
                     <div className="flex flex-col w-full relative md:flex-row">
                         <Filters />

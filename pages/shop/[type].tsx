@@ -21,13 +21,10 @@ import { setIsLoadingProducts, setProductsAndCount } from '../../store/slices/pr
 import { getCategoryByInterest, getInterestBySlug, listProducts } from '../../utils/account/products';
 import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
 import { Product } from '../../types/products';
-import { isNumber } from '../../utils/typeguards';
 
 const LIMIT = 8;
 const SKIP = 0;
-const CATEGORIES: Category[] = [];
 const CONFIGURATIONS: Configuration[] = [];
-const INTERESTS: Interest[] = [];
 const STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.Import, StockStatus.PreOrder];
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
