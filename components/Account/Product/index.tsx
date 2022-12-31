@@ -77,7 +77,7 @@ export const Product: React.FC<ProductProps> = ({ product, updateProducts }) => 
     };
 
     return (
-        <div className="card card-side bg-base-100 shadow-xl">
+        <div className="card card-side bg-base-100 shadow-md">
             <figure className="w-48 overflow-hidden relative">
                 <Image
                     src={`https://kocardboard-images.s3.eu-west-1.amazonaws.com/${mainImage}`}
@@ -140,12 +140,12 @@ export const Product: React.FC<ProductProps> = ({ product, updateProducts }) => 
                         }}
                         passHref
                     >
-                        <button className="btn btn-neutral rounded-md shadow-md">
+                        <button className="btn btn-neutral rounded-md shadow-none">
                             <BiEdit className="inline-block text-xl mr-2" />
                             Edit
                         </button>
                     </Link>
-                    <button className="btn btn-error rounded-md shadow-md" onClick={handleDelete}>
+                    <button className="btn btn-error rounded-md shadow-none" onClick={handleDelete}>
                         <BiTrash className="inline-block text-xl" />
                     </button>
                 </div>

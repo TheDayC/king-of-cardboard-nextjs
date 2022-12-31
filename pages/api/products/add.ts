@@ -47,6 +47,7 @@ async function addProduct(req: NextApiRequest, res: NextApiResponse): Promise<vo
                 quantity: safelyParse(req, 'body.quantity', parseAsNumber, 0),
                 price: safelyParse(req, 'body.price', parseAsNumber, 0),
                 salePrice: safelyParse(req, 'body.salePrice', parseAsNumber, 0),
+                priceHistory: req.body.priceHistory || [],
                 isInfinite: safelyParse(req, 'body.isInfinite', parseAsBoolean, false),
             });
 

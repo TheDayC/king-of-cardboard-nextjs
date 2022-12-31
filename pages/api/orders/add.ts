@@ -18,7 +18,7 @@ import { Address, CustomerDetails } from '../../../types/checkout';
 import { getPrettyPrice } from '../../../utils/account/products';
 import { formatOrderNumber } from '../../../utils/checkout';
 import { RepeaterItem } from '../../../types/orders';
-import { Category, Configuration, Interest } from '../../../enums/products';
+import { Category, Configuration, Interest, StockStatus } from '../../../enums/products';
 
 const defaultErr = 'Order could not be added.';
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -283,6 +283,7 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                         category: safelyParse(matchingItem, 'category', parseAsNumber, Category.Other),
                         configuration: safelyParse(matchingItem, 'configuration', parseAsNumber, Configuration.Other),
                         interest: safelyParse(matchingItem, 'interest', parseAsNumber, Interest.Other),
+                        stockStatus: safelyParse(matchingItem, 'stockStatus', parseAsNumber, StockStatus.InStock),
                         quantity: toNumber(item.quantity),
                         price: safelyParse(matchingItem, 'price', parseAsNumber, Interest.Other),
                         salePrice: safelyParse(matchingItem, 'salePrice', parseAsNumber, Interest.Other),

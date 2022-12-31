@@ -18,6 +18,7 @@ export interface Product {
     quantity: number;
     price: number;
     salePrice: number;
+    priceHistory: PriceHistory[];
     isInfinite: boolean;
 }
 
@@ -29,4 +30,9 @@ export interface ListProducts {
 export interface SelectOptions {
     key: string;
     value: string | number;
+}
+
+export interface PriceHistory {
+    timestamp: string;
+    price: string;
 }

@@ -30,8 +30,3 @@ export interface ListOrders {
     orders: Order[];
     count: number;
 }
-
-export interface RepeaterItem {
-    sku: string;
-    quantity: number;
-}

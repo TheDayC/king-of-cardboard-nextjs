@@ -14,7 +14,7 @@ interface ImageUploadProps {
     isRequired: boolean;
     isMultiple: boolean;
     currentImages?: string | string[];
-    register: UseFormRegister<FieldValues>;
+    register: UseFormRegister<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
     setFileList: (fileList: FileList) => void;
 }
 

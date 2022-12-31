@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import { BsFillCartCheckFill, BsBoxSeam, BsCurrencyPound } from 'react-icons/bs';
+import { BsFillCartCheckFill, BsBoxSeam, BsCurrencyPound, BsCalendarDate, BsFillTagFill } from 'react-icons/bs';
 import { MdOutlineTitle } from 'react-icons/md';
 import { ImFontSize } from 'react-icons/im';
 import { AiOutlineBarcode, AiOutlinePoundCircle } from 'react-icons/ai';
@@ -20,6 +20,8 @@ import { addGalleryToBucket, addImageToBucket, addProduct, editProduct } from '.
 import { addError, addSuccess } from '../../../store/slices/alerts';
 import ImageUpload from '../Fields/ImageUpload';
 import { isNumber } from '../../../utils/typeguards';
+import RepeaterField from '../Fields/Repeater';
+import { PriceHistory } from '../../../types/products';
 
 const productCategory = [
     { key: 'Sports', value: Category.Sports },
@@ -52,6 +54,8 @@ const productStatus = [
     { key: 'Import', value: StockStatus.Import },
 ];
 
+const defaultRepeateritem = { timestamp: '', price: 0 };
+
 interface ProductBodyProps {
     _id?: string;
     sku?: string;
@@ -70,6 +74,7 @@ interface ProductBodyProps {
     price?: number;
     salePrice?: number;
     isInfinite?: boolean;
+    priceHistory?: PriceHistory[];
     isNew: boolean;
 }
 
@@ -88,6 +93,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     quantity,
     price,
     salePrice,
+    priceHistory,
     isNew,
 }) => {
     const { data: session } = useSession();
@@ -98,12 +104,31 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
         setValue,
         setError,
         reset,
-    } = useForm();
+    } = useForm({
+        defaultValues: {
+            title,
+            slug,
+            sku,
+            category,
+            configuration,
+            interest,
+            stockStatus,
+            quantity,
+            price,
+            salePrice,
+            mainImage,
+            gallery,
+            content: existingContent,
+            historicalTimestamp: priceHistory && priceHistory.length ? priceHistory.map((pH) => pH.timestamp) : [],
+            historicalPrice: priceHistory && priceHistory.length ? priceHistory.map((pH) => pH.price) : [],
+        },
+    });
     const router = useRouter();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
     const [mainImageFileList, setMainImageFileList] = useState<FileList | null>(null);
     const [galleryFileList, setGalleryFileList] = useState<FileList | null>(null);
+    const [repeaterItems, setRepeaterItems] = useState<Record<string, string | number>[]>([defaultRepeateritem]);
 
     // Errors
     const hasErrors = Object.keys(errors).length > 0;
@@ -190,6 +215,10 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             stockStatus: toNumber(stockStatus),
             price: toNumber(price),
             salePrice: toNumber(salePrice),
+            priceHistory: data.historicalTimestamp.map((timestamp: string, i: number) => ({
+                timestamp,
+                price: data.historicalPrice[i],
+            })),
             isInfinite: false,
         };
 
@@ -222,6 +251,23 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
         setValue('content', content);
     };
 
+    const addRepeaterRow = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+
+        setRepeaterItems([...repeaterItems, defaultRepeateritem]);
+    };
+
+    const removeRepeaterRow = (rowCount: number) => {
+        setRepeaterItems([...repeaterItems.filter((item, i) => i !== rowCount)]);
+    };
+
+    /* useEffect(() => {
+        if (priceHistory) {
+            const mappedRepeaterItems = repeaterItems.map(({ timestamp, price }) => ({ timestamp, price }));
+            setRepeaterItems(mappedRepeaterItems);
+        }
+    }, [repeaterItems]); */
+
     useEffect(() => {
         register('content');
     }, [register]);
@@ -237,7 +283,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         error={titleErr}
                         register={register}
                         Icon={MdOutlineTitle}
-                        defaultValue={title}
                         isRequired
                     />
                     <InputField
@@ -247,7 +292,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         error={slugErr}
                         register={register}
                         Icon={ImFontSize}
-                        defaultValue={slug}
                         isRequired
                     />
                     <InputField
@@ -257,7 +301,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         error={skuErr}
                         register={register}
                         Icon={AiOutlineBarcode}
-                        defaultValue={sku}
                         isRequired
                     />
                 </div>
@@ -269,7 +312,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         options={productCategory}
                         error={typeErr}
                         register={register}
-                        defaultValue={category}
                         Icon={BiCategory}
                     />
                     <SelectField
@@ -279,7 +321,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         options={productConfig}
                         error={typeErr}
                         register={register}
-                        defaultValue={configuration}
                         Icon={BsBoxSeam}
                     />
                     <SelectField
@@ -289,7 +330,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         options={productInterest}
                         error={typeErr}
                         register={register}
-                        defaultValue={interest}
                         Icon={BiFootball}
                     />
                     <SelectField
@@ -312,7 +352,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         error={qtyErr}
                         register={register}
                         Icon={FaBoxes}
-                        defaultValue={isNumber(quantity) ? quantity : undefined}
                         isRequired
                     />
                     <InputField
@@ -323,7 +362,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         error={priceErr}
                         register={register}
                         Icon={BsCurrencyPound}
-                        defaultValue={isNumber(price) ? price : undefined}
                         isRequired
                     />
                     <InputField
@@ -334,7 +372,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         error={salePriceErr}
                         register={register}
                         Icon={AiOutlinePoundCircle}
-                        defaultValue={isNumber(salePrice) ? salePrice : undefined}
                         isRequired={false}
                     />
                 </div>
@@ -368,6 +405,28 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                 </div>
                 <div className="flex flex-col">
                     <RichTextEditor placeholder="Content" onChange={handleRichContent} value={existingContent || ''} />
+                </div>
+
+                <div className="flex flex-col space-y-4">
+                    <h3 className="text-2xl">Items</h3>
+                    <div className="flex flex-col space-y-4 items-start justify-start">
+                        {repeaterItems.map((item, i) => (
+                            <RepeaterField
+                                fieldOne="historicalTimestamp"
+                                fieldOneLabel="Timestamp"
+                                fieldOneIcon={<BsCalendarDate className="w-5 h-5" />}
+                                fieldTwo="historicalPrice"
+                                fieldTwoLabel="Price"
+                                fieldTwoIcon={<BsFillTagFill className="w-5 h-5" />}
+                                rowCount={i}
+                                register={register}
+                                isLastRow={i === repeaterItems.length - 1}
+                                addRepeaterRow={addRepeaterRow}
+                                removeRepeaterRow={removeRepeaterRow}
+                                key={`item-${i}`}
+                            />
+                        ))}
+                    </div>
                 </div>
 
                 <div className="form-control">
