@@ -245,7 +245,7 @@ export function getStockStatusTitle(stockStatus: StockStatus): string {
 export function getStockStatusColor(stockStatus: StockStatus): string {
     switch (stockStatus) {
         case StockStatus.Import:
-            return '#438ba9';
+            return '#0c77a3';
         case StockStatus.OutOfStock:
             return '#ff5724';
         case StockStatus.PreOrder:
