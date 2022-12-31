@@ -1,7 +1,4 @@
-import { LineItem } from '@commercelayer/sdk';
-
-import { Achievement, CategoriesAndTypes, RecalculateAchievements, Objective } from '../types/achievements';
-import { parseAsArrayOfStrings, safelyParse } from '../utils/parsers';
+import { Achievement, RecalculateAchievements, Objective } from '../types/achievements';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 

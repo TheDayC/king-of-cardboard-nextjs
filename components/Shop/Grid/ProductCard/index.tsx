@@ -1,6 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { BsArrowRightSquareFill } from 'react-icons/bs';
+
+import { StockStatus } from '../../../../enums/products';
+import { getStockStatusColor, getStockStatusTitle, getStockStatusTooltip } from '../../../../utils/account/products';
 
 interface CardProps {
     name: string;
@@ -12,6 +16,8 @@ interface CardProps {
     compareAmount: string;
     slug: string;
     shouldShowCompare: boolean;
+    stock: number;
+    stockStatus: StockStatus;
 }
 
 export const ProductCard: React.FC<CardProps> = ({
@@ -24,11 +30,18 @@ export const ProductCard: React.FC<CardProps> = ({
     compareAmount,
     slug,
     shouldShowCompare,
+    stock,
+    stockStatus,
 }) => {
     const linkOptions = {
         pathname: '/product/[slug]',
         query: { slug },
     };
+    const stockText = stock > 0 ? `${stock} available` : 'Out of stock';
+    const stockStatusTitle = getStockStatusTitle(stockStatus);
+    const stockStatusColor = getStockStatusColor(stockStatus);
+    const stockStatusMsg = getStockStatusTooltip(stockStatus);
+    const shouldShowStockStatusTitle = stockStatus !== StockStatus.InStock;
 
     return (
         <div
@@ -38,14 +51,24 @@ export const ProductCard: React.FC<CardProps> = ({
             {image.length > 0 && (
                 <Link href={linkOptions} passHref>
                     <div className="relative w-full h-40 cursor-pointer flex flex-row justify-center">
-                        <div className="rounded-md overflow-hidden shadow-md w-40 h-40">
+                        <div className="relative">
                             <Image
                                 src={`${process.env.NEXT_PUBLIC_AWS_S3_URL}${image}`}
                                 width={160}
                                 height={160}
                                 alt={imgDesc}
                                 title={imgTitle}
+                                className="rounded-md shadow-md"
                             />
+                            {shouldShowStockStatusTitle && (
+                                <div
+                                    className="badge absolute -bottom-2 -right-2 text-md border-0 shadow-sm tooltip tooltip-bottom"
+                                    style={{ backgroundColor: stockStatusColor }}
+                                    data-tip={stockStatusMsg}
+                                >
+                                    {stockStatusTitle}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </Link>
@@ -65,15 +88,21 @@ export const ProductCard: React.FC<CardProps> = ({
                         </div>
                     )}
                 </div>
-                <div className="card-actions w-full">
-                    <div className="flex flex-row justify-end items-center w-full">
-                        {shouldShowCompare && (
-                            <span className="text-md line-through text-base-200 mr-2 mt-1">{compareAmount}</span>
-                        )}
-                        <span className="text-2xl font-bold">{amount}</span>
+                <div className="card-actions w-full justify-center">
+                    <div className="flex flex-row justify-between items-end w-full">
+                        <p className="text-md text-green-600">{stockText}</p>
+                        <div className="flex flex-row justify-end items-center">
+                            {shouldShowCompare && (
+                                <span className="text-md line-through text-base-200 mr-2 mt-1">{compareAmount}</span>
+                            )}
+                            <span className="text-2xl font-bold">{amount}</span>
+                        </div>
                     </div>
                     <Link href={linkOptions} passHref className="w-full">
-                        <button className="btn btn-primary btn-sm rounded-md shadow-md w-full">View Product</button>
+                        <button className="btn btn-block btn-md btn-primary rounded-md shadow-none">
+                            View Product
+                            <BsArrowRightSquareFill className="inline w-5 h-5 ml-4" />
+                        </button>
                     </Link>
                 </div>
             </div>

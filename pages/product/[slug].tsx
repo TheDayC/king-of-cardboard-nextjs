@@ -8,6 +8,7 @@ import Product from '../../components/Product';
 import { ImageItem } from '../../types/contentful';
 import { getProduct } from '../../utils/account/products';
 import { Category, Configuration, Interest } from '../../enums/products';
+import { PriceHistory } from '../../types/products';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const productSlug = safelyParse(context, 'query.slug', parseAsString, undefined);
@@ -39,12 +40,26 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 types: [],
                 categories: [],
                 options: [],
+                priceHistory: [],
             },
         };
     }
 
-    const { _id, title, slug, content, sku, mainImage, price, salePrice, quantity, interest, category, configuration } =
-        product;
+    const {
+        _id,
+        title,
+        slug,
+        content,
+        sku,
+        mainImage,
+        price,
+        salePrice,
+        quantity,
+        interest,
+        category,
+        configuration,
+        priceHistory,
+    } = product;
 
     return {
         props: {
@@ -70,6 +85,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             interest,
             category,
             configuration,
+            priceHistory,
             shouldShowCompare: salePrice > 0 && salePrice !== price,
         },
     };
@@ -94,6 +110,7 @@ interface ProductPageProps {
     interest: Interest;
     category: Category;
     configuration: Configuration;
+    priceHistory: PriceHistory[];
     shouldShowCompare: boolean;
 }
 
@@ -116,6 +133,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({
     interest,
     category,
     configuration,
+    priceHistory,
     shouldShowCompare,
 }) => {
     // Show error page if a code is provided.
@@ -145,6 +163,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({
                 interest={interest}
                 category={category}
                 configuration={configuration}
+                priceHistory={priceHistory}
                 shouldShowCompare={shouldShowCompare}
             />
         </PageWrapper>

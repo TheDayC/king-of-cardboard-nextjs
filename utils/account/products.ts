@@ -228,3 +228,48 @@ export function getSortQuery(sortOption: SortOption): any {
             return { created: -1 };
     }
 }
+
+export function getStockStatusTitle(stockStatus: StockStatus): string {
+    switch (stockStatus) {
+        case StockStatus.Import:
+            return 'Import';
+        case StockStatus.OutOfStock:
+            return 'Out of Stock';
+        case StockStatus.PreOrder:
+            return 'Pre-order';
+        default:
+            return 'In Stock';
+    }
+}
+
+export function getStockStatusColor(stockStatus: StockStatus): string {
+    switch (stockStatus) {
+        case StockStatus.Import:
+            return '#0c77a3';
+        case StockStatus.OutOfStock:
+            return '#ff5724';
+        case StockStatus.PreOrder:
+            return '#8947ac';
+        default:
+            return '#c59d52';
+    }
+}
+
+export function getStockStatusTooltip(stockStatus: StockStatus): string {
+    switch (stockStatus) {
+        case StockStatus.Import:
+            return 'Imports may take longer to arrive than a shelf item.';
+        case StockStatus.OutOfStock:
+            return 'Out of stock items may be replenished in future.';
+        case StockStatus.PreOrder:
+            return 'Pre-order items will only be shipped upon release and may take longer to arrive than a shelf item.';
+        default:
+            return '';
+    }
+}
+
+export function getPercentageChange(previous: number, current: number): number {
+    const decreaseValue = current - previous;
+
+    return round((decreaseValue / previous) * 100, 2);
+}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import { BsBoxSeam, BsFillPinMapFill, BsInputCursorText, BsPhone } from 'react-icons/bs';
+import { BsBoxSeam, BsCartFill, BsFillPinMapFill, BsInputCursorText, BsPhone } from 'react-icons/bs';
 import { MdOutlineEmail, MdOutlineTitle } from 'react-icons/md';
 import { BiBuildings, BiCategory, BiSave } from 'react-icons/bi';
 import { useRouter } from 'next/router';
@@ -12,7 +12,6 @@ import { parseAsString, safelyParse } from '../../../utils/parsers';
 import { Address } from '../../../types/checkout';
 import SelectField from '../Fields/Select';
 import { Status, Payment, Fulfillment } from '../../../enums/orders';
-import { RepeaterItem } from '../../../types/orders';
 import { CartItem } from '../../../types/cart';
 import RepeaterField from '../Fields/Repeater';
 import { addOrder, editOrder } from '../../../utils/account/order';
@@ -106,7 +105,7 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
     });
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
-    const [repeaterItems, setRepeaterItems] = useState<RepeaterItem[]>([defaultRepeateritem]);
+    const [repeaterItems, setRepeaterItems] = useState<Record<string, string | number>[]>([defaultRepeateritem]);
 
     // Errors
     const hasErrors = Object.keys(errors).length > 0;
@@ -209,7 +208,7 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
 
     useEffect(() => {
         if (items) {
-            const mappedRepeaterItems: RepeaterItem[] = items.map(({ sku, quantity }) => ({ sku, quantity }));
+            const mappedRepeaterItems = items.map(({ sku, quantity }) => ({ sku, quantity }));
             setRepeaterItems(mappedRepeaterItems);
         }
     }, [items]);
@@ -406,6 +405,12 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                     <div className="flex flex-col space-y-4 items-start justify-start">
                         {repeaterItems.map((item, i) => (
                             <RepeaterField
+                                fieldOne="sku"
+                                fieldOneLabel="SKU"
+                                fieldOneIcon={<BsBoxSeam className="w-5 h-5" />}
+                                fieldTwo="quantity"
+                                fieldTwoLabel="Quantity"
+                                fieldTwoIcon={<BsCartFill className="w-5 h-5" />}
                                 rowCount={i}
                                 register={register}
                                 isLastRow={i === repeaterItems.length - 1}

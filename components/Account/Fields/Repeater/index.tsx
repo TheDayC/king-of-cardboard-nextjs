@@ -1,10 +1,14 @@
 import React from 'react';
 import { UseFormRegister } from 'react-hook-form';
-import { BsBoxSeam, BsCartFill, BsDashCircleFill, BsFillPlusCircleFill } from 'react-icons/bs';
+import { BsDashCircleFill, BsFillPlusCircleFill } from 'react-icons/bs';
 
 interface RepeaterFieldProps {
-    sku?: string;
-    quantity?: number;
+    fieldOne: string;
+    fieldOneLabel: string;
+    fieldOneIcon: JSX.Element;
+    fieldTwo: string;
+    fieldTwoLabel: string;
+    fieldTwoIcon: JSX.Element;
     rowCount: number;
     register: UseFormRegister<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
     isLastRow: boolean;
@@ -13,6 +17,12 @@ interface RepeaterFieldProps {
 }
 
 export const RepeaterField: React.FC<RepeaterFieldProps> = ({
+    fieldOne,
+    fieldOneLabel,
+    fieldOneIcon,
+    fieldTwo,
+    fieldTwoLabel,
+    fieldTwoIcon,
     rowCount,
     register,
     isLastRow,
@@ -29,13 +39,11 @@ export const RepeaterField: React.FC<RepeaterFieldProps> = ({
         <div className="flex flex-row space-x-4 items-start justify-start">
             <div className="form-control inline-block">
                 <label className="input-group input-group-md">
-                    <span className="bg-base-200">
-                        <BsBoxSeam className="w-5 h-5" />
-                    </span>
+                    <span className="bg-base-200">{fieldOneIcon}</span>
                     <input
                         type="text"
-                        placeholder="SKU"
-                        {...register(`sku.${rowCount}`, {
+                        placeholder={fieldOneLabel}
+                        {...register(`${fieldOne}.${rowCount}`, {
                             required: false,
                         })}
                         className="input input-md input-bordered w-full"
@@ -44,13 +52,11 @@ export const RepeaterField: React.FC<RepeaterFieldProps> = ({
             </div>
             <div className="form-control inline-block">
                 <label className="input-group input-group-md">
-                    <span className="bg-base-200">
-                        <BsCartFill className="w-5 h-5" />
-                    </span>
+                    <span className="bg-base-200">{fieldTwoIcon}</span>
                     <input
                         type="number"
-                        placeholder="Quantity"
-                        {...register(`quantity.${rowCount}`, {
+                        placeholder={fieldTwoLabel}
+                        {...register(`${fieldTwo}.${rowCount}`, {
                             required: false,
                         })}
                         className="input input-md input-bordered w-full"

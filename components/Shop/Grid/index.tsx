@@ -44,6 +44,8 @@ export const Grid: React.FC = () => {
                             compareAmount={getPrettyPrice(product.salePrice)}
                             slug={product.slug}
                             shouldShowCompare={product.salePrice > 0 && product.salePrice !== product.price}
+                            stock={product.quantity}
+                            stockStatus={product.stockStatus}
                             key={`product-card-${product.slug}`}
                         />
                     ))}
@@ -51,15 +53,15 @@ export const Grid: React.FC = () => {
             ) : (
                 <NoProducts />
             )}
-            <div className="flex justify-center">
-                {productPageCount > 1 && (
+            {productPageCount > 1 && (
+                <div className="flex justify-center">
                     <Pagination
                         currentPage={currentPage}
                         pageCount={productPageCount}
                         handlePageNumber={handlePageNumber}
                     />
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 };
