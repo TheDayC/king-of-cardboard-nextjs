@@ -88,8 +88,10 @@
     margin-right: 20px;
 }
 
-.input:focus {
-    outline-offset: 0px;
+.input:focus,
+.select:focus {
+    outline-offset: -2px;
+    outline: 2px solid #f6c467;
 }
 
 .accountMenuHeight {

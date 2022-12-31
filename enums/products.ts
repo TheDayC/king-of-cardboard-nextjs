@@ -36,4 +36,13 @@ export enum FilterType {
     StockStatus,
 }
 
+export enum SortOption {
+    DateAddedAsc,
+    DateAddedDesc,
+    PriceAsc,
+    PriceDesc,
+    TitleAsc,
+    TitleDesc,
+}
+
 export type FilterValue = Category | Configuration | Interest | StockStatus;

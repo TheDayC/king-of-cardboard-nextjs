@@ -19,7 +19,7 @@ import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import { setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
 import { getCategoryByInterest, getInterestBySlug, listProducts } from '../../utils/account/products';
-import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
+import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
 import { Product } from '../../types/products';
 
 const LIMIT = 8;
@@ -39,6 +39,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         CONFIGURATIONS,
         [interest],
         STOCK_STATUSES,
+        '',
+        SortOption.DateAddedDesc,
         true
     );
 

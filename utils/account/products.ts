@@ -6,7 +6,7 @@ import { s3Client } from '../../lib/aws';
 import { errorHandler } from '../../middleware/errors';
 import { ListProducts, Product } from '../../types/products';
 import { parseAsNumber, safelyParse } from '../parsers';
-import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
+import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
@@ -36,6 +36,8 @@ export async function listProducts(
     configurations?: Configuration[],
     interests?: Interest[],
     stockStatuses?: StockStatus[],
+    searchTerm?: string,
+    sortOption?: SortOption.DateAddedDesc,
     isServer: boolean = false
 ): Promise<ListProducts> {
     const headers = isServer ? { 'Accept-Encoding': 'application/json' } : undefined;
@@ -50,6 +52,8 @@ export async function listProducts(
                 configurations,
                 interests,
                 stockStatuses,
+                sortOption,
+                searchTerm,
             },
             {
                 headers,
@@ -204,5 +208,23 @@ export function getCategoryByInterest(interest: Interest): Category {
             return Category.Other;
         default:
             return Category.Sports;
+    }
+}
+
+export function getSortQuery(sortOption: SortOption): any {
+    switch (sortOption) {
+        case SortOption.TitleAsc:
+            return { title: 1 };
+        case SortOption.TitleDesc:
+            return { title: -1 };
+        case SortOption.PriceAsc:
+            return { price: 1 };
+        case SortOption.PriceDesc:
+            return { price: -1 };
+        case SortOption.DateAddedAsc:
+            return { created: 1 };
+        case SortOption.DateAddedDesc:
+        default:
+            return { created: -1 };
     }
 }

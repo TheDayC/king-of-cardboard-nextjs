@@ -16,10 +16,10 @@ import {
 import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
-import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
+import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
 import { Product } from '../../types/products';
 import { listProducts } from '../../utils/account/products';
-import { setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
+import { fetchProducts, setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
 import selector from './selector';
 
 const LIMIT = 4;
@@ -38,6 +38,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
         CONFIGURATIONS,
         [Interest.Baseball],
         STOCK_STATUSES,
+        '',
+        SortOption.DateAddedDesc,
         true
     );
     const { products: basketballProducts, count: basketballCount } = await listProducts(
@@ -47,6 +49,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
         CONFIGURATIONS,
         [Interest.Basketball],
         STOCK_STATUSES,
+        '',
+        SortOption.DateAddedDesc,
         true
     );
     const { products: footballProducts, count: footballCount } = await listProducts(
@@ -56,6 +60,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
         CONFIGURATIONS,
         [Interest.Football],
         STOCK_STATUSES,
+        '',
+        SortOption.DateAddedDesc,
         true
     );
     const { products: soccerProducts, count: soccerCount } = await listProducts(
@@ -65,6 +71,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
         CONFIGURATIONS,
         [Interest.Soccer],
         STOCK_STATUSES,
+        '',
+        SortOption.DateAddedDesc,
         true
     );
     const { products: ufcProducts, count: ufcCount } = await listProducts(
@@ -74,6 +82,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
         CONFIGURATIONS,
         [Interest.UFC],
         STOCK_STATUSES,
+        '',
+        SortOption.DateAddedDesc,
         true
     );
     const { products: wweProducts, count: wweCount } = await listProducts(
@@ -83,6 +93,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
         CONFIGURATIONS,
         [Interest.Wrestling],
         STOCK_STATUSES,
+        '',
+        SortOption.DateAddedDesc,
         true
     );
     const { products: pokemonProducts, count: pokemonCount } = await listProducts(
@@ -92,6 +104,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
         CONFIGURATIONS,
         [Interest.Pokemon],
         STOCK_STATUSES,
+        '',
+        SortOption.DateAddedDesc,
         true
     );
 
@@ -129,7 +143,8 @@ interface ShopProps {
 
 export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount }) => {
     const dispatch = useDispatch();
-    const { shouldShowRows } = useSelector(selector);
+    const { shouldShowRows, searchTerm, sortOption } = useSelector(selector);
+    const hasSearchTerm = searchTerm.length > 0;
 
     useEffect(() => {
         dispatch(setIsLoadingProducts(true));
@@ -154,6 +169,12 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount
         );
     }, [dispatch, allProducts, totalCount]);
 
+    // If the search term or sorty updates then fetch the products.
+    useEffect(() => {
+        dispatch(setIsLoadingProducts(true));
+        dispatch(fetchProducts({ limit: 8, skip: 0 }));
+    }, [searchTerm, sortOption]);
+
     return (
         <PageWrapper
             title="Shop - King of Cardboard"
@@ -161,7 +182,7 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount
         >
             <div className="flex flex-col w-full relative">
                 <div className="block w-full mb-10">{content && <Content content={[content]} />}</div>
-                {shouldShowRows ? (
+                {shouldShowRows && !hasSearchTerm ? (
                     <div className="flex flex-col w-full relative md:flex-row">
                         <Filters />
                         <LatestProductRows />

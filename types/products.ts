@@ -24,3 +24,8 @@ export interface ListProducts {
     products: Product[];
     count: number;
 }
+
+export interface SelectOptions {
+    key: string;
+    value: string | number;
+}

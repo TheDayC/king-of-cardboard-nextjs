@@ -84,13 +84,13 @@ export const LatestProductRows: React.FC = () => {
     ];
 
     return (
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col w-full space-y-4 md:w-5/6">
             {rows.map(({ title, description, shouldShow, products, link, icon }) => {
                 if (!shouldShow) return null;
 
                 return (
-                    <div className="flex flex-col mb-8" key={`product-row-${title}`}>
-                        <div className="flex flex-row mb-2">
+                    <div className="flex flex-col space-y-4" key={`product-row-${title}`}>
+                        <div className="flex flex-row">
                             <Link href={link} passHref>
                                 <h2 className="text-4xl hover:underline">
                                     {title}
@@ -98,7 +98,7 @@ export const LatestProductRows: React.FC = () => {
                                 </h2>
                             </Link>
                         </div>
-                        <p className="mb-4">{description}</p>
+                        <p>{description}</p>
                         <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-2">
                             {products.map((product) => (
                                 <ProductCard

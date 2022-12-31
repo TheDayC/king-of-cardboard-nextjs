@@ -50,6 +50,12 @@ const filtersSlice = createSlice({
         removeAllStockStatuses(state) {
             state.stockStatus = [];
         },
+        setSearchTerm(state, action) {
+            state.searchTerm = action.payload;
+        },
+        setSortOption(state, action) {
+            state.sortOption = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(hydrate, (state, action) => ({
@@ -73,5 +79,7 @@ export const {
     addStockStatus,
     removeStockStatus,
     removeAllStockStatuses,
+    setSearchTerm,
+    setSortOption,
 } = filtersSlice.actions;
 export default filtersSlice.reducer;

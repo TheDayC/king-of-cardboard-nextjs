@@ -25,8 +25,18 @@ import {
     removeStockStatus,
 } from '../../../store/slices/filters';
 import Filter from './Filter';
-import { Interest, Category, Configuration, FilterType, FilterValue, StockStatus } from '../../../enums/products';
+import {
+    Interest,
+    Category,
+    Configuration,
+    FilterType,
+    FilterValue,
+    StockStatus,
+    SortOption,
+} from '../../../enums/products';
 import { fetchProducts } from '../../../store/slices/products';
+import Sort from './Sort';
+import SearchBar from '../SearchBar';
 
 const iconClassName = 'w-6 h-6 inline-block mr-2';
 
@@ -58,6 +68,15 @@ export const STATUS_FILTERS = [
     { value: StockStatus.OutOfStock, icon: <BsEyeSlash className={iconClassName} />, label: 'Out of Stock' },
     { value: StockStatus.PreOrder, icon: <BsCalendarEvent className={iconClassName} />, label: 'Pre-Order' },
     { value: StockStatus.Import, icon: <FaPlaneArrival className={iconClassName} />, label: 'Import' },
+];
+
+export const SORT_OPTIONS = [
+    { key: 'Date Added (Asc)', value: SortOption.DateAddedAsc },
+    { key: 'Date Added (Desc)', value: SortOption.DateAddedDesc },
+    { key: 'Price (Low to High)', value: SortOption.PriceAsc },
+    { key: 'Price (High to Low)', value: SortOption.PriceDesc },
+    { key: 'Title (Asc)', value: SortOption.TitleAsc },
+    { key: 'Title (Desc)', value: SortOption.TitleDesc },
 ];
 
 export const Filters: React.FC = () => {
@@ -112,8 +131,14 @@ export const Filters: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col w-full md:w-1/6 md:mr-4 relative">
-            <div className="card bordered mb-4 rounded-md">
+        <div className="flex flex-col w-full md:w-1/6 md:mr-4 relative space-y-4">
+            <div className="flex flex-col w-full">
+                <SearchBar />
+            </div>
+            <div className="flex flex-col w-full">
+                <Sort value="default" options={SORT_OPTIONS} />
+            </div>
+            <div className="card bordered rounded-md">
                 <div className="card-body p-4">
                     <h3 className="card-title text-sm lg:text-lg mb-4">Category</h3>
                     {CATEGORY_FILTERS.map(({ value, icon, label }) => (
@@ -129,7 +154,7 @@ export const Filters: React.FC = () => {
                     ))}
                 </div>
             </div>
-            <div className="card bordered mb-4 rounded-md">
+            <div className="card bordered rounded-md">
                 <div className="card-body p-4">
                     <h3 className="card-title text-sm lg:text-lg mb-4">Status</h3>
                     {STATUS_FILTERS.map(({ value, icon, label }) => (
@@ -145,7 +170,7 @@ export const Filters: React.FC = () => {
                     ))}
                 </div>
             </div>
-            <div className="card bordered mb-4 rounded-md">
+            <div className="card bordered rounded-md">
                 <div className="card-body p-4">
                     <h3 className="card-title text-sm lg:text-lg mb-4">Configuration</h3>
                     {CONFIGURATION_FILTERS.map(({ value, icon, label }) => (
@@ -161,7 +186,7 @@ export const Filters: React.FC = () => {
                     ))}
                 </div>
             </div>
-            <div className="card bordered mb-4 rounded-md">
+            <div className="card bordered rounded-md">
                 <div className="card-body p-4">
                     <h3 className="card-title text-sm lg:text-lg mb-4">Interest</h3>
                     {INTEREST_FILTERS.map(({ value, icon, label }) => (
@@ -177,7 +202,7 @@ export const Filters: React.FC = () => {
                     ))}
                 </div>
             </div>
-            <button className="btn btn-md mb-4 btn-secondary" onClick={handleClearFilters}>
+            <button className="btn btn-md btn-secondary" onClick={handleClearFilters}>
                 Clear Filters
             </button>
         </div>
