@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
+import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
 
 import { AlertLevel } from '../../enums/system';
 import { AccountAddress } from '../../types/account';
@@ -46,6 +46,8 @@ export interface Filters {
     interests: Interest[];
     configurations: Configuration[];
     stockStatus: StockStatus[];
+    searchTerm: string;
+    sortOption: SortOption.DateAddedDesc;
 }
 
 export interface Global {

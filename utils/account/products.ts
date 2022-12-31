@@ -6,7 +6,7 @@ import { s3Client } from '../../lib/aws';
 import { errorHandler } from '../../middleware/errors';
 import { ListProducts, Product } from '../../types/products';
 import { parseAsNumber, safelyParse } from '../parsers';
-import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
+import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
@@ -35,17 +35,30 @@ export async function listProducts(
     categories?: Category[],
     configurations?: Configuration[],
     interests?: Interest[],
-    stockStatuses?: StockStatus[]
+    stockStatuses?: StockStatus[],
+    searchTerm?: string,
+    sortOption?: SortOption.DateAddedDesc,
+    isServer: boolean = false
 ): Promise<ListProducts> {
+    const headers = isServer ? { 'Accept-Encoding': 'application/json' } : undefined;
+
     try {
-        const res = await axios.post(`${URL}/api/products/list`, {
-            count,
-            page,
-            categories,
-            configurations,
-            interests,
-            stockStatuses,
-        });
+        const res = await axios.post(
+            `${URL}/api/products/list`,
+            {
+                count,
+                page,
+                categories,
+                configurations,
+                interests,
+                stockStatuses,
+                sortOption,
+                searchTerm,
+            },
+            {
+                headers,
+            }
+        );
 
         return res.data;
     } catch (error: unknown) {
@@ -184,5 +197,34 @@ export function getInterestBySlug(slug: string): Interest {
             return Interest.Wrestling;
         default:
             return Interest.Other;
+    }
+}
+
+export function getCategoryByInterest(interest: Interest): Category {
+    switch (interest) {
+        case Interest.Pokemon:
+            return Category.TCG;
+        case Interest.Other:
+            return Category.Other;
+        default:
+            return Category.Sports;
+    }
+}
+
+export function getSortQuery(sortOption: SortOption): any {
+    switch (sortOption) {
+        case SortOption.TitleAsc:
+            return { title: 1 };
+        case SortOption.TitleDesc:
+            return { title: -1 };
+        case SortOption.PriceAsc:
+            return { price: 1 };
+        case SortOption.PriceDesc:
+            return { price: -1 };
+        case SortOption.DateAddedAsc:
+            return { created: 1 };
+        case SortOption.DateAddedDesc:
+        default:
+            return { created: -1 };
     }
 }

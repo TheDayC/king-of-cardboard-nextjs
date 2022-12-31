@@ -1,4 +1,5 @@
 import { createAction, createSlice } from '@reduxjs/toolkit';
+import { uniq } from 'lodash';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
@@ -11,40 +12,31 @@ const filtersSlice = createSlice({
     initialState: filtersInitialState,
     reducers: {
         addCategory(state, action) {
-            state.categories.push(action.payload);
+            state.categories = uniq([...state.categories, action.payload]);
         },
         addConfiguration(state, action) {
-            state.configurations.push(action.payload);
+            state.configurations = uniq([...state.configurations, action.payload]);
         },
         addInterest(state, action) {
-            state.interests.push(action.payload);
+            state.interests = uniq([...state.interests, action.payload]);
         },
         addStockStatus(state, action) {
-            state.stockStatus.push(action.payload);
+            state.stockStatus = uniq([...state.stockStatus, action.payload]);
         },
         setStaticPageInterest(state, action) {
-            state.interests = [];
-            state.interests.push(action.payload);
+            state.interests = uniq([...state.interests, action.payload]);
         },
         removeCategory(state, action) {
-            const index = state.categories.findIndex((type) => type === action.payload);
-
-            state.categories.splice(index, 1);
+            state.categories = state.categories.filter((category) => category !== action.payload);
         },
         removeConfiguration(state, action) {
-            const index = state.configurations.findIndex((type) => type === action.payload);
-
-            state.configurations.splice(index, 1);
+            state.configurations = state.configurations.filter((configuration) => configuration !== action.payload);
         },
         removeInterest(state, action) {
-            const index = state.interests.findIndex((type) => type === action.payload);
-
-            state.interests.splice(index, 1);
+            state.interests = state.interests.filter((interest) => interest !== action.payload);
         },
         removeStockStatus(state, action) {
-            const index = state.stockStatus.findIndex((type) => type === action.payload);
-
-            state.stockStatus.splice(index, 1);
+            state.stockStatus = state.stockStatus.filter((status) => status !== action.payload);
         },
         removeAllCategories(state) {
             state.categories = [];
@@ -57,6 +49,12 @@ const filtersSlice = createSlice({
         },
         removeAllStockStatuses(state) {
             state.stockStatus = [];
+        },
+        setSearchTerm(state, action) {
+            state.searchTerm = action.payload;
+        },
+        setSortOption(state, action) {
+            state.sortOption = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -81,5 +79,7 @@ export const {
     addStockStatus,
     removeStockStatus,
     removeAllStockStatuses,
+    setSearchTerm,
+    setSortOption,
 } = filtersSlice.actions;
 export default filtersSlice.reducer;

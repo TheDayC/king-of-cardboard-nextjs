@@ -19,9 +19,19 @@ export const fetchProducts = createAsyncThunk(
     async (data: ProductsThunkInput, { getState }): Promise<ListProducts> => {
         const { limit, skip } = data;
         const state = getState() as AppStateShape;
-        const { categories, configurations, interests, stockStatus } = state.filters;
+        const { categories, configurations, interests, stockStatus, searchTerm, sortOption } = state.filters;
 
-        return await listProducts(limit, skip, categories, configurations, interests, stockStatus);
+        return await listProducts(
+            limit,
+            skip,
+            categories,
+            configurations,
+            interests,
+            stockStatus,
+            searchTerm,
+            sortOption,
+            false
+        );
     }
 );
 

@@ -8,36 +8,46 @@ import PageWrapper from '../../components/PageWrapper';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import Filters from '../../components/Shop/Filters';
 import Grid from '../../components/Shop/Grid';
-import { setStaticPageInterest, removeAllInterests } from '../../store/slices/filters';
+import {
+    setStaticPageInterest,
+    removeAllInterests,
+    addCategory,
+    addInterest,
+    addStockStatus,
+} from '../../store/slices/filters';
 import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import { setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
-import { getInterestBySlug, listProducts } from '../../utils/account/products';
-import { Category, Configuration, Interest } from '../../enums/products';
+import { getCategoryByInterest, getInterestBySlug, listProducts } from '../../utils/account/products';
+import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
 import { Product } from '../../types/products';
-import { isNumber } from '../../utils/typeguards';
 
 const LIMIT = 8;
 const SKIP = 0;
-const CATEGORIES: Category[] = [];
 const CONFIGURATIONS: Configuration[] = [];
-const INTERESTS: Interest[] = [];
+const STOCK_STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.Import, StockStatus.PreOrder];
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const staticInterest = safelyParse(context, 'query.type', parseAsString, '');
     const interest = getInterestBySlug(staticInterest);
+    const category = getCategoryByInterest(interest);
     const { content } = await getPageBySlug(staticInterest, 'shop/');
     const { products, count } = await listProducts(
         LIMIT,
         SKIP,
-        CATEGORIES,
+        [category],
         CONFIGURATIONS,
-        isNumber(interest) ? [interest] : INTERESTS
+        [interest],
+        STOCK_STATUSES,
+        '',
+        SortOption.DateAddedDesc,
+        true
     );
 
     return {
         props: {
             interest,
+            category,
             staticInterest,
             content,
             products,
@@ -49,12 +59,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 interface ShopTypeProps {
     interest: Interest;
     staticInterest: string;
+    category: Category;
     content: Document | null;
     products: Product[] | null;
     count: number;
 }
 
-export const ShopType: React.FC<ShopTypeProps> = ({ interest, staticInterest, content, products, count }) => {
+export const ShopType: React.FC<ShopTypeProps> = ({ interest, staticInterest, category, content, products, count }) => {
     const dispatch = useDispatch();
     const shouldUpperCase = interest === Interest.UFC;
     const caseChangedShopType = shouldUpperCase ? upperCase(staticInterest) : startCase(staticInterest);
@@ -69,8 +80,13 @@ export const ShopType: React.FC<ShopTypeProps> = ({ interest, staticInterest, co
 
     useEffect(() => {
         dispatch(setIsLoadingProducts(true));
+        dispatch(addCategory(category));
+        dispatch(addInterest(interest));
+        STOCK_STATUSES.forEach((status) => {
+            dispatch(addStockStatus(status));
+        });
         dispatch(setProductsAndCount({ products, count }));
-    }, [dispatch, products, count]);
+    }, [dispatch, products, count, category, interest]);
 
     return (
         <PageWrapper

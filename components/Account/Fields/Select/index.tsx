@@ -2,17 +2,14 @@ import React from 'react';
 import { UseFormRegister } from 'react-hook-form';
 import { IconType } from 'react-icons/lib';
 
-interface Options {
-    key: string;
-    value: string | number;
-}
+import { SelectOptions } from '../../../../types/products';
 
 interface SelectFieldProps {
     instruction: string;
     placeholder: string;
     fieldName: string;
     error: string | null;
-    options: Options[];
+    options: SelectOptions[];
     register: UseFormRegister<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
     Icon: IconType;
     defaultValue?: string | number;
