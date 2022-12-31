@@ -1,6 +1,6 @@
 import React from 'react';
 import { UseFormRegister } from 'react-hook-form';
-import { BsBoxSeam, BsCartFill, BsDashCircleFill, BsFillPlusCircleFill } from 'react-icons/bs';
+import { BsDashCircleFill, BsFillPlusCircleFill } from 'react-icons/bs';
 
 interface RepeaterFieldProps {
     fieldOne: string;

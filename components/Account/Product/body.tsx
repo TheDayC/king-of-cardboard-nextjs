@@ -19,7 +19,6 @@ import { Category, Configuration, Interest, StockStatus } from '../../../enums/p
 import { addGalleryToBucket, addImageToBucket, addProduct, editProduct } from '../../../utils/account/products';
 import { addError, addSuccess } from '../../../store/slices/alerts';
 import ImageUpload from '../Fields/ImageUpload';
-import { isNumber } from '../../../utils/typeguards';
 import RepeaterField from '../Fields/Repeater';
 import { PriceHistory } from '../../../types/products';
 

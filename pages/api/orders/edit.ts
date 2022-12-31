@@ -9,7 +9,6 @@ import { Category, Configuration, Interest } from '../../../enums/products';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { Address, CustomerDetails } from '../../../types/checkout';
-import { RepeaterItem } from '../../../types/orders';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 
 const defaultErr = 'Order could not be updated.';
@@ -45,7 +44,7 @@ async function editOrder(req: NextApiRequest, res: NextApiResponse): Promise<voi
             const billingAddress = req.body.billingAddress as Address;
             const paymentId = safelyParse(req, 'body.paymentId', parseAsString, null);
             const paymentMethod = safelyParse(req, 'body.paymentMethod', parseAsNumber, null);
-            const repeaterItems: RepeaterItem[] = req.body.repeaterItems || [];
+            const repeaterItems: Record<string, string | number>[] = req.body.repeaterItems || [];
             const shippingMethodId = safelyParse(req, 'body.shippingMethodId', parseAsString, '');
 
             const foundItems = await productsCollection

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { FieldValues, UseFormRegister } from 'react-hook-form';
+import { UseFormRegister } from 'react-hook-form';
 import { BiEditAlt } from 'react-icons/bi';
 import { AiOutlineFileAdd } from 'react-icons/ai';
 

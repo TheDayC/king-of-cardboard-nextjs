@@ -17,7 +17,6 @@ import { parseImgData } from '../../../utils/webhooks';
 import { Address, CustomerDetails } from '../../../types/checkout';
 import { getPrettyPrice } from '../../../utils/account/products';
 import { formatOrderNumber } from '../../../utils/checkout';
-import { RepeaterItem } from '../../../types/orders';
 import { Category, Configuration, Interest, StockStatus } from '../../../enums/products';
 
 const defaultErr = 'Order could not be added.';
@@ -264,7 +263,7 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
 
             // If adding items from admin panel we need to find items based on their SKUs
             if (shouldFindItems) {
-                const repeaterItems: RepeaterItem[] = req.body.repeaterItems || [];
+                const repeaterItems: Record<string, string | number>[] = req.body.repeaterItems || [];
 
                 const foundItems = await productsCollection
                     .find({ sku: { $in: repeaterItems.map((item) => item.sku) } })
@@ -294,6 +293,7 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                         },
                         stock: safelyParse(matchingItem, 'stock', parseAsNumber, 0),
                         cartQty: safelyParse(matchingItem, 'cartQty', parseAsNumber, 0),
+                        priceHistory: [],
                     };
                 });
 
