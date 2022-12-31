@@ -228,3 +228,29 @@ export function getSortQuery(sortOption: SortOption): any {
             return { created: -1 };
     }
 }
+
+export function getStockStatusTitle(stockStatus: StockStatus): string {
+    switch (stockStatus) {
+        case StockStatus.Import:
+            return 'Import';
+        case StockStatus.OutOfStock:
+            return 'Out of Stock';
+        case StockStatus.PreOrder:
+            return 'Pre-order';
+        default:
+            return 'In Stock';
+    }
+}
+
+export function getStockStatusColor(stockStatus: StockStatus): string {
+    switch (stockStatus) {
+        case StockStatus.Import:
+            return '#438ba9';
+        case StockStatus.OutOfStock:
+            return '#ff5724';
+        case StockStatus.PreOrder:
+            return '#8947ac';
+        default:
+            return '#c59d52';
+    }
+}

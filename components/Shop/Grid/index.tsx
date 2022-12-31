@@ -13,6 +13,7 @@ const PER_PAGE = 8;
 
 export const Grid: React.FC = () => {
     const { products, productsTotal, isLoadingProducts } = useSelector(selector);
+    console.log('🚀 ~ file: index.tsx:16 ~ products', products);
     const [currentPage, setCurrentPage] = useState(0);
     const productPageCount = ceil(divide(productsTotal, PER_PAGE));
 
@@ -44,6 +45,8 @@ export const Grid: React.FC = () => {
                             compareAmount={getPrettyPrice(product.salePrice)}
                             slug={product.slug}
                             shouldShowCompare={product.salePrice > 0 && product.salePrice !== product.price}
+                            stock={product.quantity}
+                            stockStatus={product.stockStatus}
                             key={`product-card-${product.slug}`}
                         />
                     ))}

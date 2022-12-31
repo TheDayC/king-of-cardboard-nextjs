@@ -111,6 +111,8 @@ export const LatestProductRows: React.FC = () => {
                                     compareAmount={getPrettyPrice(product.salePrice)}
                                     slug={product.slug}
                                     shouldShowCompare={product.salePrice > 0 && product.salePrice !== product.price}
+                                    stock={product.quantity}
+                                    stockStatus={product.stockStatus}
                                     key={`product-${product.slug}`}
                                 />
                             ))}
