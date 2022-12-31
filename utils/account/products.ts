@@ -35,17 +35,26 @@ export async function listProducts(
     categories?: Category[],
     configurations?: Configuration[],
     interests?: Interest[],
-    stockStatuses?: StockStatus[]
+    stockStatuses?: StockStatus[],
+    isServer: boolean = false
 ): Promise<ListProducts> {
+    const headers = isServer ? { 'Accept-Encoding': 'application/json' } : undefined;
+
     try {
-        const res = await axios.post(`${URL}/api/products/list`, {
-            count,
-            page,
-            categories,
-            configurations,
-            interests,
-            stockStatuses,
-        });
+        const res = await axios.post(
+            `${URL}/api/products/list`,
+            {
+                count,
+                page,
+                categories,
+                configurations,
+                interests,
+                stockStatuses,
+            },
+            {
+                headers,
+            }
+        );
 
         return res.data;
     } catch (error: unknown) {
@@ -184,5 +193,16 @@ export function getInterestBySlug(slug: string): Interest {
             return Interest.Wrestling;
         default:
             return Interest.Other;
+    }
+}
+
+export function getCategoryByInterest(interest: Interest): Category {
+    switch (interest) {
+        case Interest.Pokemon:
+            return Category.TCG;
+        case Interest.Other:
+            return Category.Other;
+        default:
+            return Category.Sports;
     }
 }

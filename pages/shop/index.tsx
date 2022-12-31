@@ -14,12 +14,12 @@ import {
 } from '../../store/slices/filters';
 import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
-import selector from './selector';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
 import { Category, Configuration, Interest } from '../../enums/products';
 import { Product } from '../../types/products';
 import { listProducts } from '../../utils/account/products';
 import { setProductsAndCount } from '../../store/slices/products';
+import selector from './selector';
 
 const LIMIT = 4;
 const SKIP = 0;
@@ -108,10 +108,13 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount
     const { shouldShowRows } = useSelector(selector);
 
     useEffect(() => {
+        // Reset the shop.
         dispatch(removeAllCategories());
         dispatch(removeAllConfigurations());
         dispatch(removeAllInterests());
         dispatch(removeAllStockStatuses());
+
+        // Update the shop products.
         dispatch(
             setProductsAndCount({
                 products: allProducts,
