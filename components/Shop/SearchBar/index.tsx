@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { BiSearchAlt } from 'react-icons/bi';
 import { debounce } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';

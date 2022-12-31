@@ -173,7 +173,7 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount
     useEffect(() => {
         dispatch(setIsLoadingProducts(true));
         dispatch(fetchProducts({ limit: 8, skip: 0 }));
-    }, [searchTerm, sortOption]);
+    }, [dispatch, searchTerm, sortOption]);
 
     return (
         <PageWrapper

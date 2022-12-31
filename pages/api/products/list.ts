@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { SortOption } from '../../../enums/products';
 
+import { SortOption } from '../../../enums/products';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { buildProductListMongoQueryValues } from '../../../utils/account/database';

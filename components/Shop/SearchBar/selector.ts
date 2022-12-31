@@ -1,9 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectProductData } from '../../../store/state/selectors';
+import { selectFiltersData } from '../../../store/state/selectors';
 
-const selector = createSelector([selectProductData], (products) => ({
-    searchTerm: products.searchTerm,
+const selector = createSelector([selectFiltersData], (filters) => ({
+    searchTerm: filters.searchTerm,
 }));
 
 export default selector;

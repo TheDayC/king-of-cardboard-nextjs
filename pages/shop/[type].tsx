@@ -86,7 +86,7 @@ export const ShopType: React.FC<ShopTypeProps> = ({ interest, staticInterest, ca
             dispatch(addStockStatus(status));
         });
         dispatch(setProductsAndCount({ products, count }));
-    }, [dispatch, products, count]);
+    }, [dispatch, products, count, category, interest]);
 
     return (
         <PageWrapper
