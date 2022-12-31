@@ -13,7 +13,6 @@ const PER_PAGE = 8;
 
 export const Grid: React.FC = () => {
     const { products, productsTotal, isLoadingProducts } = useSelector(selector);
-    console.log('🚀 ~ file: index.tsx:16 ~ products', products);
     const [currentPage, setCurrentPage] = useState(0);
     const productPageCount = ceil(divide(productsTotal, PER_PAGE));
 
@@ -54,15 +53,15 @@ export const Grid: React.FC = () => {
             ) : (
                 <NoProducts />
             )}
-            <div className="flex justify-center">
-                {productPageCount > 1 && (
+            {productPageCount > 1 && (
+                <div className="flex justify-center">
                     <Pagination
                         currentPage={currentPage}
                         pageCount={productPageCount}
                         handlePageNumber={handlePageNumber}
                     />
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 };

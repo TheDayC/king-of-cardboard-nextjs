@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { BsArrowRightSquareFill } from 'react-icons/bs';
 
 import { StockStatus } from '../../../../enums/products';
-import { getStockStatusColor, getStockStatusTitle } from '../../../../utils/account/products';
+import { getStockStatusColor, getStockStatusTitle, getStockStatusTooltip } from '../../../../utils/account/products';
 
 interface CardProps {
     name: string;
@@ -40,6 +40,7 @@ export const ProductCard: React.FC<CardProps> = ({
     const stockText = stock > 0 ? `${stock} available` : 'Out of stock';
     const stockStatusTitle = getStockStatusTitle(stockStatus);
     const stockStatusColor = getStockStatusColor(stockStatus);
+    const stockStatusMsg = getStockStatusTooltip(stockStatus);
     const shouldShowStockStatusTitle = stockStatus !== StockStatus.InStock;
 
     return (
@@ -61,8 +62,9 @@ export const ProductCard: React.FC<CardProps> = ({
                             />
                             {shouldShowStockStatusTitle && (
                                 <div
-                                    className="badge absolute -bottom-2 -right-2 text-md border-0 shadow-sm"
+                                    className="badge absolute -bottom-2 -right-2 text-md border-0 shadow-sm tooltip tooltip-bottom"
                                     style={{ backgroundColor: stockStatusColor }}
+                                    data-tip={stockStatusMsg}
                                 >
                                     {stockStatusTitle}
                                 </div>

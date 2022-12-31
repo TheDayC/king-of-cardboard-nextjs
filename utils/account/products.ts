@@ -254,3 +254,16 @@ export function getStockStatusColor(stockStatus: StockStatus): string {
             return '#c59d52';
     }
 }
+
+export function getStockStatusTooltip(stockStatus: StockStatus): string {
+    switch (stockStatus) {
+        case StockStatus.Import:
+            return 'Imports may take longer to arrive than a shelf item.';
+        case StockStatus.OutOfStock:
+            return 'Out of stock items may be replenished in future.';
+        case StockStatus.PreOrder:
+            return 'Pre-order items will only be shipped upon release and may take longer to arrive than a shelf item.';
+        default:
+            return '';
+    }
+}
