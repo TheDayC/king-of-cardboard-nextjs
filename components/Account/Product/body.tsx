@@ -127,7 +127,9 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     const [isLoading, setIsLoading] = useState(false);
     const [mainImageFileList, setMainImageFileList] = useState<FileList | null>(null);
     const [galleryFileList, setGalleryFileList] = useState<FileList | null>(null);
-    const [repeaterItems, setRepeaterItems] = useState<Record<string, string | number>[]>([defaultRepeateritem]);
+    const [repeaterItems, setRepeaterItems] = useState<Record<string, string | number>[] | PriceHistory[]>(
+        priceHistory ? priceHistory : [defaultRepeateritem]
+    );
     const [currentContent, setCurrentContent] = useState<string | undefined>(existingContent);
 
     // Errors
