@@ -108,6 +108,9 @@ export async function getProduct(id?: string, slug?: string): Promise<Product | 
                 id,
                 slug,
             },
+            headers: {
+                'Accept-Encoding': 'application/json',
+            },
         });
 
         return res.data as Product;
