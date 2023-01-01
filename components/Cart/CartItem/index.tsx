@@ -66,7 +66,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                 </button>
             </div>
             <div className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2">
-                <div className="text-error lg:flex lg:flex-row items-center justify-center w-full relative">
+                <div className="hidden lg:flex lg:flex-row items-center justify-center w-full relative">
                     {image.url.length > 0 && (
                         <Link href={`/product/${slug}`} passHref>
                             <div className="w-20 h-20 rounded-md overflow-hidden">
@@ -84,10 +84,8 @@ export const CartItem: React.FC<CartItemProps> = ({
                 <div className="flex flex-col justify-center items-center text-center lg:space-x-4">
                     <Link href={`/product/${slug}`} passHref>
                         <div className="cursor-pointer">
-                            <h4 className="hidden lg:block text-xs mb-1 font-bold lg:text-lg hover:underline">
-                                {name}
-                            </h4>
-                            <p className="hidden lg:block text-xs text-gray-400 lg:text-lg">{sku || ''}</p>
+                            <h4 className="block text-xs mb-1 font-bold lg:text-lg hover:underline">{name}</h4>
+                            <p className="block text-xs text-gray-400 lg:text-lg">{sku || ''}</p>
 
                             {/* lineItemOptions.length > 0 &&
                                 lineItemOptions.map((option) => (
@@ -115,7 +113,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                     max={stock}
                 />
             </div>
-            <div className="flex flex-row items-center justify-center text-sm lg:text-lg">{stock}</div>
+            <div className="hidden text-sm lg:flex lg:flex-row lg:text-lg">{stock}</div>
             <div className="flex flex-row items-center justify-center font-semibold text-sm lg:text-lg">
                 {totalAmount}
             </div>

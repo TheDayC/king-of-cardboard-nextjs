@@ -40,10 +40,10 @@ export const Cart: React.FC = () => {
                         <div className="grid grid-cols-4 bg-neutral text-neutral-content p-2 rounded-md text-sm lg:text-md lg:p-4 lg:grid-cols-7">
                             <div className="text-center lg:table-cell">Remove</div>
                             <div className="text-center hidden lg:table-cell">&nbsp;</div>
-                            <div className="text-center">Product</div>
+                            <div className="text-center table-cell">Product</div>
                             <div className="text-center hidden lg:table-cell">Price</div>
                             <div className="text-center">Quantity</div>
-                            <div className="text-center">Stock</div>
+                            <div className="text-center hidden lg:table-cell">Stock</div>
                             <div className="text-center">Total</div>
                         </div>
                         <div className="flex flex-col w-full">
@@ -76,9 +76,9 @@ export const Cart: React.FC = () => {
                                 Update quantities
                                 <BiRefresh className="inline-block w-6 h-6 ml-2" />
                             </button>
-                            <Link href="/checkout" passHref>
+                            <Link href="/checkout" passHref className="w-full lg:w-auto">
                                 <button
-                                    className={`btn btn-primary w-full rounded-md lg:btn-wide${
+                                    className={`btn btn-primary btn-block w-full rounded-md lg:btn-wide${
                                         isUpdatingCart ? ' loading btn-square' : ''
                                     }`}
                                     role="button"
