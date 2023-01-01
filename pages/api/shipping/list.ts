@@ -15,7 +15,7 @@ async function listShipping(req: NextApiRequest, res: NextApiResponse): Promise<
             const page = safelyParse(req, 'query.page', parseAsNumber, 0);
 
             const shippingCount = await collection.countDocuments();
-            const shippingList = await collection.find({}, { skip: page, limit: count }).toArray();
+            const shippingList = await collection.find({}, { skip: page, limit: count, sort: { title: 1 } }).toArray();
 
             if (shippingList.length === 0) {
                 res.status(400).json({ message: defaultErr });

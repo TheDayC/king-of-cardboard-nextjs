@@ -21,7 +21,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
     const role = safelyParse(session, 'user.role', parseAsRole, Roles.User);
     const isAdmin = role === Roles.Admin;
     const id = safelyParse(query, 'id', parseAsString, null);
-    const { shippingMethods } = await listShippingMethods(LIMIT, PAGE);
+    const { shippingMethods } = await listShippingMethods(LIMIT, PAGE, true);
 
     if (!session || !isAdmin || !id) {
         return {

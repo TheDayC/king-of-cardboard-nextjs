@@ -37,16 +37,20 @@ export async function editShippingMethod(id: string, options: any): Promise<bool
     return false;
 }
 
-export async function listShippingMethods(count: number, page: number): Promise<ListShippingMethods> {
+export async function listShippingMethods(
+    count: number,
+    page: number,
+    isServer: boolean = false
+): Promise<ListShippingMethods> {
+    const headers = isServer ? { 'Accept-Encoding': 'application/json' } : undefined;
+
     try {
         const res = await axios.get(`${URL}/api/shipping/list`, {
             params: {
                 count,
                 page,
             },
-            headers: {
-                'Accept-Encoding': 'application/json',
-            },
+            headers,
         });
 
         return res.data;

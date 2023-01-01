@@ -31,14 +31,12 @@ export const Delivery: React.FC = () => {
             return;
         }
 
-        const shippingMethodId = Object.keys(data.method)[0];
-
         // Start checkout and cart loaders.
         dispatch(setIsCheckoutLoading(true));
         dispatch(setUpdatingCart(true));
 
         // Set shipping method and update cart totals
-        dispatch(setChosenShippingMethodId(shippingMethodId));
+        dispatch(setChosenShippingMethodId(data.method));
         dispatch(fetchCartTotals());
 
         // Redirect to next stage.
@@ -53,13 +51,11 @@ export const Delivery: React.FC = () => {
     };
 
     useEffect(() => {
-        if (shippingMethods.length === 0) {
-            // Set loading
-            dispatch(setCheckoutLoading(true));
+        // Set loading
+        dispatch(setCheckoutLoading(true));
 
-            // Fetch the shipping methods and the fetch will remove loading spinner on return.
-            dispatch(fetchShippingMethods());
-        }
+        // Fetch the shipping methods and the fetch will remove loading spinner on return.
+        dispatch(fetchShippingMethods());
     }, [shippingMethods, dispatch]);
 
     return (

@@ -57,7 +57,7 @@ export const ShippingMethod: React.FC<ShippingMethodProps> = ({
                     className="radio radio-md"
                     value={_id}
                     defaultChecked={isDefault}
-                    {...register(`method.${_id}.methodId`, {
+                    {...register('method', {
                         required: { value: true, message: 'Required' },
                     })}
                 />
