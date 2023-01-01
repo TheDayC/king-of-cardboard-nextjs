@@ -54,7 +54,6 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
         formState: { errors },
         setValue,
         reset,
-        getValues,
     } = useForm({
         defaultValues: {
             title,
@@ -67,7 +66,6 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
         },
     });
     const router = useRouter();
-    const { content } = getValues();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
     const [currentContent, setCurrentContent] = useState<string | undefined>(existingContent);
