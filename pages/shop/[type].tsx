@@ -97,7 +97,7 @@ export const ShopType: React.FC<ShopTypeProps> = ({ interest, staticInterest, ca
 
         dispatch(setIsLoadingProducts(true));
 
-        dispatch(fetchProducts({ limit: 8, skip: 0 }));
+        dispatch(fetchProducts({ limit: LIMIT, skip: 0 }));
     }, [dispatch, sortOption, searchTerm, isInitialLoad]);
 
     return (
