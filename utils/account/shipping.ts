@@ -44,6 +44,9 @@ export async function listShippingMethods(count: number, page: number): Promise<
                 count,
                 page,
             },
+            headers: {
+                'Accept-Encoding': 'application/json',
+            },
         });
 
         return res.data;
@@ -76,6 +79,9 @@ export async function getShippingMethod(id: string): Promise<AccountShippingMeth
         const res = await axios.get(`${URL}/api/shipping/get`, {
             params: {
                 id,
+            },
+            headers: {
+                'Accept-Encoding': 'application/json',
             },
         });
 

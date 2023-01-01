@@ -55,11 +55,22 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
         setValue,
         reset,
         getValues,
-    } = useForm();
+    } = useForm({
+        defaultValues: {
+            title,
+            slug,
+            supplier,
+            price,
+            min,
+            max,
+            content: existingContent,
+        },
+    });
     const router = useRouter();
     const { content } = getValues();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
+    const [currentContent, setCurrentContent] = useState<string | undefined>(existingContent);
 
     // Errors
     const hasErrors = Object.keys(errors).length > 0;
@@ -118,17 +129,12 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
 
     const handleRichContent = (content?: string) => {
         setValue('content', content);
+        setCurrentContent(content);
     };
 
     useEffect(() => {
         register('content');
     }, [register]);
-
-    useEffect(() => {
-        if (existingContent) {
-            setValue('content', existingContent);
-        }
-    }, [existingContent, setValue]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -201,7 +207,7 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
                     />
                 </div>
                 <div className="flex flex-col">
-                    <RichTextEditor placeholder="Content" onChange={handleRichContent} value={content as string} />
+                    <RichTextEditor placeholder="Content" onChange={handleRichContent} value={currentContent || ''} />
                 </div>
 
                 <div className="form-control">
