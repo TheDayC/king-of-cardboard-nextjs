@@ -6,7 +6,7 @@ import AccountWrapper from '../../../../components/AccountWrapper';
 import { authOptions } from '../../../api/auth/[...nextauth]';
 import { parseAsRole, safelyParse } from '../../../../utils/parsers';
 import { Roles } from '../../../../enums/auth';
-import ProductBody from '../../../../components/Account/Product/body';
+//import ProductBody from '../../../../components/Account/Product/body';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const session = await unstable_getServerSession(req, res, authOptions);
@@ -19,6 +19,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
                 permanent: false,
                 destination: '/login',
             },
+            props: {},
         };
     }
 
@@ -29,11 +30,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 
 export const AddProductsPage: React.FC = () => {
     return (
-        <AccountWrapper title="Products - Account - King of Cardboard" description="Account page">
+        <AccountWrapper title="Add - Products - Account - King of Cardboard" description="Account page">
             <div className="flex flex-col w-full justify-start items-start p-2 md:p-4 md:p-8 md:flex-row">
                 <div className="flex flex-col relative w-full space-y-4" data-testid="content">
                     <h1 className="text-3xl mb-4">Add Product</h1>
-                    <ProductBody isNew />
+                    {/* <ProductBody isNew /> */}
                 </div>
             </div>
         </AccountWrapper>

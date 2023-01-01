@@ -15,6 +15,7 @@ import Pagination from '../../../components/Pagination';
 import AccountWrapper from '../../../components/AccountWrapper';
 import crown from '../../../images/large-crown.png';
 import Loading from '../../../components/Loading';
+import { ResponseError } from '../../../types/errors';
 
 const SIZE = 5;
 const PAGE = 0;
@@ -48,8 +49,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     if (!isListOrders(orderList)) {
         return {
             props: {
-                orders: [],
-                count: 0,
+                initialOrders: [],
+                initialCount: 0,
+                error: orderList,
             },
         };
     }
@@ -66,9 +68,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 interface OrderHistoryPageProps {
     initialOrders: Order[];
     initialCount: number;
+    error?: ResponseError;
 }
 
-export const OrderHistoryPage: React.FC<OrderHistoryPageProps> = ({ initialOrders, initialCount }) => {
+export const OrderHistoryPage: React.FC<OrderHistoryPageProps> = ({ initialOrders, initialCount, error }) => {
+    console.log('🚀 ~ file: index.tsx:75 ~ error', error);
     console.log('🚀 ~ file: index.tsx:72 ~ initialOrders', initialOrders);
     const { data: session } = useSession();
     const [orders, setOrders] = useState<Order[]>(initialOrders);
