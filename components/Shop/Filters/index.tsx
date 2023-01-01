@@ -142,7 +142,7 @@ export const Filters: React.FC = () => {
                 <SearchBar />
             </div>
             <div className="flex flex-col w-full">
-                <Sort value="default" options={SORT_OPTIONS} />
+                <Sort options={SORT_OPTIONS} />
             </div>
             <div className="card bordered rounded-md">
                 <div className="card-body p-4">
