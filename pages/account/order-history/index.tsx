@@ -57,8 +57,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     // If we're signed in then decide whether we should show the page or 404.
     return {
         props: {
-            initialOrders: orderList.orders,
-            initialCount: orderList.count,
+            initialOrders: orderList.orders || [],
+            initialCount: orderList.count || 0,
         },
     };
 };
