@@ -3,8 +3,9 @@ import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
 import { Interest, SortOption } from '../../enums/products';
-import { ListProducts } from '../../types/products';
+import { ListProducts, Product } from '../../types/products';
 import { listProducts } from '../../utils/account/products';
+import { PRODUCT_INTERESTS } from '../../utils/constants';
 import productsInitialState from '../state/products';
 import { AppStateShape } from '../types/state';
 
@@ -43,102 +44,29 @@ export const fetchProductRows = createAsyncThunk(
         const state = getState() as AppStateShape;
         const { categories, configurations, stockStatus, searchTerm, sortOption } = state.filters;
 
-        const { products: baseballProducts, count: baseballCount } = await listProducts(
-            limit,
-            skip,
-            true,
-            categories,
-            configurations,
-            [Interest.Baseball],
-            stockStatus,
-            searchTerm,
-            sortOption
-        );
-        const { products: basketballProducts, count: basketballCount } = await listProducts(
-            limit,
-            skip,
-            true,
-            categories,
-            configurations,
-            [Interest.Basketball],
-            stockStatus,
-            searchTerm,
-            sortOption
-        );
-        const { products: footballProducts, count: footballCount } = await listProducts(
-            limit,
-            skip,
-            true,
-            categories,
-            configurations,
-            [Interest.Football],
-            stockStatus,
-            searchTerm,
-            sortOption
-        );
-        const { products: soccerProducts, count: soccerCount } = await listProducts(
-            limit,
-            skip,
-            true,
-            categories,
-            configurations,
-            [Interest.Soccer],
-            stockStatus,
-            searchTerm,
-            sortOption
-        );
-        const { products: ufcProducts, count: ufcCount } = await listProducts(
-            limit,
-            skip,
-            true,
-            categories,
-            configurations,
-            [Interest.UFC],
-            stockStatus,
-            searchTerm,
-            sortOption
-        );
-        const { products: wweProducts, count: wweCount } = await listProducts(
-            limit,
-            skip,
-            true,
-            categories,
-            configurations,
-            [Interest.Wrestling],
-            stockStatus,
-            searchTerm,
-            sortOption
-        );
-        const { products: pokemonProducts, count: pokemonCount } = await listProducts(
-            limit,
-            skip,
-            true,
-            categories,
-            configurations,
-            [Interest.Pokemon],
-            stockStatus,
-            searchTerm,
-            sortOption
-        );
+        let allProducts: Product[] = [];
+        let totalCount = 0;
+
+        for (const interest of PRODUCT_INTERESTS) {
+            const { products: tempProducts, count: tempCount } = await listProducts(
+                limit,
+                skip,
+                false,
+                categories,
+                configurations,
+                [interest],
+                stockStatus,
+                searchTerm,
+                sortOption
+            );
+
+            allProducts = [...allProducts, ...tempProducts];
+            totalCount = totalCount + tempCount;
+        }
 
         return {
-            products: [
-                ...baseballProducts,
-                ...basketballProducts,
-                ...footballProducts,
-                ...soccerProducts,
-                ...ufcProducts,
-                ...wweProducts,
-                ...pokemonProducts,
-            ],
-            count:
-                baseballProducts.length +
-                basketballProducts.length +
-                footballProducts.length +
-                soccerProducts.length +
-                ufcProducts.length +
-                wweProducts.length +
-                pokemonProducts.length,
+            products: allProducts,
+            count: totalCount,
         };
     }
 );

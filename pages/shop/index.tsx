@@ -16,7 +16,7 @@ import {
 import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
-import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
+import { Category, Configuration, SortOption, StockStatus } from '../../enums/products';
 import { Product } from '../../types/products';
 import { listProducts } from '../../utils/account/products';
 import {
@@ -26,6 +26,7 @@ import {
     setProductsAndCount,
 } from '../../store/slices/products';
 import selector from './selector';
+import { PRODUCT_INTERESTS } from '../../utils/constants';
 
 const LIMIT = 4;
 const SKIP = 0;
@@ -36,106 +37,31 @@ const STOCK_STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.Import, 
 export const getServerSideProps: GetServerSideProps = async () => {
     const { content } = await getPageBySlug('shop', '');
 
-    const { products: baseballProducts, count: baseballCount } = await listProducts(
-        LIMIT,
-        SKIP,
-        true,
-        CATEGORIES,
-        CONFIGURATIONS,
-        [Interest.Baseball],
-        STOCK_STATUSES,
-        '',
-        SortOption.DateAddedDesc
-    );
-    const { products: basketballProducts, count: basketballCount } = await listProducts(
-        LIMIT,
-        SKIP,
-        true,
-        CATEGORIES,
-        CONFIGURATIONS,
-        [Interest.Basketball],
-        STOCK_STATUSES,
-        '',
-        SortOption.DateAddedDesc
-    );
-    const { products: footballProducts, count: footballCount } = await listProducts(
-        LIMIT,
-        SKIP,
-        true,
-        CATEGORIES,
-        CONFIGURATIONS,
-        [Interest.Football],
-        STOCK_STATUSES,
-        '',
-        SortOption.DateAddedDesc
-    );
-    const { products: soccerProducts, count: soccerCount } = await listProducts(
-        LIMIT,
-        SKIP,
-        true,
-        CATEGORIES,
-        CONFIGURATIONS,
-        [Interest.Soccer],
-        STOCK_STATUSES,
-        '',
-        SortOption.DateAddedDesc
-    );
-    const { products: ufcProducts, count: ufcCount } = await listProducts(
-        LIMIT,
-        SKIP,
-        true,
-        CATEGORIES,
-        CONFIGURATIONS,
-        [Interest.UFC],
-        STOCK_STATUSES,
-        '',
-        SortOption.DateAddedDesc
-    );
-    const { products: wweProducts, count: wweCount } = await listProducts(
-        LIMIT,
-        SKIP,
-        true,
-        CATEGORIES,
-        CONFIGURATIONS,
-        [Interest.Wrestling],
-        STOCK_STATUSES,
-        '',
-        SortOption.DateAddedDesc
-    );
-    const { products: pokemonProducts, count: pokemonCount } = await listProducts(
-        LIMIT,
-        SKIP,
-        true,
-        CATEGORIES,
-        CONFIGURATIONS,
-        [Interest.Pokemon],
-        STOCK_STATUSES,
-        '',
-        SortOption.DateAddedDesc
-    );
+    let allProducts: Product[] = [];
+    let totalCount = 0;
+
+    for (const interest of PRODUCT_INTERESTS) {
+        const { products: tempProducts, count: tempCount } = await listProducts(
+            LIMIT,
+            SKIP,
+            true,
+            CATEGORIES,
+            CONFIGURATIONS,
+            [interest],
+            STOCK_STATUSES,
+            '',
+            SortOption.DateAddedDesc
+        );
+
+        allProducts = [...allProducts, ...tempProducts];
+        totalCount = totalCount + tempCount;
+    }
 
     return {
         props: {
-            errorCode: null,
             content,
-            baseballProducts,
-            basketballProducts,
-            footballProducts,
-            soccerProducts,
-            ufcProducts,
-            wweProducts,
-            pokemonProducts,
-            allProducts: [
-                ...baseballProducts,
-                ...basketballProducts,
-                ...footballProducts,
-                ...soccerProducts,
-                ...ufcProducts,
-                ...wweProducts,
-                ...pokemonProducts,
-            ],
-            totalCount:
-                baseballCount + basketballCount + footballCount + soccerCount + ufcCount + wweCount + pokemonCount,
+            allProducts,
+            totalCount,
         },
     };
 };

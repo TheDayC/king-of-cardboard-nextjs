@@ -4,6 +4,7 @@ import { MdOutlineCatchingPokemon } from 'react-icons/md';
 import { upperCase, upperFirst } from 'lodash';
 
 import { ProductType } from '../enums/shop';
+import { Interest } from '../enums/products';
 
 export const shopSubMenu = [
     {
@@ -48,4 +49,15 @@ export const shopSubMenu = [
         label: upperFirst(ProductType.Pokemon),
         css: 'origin-center rotate-180',
     },
+];
+
+export const PRODUCT_INTERESTS = [
+    Interest.Baseball,
+    Interest.Basketball,
+    Interest.Football,
+    Interest.Soccer,
+    Interest.UFC,
+    Interest.Wrestling,
+    Interest.Pokemon,
+    Interest.Other,
 ];
