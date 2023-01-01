@@ -107,7 +107,7 @@ export const ShopType: React.FC<ShopTypeProps> = ({ interest, staticInterest, ca
         >
             <div className="flex flex-col w-full relative">
                 {content && <Content content={[content]} />}
-                <div className="flex flex-col w-full relative md:flex-row">
+                <div className="flex flex-col w-full relative space-y-4 md:flex-row md:space-x-4 md:space-y-0">
                     <Filters />
                     <Grid />
                 </div>
