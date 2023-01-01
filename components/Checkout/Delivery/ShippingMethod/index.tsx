@@ -34,8 +34,8 @@ export const ShippingMethod: React.FC<ShippingMethodProps> = ({
 
     return (
         <div className="form-control">
-            <label className="label cursor-pointer">
-                <span className="label-text">
+            <label className="label cursor-pointer space-x-4">
+                <span className="label-text grow">
                     <div className="flex flex-col space-y-3">
                         <div className="flex flex-row items-center justify-between">
                             <div className="flex flex-row space-x-4 items-center">
@@ -54,7 +54,7 @@ export const ShippingMethod: React.FC<ShippingMethodProps> = ({
                 </span>
                 <input
                     type="radio"
-                    className="radio radio-md"
+                    className="radio radio-md border border-gray-400"
                     value={_id}
                     defaultChecked={isDefault}
                     {...register('method', {

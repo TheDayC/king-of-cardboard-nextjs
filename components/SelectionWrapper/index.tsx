@@ -38,7 +38,7 @@ export const SelectionWrapper: React.FC<SelectionWrapperProps> = ({
 
     const radioPropsBase = {
         ...registerValue,
-        className: 'radio radio-md',
+        className: 'radio radio-md border border-gray-400',
         type: 'radio',
         value: id,
     };
