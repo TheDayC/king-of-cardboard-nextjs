@@ -14,7 +14,7 @@ import Product from '../../../components/Account/Product';
 import Loading from '../../../components/Loading';
 import Pagination from '../../../components/Pagination';
 
-const LIMIT = 10;
+const LIMIT = 5;
 const PAGE = 0;
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
@@ -54,9 +54,9 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
     const [isLoading, setIsLoading] = useState(false);
     const pageCount = totalProducts / LIMIT;
 
-    const handleUpdateProducts = async () => {
+    const handleUpdateProducts = async (nextPage: number) => {
         setIsLoading(true);
-        const { products: newProducts, count: newTotalProducts } = await listProducts(count, page, true);
+        const { products: newProducts, count: newTotalProducts } = await listProducts(LIMIT, LIMIT * nextPage, false);
 
         setProducts(newProducts);
         setTotalProducts(newTotalProducts);
@@ -66,7 +66,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
 
     const handlePageNumber = (nextPage: number) => {
         setPage(nextPage);
-        handleUpdateProducts();
+        handleUpdateProducts(nextPage);
     };
 
     return (
@@ -92,7 +92,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
                             />
                         ))}
                     {pageCount > 1 && (
-                        <Pagination currentPage={page - 1} pageCount={pageCount} handlePageNumber={handlePageNumber} />
+                        <Pagination currentPage={page} pageCount={pageCount} handlePageNumber={handlePageNumber} />
                     )}
                 </div>
             </div>

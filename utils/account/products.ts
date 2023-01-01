@@ -38,7 +38,7 @@ export async function listProducts(
     interests?: Interest[],
     stockStatuses?: StockStatus[],
     searchTerm?: string,
-    sortOption?: SortOption.DateAddedDesc
+    sortOption?: SortOption
 ): Promise<ListProducts> {
     const headers = isServer ? { 'Accept-Encoding': 'application/json' } : undefined;
 
