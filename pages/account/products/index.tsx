@@ -87,6 +87,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
                         products.map((product) => (
                             <Product
                                 product={product}
+                                currentPage={page}
                                 key={`product-${product._id}`}
                                 updateProducts={handleUpdateProducts}
                             />

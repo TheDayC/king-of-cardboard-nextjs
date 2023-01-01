@@ -16,10 +16,11 @@ import { isNumber } from '../../../utils/typeguards';
 
 interface ProductProps {
     product: ProductType;
-    updateProducts: () => void;
+    currentPage: number;
+    updateProducts: (nextPage: number) => void;
 }
 
-export const Product: React.FC<ProductProps> = ({ product, updateProducts }) => {
+export const Product: React.FC<ProductProps> = ({ product, currentPage, updateProducts }) => {
     const dispatch = useDispatch();
     const { _id: id, title, sku, price, salePrice, quantity, lastUpdated, mainImage } = product;
     const [shouldEditPrice, setShouldEditPrice] = useState(false);
@@ -61,9 +62,7 @@ export const Product: React.FC<ProductProps> = ({ product, updateProducts }) => 
     const handleSubmitPrice = async () => {
         setIsLoading(true);
 
-        const hasEditedProduct = isOnSale
-            ? await editProduct(id, { salePrice: newPrice })
-            : await editProduct(id, { price: newPrice });
+        const hasEditedProduct = await editProduct(id, { price: newPrice });
 
         if (hasEditedProduct) {
             dispatch(addSuccess('Price updated!'));
@@ -73,7 +72,7 @@ export const Product: React.FC<ProductProps> = ({ product, updateProducts }) => 
 
         setShouldEditPrice(false);
         setIsLoading(false);
-        updateProducts();
+        updateProducts(currentPage);
     };
 
     return (
@@ -99,7 +98,7 @@ export const Product: React.FC<ProductProps> = ({ product, updateProducts }) => 
                     </div>
                     <div className="flex flex-col justify-start">
                         <div className="flex flex-row space-x-4 items-end">
-                            {isOnSale && <p className="text-lg text-error line-through">{prettyPrice}</p>}
+                            {isOnSale && <p className="text-lg text-error line-through">{prettySalePrice}</p>}
                             {shouldEditPrice ? (
                                 <div className="flex flex-row space-x-2 items-center relative">
                                     {isLoading && <Loading show width={5} height={5} />}
@@ -108,7 +107,7 @@ export const Product: React.FC<ProductProps> = ({ product, updateProducts }) => 
                                             type="number"
                                             placeholder="Price"
                                             className="input input-sm input-bordered"
-                                            defaultValue={isOnSale ? salePrice : price}
+                                            defaultValue={price}
                                             onChange={handleNewPrice}
                                             id="newPrice"
                                             autoFocus
@@ -125,7 +124,7 @@ export const Product: React.FC<ProductProps> = ({ product, updateProducts }) => 
                                 </div>
                             ) : (
                                 <div className="flex flex-row space-x-4 items-center" onClick={handleEditPrice}>
-                                    <p className="text-5xl">{isOnSale ? prettySalePrice : prettyPrice}</p>
+                                    <p className="text-5xl">{prettyPrice}</p>
                                     <BiEditAlt className="inline-block text-2xl text-gray-400 cursor-pointer mt-1" />
                                 </div>
                             )}
