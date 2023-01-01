@@ -6,7 +6,7 @@ import AccountWrapper from '../../../../components/AccountWrapper';
 import { authOptions } from '../../../api/auth/[...nextauth]';
 import { parseAsRole, safelyParse } from '../../../../utils/parsers';
 import { Roles } from '../../../../enums/auth';
-import ProductBody from '../../../../components/Account/Product/body';
+//import ProductBody from '../../../../components/Account/Product/body';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const session = await unstable_getServerSession(req, res, authOptions);
@@ -19,6 +19,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
                 permanent: false,
                 destination: '/login',
             },
+            props: {},
         };
     }
 
