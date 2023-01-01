@@ -35,7 +35,7 @@ async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<
                     : {};
             const sortQuery = getSortQuery(sortOption);
 
-            const productCount = await productsCollection.countDocuments(query);
+            const productCount = await productsCollection.countDocuments({ ...query, ...searchQuery });
             const productList = await productsCollection
                 .find(
                     {

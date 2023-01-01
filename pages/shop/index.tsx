@@ -55,7 +55,6 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts }) => {
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const { shouldShowRows, sortOption, hasSearchTerm, hasNonDefaultSortOption, searchTerm } = useSelector(selector);
     const shouldFetchRows = shouldShowRows && !hasSearchTerm && !hasNonDefaultSortOption;
-    console.log('🚀 ~ file: index.tsx:58 ~ shouldFetchRows', shouldFetchRows);
 
     // On page load set the server side fetched products
     useEffect(() => {
