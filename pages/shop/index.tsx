@@ -2,17 +2,12 @@ import React, { useEffect } from 'react';
 import { GetServerSideProps } from 'next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Document } from '@contentful/rich-text-types';
+import { debounce } from 'lodash';
 
 import PageWrapper from '../../components/PageWrapper';
 import Filters from '../../components/Shop/Filters';
 import Grid from '../../components/Shop/Grid';
-import {
-    addStockStatus,
-    removeAllCategories,
-    removeAllConfigurations,
-    removeAllInterests,
-    removeAllStockStatuses,
-} from '../../store/slices/filters';
+import { resetFilters } from '../../store/slices/filters';
 import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
@@ -26,13 +21,12 @@ import {
     setProductsAndCount,
 } from '../../store/slices/products';
 import selector from './selector';
-import { PRODUCT_INTERESTS } from '../../utils/constants';
+import { DEFAULT_STOCK_STATUSES, PRODUCT_INTERESTS } from '../../utils/constants';
 
 const LIMIT = 4;
 const SKIP = 0;
 const CATEGORIES: Category[] = [];
 const CONFIGURATIONS: Configuration[] = [];
-const STOCK_STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.Import, StockStatus.PreOrder];
 
 export const getServerSideProps: GetServerSideProps = async () => {
     const { content } = await getPageBySlug('shop', '');
@@ -48,7 +42,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
             CATEGORIES,
             CONFIGURATIONS,
             [interest],
-            STOCK_STATUSES,
+            DEFAULT_STOCK_STATUSES,
             '',
             SortOption.DateAddedDesc
         );
@@ -74,22 +68,14 @@ interface ShopProps {
 
 export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount }) => {
     const dispatch = useDispatch();
-    const { shouldShowRows, searchTerm, sortOption } = useSelector(selector);
-    const hasSearchTerm = searchTerm.length > 0;
+    const { shouldShowRows, searchTerm, sortOption, hasSearchTerm } = useSelector(selector);
+    const shouldFetchRows = shouldShowRows && !hasSearchTerm;
 
     useEffect(() => {
         dispatch(setIsLoadingProducts(true));
 
         // Reset the shop.
-        dispatch(removeAllCategories());
-        dispatch(removeAllConfigurations());
-        dispatch(removeAllInterests());
-        dispatch(removeAllStockStatuses());
-
-        // Add default stock statuses
-        STOCK_STATUSES.forEach((status) => {
-            dispatch(addStockStatus(status));
-        });
+        dispatch(resetFilters());
 
         // Update the shop products.
         dispatch(
@@ -100,16 +86,44 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount
         );
     }, [dispatch, allProducts, totalCount]);
 
+    const debouncedFetchProductRows = debounce(async () => {
+        dispatch(fetchProductRows({ limit: 4, skip: 0 }));
+    }, 700);
+
+    const debouncedFetchProducts = debounce(async () => {
+        dispatch(fetchProducts({ limit: 8, skip: 0 }));
+    }, 700);
+
     // If the search term or sorty updates then fetch the products.
+    /* useEffect(() => {
+        dispatch(setIsLoadingProducts(true));
+
+        if (shouldShowRows) {
+            debouncedFetchProductRows();
+        } else {
+            debouncedFetchProducts();
+        }
+    }, [dispatch, searchTerm, sortOption, shouldShowRows]);
+    
     useEffect(() => {
         dispatch(setIsLoadingProducts(true));
 
-        if (shouldShowRows && !hasSearchTerm) {
-            dispatch(fetchProductRows({ limit: 4, skip: 0 }));
+        if (shouldShowRows) {
+            debouncedFetchProductRows();
         } else {
-            dispatch(fetchProducts({ limit: 8, skip: 0 }));
+            debouncedFetchProducts();
         }
-    }, [dispatch, searchTerm, sortOption, shouldShowRows, hasSearchTerm]);
+    }, [dispatch, sortOption, shouldShowRows]);
+    
+    useEffect(() => {
+        dispatch(setIsLoadingProducts(true));
+
+        if (shouldFetchRows) {
+            debouncedFetchProductRows();
+        } else {
+            debouncedFetchProducts();
+        }
+    }, [dispatch, searchTerm, shouldFetchRows]); */
 
     return (
         <PageWrapper
@@ -118,7 +132,7 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount
         >
             <div className="flex flex-col w-full relative">
                 <div className="block w-full mb-10">{content && <Content content={[content]} />}</div>
-                {shouldShowRows && !hasSearchTerm ? (
+                {shouldFetchRows ? (
                     <div className="flex flex-col w-full relative md:flex-row">
                         <Filters />
                         <LatestProductRows />

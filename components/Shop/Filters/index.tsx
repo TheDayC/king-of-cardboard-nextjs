@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BiFootball, BiBall, BiBasketball, BiBaseball } from 'react-icons/bi';
+import { BiFootball, BiBall, BiBasketball, BiBaseball, BiRefresh } from 'react-icons/bi';
 import { SiDcentertainment, SiUfc, SiWwe } from 'react-icons/si';
 import { MdOutlineCatchingPokemon } from 'react-icons/md';
 import { BsBoxSeam, BsCalendarEvent, BsEye, BsEyeSlash } from 'react-icons/bs';
@@ -15,14 +15,11 @@ import {
     addConfiguration,
     addInterest,
     addStockStatus,
-    removeAllCategories,
-    removeAllConfigurations,
-    removeAllInterests,
-    removeAllStockStatuses,
     removeCategory,
     removeConfiguration,
     removeInterest,
     removeStockStatus,
+    resetFilters,
 } from '../../../store/slices/filters';
 import Filter from './Filter';
 import {
@@ -34,9 +31,15 @@ import {
     StockStatus,
     SortOption,
 } from '../../../enums/products';
-import { fetchProducts } from '../../../store/slices/products';
+import {
+    fetchProductRows,
+    fetchProducts,
+    setIsLoadingProducts,
+    setProductsAndCount,
+} from '../../../store/slices/products';
 import Sort from './Sort';
 import SearchBar from '../SearchBar';
+import { DEFAULT_STOCK_STATUSES } from '../../../utils/constants';
 
 const iconClassName = 'w-6 h-6 inline-block mr-2';
 
@@ -124,10 +127,13 @@ export const Filters: React.FC = () => {
     };
 
     const handleClearFilters = () => {
-        dispatch(removeAllCategories());
-        dispatch(removeAllConfigurations());
-        dispatch(removeAllInterests());
-        dispatch(removeAllStockStatuses());
+        dispatch(setIsLoadingProducts(true));
+
+        // Reset the shop.
+        dispatch(resetFilters());
+
+        // Update the shop products.
+        dispatch(fetchProductRows({ limit: 4, skip: 0 }));
     };
 
     return (
@@ -203,7 +209,8 @@ export const Filters: React.FC = () => {
                 </div>
             </div>
             <button className="btn btn-md btn-secondary" onClick={handleClearFilters}>
-                Clear Filters
+                Reset Filters
+                <BiRefresh className="inline-block w-6 h-6 ml-2" />
             </button>
         </div>
     );

@@ -28,7 +28,7 @@ async function editTeam(req: NextApiRequest, res: NextApiResponse): Promise<void
                 {
                     $set: {
                         title: safelyParse(req, 'body.title', parseAsString, existingTeam.title),
-                        lastUpdated: currentDate.toISO(),
+                        lastUpdated: new Date(currentDate.toISO()),
                         image: safelyParse(req, 'body.image', parseAsString, existingTeam.image),
                     },
                 }

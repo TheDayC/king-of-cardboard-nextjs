@@ -23,8 +23,8 @@ async function addShipping(req: NextApiRequest, res: NextApiResponse): Promise<v
             }
 
             await collection.insertOne({
-                created: currentDate.toISO(),
-                lastUpdated: currentDate.toISO(),
+                created: new Date(currentDate.toISO()),
+                lastUpdated: new Date(currentDate.toISO()),
                 title: safelyParse(req, 'body.title', parseAsString, null),
                 slug,
                 content: safelyParse(req, 'body.content', parseAsString, null),

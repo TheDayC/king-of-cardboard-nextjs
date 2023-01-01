@@ -28,7 +28,7 @@ async function editLeague(req: NextApiRequest, res: NextApiResponse): Promise<vo
                 {
                     $set: {
                         title: safelyParse(req, 'body.title', parseAsString, existingLeague.title),
-                        lastUpdated: currentDate.toISO(),
+                        lastUpdated: new Date(currentDate.toISO()),
                         image: safelyParse(req, 'body.image', parseAsString, existingLeague.image),
                     },
                 }

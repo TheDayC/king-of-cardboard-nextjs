@@ -104,7 +104,7 @@ async function editOrder(req: NextApiRequest, res: NextApiResponse): Promise<voi
                         paymentStatus,
                         fulfillmentStatus,
                         items,
-                        lastUpdated: currentDate.toISO(),
+                        lastUpdated: new Date(currentDate.toISO()),
                         subTotal,
                         discount,
                         shipping,

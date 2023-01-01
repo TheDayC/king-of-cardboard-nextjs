@@ -27,8 +27,7 @@ async function editShipping(req: NextApiRequest, res: NextApiResponse): Promise<
                 { _id: new ObjectId(id) },
                 {
                     $set: {
-                        created: existing.created,
-                        lastUpdated: currentDate.toISO(),
+                        lastUpdated: new Date(currentDate.toISO()),
                         title: safelyParse(req, 'body.title', parseAsString, existing.title),
                         slug: safelyParse(req, 'body.slug', parseAsString, existing.slug),
                         content: safelyParse(req, 'body.content', parseAsString, existing.content),

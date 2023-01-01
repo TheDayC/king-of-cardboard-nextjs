@@ -49,7 +49,7 @@ async function getResetId(email: string, token: string, db: Db): Promise<string 
     // We'll update last reset in the future incase we require it for checks.
     const resetInsert = await passwordResetsCollection.findOneAndUpdate(
         { email },
-        { $set: { token, expires, lastReset: null } },
+        { $set: { token, expires: new Date(expires), lastReset: null } },
         { upsert: true, returnDocument: 'after', projection: { _id: 1 } }
     );
 
@@ -192,7 +192,13 @@ async function passwordReset(req: NextApiRequest, res: NextApiResponse): Promise
 
             await passwordResetsCollection.updateOne(
                 { _id: reset._id },
-                { $set: { expires: null, token: null, lastReset: DateTime.now().setZone('Europe/London').toISO() } }
+                {
+                    $set: {
+                        expires: null,
+                        token: null,
+                        lastReset: new Date(DateTime.now().setZone('Europe/London').toISO()),
+                    },
+                }
             );
 
             res.status(201).end();

@@ -4,7 +4,7 @@ import { round } from 'lodash';
 
 import { s3Client } from '../../lib/aws';
 import { errorHandler } from '../../middleware/errors';
-import { ListProducts, Product } from '../../types/products';
+import { ListProducts, Product, ProductFacets } from '../../types/products';
 import { parseAsNumber, safelyParse } from '../parsers';
 import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
 
@@ -66,6 +66,39 @@ export async function listProducts(
     }
 
     return { products: [], count: 0 };
+}
+
+export async function listProductRows(limit: number, skip: number, isServer: boolean = false): Promise<ProductFacets> {
+    const headers = isServer ? { 'Accept-Encoding': 'application/json' } : undefined;
+
+    try {
+        const res = await axios.post(
+            `${URL}/api/products/listRows`,
+            {
+                limit,
+                skip,
+            },
+            {
+                headers,
+            }
+        );
+        console.log('🚀 ~ file: products.ts:89 ~ res', res);
+
+        return res.data;
+    } catch (error: unknown) {
+        errorHandler(error, 'Could not list products.');
+    }
+
+    return {
+        baseball: [],
+        basketball: [],
+        football: [],
+        soccer: [],
+        ufc: [],
+        wrestling: [],
+        pokemon: [],
+        other: [],
+    };
 }
 
 export async function deleteProduct(key: string): Promise<boolean> {

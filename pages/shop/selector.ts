@@ -7,6 +7,7 @@ const selector = createSelector([selectFiltersData], (filters) => ({
         filters.categories.length === 0 && filters.configurations.length === 0 && filters.interests.length === 0,
     searchTerm: filters.searchTerm,
     sortOption: filters.sortOption,
+    hasSearchTerm: filters.searchTerm.length > 0,
 }));
 
 export default selector;

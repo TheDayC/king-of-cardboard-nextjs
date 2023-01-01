@@ -29,7 +29,7 @@ async function editBreak(req: NextApiRequest, res: NextApiResponse): Promise<voi
                     $set: {
                         title: safelyParse(req, 'body.title', parseAsString, existingBreak.title),
                         status: safelyParse(req, 'body.format', parseAsNumber, existingBreak.status),
-                        lastUpdated: currentDate.toISO(),
+                        lastUpdated: new Date(currentDate.toISO()),
                         format: safelyParse(req, 'body.format', parseAsNumber, existingBreak.format),
                         sport: safelyParse(req, 'body.sport', parseAsString, existingBreak.sport),
                         league: safelyParse(req, 'body.league', parseAsString, existingBreak.league),

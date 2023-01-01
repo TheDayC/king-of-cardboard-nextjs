@@ -25,8 +25,8 @@ async function addProductType(req: NextApiRequest, res: NextApiResponse): Promis
             await productTypesCollection.insertOne({
                 title: safelyParse(req, 'body.title', parseAsString, null),
                 slug,
-                created: currentDate.toISO(),
-                lastUpdated: currentDate.toISO(),
+                created: new Date(currentDate.toISO()),
+                lastUpdated: new Date(currentDate.toISO()),
             });
 
             res.status(201).end();

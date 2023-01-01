@@ -16,8 +16,8 @@ async function addSport(req: NextApiRequest, res: NextApiResponse): Promise<void
 
             await sportsCollection.insertOne({
                 title: safelyParse(req, 'body.title', parseAsString, null),
-                created: currentDate.toISO(),
-                lastUpdated: currentDate.toISO(),
+                created: new Date(currentDate.toISO()),
+                lastUpdated: new Date(currentDate.toISO()),
                 image: safelyParse(req, 'body.image', parseAsString, null),
                 leagues: safelyParse(req, 'body.leagues', parseAsArrayOfStrings, []),
             });

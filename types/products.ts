@@ -36,3 +36,14 @@ export interface PriceHistory {
     timestamp: string;
     price: number;
 }
+
+export interface ProductFacets {
+    baseball: Product[];
+    basketball: Product[];
+    football: Product[];
+    soccer: Product[];
+    ufc: Product[];
+    wrestling: Product[];
+    pokemon: Product[];
+    other: Product[];
+}
