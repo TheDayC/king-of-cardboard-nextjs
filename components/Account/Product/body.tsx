@@ -133,7 +133,9 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
         timestamp,
         price: prices[0],
     }));
-    const [repeaterItems, setRepeaterItems] = useState<Record<string, string | number>[]>(newRepeaterItems);
+    const [repeaterItems, setRepeaterItems] = useState<Record<string, string | number>[]>(
+        newRepeaterItems.length > 0 ? newRepeaterItems : [...newRepeaterItems, defaultRepeateritem]
+    );
     const [currentContent, setCurrentContent] = useState<string | undefined>(existingContent);
 
     // Errors
