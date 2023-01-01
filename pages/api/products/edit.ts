@@ -57,7 +57,6 @@ async function editProduct(req: NextApiRequest, res: NextApiResponse): Promise<v
 
             res.status(204).end();
         } catch (err: unknown) {
-            console.log('🚀 ~ file: edit.ts:61 ~ editProduct ~ err', err);
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);
 
             res.status(status).json(errorHandler(err, defaultErr));

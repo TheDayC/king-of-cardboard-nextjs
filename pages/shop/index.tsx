@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Document } from '@contentful/rich-text-types';
@@ -13,7 +13,7 @@ import Content from '../../components/Content';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
 import { Category, Configuration, SortOption, StockStatus } from '../../enums/products';
 import { Product } from '../../types/products';
-import { listProducts } from '../../utils/account/products';
+import { listProductRows, listProducts } from '../../utils/account/products';
 import {
     fetchProductRows,
     fetchProducts,
@@ -21,7 +21,6 @@ import {
     setProductsAndCount,
 } from '../../store/slices/products';
 import selector from './selector';
-import { DEFAULT_STOCK_STATUSES, PRODUCT_INTERESTS } from '../../utils/constants';
 
 const LIMIT = 4;
 const SKIP = 0;
@@ -31,31 +30,21 @@ const CONFIGURATIONS: Configuration[] = [];
 export const getServerSideProps: GetServerSideProps = async () => {
     const { content } = await getPageBySlug('shop', '');
 
-    let allProducts: Product[] = [];
-    let totalCount = 0;
-
-    for (const interest of PRODUCT_INTERESTS) {
-        const { products: tempProducts, count: tempCount } = await listProducts(
-            LIMIT,
-            SKIP,
-            true,
-            CATEGORIES,
-            CONFIGURATIONS,
-            [interest],
-            DEFAULT_STOCK_STATUSES,
-            '',
-            SortOption.DateAddedDesc
-        );
-
-        allProducts = [...allProducts, ...tempProducts];
-        totalCount = totalCount + tempCount;
-    }
+    const productFacets = await listProductRows(LIMIT, SKIP, true);
 
     return {
         props: {
             content,
-            allProducts,
-            totalCount,
+            allProducts: [
+                ...productFacets.baseball,
+                ...productFacets.basketball,
+                ...productFacets.football,
+                ...productFacets.soccer,
+                ...productFacets.ufc,
+                ...productFacets.wrestling,
+                ...productFacets.pokemon,
+                ...productFacets.other,
+            ],
         },
     };
 };
@@ -63,67 +52,45 @@ export const getServerSideProps: GetServerSideProps = async () => {
 interface ShopProps {
     content: Document | null;
     allProducts: Product[];
-    totalCount: number;
 }
 
-export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount }) => {
+export const ShopPage: React.FC<ShopProps> = ({ content, allProducts }) => {
     const dispatch = useDispatch();
-    const { shouldShowRows, searchTerm, sortOption, hasSearchTerm } = useSelector(selector);
-    const shouldFetchRows = shouldShowRows && !hasSearchTerm;
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const { shouldShowRows, sortOption, hasSearchTerm, hasNonDefaultSortOption, searchTerm } = useSelector(selector);
+    const shouldFetchRows = shouldShowRows && !hasSearchTerm && !hasNonDefaultSortOption;
 
+    // On page load set the server side fetched products
     useEffect(() => {
+        if (!setIsInitialLoad) return;
+
         dispatch(setIsLoadingProducts(true));
 
-        // Reset the shop.
+        // Reset the filters for the shop to show a default state.
         dispatch(resetFilters());
 
         // Update the shop products.
         dispatch(
             setProductsAndCount({
                 products: allProducts,
-                count: totalCount,
+                count: 0,
             })
         );
-    }, [dispatch, allProducts, totalCount]);
+        setIsInitialLoad(false);
+    }, [dispatch, allProducts]);
 
-    const debouncedFetchProductRows = debounce(async () => {
-        dispatch(fetchProductRows({ limit: 4, skip: 0 }));
-    }, 700);
-
-    const debouncedFetchProducts = debounce(async () => {
-        dispatch(fetchProducts({ limit: 8, skip: 0 }));
-    }, 700);
-
-    // If the search term or sorty updates then fetch the products.
-    /* useEffect(() => {
-        dispatch(setIsLoadingProducts(true));
-
-        if (shouldShowRows) {
-            debouncedFetchProductRows();
-        } else {
-            debouncedFetchProducts();
-        }
-    }, [dispatch, searchTerm, sortOption, shouldShowRows]);
-    
+    // If the search term is changed then fetch products.
     useEffect(() => {
-        dispatch(setIsLoadingProducts(true));
+        if (isInitialLoad) return;
 
-        if (shouldShowRows) {
-            debouncedFetchProductRows();
-        } else {
-            debouncedFetchProducts();
-        }
-    }, [dispatch, sortOption, shouldShowRows]);
-    
-    useEffect(() => {
         dispatch(setIsLoadingProducts(true));
 
         if (shouldFetchRows) {
-            debouncedFetchProductRows();
+            dispatch(fetchProductRows({ limit: 4, skip: 0 }));
         } else {
-            debouncedFetchProducts();
+            dispatch(fetchProducts({ limit: 8, skip: 0 }));
         }
-    }, [dispatch, searchTerm, shouldFetchRows]); */
+    }, [dispatch, shouldFetchRows, sortOption, searchTerm]);
 
     return (
         <PageWrapper

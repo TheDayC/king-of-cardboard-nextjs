@@ -1,4 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
+import { SortOption } from '../../enums/products';
 
 import { selectFiltersData } from '../../store/state/selectors';
 
@@ -8,6 +9,7 @@ const selector = createSelector([selectFiltersData], (filters) => ({
     searchTerm: filters.searchTerm,
     sortOption: filters.sortOption,
     hasSearchTerm: filters.searchTerm.length > 0,
+    hasNonDefaultSortOption: filters.sortOption !== SortOption.DateAddedDesc,
 }));
 
 export default selector;

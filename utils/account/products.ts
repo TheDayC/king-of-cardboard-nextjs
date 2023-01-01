@@ -7,6 +7,7 @@ import { errorHandler } from '../../middleware/errors';
 import { ListProducts, Product, ProductFacets } from '../../types/products';
 import { parseAsNumber, safelyParse } from '../parsers';
 import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
+import Sort from '../../components/Shop/Filters/Sort';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
@@ -82,7 +83,6 @@ export async function listProductRows(limit: number, skip: number, isServer: boo
                 headers,
             }
         );
-        console.log('🚀 ~ file: products.ts:89 ~ res', res);
 
         return res.data;
     } catch (error: unknown) {

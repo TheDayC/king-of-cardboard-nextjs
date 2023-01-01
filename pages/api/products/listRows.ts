@@ -60,7 +60,6 @@ async function listRows(req: NextApiRequest, res: NextApiResponse): Promise<void
 
             res.status(200).json(productList[0]);
         } catch (err: unknown) {
-            console.log('🚀 ~ file: listRows.ts:65 ~ listRows ~ err', err);
             const status = safelyParse(err, 'response.status', parseAsNumber, 500);
 
             res.status(status).json(errorHandler(err, defaultErr));

@@ -43,7 +43,6 @@ export const fetchProductRows = createAsyncThunk(
         const { limit, skip } = data;
 
         const productFacets = await listProductRows(limit, skip);
-        console.log('🚀 ~ file: products.ts:49 ~ productFacets', productFacets);
 
         return {
             products: [

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BiSearchAlt } from 'react-icons/bi';
 import { debounce } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,10 +9,19 @@ import selector from './selector';
 export const SearchBar: React.FC = () => {
     const dispatch = useDispatch();
     const { searchTerm } = useSelector(selector);
+    const [currentTerm, setCurrentTerm] = useState(searchTerm);
+
+    const debouncedSetCurrentTerm = debounce(async (value: string) => {
+        setCurrentTerm(value);
+    }, 300);
 
     const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(setSearchTerm(e.target.value));
+        debouncedSetCurrentTerm(e.target.value);
     };
+
+    useEffect(() => {
+        dispatch(setSearchTerm(currentTerm));
+    }, [currentTerm]);
 
     return (
         <div className="form-control inline-block">
@@ -25,7 +34,7 @@ export const SearchBar: React.FC = () => {
                     placeholder="Search for a product..."
                     className="input input-md input-bordered grow"
                     onChange={handleOnChange}
-                    value={searchTerm}
+                    defaultValue={searchTerm}
                 />
             </label>
         </div>
