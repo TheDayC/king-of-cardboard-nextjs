@@ -69,6 +69,7 @@ interface OrderHistoryPageProps {
 }
 
 export const OrderHistoryPage: React.FC<OrderHistoryPageProps> = ({ initialOrders, initialCount }) => {
+    console.log('🚀 ~ file: index.tsx:72 ~ initialOrders', initialOrders);
     const { data: session } = useSession();
     const [orders, setOrders] = useState<Order[]>(initialOrders);
     const [totalOrders, setTotalOrders] = useState(initialCount);
