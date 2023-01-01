@@ -2,11 +2,11 @@ import React from 'react';
 import { GetServerSideProps } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 
-import AccountWrapper from '../../../components/AccountWrapper';
-import { authOptions } from '../../api/auth/[...nextauth]';
-import { parseAsRole, safelyParse } from '../../../utils/parsers';
-import { Roles } from '../../../enums/auth';
-import ProductBody from '../../../components/Account/Product/body';
+import AccountWrapper from '../../../../components/AccountWrapper';
+import { authOptions } from '../../../api/auth/[...nextauth]';
+import { parseAsRole, safelyParse } from '../../../../utils/parsers';
+import { Roles } from '../../../../enums/auth';
+import ProductBody from '../../../../components/Account/Product/body';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const session = await unstable_getServerSession(req, res, authOptions);
