@@ -19,7 +19,12 @@ import LatestProductRows from '../../components/Shop/LatestProductRows';
 import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
 import { Product } from '../../types/products';
 import { listProducts } from '../../utils/account/products';
-import { setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
+import {
+    fetchProductRows,
+    fetchProducts,
+    setIsLoadingProducts,
+    setProductsAndCount,
+} from '../../store/slices/products';
 import selector from './selector';
 
 const LIMIT = 4;
@@ -143,7 +148,7 @@ interface ShopProps {
 
 export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount }) => {
     const dispatch = useDispatch();
-    const { shouldShowRows, searchTerm /* sortOption */ } = useSelector(selector);
+    const { shouldShowRows, searchTerm, sortOption } = useSelector(selector);
     const hasSearchTerm = searchTerm.length > 0;
 
     useEffect(() => {
@@ -170,10 +175,15 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount
     }, [dispatch, allProducts, totalCount]);
 
     // If the search term or sorty updates then fetch the products.
-    /* useEffect(() => {
+    useEffect(() => {
         dispatch(setIsLoadingProducts(true));
-        dispatch(fetchProducts({ limit: LIMIT, skip: 0 }));
-    }, [dispatch, searchTerm, sortOption]); */
+
+        if (shouldShowRows && !hasSearchTerm) {
+            dispatch(fetchProductRows({ limit: 4, skip: 0 }));
+        } else {
+            dispatch(fetchProducts({ limit: 8, skip: 0 }));
+        }
+    }, [dispatch, searchTerm, sortOption, shouldShowRows, hasSearchTerm]);
 
     return (
         <PageWrapper
