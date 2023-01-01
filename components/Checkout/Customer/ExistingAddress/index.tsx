@@ -51,7 +51,7 @@ const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping }) => {
                     >
                         <div className="flex flex-col cursor-pointer p-6 border border-solid border-base-200 justify-center items-center w-full rounded-md shadow-md h-full">
                             <MdAddCircleOutline className="mb-2 text-2xl" />
-                            <p>No saved addresses available, add one?</p>
+                            <p className="text-md text-center">No saved addresses available, add one?</p>
                         </div>
                     </Link>
                 </div>
