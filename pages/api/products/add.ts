@@ -32,8 +32,8 @@ async function addProduct(req: NextApiRequest, res: NextApiResponse): Promise<vo
 
             await productsCollection.insertOne({
                 sku,
-                created: currentDate.toISO(),
-                lastUpdated: currentDate.toISO(),
+                created: new Date(currentDate.toISO()),
+                lastUpdated: new Date(currentDate.toISO()),
                 userId: new ObjectId(safelyParse(req, 'body.userId', parseAsString, '')),
                 title: safelyParse(req, 'body.title', parseAsString, null),
                 slug: safelyParse(req, 'body.slug', parseAsString, null),

@@ -16,8 +16,8 @@ async function addTeam(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
             await teamsCollection.insertOne({
                 title: safelyParse(req, 'body.title', parseAsString, null),
-                created: currentDate.toISO(),
-                lastUpdated: currentDate.toISO(),
+                created: new Date(currentDate.toISO()),
+                lastUpdated: new Date(currentDate.toISO()),
                 image: safelyParse(req, 'body.image', parseAsString, null),
             });
 

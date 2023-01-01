@@ -29,8 +29,7 @@ async function editProductType(req: NextApiRequest, res: NextApiResponse): Promi
                     $set: {
                         title: safelyParse(req, 'body.title', parseAsString, existingProductType.title),
                         slug: safelyParse(req, 'body.slug', parseAsString, existingProductType.slug),
-                        created: existingProductType.created,
-                        lastUpdated: currentDate.toISO(),
+                        lastUpdated: new Date(currentDate.toISO()),
                     },
                 }
             );

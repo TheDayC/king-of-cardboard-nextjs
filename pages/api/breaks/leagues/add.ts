@@ -16,8 +16,8 @@ async function addLeague(req: NextApiRequest, res: NextApiResponse): Promise<voi
 
             await leaguesCollection.insertOne({
                 title: safelyParse(req, 'body.title', parseAsString, null),
-                created: currentDate.toISO(),
-                lastUpdated: currentDate.toISO(),
+                created: new Date(currentDate.toISO()),
+                lastUpdated: new Date(currentDate.toISO()),
                 image: safelyParse(req, 'body.image', parseAsString, null),
             });
 

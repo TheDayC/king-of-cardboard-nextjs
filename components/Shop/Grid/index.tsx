@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ceil, divide } from 'lodash';
 
 import selector from './selector';
@@ -8,17 +8,20 @@ import ProductCard from './ProductCard';
 import Skeleton from './skeleton';
 import NoProducts from './NoProducts';
 import { getPrettyPrice } from '../../../utils/account/products';
+import { fetchProducts } from '../../../store/slices/products';
 
-const PER_PAGE = 8;
+const LIMIT = 8;
 
 export const Grid: React.FC = () => {
+    const dispatch = useDispatch();
     const { products, productsTotal, isLoadingProducts } = useSelector(selector);
     const [currentPage, setCurrentPage] = useState(0);
-    const productPageCount = ceil(divide(productsTotal, PER_PAGE));
+    const productPageCount = ceil(divide(productsTotal, LIMIT));
 
     // Handle the page number and set it in local state.
-    const handlePageNumber = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
+    const handlePageNumber = (nextPage: number) => {
+        setCurrentPage(nextPage);
+        dispatch(fetchProducts({ limit: LIMIT, skip: LIMIT * nextPage }));
     };
 
     if (isLoadingProducts) {

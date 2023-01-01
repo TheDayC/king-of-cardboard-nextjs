@@ -34,8 +34,7 @@ async function editAddress(req: NextApiRequest, res: NextApiResponse): Promise<v
                 { _id: new ObjectId(id) },
                 {
                     $set: {
-                        created: existing.created,
-                        lastUpdated: currentDate.toISO(),
+                        lastUpdated: new Date(currentDate.toISO()),
                         userId: new ObjectId(safelyParse(req, 'body.userId', parseAsString, existing.userId)),
                         title: safelyParse(req, 'body.title', parseAsString, existing.title),
                         lineOne: safelyParse(req, 'body.lineOne', parseAsString, existing.lineOne),

@@ -35,8 +35,7 @@ async function editProduct(req: NextApiRequest, res: NextApiResponse): Promise<v
                 {
                     $set: {
                         sku: safelyParse(req, 'body.sku', parseAsString, existingProduct.sku),
-                        created: existingProduct.created,
-                        lastUpdated: currentDate.toISO(),
+                        lastUpdated: new Date(currentDate.toISO()),
                         userId: new ObjectId(safelyParse(req, 'body.userId', parseAsString, existingProduct.userId)),
                         title: safelyParse(req, 'body.title', parseAsString, existingProduct.title),
                         slug: safelyParse(req, 'body.slug', parseAsString, existingProduct.slug),

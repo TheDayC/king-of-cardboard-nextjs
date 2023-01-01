@@ -4,7 +4,7 @@ import { MdOutlineCatchingPokemon } from 'react-icons/md';
 import { upperCase, upperFirst } from 'lodash';
 
 import { ProductType } from '../enums/shop';
-import { Interest } from '../enums/products';
+import { Interest, StockStatus } from '../enums/products';
 
 export const shopSubMenu = [
     {
@@ -61,3 +61,5 @@ export const PRODUCT_INTERESTS = [
     Interest.Pokemon,
     Interest.Other,
 ];
+
+export const DEFAULT_STOCK_STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.Import, StockStatus.PreOrder];

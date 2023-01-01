@@ -16,8 +16,8 @@ async function addAddress(req: NextApiRequest, res: NextApiResponse): Promise<vo
             const currentDate = DateTime.now().setZone('Europe/London');
 
             await collection.insertOne({
-                created: currentDate.toISO(),
-                lastUpdated: currentDate.toISO(),
+                created: new Date(currentDate.toISO()),
+                lastUpdated: new Date(currentDate.toISO()),
                 userId: new ObjectId(safelyParse(req, 'body.userId', parseAsString, '')),
                 title: safelyParse(req, 'body.title', parseAsString, ''),
                 lineOne: safelyParse(req, 'body.lineOne', parseAsString, ''),

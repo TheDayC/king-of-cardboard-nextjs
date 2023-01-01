@@ -4,7 +4,7 @@ import { HYDRATE } from 'next-redux-wrapper';
 import { AppState } from '..';
 import { Interest, SortOption } from '../../enums/products';
 import { ListProducts, Product } from '../../types/products';
-import { listProducts } from '../../utils/account/products';
+import { listProductRows, listProducts } from '../../utils/account/products';
 import { PRODUCT_INTERESTS } from '../../utils/constants';
 import productsInitialState from '../state/products';
 import { AppStateShape } from '../types/state';
@@ -39,34 +39,23 @@ export const fetchProducts = createAsyncThunk(
 
 export const fetchProductRows = createAsyncThunk(
     'products/fetchProductRows',
-    async (data: ProductsThunkInput, { getState }): Promise<ListProducts> => {
+    async (data: ProductsThunkInput): Promise<ListProducts> => {
         const { limit, skip } = data;
-        const state = getState() as AppStateShape;
-        const { categories, configurations, stockStatus, searchTerm, sortOption } = state.filters;
 
-        let allProducts: Product[] = [];
-        let totalCount = 0;
-
-        for (const interest of PRODUCT_INTERESTS) {
-            const { products: tempProducts, count: tempCount } = await listProducts(
-                limit,
-                skip,
-                false,
-                categories,
-                configurations,
-                [interest],
-                stockStatus,
-                searchTerm,
-                sortOption
-            );
-
-            allProducts = [...allProducts, ...tempProducts];
-            totalCount = totalCount + tempCount;
-        }
+        const productFacets = await listProductRows(limit, skip);
 
         return {
-            products: allProducts,
-            count: totalCount,
+            products: [
+                ...productFacets.baseball,
+                ...productFacets.basketball,
+                ...productFacets.football,
+                ...productFacets.soccer,
+                ...productFacets.ufc,
+                ...productFacets.wrestling,
+                ...productFacets.pokemon,
+                ...productFacets.other,
+            ],
+            count: 0,
         };
     }
 );

@@ -3,6 +3,8 @@ import { uniq } from 'lodash';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
+import { SortOption } from '../../enums/products';
+import { DEFAULT_STOCK_STATUSES } from '../../utils/constants';
 import filtersInitialState from '../state/filters';
 
 const hydrate = createAction<AppState>(HYDRATE);
@@ -23,6 +25,12 @@ const filtersSlice = createSlice({
         addStockStatus(state, action) {
             state.stockStatus = uniq([...state.stockStatus, action.payload]);
         },
+        setSearchTerm(state, action) {
+            state.searchTerm = action.payload;
+        },
+        setSortOption(state, action) {
+            state.sortOption = action.payload;
+        },
         setStaticPageInterest(state, action) {
             state.interests = uniq([...state.interests, action.payload]);
         },
@@ -38,23 +46,13 @@ const filtersSlice = createSlice({
         removeStockStatus(state, action) {
             state.stockStatus = state.stockStatus.filter((status) => status !== action.payload);
         },
-        removeAllCategories(state) {
+        resetFilters(state) {
             state.categories = [];
-        },
-        removeAllConfigurations(state) {
             state.configurations = [];
-        },
-        removeAllInterests(state) {
             state.interests = [];
-        },
-        removeAllStockStatuses(state) {
-            state.stockStatus = [];
-        },
-        setSearchTerm(state, action) {
-            state.searchTerm = action.payload;
-        },
-        setSortOption(state, action) {
-            state.sortOption = action.payload;
+            state.stockStatus = DEFAULT_STOCK_STATUSES;
+            state.searchTerm = '';
+            state.sortOption = SortOption.DateAddedDesc;
         },
     },
     extraReducers: (builder) => {
@@ -73,13 +71,10 @@ export const {
     removeConfiguration,
     removeInterest,
     setStaticPageInterest,
-    removeAllCategories,
-    removeAllConfigurations,
-    removeAllInterests,
     addStockStatus,
     removeStockStatus,
-    removeAllStockStatuses,
     setSearchTerm,
     setSortOption,
+    resetFilters,
 } = filtersSlice.actions;
 export default filtersSlice.reducer;
