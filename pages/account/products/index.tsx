@@ -34,8 +34,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 
     return {
         props: {
-            initialProducts: products,
-            initialTotalProducts: count,
+            initialProducts: products || [],
+            initialTotalProducts: count || 0,
         },
     };
 };
