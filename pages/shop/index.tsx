@@ -170,10 +170,10 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount
     }, [dispatch, allProducts, totalCount]);
 
     // If the search term or sorty updates then fetch the products.
-    useEffect(() => {
+    /* useEffect(() => {
         dispatch(setIsLoadingProducts(true));
-        dispatch(fetchProducts({ limit: 8, skip: 0 }));
-    }, [dispatch, searchTerm, sortOption]);
+        dispatch(fetchProducts({ limit: LIMIT, skip: 0 }));
+    }, [dispatch, searchTerm, sortOption]); */
 
     return (
         <PageWrapper
