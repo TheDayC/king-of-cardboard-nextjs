@@ -1,27 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { GiCrownCoin } from 'react-icons/gi';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 import selector from './selector';
-import { fetchGiftCard } from '../../../store/slices/account';
+import { fetchCoins } from '../../../store/slices/account';
+import { parseAsString, safelyParse } from '../../../utils/parsers';
 
 interface RewardsProps {
-    emailAddress: string | null;
     fullWidth: boolean;
 }
 
-export const Rewards: React.FC<RewardsProps> = ({ emailAddress, fullWidth }) => {
-    const { accessToken, balance } = useSelector(selector);
+export const Rewards: React.FC<RewardsProps> = ({ fullWidth }) => {
+    const { coins } = useSelector(selector);
+    const { data: session } = useSession();
     const dispatch = useDispatch();
-    const [shouldFetch, setShouldFetch] = useState(true);
+    const userId = safelyParse(session, 'user.id', parseAsString, null);
 
     useEffect(() => {
-        if (shouldFetch && accessToken && emailAddress) {
-            setShouldFetch(false);
-            dispatch(fetchGiftCard({ accessToken, emailAddress }));
+        if (userId) {
+            dispatch(fetchCoins(userId));
         }
-    }, [accessToken, emailAddress, shouldFetch, dispatch]);
+    }, [userId, dispatch]);
 
     return (
         <Link href="/account/achievements" passHref>
@@ -30,7 +31,7 @@ export const Rewards: React.FC<RewardsProps> = ({ emailAddress, fullWidth }) => 
                     fullWidth ? ' w-full' : ''
                 }`}
             >
-                <p>{balance} coins</p>
+                <p>{coins} coins</p>
                 <GiCrownCoin className="text-primary text-3xl ml-2" />
             </div>
         </Link>

@@ -1,5 +1,4 @@
 import React from 'react';
-import { useStore } from 'react-redux';
 import type { AppProps } from 'next/app';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Elements } from '@stripe/react-stripe-js';
@@ -7,18 +6,28 @@ import { loadStripe } from '@stripe/stripe-js';
 import { SessionProvider } from 'next-auth/react';
 import Script from 'next/script';
 import Cookies from 'js-cookie';
+import { Provider } from 'react-redux';
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+
+import 'react-quill/dist/quill.snow.css';
+import '../styles/globals.css';
 
 import { wrapper } from '../store';
-import '../styles/globals.css';
-import OrderAndTokenProvider from '../context/OrderAndTokenProvider';
 import Drawer from '../components/Drawer';
 import Alert from '../components/Alert';
 
 // Called outside of the render to only create once.
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
 
-const MyApp: React.FC<AppProps> = ({ Component, pageProps: { session, ...pageProps } }) => {
-    const store = useStore();
+// PayPal setup options
+const paypalOptions = {
+    'client-id': process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '',
+    currency: 'GBP',
+    intent: 'capture',
+};
+
+const MyApp: React.FC<AppProps> = ({ Component, ...rest }) => {
+    const { store, props } = wrapper.useWrappedStore(rest);
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -26,23 +35,24 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps: { session, ...pagePro
     const cookieConsent = Boolean(Cookies.get('cookieConsent'));
 
     return (
-        <PersistGate persistor={persistor} loading={<div>Loading</div>}>
-            <SessionProvider session={session}>
-                <OrderAndTokenProvider>
+        <Provider store={store}>
+            <PersistGate persistor={persistor} loading={<div>Loading</div>}>
+                <SessionProvider session={props.pageProps.session}>
                     <Elements stripe={stripePromise}>
-                        <Drawer>
-                            {/* Global Site Tag (gtag.js) - Google Analytics */}
-                            {cookieConsent && (
-                                <React.Fragment>
-                                    <Script
-                                        strategy="afterInteractive"
-                                        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
-                                    />
-                                    <Script
-                                        id="gtag-init"
-                                        strategy="afterInteractive"
-                                        dangerouslySetInnerHTML={{
-                                            __html: `
+                        <PayPalScriptProvider options={paypalOptions}>
+                            <Drawer>
+                                {/* Global Site Tag (gtag.js) - Google Analytics */}
+                                {cookieConsent && (
+                                    <React.Fragment>
+                                        <Script
+                                            strategy="afterInteractive"
+                                            src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
+                                        />
+                                        <Script
+                                            id="gtag-init"
+                                            strategy="afterInteractive"
+                                            dangerouslySetInnerHTML={{
+                                                __html: `
                                                 window.dataLayer = window.dataLayer || [];
                                                 function gtag(){dataLayer.push(arguments);}
                                                 gtag('js', new Date());
@@ -50,15 +60,15 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps: { session, ...pagePro
                                                 page_path: window.location.pathname,
                                                 });
                                             `,
-                                        }}
-                                    />
-                                </React.Fragment>
-                            )}
-                            <Script
-                                id="facebook-pixel-script"
-                                strategy="afterInteractive"
-                                dangerouslySetInnerHTML={{
-                                    __html: `
+                                            }}
+                                        />
+                                    </React.Fragment>
+                                )}
+                                <Script
+                                    id="facebook-pixel-script"
+                                    strategy="afterInteractive"
+                                    dangerouslySetInnerHTML={{
+                                        __html: `
                                         !function(f,b,e,v,n,t,s)
   {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
   n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -70,16 +80,17 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps: { session, ...pagePro
   fbq('init', ${process.env.NEXT_PUBLIC_FB_PIXEL_ID});
   fbq('track', 'PageView');
                                     `,
-                                }}
-                            />
-                            <Component {...pageProps} />
-                            <Alert />
-                        </Drawer>
+                                    }}
+                                />
+                                <Component {...props.pageProps} />
+                                <Alert />
+                            </Drawer>
+                        </PayPalScriptProvider>
                     </Elements>
-                </OrderAndTokenProvider>
-            </SessionProvider>
-        </PersistGate>
+                </SessionProvider>
+            </PersistGate>
+        </Provider>
     );
 };
 
-export default wrapper.withRedux(MyApp);
+export default MyApp;

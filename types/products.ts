@@ -1,89 +1,38 @@
-import { Document } from '@contentful/rich-text-types';
-
-import { SkuInventory } from './commerce';
-import { ImageCollection, ImageItem } from './contentful';
+import { Category, Configuration, Interest, StockStatus } from '../enums/products';
 
 export interface Product {
-    id: string;
-    name: string;
+    _id: string;
+    sku: string;
+    created: string;
+    lastUpdated: string;
+    userId: string;
+    title: string;
     slug: string;
-    sku_code: string;
-    description: Document[] | null;
-    types: string[];
-    categories: string[];
-    images: ImageItem[];
-    cardImage: ImageItem;
-    tags: string[];
-    amount: string;
-    compare_amount: string;
+    content: string;
+    mainImage: string;
+    gallery: string[] | null;
+    category: Category;
+    interest: Interest;
+    configuration: Configuration;
+    stockStatus: StockStatus;
+    quantity: number;
+    price: number;
+    salePrice: number;
+    priceHistory: PriceHistory[];
+    isInfinite: boolean;
 }
 
-export interface SingleProduct {
-    id: string;
-    name: string;
-    slug: string;
-    sku_code: string;
-    description: Document[] | null;
-    types: string[];
-    categories: string[];
-    images: ImageCollection;
-    cardImage: ImageItem;
-    tags: string[];
-    amount: string;
-    compare_amount: string;
-    inventory: SkuInventory;
-    skuOptions: SkuOptions[];
-}
-
-interface SkuOptions {
-    id: string;
-    name: string;
-    amount: string;
-    description: string;
-}
-
-export interface ProductsWithCount {
-    products: ShallowProduct[];
+export interface ListProducts {
+    products: Product[];
     count: number;
 }
 
-export interface ContentfulProduct {
-    name: string;
-    slug: string;
-    productLink: string;
-    description: string | null;
-    types: string[];
-    categories: string[];
-    imageCollection: ImageCollection;
-    cardImage: ImageItem;
-    tags: string[];
+export interface SelectOptions {
+    key: string;
+    value: string | number;
 }
 
-export interface ContentfulProductShort {
-    name: string;
-    slug: string;
-    productLink: string;
-    types: string[];
-    categories: string[];
-    cardImage: ImageItem;
-}
-
-export interface CartImage extends ImageItem {
-    sku_code: string;
-}
-
-export interface SavedSkuOptions {
-    id: string;
-    name: string;
-    amount: string;
-    quantity: number;
-}
-
-export interface ShallowProduct {
-    name: string;
-    image: ImageItem;
-    tags: string[];
-    amount: string;
-    compareAmount: string;
-    slug: string;
+export interface PriceHistory {
+    timestamp: string;
+    price: number;
 }

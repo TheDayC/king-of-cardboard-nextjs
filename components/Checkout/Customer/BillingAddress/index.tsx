@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { UseFormRegister, FieldValues, UseFormSetValue } from 'react-hook-form';
+import React from 'react';
+import { UseFormRegister, FieldValues } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
 import { POSTCODE_PATTERN } from '../../../../regex';
@@ -11,60 +11,16 @@ import selector from './selector';
 interface BillingAddressProps {
     register: UseFormRegister<FieldValues>;
     errors: FormErrors;
-    setValue: UseFormSetValue<FieldValues>;
 }
 
-const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors, setValue }) => {
+const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => {
     const { billingAddress } = useSelector(selector);
-    const {
-        line_1: addressLineOne,
-        line_2: addressLineTwo,
-        city,
-        zip_code: postcode,
-        state_code: county,
-        company,
-    } = billingAddress;
+    const { lineOne, lineTwo, city, postcode, county, company } = billingAddress;
 
     const billingLineOneErr = safelyParse(errors, 'billingAddressLineOne.message', parseAsString, null);
     const billingCityErr = safelyParse(errors, 'billingCity.message', parseAsString, null);
     const billingPostcodeErr = safelyParse(errors, 'billingPostcode.message', parseAsString, null);
     const billingCountyErr = safelyParse(errors, 'billingCounty.message', parseAsString, null);
-
-    useEffect(() => {
-        if (addressLineOne) {
-            setValue('billingAddressLineOne', addressLineOne);
-        }
-    }, [addressLineOne, setValue]);
-
-    useEffect(() => {
-        if (addressLineTwo) {
-            setValue('billingAddressLineTwo', addressLineTwo);
-        }
-    }, [addressLineTwo, setValue]);
-
-    useEffect(() => {
-        if (city) {
-            setValue('billingCity', city);
-        }
-    }, [city, setValue]);
-
-    useEffect(() => {
-        if (postcode) {
-            setValue('billingPostcode', postcode);
-        }
-    }, [postcode, setValue]);
-
-    useEffect(() => {
-        if (county) {
-            setValue('billingCounty', county);
-        }
-    }, [county, setValue]);
-
-    useEffect(() => {
-        if (company) {
-            setValue('billingCompany', company);
-        }
-    }, [company, setValue]);
 
     return (
         <div className="grid grid-cols-1 gap-2">
@@ -79,6 +35,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors, setVa
                         required: { value: true, message: 'Address line one is required' },
                     })}
                     className={`input input-md input-bordered${billingLineOneErr ? ' input-error' : ''}`}
+                    defaultValue={lineOne}
                 />
                 {billingLineOneErr && (
                     <label className="label">
@@ -95,6 +52,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors, setVa
                     placeholder="Address Line Two"
                     {...register('billingAddressLineTwo')}
                     className="input input-md input-bordered"
+                    defaultValue={lineTwo}
                 />
             </div>
             <div className="form-control">
@@ -106,6 +64,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors, setVa
                     placeholder="Company"
                     {...register('billingCompany')}
                     className="input input-md input-bordered"
+                    defaultValue={company}
                 />
             </div>
             <div className="form-control">
@@ -119,6 +78,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors, setVa
                         required: { value: true, message: 'City is required.' },
                     })}
                     className={`input input-md input-bordered${billingCityErr ? ' input-error' : ''}`}
+                    defaultValue={city}
                 />
                 {billingCityErr && (
                     <label className="label">
@@ -141,6 +101,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors, setVa
                         },
                     })}
                     className={`input input-md input-bordered${billingPostcodeErr ? ' input-error' : ''}`}
+                    defaultValue={postcode}
                 />
                 {billingPostcodeErr && (
                     <label className="label">
@@ -159,6 +120,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors, setVa
                         required: { value: true, message: 'County is required' },
                     })}
                     className={`input input-md input-bordered${billingCountyErr ? ' input-error' : ''}`}
+                    defaultValue={county}
                 />
                 {billingCountyErr && (
                     <label className="label">

@@ -1,12 +1,10 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectGlobalData, selectCartData, selectCheckoutData } from '../../../../../store/state/selectors';
+import { selectCheckoutData } from '../../../../../store/state/selectors';
 
-const selector = createSelector([selectGlobalData, selectCartData, selectCheckoutData], (global, cart, checkout) => ({
-    accessToken: global.accessToken,
-    orderId: cart.orderId,
-    cloneBillingAddressId: checkout.cloneBillingAddressId,
-    cloneShippingAddressId: checkout.cloneShippingAddressId,
+const selector = createSelector([selectCheckoutData], (checkout) => ({
+    existingBillingAddressId: checkout.existingBillingAddressId,
+    existingShippingAddressId: checkout.existingShippingAddressId,
 }));
 
 export default selector;

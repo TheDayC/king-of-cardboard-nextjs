@@ -1,93 +1,108 @@
 import React from 'react';
 import { DateTime } from 'luxon';
 import { IoLocationSharp } from 'react-icons/io5';
+import { BsBoxSeam, BsCalendarCheck, BsCalendarDate } from 'react-icons/bs';
 
-import { statusColour, paymentStatusColour, fulfillmentStatusColour, cardLogo } from '../../../../utils/account';
 import {
-    OrderHistoryAddress,
-    OrderHistoryPaymentMethod,
-    OrderHistoryLineItemWithSkuData,
-} from '../../../../types/account';
+    getStatusColor,
+    getPaymentStatusColor,
+    getFulfillmentStatusColor,
+    getStatusTitle,
+    getPaymentStatusTitle,
+    getFulfillmentStatusTitle,
+} from '../../../../utils/account';
 import LineItem from './LineItem';
+import { Status, Payment, Fulfillment } from '../../../../enums/orders';
+import { CartItem } from '../../../../types/cart';
+import { Address } from '../../../../types/checkout';
+import { PaymentMethods } from '../../../../enums/checkout';
+import { getPrettyPrice } from '../../../../utils/account/products';
+import { formatOrderNumber } from '../../../../utils/checkout';
+import Badge from '../../Badge';
 
 interface OrderProps {
-    orderNumber: string | null;
-    status: string;
-    paymentStatus: string;
-    fulfillmentStatus: string;
+    orderNumber: number;
+    orderStatus: Status;
+    paymentStatus: Payment;
+    fulfillmentStatus: Fulfillment;
+    subTotal: number;
+    shipping: number;
+    discount: number;
+    total: number;
+    created: string;
+    lastUpdated: string;
+    items: CartItem[];
     itemCount: number;
-    shipmentsCount: number;
-    subTotal: string;
-    shippingTotal: string;
-    discountTotal: string;
-    total: string;
-    placedAt: string;
-    updatedAt: string;
-    lineItems: OrderHistoryLineItemWithSkuData[];
-    shippingAddress: OrderHistoryAddress;
-    billingAddress: OrderHistoryAddress;
-    paymentMethodDetails: OrderHistoryPaymentMethod;
+    shippingAddress: Address;
+    billingAddress: Address;
+    paymentId: string;
+    paymentMethod: PaymentMethods;
 }
 
 export const LongOrder: React.FC<OrderProps> = ({
     orderNumber,
-    status,
+    orderStatus,
     paymentStatus,
     fulfillmentStatus,
-    itemCount,
-    shipmentsCount,
     subTotal,
-    shippingTotal,
-    discountTotal,
+    shipping,
+    discount,
     total,
-    placedAt,
-    updatedAt,
-    lineItems,
+    created,
+    lastUpdated,
+    items,
+    itemCount,
     shippingAddress,
     billingAddress,
-    paymentMethodDetails,
+    /*  paymentId,
+    paymentMethod, */
 }) => {
-    const placedAtDate = DateTime.fromISO(placedAt, { zone: 'Europe/London' });
-    const updatedAtDate = DateTime.fromISO(updatedAt, { zone: 'Europe/London' });
+    const createdDate = DateTime.fromISO(created, { zone: 'Europe/London' });
+    const lastUpdatedDate = DateTime.fromISO(lastUpdated, { zone: 'Europe/London' });
+
+    const statusColor = getStatusColor(orderStatus);
+    const statusTitle = getStatusTitle(orderStatus);
+    const paymentColor = getPaymentStatusColor(paymentStatus);
+    const paymentTitle = getPaymentStatusTitle(paymentStatus);
+    const fulfillmentColor = getFulfillmentStatusColor(fulfillmentStatus);
+    const fulfillmentTitle = getFulfillmentStatusTitle(fulfillmentStatus);
 
     return (
-        <div className="flex w-full flex-col">
-            <h1 className="text-3xl mb-2">{`Order #${orderNumber}`}</h1>
-            <div className="flex flex-row mb-2">
-                <p className="text-xs text-gray-400">Placed on: {placedAtDate.toFormat('MMM dd, y')}</p>
-                <p className="text-xs text-gray-400 ml-2">Updated on: {updatedAtDate.toFormat('MMM dd, y')}</p>
-            </div>
-            <div className="flex flex-row">
-                <p className="text-xs text-gray-400 mr-2">
-                    <b>Items:</b> {itemCount}
+        <div className="flex w-full flex-col space-y-4">
+            <h1 className="text-5xl">Order {formatOrderNumber(orderNumber)}</h1>
+            <div className="flex flex-row items-start justify-start space-x-4">
+                <p className="text-sm text-gray-400">
+                    <BsCalendarDate className="w-5 h-5 inline mr-2 -mt-1" />
+                    Placed on: {createdDate.toFormat('MMM dd, y')}
                 </p>
-                <p className="text-xs text-gray-400">
-                    <b>Shipments:</b> {shipmentsCount}
+                <p className="text-sm text-gray-400">
+                    <BsCalendarCheck className="w-5 h-5 inline mr-2 -mt-1" />
+                    Last updated on: {lastUpdatedDate.toFormat('MMM dd, y')}
+                </p>
+                <p className="text-sm text-gray-400">
+                    <BsBoxSeam className="w-5 h-5 inline mr-2 -mt-1" />
+                    Items: {itemCount}
                 </p>
             </div>
             <div className="divider lightDivider"></div>
-            <div className="flex flex-row w-full">
-                <div className="flex flex-row justify-center items-center">
-                    <h3 className="text-lg mr-2">Order:</h3>
-                    <div className={`rounded-full w-3 h-3 bg-${statusColour(status)}-400 mr-2`}></div>
-                    <p className="capitalize">{status}</p>
+            <div className="flex flex-row w-full space-x-6">
+                <div className="flex flex-row justify-start items-center text-lg space-x-2">
+                    <Badge color={statusColor} />
+                    <h3 className="font-bold">Order:</h3>
+                    <p className="capitalize">{statusTitle}</p>
                 </div>
-                <div className="divider divider-vertical lightDivider"></div>
-                <div className="flex flex-row justify-center items-center">
-                    <h3 className="text-lg mr-2">Payment:</h3>
-                    <div className={`rounded-full w-3 h-3 bg-${paymentStatusColour(paymentStatus)}-400 mr-2`}></div>
-                    <p className="capitalize">{paymentStatus}</p>
+                <div className="flex flex-row justify-start items-center text-lg space-x-2">
+                    <Badge color={paymentColor} />
+                    <h3 className="font-bold">Payment:</h3>
+                    <p className="capitalize">{paymentTitle}</p>
                 </div>
-                <div className="divider divider-vertical lightDivider"></div>
-                <div className="flex flex-row justify-center items-center">
-                    <h3 className="text-lg mr-2">Fulfillment:</h3>
-                    <div
-                        className={`rounded-full w-3 h-3 bg-${fulfillmentStatusColour(fulfillmentStatus)}-400 mr-2`}
-                    ></div>
-                    <p className="capitalize">{fulfillmentStatus}</p>
+                <div className="flex flex-row justify-start items-center mr-0 text-lg space-x-2">
+                    <Badge color={fulfillmentColor} />
+                    <h3 className="font-bold">Fulfillment:</h3>
+                    <p className="capitalize">{fulfillmentTitle}</p>
                 </div>
             </div>
-            {paymentMethodDetails && (
+            {/* paymentMethodDetails && (
                 <React.Fragment>
                     <div className="divider lightDivider"></div>
                     <div className="flex flex-col">
@@ -103,79 +118,71 @@ export const LongOrder: React.FC<OrderProps> = ({
                         </div>
                     </div>
                 </React.Fragment>
-            )}
+            ) */}
             <div className="divider lightDivider"></div>
-            <div className="flex flex-row justify-start items-start w-full">
-                <div className="flex flex-col">
-                    <h4 className="text-2xl mb-4">Billing Address</h4>
+            <div className="flex flex-row justify-start items-start w-full space-x-10">
+                <div className="flex flex-col space-y-4">
+                    <h4 className="text-2xl font-bold">Billing Address</h4>
                     <div className="flex flex-row justify-start align-start space-x-2">
                         <IoLocationSharp className="mt-1 text-accent" />
                         {
                             <div className="text-md">
-                                <p>
-                                    {billingAddress.first_name || ''} {billingAddress.last_name || ''}
-                                </p>
-                                <p>{billingAddress.line_1 || ''}</p>
-                                {billingAddress.line_2 && <p>{billingAddress.line_2}</p>}
-                                <p>{billingAddress.city || ''}</p>
-                                <p>{billingAddress.zip_code || ''}</p>
-                                <p>{billingAddress.state_code || ''}</p>
-                                <p>{billingAddress.phone || ''}</p>
+                                <p>{billingAddress.lineOne}</p>
+                                {billingAddress.lineTwo.length > 0 && <p>{billingAddress.lineTwo}</p>}
+                                <p>{billingAddress.city}</p>
+                                <p>{billingAddress.postcode}</p>
+                                <p>{billingAddress.county}</p>
                             </div>
                         }
                     </div>
                 </div>
-                <div className="divider divider-vertical lightDivider"></div>
-                <div className="flex flex-col">
-                    <h4 className="text-2xl mb-4">Shipping Address</h4>
+                <div className="flex flex-col space-y-4">
+                    <h4 className="text-2xl font-bold">Shipping Address</h4>
                     <div className="flex flex-row justify-start align-start space-x-2">
                         <IoLocationSharp className="mt-1 text-accent" />
                         {
                             <div className="text-md">
-                                <p>
-                                    {shippingAddress.first_name || ''} {shippingAddress.last_name || ''}
-                                </p>
-                                <p>{shippingAddress.line_1 || ''}</p>
-                                {shippingAddress.line_2 && <p>{shippingAddress.line_2}</p>}
-                                <p>{shippingAddress.city || ''}</p>
-                                <p>{shippingAddress.zip_code || ''}</p>
-                                <p>{shippingAddress.state_code || ''}</p>
-                                <p>{shippingAddress.phone || ''}</p>
+                                <p>{shippingAddress.lineOne}</p>
+                                {shippingAddress.lineTwo.length > 0 && <p>{shippingAddress.lineTwo}</p>}
+                                <p>{shippingAddress.city}</p>
+                                <p>{shippingAddress.postcode}</p>
+                                <p>{shippingAddress.county}</p>
                             </div>
                         }
                     </div>
                 </div>
             </div>
             <div className="divider lightDivider"></div>
-            <div className="flex flex-col justify-start items-start w-full">
-                <h3 className="text-2xl mb-4">Items</h3>
-                {lineItems.length > 0 &&
-                    lineItems.map((lineItem) => (
-                        <React.Fragment key={lineItem.lineItemId}>
+            <div className="flex flex-col justify-start items-start w-full space-y-4">
+                <h3 className="text-2xl font-bold">Items</h3>
+                {items.length > 0 &&
+                    items.map((lineItem) => (
+                        <React.Fragment key={lineItem._id}>
                             <LineItem
-                                name={lineItem.name}
-                                imageUrl={lineItem.imageUrl}
-                                skuCode={lineItem.skuCode}
+                                name={lineItem.title}
+                                slug={lineItem.slug}
+                                imageUrl={lineItem.mainImage.url}
+                                skuCode={lineItem.sku}
                                 quantity={lineItem.quantity}
-                                amount={lineItem.amount}
+                                amount={getPrettyPrice(lineItem.price)}
                             />
 
                             <div className="divider lightDivider w-full"></div>
                         </React.Fragment>
                     ))}
             </div>
-            <div className="flex flex-col justify-end items-end">
-                <p className="text-md mb-2">
-                    <b>Shipping:</b> {shippingTotal}
+            <div className="flex flex-col justify-end items-end space-y-4">
+                <p className="text-2xl border-b border-gray-400 pb-4 w-1/4 text-right">
+                    <b>Shipping:</b> {getPrettyPrice(shipping)}
                 </p>
-                <p className="text-md mb-2">
-                    <b>Discount:</b> {discountTotal}
+                <p className="text-2xl border-b border-gray-400 pb-4 w-1/4 text-right">
+                    <b>Discount:</b> {getPrettyPrice(discount)}
                 </p>
-                <p className="text-md mb-4">
-                    <b>Subtotal:</b> {subTotal}
+                <p className="text-2xl border-b border-gray-400 pb-4 w-1/4 text-right">
+                    <b>Subtotal:</b> {getPrettyPrice(subTotal)}
                 </p>
-                <p className="text-3xl">
-                    <b>Total:</b> {total}
+                <p className="text-5xl">
+                    <b>Total:</b> {getPrettyPrice(total)}
                 </p>
             </div>
         </div>

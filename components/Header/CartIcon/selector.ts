@@ -1,11 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectCartData, selectGlobalData } from '../../../store/state/selectors';
+import { selectCartData } from '../../../store/state/selectors';
 
-const selector = createSelector([selectCartData, selectGlobalData], (cart, global) => ({
-    accessToken: global.accessToken,
-    itemCount: cart.itemCount,
-    orderId: cart.orderId,
+const selector = createSelector([selectCartData], (cart) => ({
+    itemCount: cart.items.length,
 }));
 
 export default selector;

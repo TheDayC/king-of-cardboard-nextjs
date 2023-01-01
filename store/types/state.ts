@@ -1,17 +1,18 @@
 import { DateTime } from 'luxon';
+import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
 
-import { Categories, ProductType } from '../../enums/shop';
 import { AlertLevel } from '../../enums/system';
-import { Address, GiftCard, Order, SingleAddress, SingleOrder } from '../../types/account';
+import { AccountAddress } from '../../types/account';
 import { Break, SingleBreak } from '../../types/breaks';
-import { CartItem, UpdateQuantity } from '../../types/cart';
-import { Shipment } from '../../types/checkout';
-import { ShallowImport } from '../../types/imports';
+import { CartItem } from '../../types/cart';
+import { Address, CustomerDetails } from '../../types/checkout';
+import { Order } from '../../types/orders';
 import { ContentfulPage } from '../../types/pages';
-import { Product, ShallowProduct, SingleProduct } from '../../types/products';
+import { Product } from '../../types/products';
 import { SocialMedia } from '../../types/profile';
+import { AccountShippingMethod } from '../../types/shipping';
 
-export interface IAppState {
+export interface AppStateShape {
     global: Global;
     products: ProductsState;
     cart: CartState;
@@ -22,24 +23,16 @@ export interface IAppState {
     pages: PagesState;
     breaks: BreaksState;
     account: AccountState;
-    imports: ImportsState;
 }
 
 export interface CartState {
-    shouldCreateOrder: boolean;
-    shouldUpdateCart: boolean;
-    orderId: string | null;
-    orderNumber: number | null;
-    orderExpiry: string | null;
-    itemCount: number;
     items: CartItem[];
     isUpdatingCart: boolean;
-    subTotal: string;
-    shipping: string;
-    discount: string;
-    total: string;
-    orderHasGiftCard: boolean;
-    updateQuantities: UpdateQuantity[];
+    subTotal: number;
+    shipping: number;
+    discount: number;
+    total: number;
+    shouldUseCoins: boolean;
 }
 
 export interface PaymentMethod {
@@ -49,41 +42,35 @@ export interface PaymentMethod {
 }
 
 export interface Filters {
-    productTypes: ProductType[];
-    categories: Categories[];
+    categories: Category[];
+    interests: Interest[];
+    configurations: Configuration[];
+    stockStatus: StockStatus[];
+    searchTerm: string;
+    sortOption: SortOption.DateAddedDesc;
 }
 
 export interface Global {
     checkoutLoading: boolean;
-    accessToken: string | null;
-    userToken: string | null;
-    userTokenExpiry: string | null;
-    isFetchingToken: boolean;
     userId: string | null;
     expires: string | null;
     hasRejected: boolean;
     sessionEmail: string | null;
-    showNewsBanner: boolean;
     isDrawerOpen: boolean;
 }
 
 export interface Checkout {
     currentStep: number;
     customerDetails: CustomerDetails;
-    billingAddress: CustomerAddress;
-    shippingAddress: CustomerAddress;
-    cloneBillingAddressId: string | null;
-    cloneShippingAddressId: string | null;
+    billingAddress: Address;
+    shippingAddress: Address;
+    existingBillingAddressId: string | null;
+    existingShippingAddressId: string | null;
     isShippingSameAsBilling: boolean;
     paymentMethods: PaymentMethod[];
-    shipments: Shipment[];
-}
-
-export interface CustomerDetails {
-    email: string | null;
-    first_name: string | null;
-    last_name: string | null;
-    phone: string | null;
+    shippingMethods: AccountShippingMethod[];
+    isCheckoutLoading: boolean;
+    chosenShippingMethodId: string | null;
 }
 
 export interface CustomerAddress {
@@ -162,8 +149,8 @@ export interface Confirmation {
     total: string;
     orderNumber: number | null;
     customerDetails: CustomerDetails;
-    billingAddress: CustomerAddress;
-    shippingAddress: CustomerAddress;
+    billingAddress: Address;
+    shippingAddress: Address;
 }
 
 export interface PagesState {
@@ -186,13 +173,13 @@ export interface AccountState {
     socialMedia: SocialMedia;
     balance: number;
     shouldFetchRewards: boolean;
-    giftCard: GiftCard;
+    coins: number;
     orders: Order[];
-    orderPageCount: number;
-    currentOrder: SingleOrder;
-    addresses: Address[];
-    addressPageCount: number;
-    currentAddress: SingleAddress;
+    orderCount: number;
+    currentOrder: Order;
+    addresses: AccountAddress[];
+    addressCount: number;
+    isLoadingAddressBook: boolean;
     isLoadingOrder: boolean;
     isLoadingOrders: boolean;
 }
@@ -208,21 +195,8 @@ export interface CustomAlert {
     timestamp: DateTime;
 }
 
-export interface CommonThunkInput {
-    accessToken: string;
-    orderId: string;
-    isImport?: boolean;
-}
-
 export interface ProductsState {
-    products: ShallowProduct[];
+    products: Product[];
     productsTotal: number;
     isLoadingProducts: boolean;
-    currentProduct: SingleProduct;
-}
-
-export interface ImportsState {
-    imports: ShallowImport[];
-    importsTotal: number;
-    isLoadingImports: boolean;
 }

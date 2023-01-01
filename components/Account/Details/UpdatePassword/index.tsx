@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
-import { useDispatch, useSelector } from 'react-redux';
-import { useSession } from 'next-auth/react';
+//import { useDispatch, useSelector } from 'react-redux';
+//import { useSession } from 'next-auth/react';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
-import selector from './selector';
-import { addError, addSuccess } from '../../../../store/slices/alerts';
-import { updatePassword } from '../../../../utils/account';
+//import { addError, addSuccess } from '../../../../store/slices/alerts';
 import { PASS_PATTERN } from '../../../../regex';
 
 export const UpdatePassword: React.FC = () => {
@@ -19,17 +17,16 @@ export const UpdatePassword: React.FC = () => {
     } = useForm();
     const password = watch('password', ''); // Watch password field for changes.
     const [loading, setLoading] = useState(false);
-    const { data: session } = useSession();
-    const { accessToken: token } = useSelector(selector);
-    const dispatch = useDispatch();
+    //const { data: session } = useSession();
+    //const dispatch = useDispatch();
 
     const hasErrors = Object.keys(errors).length > 0;
     const passwordTypeErr = safelyParse(errors, 'password.type', parseAsString, null);
     const confirmPasswordTypeErr = safelyParse(errors, 'confirmPassword.type', parseAsString, null);
-    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
+    //const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
 
-    const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
-        const { password: newPassword, confirmPassword } = data;
+    const onSubmit: SubmitHandler<FieldValues> = async (/* data: FieldValues */) => {
+        /* const { password: newPassword, confirmPassword } = data;
 
         if (newPassword !== confirmPassword || !emailAddress || !token) return;
 
@@ -41,7 +38,7 @@ export const UpdatePassword: React.FC = () => {
             dispatch(addSuccess('Password updated!'));
         } else {
             dispatch(addError('Failed to update password.'));
-        }
+        } */
 
         setLoading(false);
     };

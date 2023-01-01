@@ -2,8 +2,9 @@ import { Document } from '@contentful/rich-text-types';
 
 export interface ContentfulPage {
     title: string;
-    content: Document;
-    sliderCollection: SliderCollection;
+    slug: string;
+    content: Document | null;
+    sliderCollection: SliderCollection | null;
     hero: Hero[];
 }
 
@@ -29,13 +30,6 @@ export interface Hero {
     image_url?: string;
     link?: string;
     link_title?: string;
-}
-
-export interface ServerSideRedirectProps {
-    redirect: {
-        permanent: boolean;
-        destination: string;
-    };
 }
 
 export interface PageWithHero {

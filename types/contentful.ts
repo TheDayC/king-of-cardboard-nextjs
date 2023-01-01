@@ -7,9 +7,3 @@ export interface ImageItem {
 export interface ImageCollection {
     items: ImageItem[];
 }
-
-export interface Repeater {
-    id: string;
-    key: string;
-    value: string;
-}

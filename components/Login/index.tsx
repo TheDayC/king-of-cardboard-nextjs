@@ -5,18 +5,17 @@ import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 
 import Credentials from './credentials';
-// import Google from './google';
-// import Twitch from './twitch';
+import Google from './google';
+//import Twitch from './twitch';
 import { parseAsString, safelyParse } from '../../utils/parsers';
-import { addSuccess, addWarning } from '../../store/slices/alerts';
+import { addWarning } from '../../store/slices/alerts';
 
 interface LoginProps {
     providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider>;
-    showRegistrationSuccess: boolean;
     shouldRedirect: boolean;
 }
 
-export const Login: React.FC<LoginProps> = ({ providers, showRegistrationSuccess, shouldRedirect }) => {
+export const Login: React.FC<LoginProps> = ({ providers, shouldRedirect }) => {
     const { credentials } = providers;
     const router = useRouter();
     const dispatch = useDispatch();
@@ -28,18 +27,12 @@ export const Login: React.FC<LoginProps> = ({ providers, showRegistrationSuccess
         }
     }, [error, dispatch]);
 
-    useEffect(() => {
-        if (showRegistrationSuccess) {
-            dispatch(addSuccess('Registration Successful!'));
-        }
-    }, [showRegistrationSuccess, dispatch]);
-
     return (
         <React.Fragment>
             {credentials && <Credentials shouldRedirect={shouldRedirect} />}
-            {/* <div className="divider">OR</div>
+            <div className="divider">OR</div>
             <Google />
-            <Twitch /> */}
+            {/* <Twitch /> */}
         </React.Fragment>
     );
 };

@@ -1,6 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
-import { IAppState } from '../types/state';
+import { AppStateShape } from '../types/state';
 import globalReducer from './global';
 import productsReducer from './products';
 import cartReducer from './cart';
@@ -11,9 +11,8 @@ import confirmationReducer from './confirmation';
 import pagesReducer from './pages';
 import breaksReducer from './breaks';
 import accountReducer from './account';
-import importsReducer from './imports';
 
-const rootReducer = combineReducers<IAppState>({
+const rootReducer = combineReducers<AppStateShape>({
     global: globalReducer,
     products: productsReducer,
     cart: cartReducer,
@@ -24,7 +23,6 @@ const rootReducer = combineReducers<IAppState>({
     pages: pagesReducer,
     breaks: breaksReducer,
     account: accountReducer,
-    imports: importsReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

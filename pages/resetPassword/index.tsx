@@ -1,25 +1,24 @@
 import React, { useState } from 'react';
-import Error from 'next/error';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { RiLockPasswordLine, RiLockPasswordFill } from 'react-icons/ri';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import { getSession } from 'next-auth/react';
+import { BiRefresh } from 'react-icons/bi';
+import { unstable_getServerSession } from 'next-auth';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { addError, addSuccess } from '../../store/slices/alerts';
-import selector from './selector';
 import { resetPassword } from '../../utils/account';
 import PageWrapper from '../../components/PageWrapper';
 import { PASS_PATTERN } from '../../regex';
+import { authOptions } from '../api/auth/[...nextauth]';
+import { isBoolean } from '../../utils/typeguards';
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await getSession(context);
-    const resetToken = safelyParse(context, 'query.token', parseAsString, null);
-    const emailAddress = safelyParse(context, 'query.email', parseAsString, null);
-    const id = safelyParse(context, 'query.id', parseAsString, null);
-    const errorCode = resetToken && id ? false : 404;
+export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+    const session = await unstable_getServerSession(req, res, authOptions);
+    const token = safelyParse(query, 'token', parseAsString, null);
+    const email = safelyParse(query, 'email', parseAsString, null);
 
     // If the user is already signed in then we can trust them so we can send them to the details page.
     if (session) {
@@ -31,21 +30,27 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         };
     }
 
+    if (!token || !email) {
+        return {
+            redirect: {
+                permanent: false,
+                destination: '/login',
+            },
+        };
+    }
+
     // If we're signed in then decide whether we should show the page or 404.
     return {
-        props: { errorCode, resetToken, emailAddress, id },
+        props: { token, email },
     };
 };
 
 interface ResetPasswordPageProps {
-    errorCode: number | boolean;
-    resetToken: string | null;
-    emailAddress: string | null;
-    id: string | null;
+    token: string;
+    email: string;
 }
 
-export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode, resetToken, emailAddress, id }) => {
-    const { accessToken } = useSelector(selector);
+export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ token, email }) => {
     const {
         register,
         handleSubmit,
@@ -65,41 +70,37 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
     const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         const { password: newPassword, confirmPassword } = data;
 
-        if (newPassword !== confirmPassword || !emailAddress || !accessToken || !resetToken || !id) return;
+        if (newPassword !== confirmPassword || !email || !token) return;
 
         setLoading(true);
 
-        const res = await resetPassword(accessToken, password, id, resetToken);
+        const res = await resetPassword(token, password, email);
 
-        if (res) {
+        if (isBoolean(res)) {
             dispatch(addSuccess('Password reset!'));
 
             setLoading(false);
             router.push('/login');
         } else {
-            dispatch(addError('Failed to reset password, please contact support.'));
+            dispatch(addError(res.description));
         }
 
         setLoading(false);
     };
 
-    // Show error page if a code is provided.
-    if (errorCode && typeof errorCode === 'number') {
-        return <Error statusCode={errorCode} />;
-    }
-
     return (
         <PageWrapper title="Reset Password - King of Cardboard" description="Reset your account password.">
             <div className="flex flex-col w-full justify-start items-center">
                 <h1 className="text-xl mb-4">
-                    Reset password for <b>{emailAddress}</b>
+                    Reset password for <b>{email}</b>
                 </h1>
                 <div className="text-md text-error">
-                    <p>Passwords must:</p>
+                    <p>Passwords must contain at least:</p>
                     <ul className="list-disc list-inside pl-6 mb-2">
-                        <li>Contain at least 8 characters</li>
-                        <li>Contain at least 1 number</li>
-                        <li>Contain at least 1 special character</li>
+                        <li>8 characters</li>
+                        <li>1 capital letter</li>
+                        <li>1 number</li>
+                        <li>1 special character</li>
                     </ul>
                 </div>
 
@@ -183,7 +184,12 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ errorCode,
                                     hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'
                                 }${loading ? ' loading btn-square' : ''}`}
                             >
-                                {loading ? '' : 'Update Password'}
+                                {!loading && (
+                                    <React.Fragment>
+                                        Update Password
+                                        <BiRefresh className="inline-block w-6 h-6 ml-2" />
+                                    </React.Fragment>
+                                )}
                             </button>
                         </div>
                     </form>

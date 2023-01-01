@@ -1,6 +1,5 @@
 import { Document } from '@contentful/rich-text-types';
 
-import { SkuInventory } from './commerce';
 import { ImageCollection, ImageItem } from './contentful';
 
 export interface ContentfulBreak {
@@ -52,11 +51,6 @@ export interface SingleBreak {
     vodLink: string;
 }
 
-export interface BreaksWithCount {
-    breaks: Break[];
-    count: number;
-}
-
 export interface BreakSlotsCollection {
     items: ContentfulBreakSlot[];
 }
@@ -75,11 +69,6 @@ export interface BreakSlot {
     amount: string;
     compare_amount: string;
     isAvailable: boolean;
-}
-
-export interface BreakTypeItem {
-    title: string;
-    link: string;
 }
 
 export interface BreakStatuses {

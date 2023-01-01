@@ -4,30 +4,23 @@ import { useRouter } from 'next/router';
 import { AiOutlineUser } from 'react-icons/ai';
 import { MdOutlineMailOutline } from 'react-icons/md';
 import { RiLockPasswordLine } from 'react-icons/ri';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Link from 'next/link';
+import { signIn } from 'next-auth/react';
 
-import { Tabs } from '../../enums/auth';
 import { parseAsString, safelyParse } from '../../utils/parsers';
-import selector from './selector';
-import { addError } from '../../store/slices/alerts';
-import { registerUser } from '../../utils/auth';
+import { addError, addSuccess } from '../../store/slices/alerts';
 import { EMAIL_PATTERN, PASS_PATTERN, USER_PATTERN } from '../../regex';
 
 interface Submit {
-    username?: string;
+    displayName?: string;
     emailAddress?: string;
     confirmEmailAddress?: string;
     password?: string;
     confirmPassword?: string;
 }
 
-interface RegisterProps {
-    setCurrentTab(tab: Tabs): void;
-    setRegSuccess(regSuccess: boolean): void;
-}
-
-export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess }) => {
+export const Register: React.FC = () => {
     const {
         register,
         handleSubmit,
@@ -37,10 +30,9 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
     const [responseError, setResponseError] = useState<string | null>(null);
     const hasErrors = Object.keys(errors).length > 0;
     const router = useRouter();
-    const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
 
-    const usernameTypeErr = safelyParse(errors, 'username.type', parseAsString, null);
+    const displayNameTypeErr = safelyParse(errors, 'displayName.type', parseAsString, null);
     const emailTypeErr = safelyParse(errors, 'emailAddress.type', parseAsString, null);
     const passwordTypeErr = safelyParse(errors, 'password.type', parseAsString, null);
     const agreedErr = safelyParse(errors, 'agreed.message', parseAsString, null);
@@ -48,18 +40,17 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
 
     const onSubmit = async (data: Submit) => {
         setLoading(true);
-        const { username, emailAddress, password } = data;
+        const { displayName, emailAddress, password } = data;
 
-        if (!accessToken || !username || !emailAddress || !password) return;
+        if (!displayName || !emailAddress || !password) return;
 
-        const res = await registerUser(accessToken, username, emailAddress, password);
+        const hasSignedIn = await signIn('credentials', { displayName, emailAddress, password, redirect: false });
 
-        if (res) {
-            setCurrentTab(Tabs.Login);
-            setRegSuccess(true);
+        if (hasSignedIn) {
+            dispatch(addSuccess('Registration Successful!'));
+            //await signIn('credentials', { displayName, emailAddress, password, redirect: false });
         } else {
             setResponseError('Details are invalid or user already exists.');
-            setRegSuccess(false);
         }
 
         setLoading(false);
@@ -84,20 +75,20 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
                     </span>
                     <input
                         type="text"
-                        placeholder="Username"
-                        {...register('username', {
-                            required: { value: true, message: 'Username required' },
+                        placeholder="Display name"
+                        {...register('displayName', {
+                            required: { value: true, message: 'Display name required' },
                             pattern: USER_PATTERN,
                         })}
-                        className={`input input-md input-bordered w-full${usernameTypeErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered w-full${displayNameTypeErr ? ' input-error' : ''}`}
                     />
                 </label>
-                {usernameTypeErr === 'required' && (
+                {displayNameTypeErr === 'required' && (
                     <label className="label">
                         <span className="label-text-alt text-error">Username required.</span>
                     </label>
                 )}
-                {usernameTypeErr === 'pattern' && (
+                {displayNameTypeErr === 'pattern' && (
                     <label className="label">
                         <span className="label-text-alt text-error">
                             Usernames must be a min of 4 characters and only contain letters and numbers.
@@ -177,7 +168,7 @@ export const Register: React.FC<RegisterProps> = ({ setCurrentTab, setRegSuccess
 
                     <input
                         type="checkbox"
-                        className={`checkbox rounded-sm w-10 ml-2`}
+                        className="checkbox rounded-sm w-6 h-6 ml-2"
                         {...register('agreed', {
                             required: {
                                 value: true,

@@ -181,6 +181,7 @@
             }
 
             p.subTotal,
+            p.discount,
             p.shipping,
             p.total {
                 margin-bottom: 16px;
@@ -599,6 +600,14 @@
                                                             <td align="right">
                                                                 <p class="subTotal">
                                                                     Subtotal: <span>{{subTotal}}</span>
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td align="right">
+                                                                <p class="discount">
+                                                                    Discount: <span>{{discount}}</span>
                                                                 </p>
                                                             </td>
                                                         </tr>

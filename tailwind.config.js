@@ -9,6 +9,11 @@ module.exports = {
             fontFamily: {
                 sans: ['Inter', ...defaultTheme.fontFamily.sans],
             },
+            boxShadow: {
+                sm: '0 1px 2px 0 rgb(0 0 0 / 0.5)',
+                md: '0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.3)',
+                xl: '0 20px 25px -5px rgba(0, 0, 0, 0.4)',
+            },
         },
         backgroundColor: (theme) => ({
             ...theme('colors'),
@@ -29,8 +34,8 @@ module.exports = {
                     primary: '#f6c467',
                     'primary-focus': '#c59d52',
                     'primary-content': '#ffffff',
-                    secondary: '#60c7f2',
-                    'secondary-focus': '#438ba9',
+                    secondary: '#119fda',
+                    'secondary-focus': '#0c77a3',
                     'secondary-content': '#ffffff',
                     accent: '#C365F6',
                     'accent-focus': '#8947ac',

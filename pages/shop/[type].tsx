@@ -5,56 +5,50 @@ import { useDispatch } from 'react-redux';
 import { Document } from '@contentful/rich-text-types';
 
 import PageWrapper from '../../components/PageWrapper';
-import { parseAsProductType, safelyParse } from '../../utils/parsers';
+import { parseAsString, safelyParse } from '../../utils/parsers';
 import Filters from '../../components/Shop/Filters';
 import Grid from '../../components/Shop/Grid';
-import { removeAllProductTypes, setUrlProductType } from '../../store/slices/filters';
-import { createToken } from '../../utils/auth';
-import { CreateToken } from '../../types/commerce';
-import { setAccessToken, setExpires } from '../../store/slices/global';
-import { pageBySlug } from '../../utils/pages';
+import {
+    setStaticPageInterest,
+    removeAllInterests,
+    addCategory,
+    addInterest,
+    addStockStatus,
+} from '../../store/slices/filters';
+import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
-import { Categories, FilterMode, ProductType } from '../../enums/shop';
-import { getProducts } from '../../utils/products';
-import { Product } from '../../types/products';
 import { setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
+import { getCategoryByInterest, getInterestBySlug, listProducts } from '../../utils/account/products';
+import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
+import { Product } from '../../types/products';
 
 const LIMIT = 8;
 const SKIP = 0;
-const CATEGORIES: Categories[] = [];
-const DEFAULT_PRODUCTS: Product[] = [];
+const CONFIGURATIONS: Configuration[] = [];
+const STOCK_STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.Import, StockStatus.PreOrder];
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const accessToken = await createToken();
-
-    if (!accessToken.token) {
-        return {
-            props: {
-                errorCode: 500,
-                shopType: null,
-                accessToken,
-                content: null,
-                products: DEFAULT_PRODUCTS,
-                count: 0,
-            },
-        };
-    }
-
-    const shopType = safelyParse(context, 'query.type', parseAsProductType, null);
-    const content = await pageBySlug(shopType, 'shop/');
-    const { products, count } = await getProducts(
-        accessToken.token,
+    const staticInterest = safelyParse(context, 'query.type', parseAsString, '');
+    const interest = getInterestBySlug(staticInterest);
+    const category = getCategoryByInterest(interest);
+    const { content } = await getPageBySlug(staticInterest, 'shop/');
+    const { products, count } = await listProducts(
         LIMIT,
         SKIP,
-        CATEGORIES,
-        shopType ? [shopType] : []
+        [category],
+        CONFIGURATIONS,
+        [interest],
+        STOCK_STATUSES,
+        '',
+        SortOption.DateAddedDesc,
+        true
     );
 
     return {
         props: {
-            errorCode: !shopType ? 404 : null,
-            shopType,
-            accessToken,
+            interest,
+            category,
+            staticInterest,
             content,
             products,
             count,
@@ -63,35 +57,36 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 interface ShopTypeProps {
-    shopType: ProductType | null;
-    accessToken: CreateToken;
-    content: Document[] | null;
+    interest: Interest;
+    staticInterest: string;
+    category: Category;
+    content: Document | null;
     products: Product[] | null;
     count: number;
 }
 
-export const ShopType: React.FC<ShopTypeProps> = ({ shopType, accessToken, content, products, count }) => {
+export const ShopType: React.FC<ShopTypeProps> = ({ interest, staticInterest, category, content, products, count }) => {
     const dispatch = useDispatch();
-    const shouldUpperCase = shopType === ProductType.UFC;
-    const caseChangedShopType = shouldUpperCase ? upperCase(shopType || '') : startCase(shopType || '');
+    const shouldUpperCase = interest === Interest.UFC;
+    const caseChangedShopType = shouldUpperCase ? upperCase(staticInterest) : startCase(staticInterest);
 
     useEffect(() => {
-        if (shopType) {
-            dispatch(setUrlProductType(shopType));
+        if (interest) {
+            dispatch(setStaticPageInterest(interest));
         } else {
-            dispatch(removeAllProductTypes());
+            dispatch(removeAllInterests());
         }
-    }, [dispatch, shopType]);
-
-    useEffect(() => {
-        dispatch(setAccessToken(accessToken.token));
-        dispatch(setExpires(accessToken.expires));
-    }, [dispatch, accessToken]);
+    }, [dispatch, interest]);
 
     useEffect(() => {
         dispatch(setIsLoadingProducts(true));
+        dispatch(addCategory(category));
+        dispatch(addInterest(interest));
+        STOCK_STATUSES.forEach((status) => {
+            dispatch(addStockStatus(status));
+        });
         dispatch(setProductsAndCount({ products, count }));
-    }, [dispatch, products, count]);
+    }, [dispatch, products, count, category, interest]);
 
     return (
         <PageWrapper
@@ -99,10 +94,10 @@ export const ShopType: React.FC<ShopTypeProps> = ({ shopType, accessToken, conte
             description={`${caseChangedShopType} cards, sealed product and memorabilia.`}
         >
             <div className="flex flex-col w-full relative">
-                {content && <Content content={content} />}
+                {content && <Content content={[content]} />}
                 <div className="flex flex-col w-full relative md:flex-row">
-                    <Filters mode={FilterMode.Products} />
-                    <Grid mode={FilterMode.Products} />
+                    <Filters />
+                    <Grid />
                 </div>
             </div>
         </PageWrapper>

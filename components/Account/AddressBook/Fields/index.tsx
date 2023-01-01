@@ -1,50 +1,42 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useSession } from 'next-auth/react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
+import { BsPlusCircleFill } from 'react-icons/bs';
 
-import selector from './selector';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import { fieldPatternMsgs } from '../../../../utils/checkout';
-import { addAddress, editAddress } from '../../../../utils/account';
 import { addError, addSuccess } from '../../../../store/slices/alerts';
-import { fetchAddresses } from '../../../../store/slices/account';
-import { NAME_PATTERN, PHONE_PATTERN, POSTCODE_PATTERN } from '../../../../regex';
+import { POSTCODE_PATTERN } from '../../../../regex';
+import { addAddress, editAddress } from '../../../../utils/account/address';
 
 interface FieldProps {
     id?: string;
     addressId?: string;
-    name?: string;
-    addressLineOne?: string;
-    addressLineTwo?: string;
+    title?: string;
+    lineOne?: string;
+    lineTwo?: string;
     city?: string;
     company?: string;
     county?: string;
-    firstName?: string;
-    lastName?: string;
-    phone?: string;
     postcode?: string;
 }
 
 export const Fields: React.FC<FieldProps> = ({
     id,
     addressId,
-    name,
-    addressLineOne,
-    addressLineTwo,
+    title,
+    lineOne,
+    lineTwo,
     city,
     company,
     county,
-    firstName,
-    lastName,
-    phone,
     postcode,
 }) => {
-    const { accessToken } = useSelector(selector);
     const { data: session } = useSession();
     const dispatch = useDispatch();
-    const emailAddress = safelyParse(session, 'user.email', parseAsString, null);
+    const userId = safelyParse(session, 'user.id', parseAsString, null);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const {
@@ -52,64 +44,64 @@ export const Fields: React.FC<FieldProps> = ({
         handleSubmit,
         formState: { errors },
         reset,
-        setValue,
-    } = useForm();
+    } = useForm({
+        defaultValues: {
+            title: title ? title : '',
+            lineOne: lineOne ? lineOne : '',
+            lineTwo: lineTwo ? lineTwo : '',
+            city: city ? city : '',
+            company: company ? company : '',
+            county: county ? county : '',
+            postcode: postcode ? postcode : '',
+        },
+    });
     const hasErrors = Object.keys(errors).length > 0;
 
     const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
-        if (hasErrors || !emailAddress || !accessToken) {
+        if (hasErrors || !userId) {
             return;
         }
 
-        const { name, addressLineOne, addressLineTwo, city, company, county, firstName, lastName, phone, postcode } =
-            data;
+        const { title, lineOne, lineTwo, city, company, county, postcode } = data;
 
         setIsLoading(true);
 
         if (addressId) {
-            const res = await editAddress(
-                accessToken,
-                id || '',
-                addressId,
-                name,
-                addressLineOne,
-                addressLineTwo,
+            const hasEdited = await editAddress({
+                id,
+                title,
+                lineOne,
+                lineTwo,
                 city,
+                postcode,
                 company,
                 county,
-                firstName,
-                lastName,
-                phone,
-                postcode
-            );
+                country: 'GB',
+                userId,
+            });
 
-            if (res) {
+            if (hasEdited) {
                 dispatch(addSuccess('Address updated!'));
-                dispatch(fetchAddresses(accessToken));
                 router.push('/account/address-book');
             } else {
                 dispatch(addError('Failed to update address.'));
             }
         } else {
-            const res = await addAddress(
-                accessToken,
-                emailAddress,
-                name,
-                addressLineOne,
-                addressLineTwo,
+            const hasAdded = await addAddress({
+                title,
+                lineOne,
+                lineTwo,
                 city,
+                postcode,
                 company,
                 county,
-                firstName,
-                lastName,
-                phone,
-                postcode
-            );
+                country: 'GB',
+                userId,
+            });
 
-            if (res) {
+            if (hasAdded) {
                 dispatch(addSuccess('Address successfullly added!'));
                 reset();
-                dispatch(fetchAddresses(accessToken));
                 router.push('/account/address-book');
             } else {
                 dispatch(addError('Unable to add address.'));
@@ -119,185 +111,43 @@ export const Fields: React.FC<FieldProps> = ({
         setIsLoading(false);
     };
 
-    const nameErr = safelyParse(errors, 'name.message', parseAsString, null);
-    const firstNameErr = safelyParse(errors, 'firstName.message', parseAsString, null);
-    const lastNameErr = safelyParse(errors, 'lastName.message', parseAsString, null);
-    const mobileErr = safelyParse(errors, 'phone.message', parseAsString, null);
+    const titleErr = safelyParse(errors, 'title.message', parseAsString, null);
     const lineOneErr = safelyParse(errors, 'addressLineOne.message', parseAsString, null);
     const cityErr = safelyParse(errors, 'city.message', parseAsString, null);
     const postcodeErr = safelyParse(errors, 'postcode.message', parseAsString, null);
     const countyErr = safelyParse(errors, 'county.message', parseAsString, null);
     const btnText = addressId ? 'Save Address' : 'Add Address';
 
-    useEffect(() => {
-        if (name) {
-            setValue('name', name);
-        }
-    }, [name, setValue]);
-
-    useEffect(() => {
-        if (firstName) {
-            setValue('firstName', firstName);
-        }
-    }, [firstName, setValue]);
-
-    useEffect(() => {
-        if (lastName) {
-            setValue('lastName', lastName);
-        }
-    }, [lastName, setValue]);
-
-    useEffect(() => {
-        if (addressLineOne) {
-            setValue('addressLineOne', addressLineOne);
-        }
-    }, [addressLineOne, setValue]);
-
-    useEffect(() => {
-        if (addressLineTwo) {
-            setValue('addressLineTwo', addressLineTwo);
-        }
-    }, [addressLineTwo, setValue]);
-
-    useEffect(() => {
-        if (city) {
-            setValue('city', city);
-        }
-    }, [city, setValue]);
-
-    useEffect(() => {
-        if (postcode) {
-            setValue('postcode', postcode);
-        }
-    }, [postcode, setValue]);
-
-    useEffect(() => {
-        if (county) {
-            setValue('county', county);
-        }
-    }, [county, setValue]);
-
-    useEffect(() => {
-        if (company) {
-            setValue('company', company);
-        }
-    }, [company, setValue]);
-
-    useEffect(() => {
-        if (phone) {
-            setValue('phone', phone);
-        }
-    }, [phone, setValue]);
-
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full">
-            <div className="flex flex-col md:flex-row relative w-full">
-                <div className="card p-0 rounded-md w-full mb-4 md:w-1/2 md:p-4 md:mb-0">
-                    <h3 className="card-title">Personal Details</h3>
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex flex-col relative w-full space-y-10">
+                <div className="block">
+                    <h3 className="card-title">Title</h3>
                     <div className="grid grid-cols-1 gap-2">
                         <div className="form-control">
                             <label className="label">
-                                <span className="label-text">Address Name</span>
+                                <span className="label-text">Address Title</span>
                                 <span className="label-text-alt hidden lg:inline">
                                     This is what we&apos;ll call your address.
                                 </span>
                             </label>
                             <input
                                 type="text"
-                                placeholder="Address Name"
-                                {...register('name', {
+                                placeholder="Add address title..."
+                                {...register('title', {
                                     required: { value: true, message: 'Required' },
                                 })}
-                                className={`input input-md input-bordered${nameErr ? ' input-error' : ''}`}
+                                className={`input input-md input-bordered${titleErr ? ' input-error' : ''}`}
                             />
-                            {nameErr && (
+                            {titleErr && (
                                 <label className="label">
-                                    <span className="label-text-alt text-error">{nameErr}</span>
-                                </label>
-                            )}
-                        </div>
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">First Name</span>
-                            </label>
-                            <input
-                                type="text"
-                                placeholder="First Name"
-                                {...register('firstName', {
-                                    required: { value: true, message: 'First name is required' },
-                                    pattern: {
-                                        value: NAME_PATTERN,
-                                        message: fieldPatternMsgs('firstName'),
-                                    },
-                                })}
-                                className={`input input-md input-bordered${firstNameErr ? ' input-error' : ''}`}
-                            />
-                            {firstNameErr && (
-                                <label className="label">
-                                    <span className="label-text-alt text-error">{firstNameErr}</span>
-                                </label>
-                            )}
-                        </div>
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Last Name</span>
-                            </label>
-                            <input
-                                type="text"
-                                placeholder="Last Name"
-                                {...register('lastName', {
-                                    required: { value: true, message: 'Last name required' },
-                                    pattern: {
-                                        value: NAME_PATTERN,
-                                        message: fieldPatternMsgs('lastName'),
-                                    },
-                                })}
-                                className={`input input-md input-bordered${lastNameErr ? ' input-error' : ''}`}
-                            />
-                            {lastNameErr && (
-                                <label className="label">
-                                    <span className="label-text-alt text-error">{lastNameErr}</span>
-                                </label>
-                            )}
-                        </div>
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Company</span>
-                            </label>
-                            <input
-                                type="text"
-                                placeholder="Company"
-                                {...register('company', {
-                                    required: false,
-                                })}
-                                className="input input-md input-bordered"
-                            />
-                        </div>
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Mobile No.</span>
-                            </label>
-                            <input
-                                type="tel"
-                                placeholder="Mobile No."
-                                {...register('phone', {
-                                    required: { value: true, message: 'Mobile is required' },
-                                    pattern: {
-                                        value: PHONE_PATTERN,
-                                        message: fieldPatternMsgs('mobile'),
-                                    },
-                                })}
-                                className={`input input-md input-bordered${mobileErr ? ' input-error' : ''}`}
-                            />
-                            {mobileErr && (
-                                <label className="label">
-                                    <span className="label-text-alt text-error">{mobileErr}</span>
+                                    <span className="label-text-alt text-error">{titleErr}</span>
                                 </label>
                             )}
                         </div>
                     </div>
                 </div>
-                <div className="card p-2 md:p-4 rounded-md w-full md:w-1/2">
+                <div className="block">
                     <h3 className="card-title">Address Details</h3>
                     <div className="grid grid-cols-1 gap-2">
                         <div className="form-control">
@@ -306,8 +156,8 @@ export const Fields: React.FC<FieldProps> = ({
                             </label>
                             <input
                                 type="text"
-                                placeholder="Address Line One"
-                                {...register('addressLineOne', {
+                                placeholder="Add the first line of your address..."
+                                {...register('lineOne', {
                                     required: { value: true, message: 'Address line one required' },
                                 })}
                                 className={`input input-md input-bordered${lineOneErr ? ' input-error' : ''}`}
@@ -324,8 +174,8 @@ export const Fields: React.FC<FieldProps> = ({
                             </label>
                             <input
                                 type="text"
-                                placeholder="Address Line Two"
-                                {...register('addressLineTwo', { required: false })}
+                                placeholder="Add the second line of your address..."
+                                {...register('lineTwo', { required: false })}
                                 className="input input-md input-bordered"
                             />
                         </div>
@@ -335,7 +185,7 @@ export const Fields: React.FC<FieldProps> = ({
                             </label>
                             <input
                                 type="text"
-                                placeholder="City"
+                                placeholder="Add your city..."
                                 {...register('city', {
                                     required: { value: true, message: 'City is required' },
                                 })}
@@ -353,7 +203,7 @@ export const Fields: React.FC<FieldProps> = ({
                             </label>
                             <input
                                 type="text"
-                                placeholder="Postcode"
+                                placeholder="Add your postcode..."
                                 {...register('postcode', {
                                     required: { value: true, message: 'Postcode is required' },
                                     pattern: {
@@ -389,16 +239,17 @@ export const Fields: React.FC<FieldProps> = ({
                         </div>
                     </div>
                 </div>
-            </div>
-            <div className="flex w-full justify-end p-4">
-                <button
-                    type="submit"
-                    className={`btn w-full lg:w-40${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'}${
-                        isLoading ? ' loading btn-square' : ''
-                    }`}
-                >
-                    {isLoading ? '' : btnText}
-                </button>
+                <div className="flex w-full justify-end">
+                    <button
+                        type="submit"
+                        className={`btn lg:${hasErrors ? ' btn-base-200 btn-disabled' : ' btn-primary'}${
+                            isLoading ? ' loading btn-square' : ''
+                        }`}
+                    >
+                        {isLoading ? '' : btnText}
+                        <BsPlusCircleFill className="w-6 h-6 ml-2" />
+                    </button>
+                </div>
             </div>
         </form>
     );

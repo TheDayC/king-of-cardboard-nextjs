@@ -13,8 +13,7 @@ import Rewards from './Rewards';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import NavBar from './Navbar';
 import CartIcon from './CartIcon';
-import NewsBanner from './NewsBanner';
-import { setIsDrawerOpen, setUserId, setUserToken } from '../../store/slices/global';
+import { setIsDrawerOpen, setUserId } from '../../store/slices/global';
 import { Slugs } from '../../enums/account';
 //import IssueBanner from './IssueBanner';
 
@@ -25,10 +24,8 @@ export const Header: React.FC = () => {
     const email = safelyParse(session, 'user.email', parseAsString, null);
     const router = useRouter();
     const slug = safelyParse(router, 'query.slug', parseAsString, null);
-    const orderNumber = safelyParse(router, 'query.orderNumber', parseAsString, null);
 
     const handleLogout = () => {
-        dispatch(setUserToken(null));
         dispatch(setUserId(null));
         signOut();
     };
@@ -39,14 +36,14 @@ export const Header: React.FC = () => {
 
     return (
         <React.Fragment>
-            <div className="navbar shadow-md bg-neutral text-neutral-content">
+            <div className="navbar bg-neutral text-neutral-content border-b-4 border-primary">
                 <div className="navbar-start">
                     <label className="text-2xl px-2 lg:hidden" onClick={handleDrawerClick}>
                         <AiOutlineMenu />
                     </label>
                     <Link href="/" passHref>
                         <div className="h-auto w-44 cursor-pointer lg:block" role="link" data-testid="logo">
-                            <Image src={logo} alt="King of Cardboard Logo Header" title="King of Cardboard" />
+                            <Image src={logo} alt="King of Cardboard Logo Header" title="King of Cardboard" priority />
                         </div>
                     </Link>
                 </div>
@@ -54,7 +51,7 @@ export const Header: React.FC = () => {
                 <div className="navbar-end">
                     {status === 'authenticated' && (
                         <div className="hidden lg:inline-block">
-                            <Rewards emailAddress={email} fullWidth={false} />
+                            <Rewards fullWidth={false} />
                         </div>
                     )}
                     <CartIcon />
@@ -78,25 +75,6 @@ export const Header: React.FC = () => {
                                 className="p-2 shadow menu dropdown-content bg-base-100 rounded-md w-52 text-base-content"
                             >
                                 <li
-                                    className={`${slug === Slugs.Account ? 'bordered' : 'hover-bordered'}`}
-                                    role="menuitem"
-                                >
-                                    <Link href={{ pathname: '/account' }}>Account</Link>
-                                </li>
-                                <li
-                                    className={`${slug === Slugs.Details ? 'bordered' : 'hover-bordered'}`}
-                                    role="menuitem"
-                                >
-                                    <Link
-                                        href={{
-                                            pathname: '/account/[slug]',
-                                            query: { slug: Slugs.Details },
-                                        }}
-                                    >
-                                        Details
-                                    </Link>
-                                </li>
-                                <li
                                     className={`${slug === Slugs.Profile ? 'bordered' : 'hover-bordered'}`}
                                     role="menuitem"
                                 >
@@ -107,47 +85,6 @@ export const Header: React.FC = () => {
                                         }}
                                     >
                                         Profile
-                                    </Link>
-                                </li>
-                                <li
-                                    className={`${slug === Slugs.AddressBook ? 'bordered' : 'hover-bordered'}`}
-                                    role="menuitem"
-                                >
-                                    <Link
-                                        href={{
-                                            pathname: '/account/[slug]',
-                                            query: { slug: Slugs.AddressBook },
-                                        }}
-                                    >
-                                        Address Book
-                                    </Link>
-                                </li>
-                                <li
-                                    className={`${
-                                        slug === Slugs.OrderHistory || orderNumber ? 'bordered' : 'hover-bordered'
-                                    }`}
-                                    role="menuitem"
-                                >
-                                    <Link
-                                        href={{
-                                            pathname: '/account/[slug]',
-                                            query: { slug: Slugs.OrderHistory },
-                                        }}
-                                    >
-                                        Order History
-                                    </Link>
-                                </li>
-                                <li
-                                    className={`${slug === Slugs.Achievements ? 'bordered' : 'hover-bordered'}`}
-                                    role="menuitem"
-                                >
-                                    <Link
-                                        href={{
-                                            pathname: '/account/[slug]',
-                                            query: { slug: Slugs.Achievements },
-                                        }}
-                                    >
-                                        Achievements
                                     </Link>
                                 </li>
                                 <li role="menuitem">
@@ -172,7 +109,6 @@ export const Header: React.FC = () => {
                     )}
                 </div>
             </div>
-            <NewsBanner />
             {/* <IssueBanner /> */}
         </React.Fragment>
     );

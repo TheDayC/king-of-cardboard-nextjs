@@ -1,16 +1,16 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { combinedFilters, FilterTypes } from '../../../../enums/shop';
+import { FilterValue, FilterType } from '../../../../enums/products';
 import { setIsLoadingProducts } from '../../../../store/slices/products';
 
 interface FilterProps {
-    value: combinedFilters;
-    type: FilterTypes;
+    value: FilterValue;
+    type: FilterType;
     label: string;
     checked: boolean;
     icon: JSX.Element;
-    changeFilterState(filter: combinedFilters, filterType: FilterTypes, addFilter: boolean): void;
+    changeFilterState(filter: FilterValue, filterType: FilterType, addFilter: boolean): void;
 }
 
 export const Filter: React.FC<FilterProps> = ({ value, type, label, checked, icon, changeFilterState }) => {

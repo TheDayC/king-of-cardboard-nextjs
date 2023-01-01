@@ -1,13 +1,11 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectBreaksData, selectGlobalData } from '../../../store/state/selectors';
+import { selectBreaksData } from '../../../store/state/selectors';
 
-const selector = createSelector([selectBreaksData, selectGlobalData], (breaks, global) => ({
+const selector = createSelector([selectBreaksData], (breaks) => ({
     breaks: breaks.breaks,
     breaksTotal: breaks.breaksTotal,
-    accessToken: global.accessToken,
     isLoadingBreaks: breaks.isLoadingBreaks,
-    order: breaks.order,
 }));
 
 export default selector;

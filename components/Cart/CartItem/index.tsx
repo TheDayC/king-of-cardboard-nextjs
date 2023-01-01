@@ -1,82 +1,65 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { MdDeleteForever } from 'react-icons/md';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Image from 'next/image';
 import Link from 'next/link';
-import { LineItemOption } from '@commercelayer/sdk';
+import { toNumber } from 'lodash';
 
-import {
-    clearUpdateQuantities,
-    setShouldUpdateCart,
-    setUpdateQuantities,
-    setUpdatingCart,
-} from '../../../store/slices/cart';
-import { removeLineItem } from '../../../utils/commerce';
+import { fetchCartTotals, removeItem, setUpdatingCart, updateCartQty } from '../../../store/slices/cart';
 import { ImageItem } from '../../../types/contentful';
-import selector from './selector';
-import { addError } from '../../../store/slices/alerts';
+import { addSuccess } from '../../../store/slices/alerts';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
+import { gaEvent } from '../../../utils/ga';
 
 interface CartItemProps {
     id: string;
     sku: string;
     name: string;
+    slug: string;
     image: ImageItem;
+    price: number;
+    salePrice: number;
     unitAmount: string;
     totalAmount: string;
     quantity: number;
     stock: number;
-    lineItemOptions: LineItemOption[];
 }
 
 export const CartItem: React.FC<CartItemProps> = ({
     id,
     sku,
     name,
+    slug,
     image,
     unitAmount,
     totalAmount,
     quantity,
     stock,
-    lineItemOptions,
 }) => {
-    const { accessToken } = useSelector(selector);
     const dispatch = useDispatch();
-    const isQuantityAtMax = quantity === stock;
 
-    const handleRemoveItem = useCallback(async () => {
-        if (!accessToken || !id) return;
+    const handleRemoveItem = async () => {
+        if (!id) return;
 
         dispatch(setUpdatingCart(true));
-        const hasDeleted = await removeLineItem(accessToken, id);
-
-        if (hasDeleted) {
-            dispatch(setShouldUpdateCart(true));
-        } else {
-            dispatch(addError('Could not remove this item.'));
-            dispatch(setUpdatingCart(false));
-        }
-    }, [dispatch, accessToken, id]);
+        dispatch(removeItem(id));
+        dispatch(fetchCartTotals());
+        gaEvent('Item removed from cart.', { sku });
+        dispatch(addSuccess('Item removed from cart.'));
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = safelyParse(e, 'target.value', parseAsString, null);
 
         if (value) {
-            const newQty = parseInt(value, 10);
+            const newQty = toNumber(value);
 
-            if (newQty > stock) {
-                dispatch(clearUpdateQuantities());
-                return;
-            }
-
-            if (newQty !== quantity) {
-                dispatch(setUpdateQuantities({ id, quantity: parseInt(value, 10) }));
-            }
+            dispatch(updateCartQty({ id, quantity: newQty <= 0 ? 1 : newQty }));
         }
     };
 
     return (
-        <div className="grid grid-cols-4 lg:grid-cols-6 bg-white p-4 border-b p-4">
+        <div className="grid grid-cols-4 lg:grid-cols-7 bg-white p-4 border-b border-gray-300 p-4">
             <div className="text-error flex flex-row items-center justify-center">
                 <button aria-label="remove item" onClick={handleRemoveItem}>
                     <MdDeleteForever className="text-3xl" />
@@ -85,26 +68,28 @@ export const CartItem: React.FC<CartItemProps> = ({
             <div className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2">
                 <div className="text-error lg:flex lg:flex-row items-center justify-center w-full relative">
                     {image.url.length > 0 && (
-                        <div className="w-20 h-20">
-                            <Image
-                                src={`${image.url}?w=100`}
-                                alt={image.description}
-                                title={image.title}
-                                layout="fill"
-                                objectFit="scale-down"
-                            />
-                        </div>
+                        <Link href={`/product/${slug}`} passHref>
+                            <div className="w-20 h-20 rounded-md overflow-hidden">
+                                <Image
+                                    src={image.url}
+                                    alt={image.description}
+                                    title={image.title}
+                                    width={100}
+                                    height={100}
+                                />
+                            </div>
+                        </Link>
                     )}
                 </div>
                 <div className="flex flex-col justify-center items-center text-center lg:space-x-4">
-                    <Link href={`/product/${sku.toLowerCase()}`} passHref>
+                    <Link href={`/product/${slug}`} passHref>
                         <div className="cursor-pointer">
-                            <h4 className="hidden lg:block text-xs mb-1 font-bold lg:text-md hover:underline">
+                            <h4 className="hidden lg:block text-xs mb-1 font-bold lg:text-lg hover:underline">
                                 {name}
                             </h4>
-                            <p className="hidden lg:block text-xs text-gray-400 mb-4">{sku || ''}</p>
+                            <p className="hidden lg:block text-xs text-gray-400 lg:text-lg">{sku || ''}</p>
 
-                            {lineItemOptions.length > 0 &&
+                            {/* lineItemOptions.length > 0 &&
                                 lineItemOptions.map((option) => (
                                     <p
                                         className="hidden lg:block text-xs text-gray-400 mb-1"
@@ -112,28 +97,26 @@ export const CartItem: React.FC<CartItemProps> = ({
                                     >
                                         Addon: {option.name} - {option.formatted_total_amount}
                                     </p>
-                                ))}
+                                )) */}
                         </div>
                     </Link>
                 </div>
             </div>
-            <div className="hidden lg:flex lg:flex-row items-center justify-center">{unitAmount}</div>
-            <div className="flex flex-row items-center justify-center">
-                {isQuantityAtMax ? (
-                    <p className="px-2 w-full text-center">{quantity}</p>
-                ) : (
-                    <input
-                        type="number"
-                        defaultValue={quantity}
-                        name="quantity"
-                        placeholder="1"
-                        className="input input-md lg:input-sm input-bordered text-center w-14 px-0"
-                        onChange={handleChange}
-                        min={1}
-                    />
-                )}
+            <div className="hidden lg:flex lg:flex-row items-center justify-center lg:text-lg">{unitAmount}</div>
+            <div className="flex flex-row items-center justify-center lg:text-lg">
+                <input
+                    type="number"
+                    defaultValue={quantity}
+                    name="quantity"
+                    placeholder="1"
+                    className="input input-md lg:input-sm input-bordered text-center w-14 px-0"
+                    onChange={handleChange}
+                    min={1}
+                    max={stock}
+                />
             </div>
-            <div className="flex flex-row items-center justify-center font-semibold text-sm lg:text-md">
+            <div className="flex flex-row items-center justify-center text-sm lg:text-lg">{stock}</div>
+            <div className="flex flex-row items-center justify-center font-semibold text-sm lg:text-lg">
                 {totalAmount}
             </div>
         </div>

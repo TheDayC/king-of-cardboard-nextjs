@@ -1,9 +1,5 @@
-export interface ObjectId {
-    $oid: string;
-}
-
 export interface Objective {
-    _id: ObjectId;
+    _id: string;
     name: string;
     min: number;
     max: number;
@@ -15,18 +11,8 @@ export interface Objective {
 }
 
 export interface Achievement {
-    id: ObjectId;
+    id: string;
     current: number;
-}
-
-export interface FetchAchievements {
-    giftCardId: string | null;
-    achievements: Achievement[] | null;
-}
-
-export interface FetchObjectives {
-    objectives: Objective[];
-    count: number;
 }
 
 export interface CategoriesAndTypes {

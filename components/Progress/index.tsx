@@ -13,7 +13,7 @@ export const Progress: React.FC<ProgressProps> = ({ complete, colour, current, m
 
     return (
         <div
-            className="w-full h-6 artboard bg-gray-100 rounded-sm relative overflow-hidden mt-4"
+            className="w-full h-6 artboard bg-gray-100 rounded-md relative overflow-hidden mt-4 border border-gray-300"
             aria-label="progress-bar"
         >
             <span className="absolute inset-0">
@@ -22,9 +22,10 @@ export const Progress: React.FC<ProgressProps> = ({ complete, colour, current, m
                 </div>
             </span>
             <span
-                className={`h-full block rounded-sm bg-${colour}`}
+                className="h-full block"
                 style={{
                     width: percentage,
+                    backgroundColor: colour,
                 }}
             ></span>
         </div>
