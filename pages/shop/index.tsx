@@ -11,9 +11,9 @@ import { resetFilters } from '../../store/slices/filters';
 import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
-import { Category, Configuration, SortOption, StockStatus } from '../../enums/products';
+import { Category, Configuration } from '../../enums/products';
 import { Product } from '../../types/products';
-import { listProductRows, listProducts } from '../../utils/account/products';
+import { listProductRows } from '../../utils/account/products';
 import {
     fetchProductRows,
     fetchProducts,
@@ -24,8 +24,6 @@ import selector from './selector';
 
 const LIMIT = 4;
 const SKIP = 0;
-const CATEGORIES: Category[] = [];
-const CONFIGURATIONS: Configuration[] = [];
 
 export const getServerSideProps: GetServerSideProps = async () => {
     const { content } = await getPageBySlug('shop', '');
