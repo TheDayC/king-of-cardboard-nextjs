@@ -24,13 +24,13 @@ export const fetchProducts = createAsyncThunk(
         return await listProducts(
             limit,
             skip,
+            false,
             categories,
             configurations,
             interests,
             stockStatus,
             searchTerm,
-            sortOption,
-            false
+            sortOption
         );
     }
 );

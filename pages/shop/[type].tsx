@@ -35,13 +35,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const { products, count } = await listProducts(
         LIMIT,
         SKIP,
+        true,
         [category],
         CONFIGURATIONS,
         [interest],
         STOCK_STATUSES,
         '',
-        SortOption.DateAddedDesc,
-        true
+        SortOption.DateAddedDesc
     );
 
     return {

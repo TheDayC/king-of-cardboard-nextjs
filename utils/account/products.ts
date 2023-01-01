@@ -32,13 +32,13 @@ export async function addProduct(options: any): Promise<boolean> {
 export async function listProducts(
     count: number,
     page: number,
+    isServer: boolean = false,
     categories?: Category[],
     configurations?: Configuration[],
     interests?: Interest[],
     stockStatuses?: StockStatus[],
     searchTerm?: string,
-    sortOption?: SortOption.DateAddedDesc,
-    isServer: boolean = false
+    sortOption?: SortOption.DateAddedDesc
 ): Promise<ListProducts> {
     const headers = isServer ? { 'Accept-Encoding': 'application/json' } : undefined;
 

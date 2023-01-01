@@ -34,79 +34,79 @@ export const getServerSideProps: GetServerSideProps = async () => {
     const { products: baseballProducts, count: baseballCount } = await listProducts(
         LIMIT,
         SKIP,
+        true,
         CATEGORIES,
         CONFIGURATIONS,
         [Interest.Baseball],
         STOCK_STATUSES,
         '',
-        SortOption.DateAddedDesc,
-        true
+        SortOption.DateAddedDesc
     );
     const { products: basketballProducts, count: basketballCount } = await listProducts(
         LIMIT,
         SKIP,
+        true,
         CATEGORIES,
         CONFIGURATIONS,
         [Interest.Basketball],
         STOCK_STATUSES,
         '',
-        SortOption.DateAddedDesc,
-        true
+        SortOption.DateAddedDesc
     );
     const { products: footballProducts, count: footballCount } = await listProducts(
         LIMIT,
         SKIP,
+        true,
         CATEGORIES,
         CONFIGURATIONS,
         [Interest.Football],
         STOCK_STATUSES,
         '',
-        SortOption.DateAddedDesc,
-        true
+        SortOption.DateAddedDesc
     );
     const { products: soccerProducts, count: soccerCount } = await listProducts(
         LIMIT,
         SKIP,
+        true,
         CATEGORIES,
         CONFIGURATIONS,
         [Interest.Soccer],
         STOCK_STATUSES,
         '',
-        SortOption.DateAddedDesc,
-        true
+        SortOption.DateAddedDesc
     );
     const { products: ufcProducts, count: ufcCount } = await listProducts(
         LIMIT,
         SKIP,
+        true,
         CATEGORIES,
         CONFIGURATIONS,
         [Interest.UFC],
         STOCK_STATUSES,
         '',
-        SortOption.DateAddedDesc,
-        true
+        SortOption.DateAddedDesc
     );
     const { products: wweProducts, count: wweCount } = await listProducts(
         LIMIT,
         SKIP,
+        true,
         CATEGORIES,
         CONFIGURATIONS,
         [Interest.Wrestling],
         STOCK_STATUSES,
         '',
-        SortOption.DateAddedDesc,
-        true
+        SortOption.DateAddedDesc
     );
     const { products: pokemonProducts, count: pokemonCount } = await listProducts(
         LIMIT,
         SKIP,
+        true,
         CATEGORIES,
         CONFIGURATIONS,
         [Interest.Pokemon],
         STOCK_STATUSES,
         '',
-        SortOption.DateAddedDesc,
-        true
+        SortOption.DateAddedDesc
     );
 
     return {

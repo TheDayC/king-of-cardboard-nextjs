@@ -21,7 +21,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const session = await unstable_getServerSession(req, res, authOptions);
     const role = safelyParse(session, 'user.role', parseAsRole, Roles.User);
     const isAdmin = role === Roles.Admin;
-    const { products, count } = await listProducts(LIMIT, PAGE);
+    const { products, count } = await listProducts(LIMIT, PAGE, true);
 
     if (!session || !isAdmin) {
         return {
@@ -46,7 +46,6 @@ interface ProductsPageProps {
 }
 
 export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, initialTotalProducts }) => {
-    console.log('🚀 ~ file: index.tsx:49 ~ initialProducts', initialProducts);
     const [products, setProducts] = useState<ProductType[]>(initialProducts);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [count, setCount] = useState(LIMIT);
@@ -57,7 +56,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
 
     const handleUpdateProducts = async () => {
         setIsLoading(true);
-        const { products: newProducts, count: newTotalProducts } = await listProducts(count, page);
+        const { products: newProducts, count: newTotalProducts } = await listProducts(count, page, true);
 
         setProducts(newProducts);
         setTotalProducts(newTotalProducts);
