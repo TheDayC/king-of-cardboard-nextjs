@@ -52,7 +52,7 @@ interface OrderHistoryPageProps {
 
 export const AchievementsPage: React.FC<OrderHistoryPageProps> = ({ achievements, objectives }) => {
     return (
-        <AccountWrapper title="Achievements - Account - King of Cardboard" description="Your order history">
+        <AccountWrapper title="Achievements - Account - King of Cardboard" description="Your achievements">
             <div className="flex flex-col relative w-full py-4 px-6">
                 <h1 className="text-5xl">Achievements</h1>
                 <AchievementList achievements={achievements} objectives={objectives} />
