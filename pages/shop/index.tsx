@@ -19,7 +19,7 @@ import LatestProductRows from '../../components/Shop/LatestProductRows';
 import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
 import { Product } from '../../types/products';
 import { listProducts } from '../../utils/account/products';
-import { fetchProducts, setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
+import { setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
 import selector from './selector';
 
 const LIMIT = 4;
@@ -143,7 +143,7 @@ interface ShopProps {
 
 export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, totalCount }) => {
     const dispatch = useDispatch();
-    const { shouldShowRows, searchTerm, sortOption } = useSelector(selector);
+    const { shouldShowRows, searchTerm /* sortOption */ } = useSelector(selector);
     const hasSearchTerm = searchTerm.length > 0;
 
     useEffect(() => {
