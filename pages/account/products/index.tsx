@@ -46,6 +46,7 @@ interface ProductsPageProps {
 }
 
 export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, initialTotalProducts }) => {
+    console.log('🚀 ~ file: index.tsx:49 ~ initialProducts', initialProducts);
     const [products, setProducts] = useState<ProductType[]>(initialProducts);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [count, setCount] = useState(LIMIT);
