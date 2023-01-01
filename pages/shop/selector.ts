@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { SortOption } from '../../enums/products';
 
+import { SortOption } from '../../enums/products';
 import { selectFiltersData } from '../../store/state/selectors';
 
 const selector = createSelector([selectFiltersData], (filters) => ({

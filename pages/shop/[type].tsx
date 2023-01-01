@@ -1,26 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { startCase, upperCase } from 'lodash';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Document } from '@contentful/rich-text-types';
 
 import PageWrapper from '../../components/PageWrapper';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import Filters from '../../components/Shop/Filters';
 import Grid from '../../components/Shop/Grid';
-import {
-    setStaticPageInterest,
-    removeAllInterests,
-    addCategory,
-    addInterest,
-    addStockStatus,
-} from '../../store/slices/filters';
+import { addCategory, addInterest, resetFilters } from '../../store/slices/filters';
 import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
-import { setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
+import { fetchProducts, setIsLoadingProducts, setProductsAndCount } from '../../store/slices/products';
 import { getCategoryByInterest, getInterestBySlug, listProducts } from '../../utils/account/products';
 import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
 import { Product } from '../../types/products';
+import selector from './selector';
 
 const LIMIT = 8;
 const SKIP = 0;
@@ -67,26 +62,43 @@ interface ShopTypeProps {
 
 export const ShopType: React.FC<ShopTypeProps> = ({ interest, staticInterest, category, content, products, count }) => {
     const dispatch = useDispatch();
+    const { sortOption, searchTerm } = useSelector(selector);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
     const shouldUpperCase = interest === Interest.UFC;
     const caseChangedShopType = shouldUpperCase ? upperCase(staticInterest) : startCase(staticInterest);
 
+    // On page load set the server side fetched products
     useEffect(() => {
-        if (interest) {
-            dispatch(setStaticPageInterest(interest));
-        } else {
-            dispatch(removeAllInterests());
-        }
-    }, [dispatch, interest]);
+        if (!setIsInitialLoad) return;
 
-    useEffect(() => {
         dispatch(setIsLoadingProducts(true));
-        dispatch(addCategory(category));
+
+        // Reset the filters for the shop to show a default state.
+        dispatch(resetFilters());
+
+        // Update the shop products.
+        dispatch(
+            setProductsAndCount({
+                products,
+                count,
+            })
+        );
+
+        // Set the current interest and category.
         dispatch(addInterest(interest));
-        STOCK_STATUSES.forEach((status) => {
-            dispatch(addStockStatus(status));
-        });
-        dispatch(setProductsAndCount({ products, count }));
-    }, [dispatch, products, count, category, interest]);
+        dispatch(addCategory(category));
+
+        setIsInitialLoad(false);
+    }, [dispatch, products, interest, category, count, isInitialLoad]);
+
+    // If the search term is changed then fetch products.
+    useEffect(() => {
+        if (isInitialLoad) return;
+
+        dispatch(setIsLoadingProducts(true));
+
+        dispatch(fetchProducts({ limit: 8, skip: 0 }));
+    }, [dispatch, sortOption, searchTerm, isInitialLoad]);
 
     return (
         <PageWrapper

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Document } from '@contentful/rich-text-types';
-import { debounce } from 'lodash';
 
 import PageWrapper from '../../components/PageWrapper';
 import Filters from '../../components/Shop/Filters';
@@ -11,7 +10,6 @@ import { resetFilters } from '../../store/slices/filters';
 import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
-import { Category, Configuration } from '../../enums/products';
 import { Product } from '../../types/products';
 import { listProductRows } from '../../utils/account/products';
 import {
@@ -75,7 +73,7 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts }) => {
             })
         );
         setIsInitialLoad(false);
-    }, [dispatch, allProducts]);
+    }, [dispatch, allProducts, isInitialLoad]);
 
     // If the search term is changed then fetch products.
     useEffect(() => {
@@ -88,7 +86,7 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts }) => {
         } else {
             dispatch(fetchProducts({ limit: 8, skip: 0 }));
         }
-    }, [dispatch, shouldFetchRows, sortOption, searchTerm]);
+    }, [dispatch, shouldFetchRows, sortOption, searchTerm, isInitialLoad]);
 
     return (
         <PageWrapper

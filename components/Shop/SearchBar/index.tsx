@@ -21,7 +21,7 @@ export const SearchBar: React.FC = () => {
 
     useEffect(() => {
         dispatch(setSearchTerm(currentTerm));
-    }, [currentTerm]);
+    }, [dispatch, currentTerm]);
 
     return (
         <div className="form-control inline-block">

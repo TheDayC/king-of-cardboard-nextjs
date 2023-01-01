@@ -31,15 +31,9 @@ import {
     StockStatus,
     SortOption,
 } from '../../../enums/products';
-import {
-    fetchProductRows,
-    fetchProducts,
-    setIsLoadingProducts,
-    setProductsAndCount,
-} from '../../../store/slices/products';
+import { fetchProductRows, fetchProducts, setIsLoadingProducts } from '../../../store/slices/products';
 import Sort from './Sort';
 import SearchBar from '../SearchBar';
-import { DEFAULT_STOCK_STATUSES } from '../../../utils/constants';
 
 const iconClassName = 'w-6 h-6 inline-block mr-2';
 
