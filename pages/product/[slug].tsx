@@ -69,7 +69,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             id: _id,
             name: title,
             slug,
-            description: content,
+            description: content || null,
             sku,
             mainImage: {
                 title: `${title} main image`,
