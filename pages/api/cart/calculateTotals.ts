@@ -50,11 +50,8 @@ async function calculateTotals(req: NextApiRequest, res: NextApiResponse): Promi
             const prices = items.map(({ id, quantity }) => {
                 const matchingProduct = productList.find(({ _id }) => _id.toString() === id);
                 const price = safelyParse(matchingProduct, 'price', parseAsNumber, 0);
-                const salePrice = safelyParse(matchingProduct, 'salePrice', parseAsNumber, 0);
-                const shouldUseSalePrice = salePrice > 0 && salePrice !== price;
-                const chosenPrice = shouldUseSalePrice ? salePrice : price;
 
-                return chosenPrice * quantity;
+                return price * quantity;
             });
             const subTotal = sum(prices); // Add up all prices to get the sub total.
             const shipping = await getShippingPrice(shippingMethodId, db); // Fetch the shipping cost.
