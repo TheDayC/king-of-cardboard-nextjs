@@ -128,6 +128,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     const [mainImageFileList, setMainImageFileList] = useState<FileList | null>(null);
     const [galleryFileList, setGalleryFileList] = useState<FileList | null>(null);
     const [repeaterItems, setRepeaterItems] = useState<Record<string, string | number>[]>([defaultRepeateritem]);
+    const [currentContent, setCurrentContent] = useState<string | undefined>(existingContent);
 
     // Errors
     const hasErrors = Object.keys(errors).length > 0;
@@ -248,6 +249,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
 
     const handleRichContent = (content?: string) => {
         setValue('content', content);
+        setCurrentContent(content);
     };
 
     const addRepeaterRow = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -259,13 +261,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     const removeRepeaterRow = (rowCount: number) => {
         setRepeaterItems([...repeaterItems.filter((item, i) => i !== rowCount)]);
     };
-
-    /* useEffect(() => {
-        if (priceHistory) {
-            const mappedRepeaterItems = repeaterItems.map(({ timestamp, price }) => ({ timestamp, price }));
-            setRepeaterItems(mappedRepeaterItems);
-        }
-    }, [repeaterItems]); */
 
     useEffect(() => {
         register('content');
@@ -403,7 +398,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                     </div>
                 </div>
                 <div className="flex flex-col">
-                    <RichTextEditor placeholder="Content" onChange={handleRichContent} value={existingContent || ''} />
+                    <RichTextEditor placeholder="Content" onChange={handleRichContent} value={currentContent || ''} />
                 </div>
 
                 <div className="flex flex-col space-y-4">
