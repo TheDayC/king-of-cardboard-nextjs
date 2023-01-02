@@ -74,6 +74,7 @@ async function editOrder(req: NextApiRequest, res: NextApiResponse): Promise<voi
                     },
                     stock: safelyParse(matchingItem, 'stock', parseAsNumber, 0),
                     cartQty: safelyParse(matchingItem, 'cartQty', parseAsNumber, 0),
+                    releaseDate: safelyParse(matchingItem, 'releaseDate', parseAsString, null),
                 };
             });
 

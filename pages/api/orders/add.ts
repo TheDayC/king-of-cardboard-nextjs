@@ -293,6 +293,7 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                         },
                         stock: safelyParse(matchingItem, 'stock', parseAsNumber, 0),
                         cartQty: safelyParse(matchingItem, 'cartQty', parseAsNumber, 0),
+                        releaseDate: safelyParse(matchingItem, 'releaseDate', parseAsString, null),
                         priceHistory: [],
                     };
                 });
