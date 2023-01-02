@@ -34,9 +34,11 @@ const checkoutSlice = createSlice({
         },
         setExistingBillingAddressId(state, action) {
             state.existingBillingAddressId = action.payload;
+            state.isCheckoutLoading = false;
         },
         setExistingShippingAddressId(state, action) {
             state.existingShippingAddressId = action.payload;
+            state.isCheckoutLoading = false;
         },
         setSameAsBilling(state, action) {
             state.isShippingSameAsBilling = action.payload;

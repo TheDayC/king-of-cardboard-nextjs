@@ -7,17 +7,20 @@ import Link from 'next/link';
 import Address from './Address';
 import selector from './selector';
 import Loading from '../../../Loading';
+import { FormErrors } from '../../../../types/checkout';
+import { parseAsString, safelyParse } from '../../../../utils/parsers';
 
 interface ExistingAddressProps {
     isShipping: boolean;
+    error: string | null;
 }
 
-const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping }) => {
+const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping, error }) => {
     const { addresses, isLoadingAddressBook } = useSelector(selector);
-
     return (
-        <div className="w-full block relative">
+        <div className="flex flex-col w-full block relative space-y-4">
             <Loading show={isLoadingAddressBook} />
+            {error && <p className="text-error text-sm">{error}</p>}
             {addresses.length > 0 ? (
                 addresses.map(({ _id, title, ...address }) => (
                     <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 relative" key={`address-${_id}`}>

@@ -1,12 +1,10 @@
 import React from 'react';
-import { UseFormRegister, FieldValues } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { UseFormRegister } from 'react-hook-form';
 
 import { EMAIL_PATTERN, NAME_PATTERN, PHONE_PATTERN } from '../../../../regex';
 import { FormErrors } from '../../../../types/checkout';
 import { fieldPatternMsgs } from '../../../../utils/checkout';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
-import selector from './selector';
 
 interface PersonalDetailsProps {
     register: UseFormRegister<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -14,9 +12,6 @@ interface PersonalDetailsProps {
 }
 
 const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) => {
-    const { customerDetails } = useSelector(selector);
-    const { firstName, lastName, email, phone } = customerDetails;
-
     // Errors
     const firstNameErr = safelyParse(errors, 'firstName.message', parseAsString, null);
     const lastNameErr = safelyParse(errors, 'lastName.message', parseAsString, null);
