@@ -1,3 +1,4 @@
+import { toNumber } from 'lodash';
 import { DateTime } from 'luxon';
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -5,6 +6,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { Category, Configuration, Interest, StockStatus } from '../../../enums/products';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
+import { PriceHistory } from '../../../types/products';
 import {
     parseAsArrayOfStrings,
     parseAsBoolean,
@@ -24,11 +26,14 @@ async function addProduct(req: NextApiRequest, res: NextApiResponse): Promise<vo
             const sku = safelyParse(req, 'body.sku', parseAsString, null);
             const existingProduct = await productsCollection.findOne({ sku });
             const currentDate = DateTime.now().setZone('Europe/London');
+            const priceHistory: PriceHistory[] = req.body.priceHistory || [];
 
             if (existingProduct) {
                 res.status(400).json({ message: 'Product already exists.' });
                 return;
             }
+
+            const releaseDate = safelyParse(req, 'body.releaseDate', parseAsString, null);
 
             await productsCollection.insertOne({
                 sku,
@@ -47,7 +52,11 @@ async function addProduct(req: NextApiRequest, res: NextApiResponse): Promise<vo
                 quantity: safelyParse(req, 'body.quantity', parseAsNumber, 0),
                 price: safelyParse(req, 'body.price', parseAsNumber, 0),
                 salePrice: safelyParse(req, 'body.salePrice', parseAsNumber, 0),
-                priceHistory: req.body.priceHistory || [],
+                priceHistory: priceHistory.map((pH) => ({
+                    timestamp: new Date(pH.timestamp),
+                    price: toNumber(pH.price),
+                })),
+                releaseDate: releaseDate ? new Date(releaseDate) : null,
                 isInfinite: safelyParse(req, 'body.isInfinite', parseAsBoolean, false),
             });
 

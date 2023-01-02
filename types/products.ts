@@ -19,6 +19,7 @@ export interface Product {
     price: number;
     salePrice: number;
     priceHistory: PriceHistory[];
+    releaseDate: string | null;
     isInfinite: boolean;
 }
 

@@ -1,3 +1,4 @@
+import { toNumber } from 'lodash';
 import { DateTime } from 'luxon';
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -5,6 +6,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { Category, Configuration, Interest, StockStatus } from '../../../enums/products';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
+import { PriceHistory } from '../../../types/products';
 import {
     parseAsArrayOfStrings,
     parseAsBoolean,
@@ -30,6 +32,15 @@ async function editProduct(req: NextApiRequest, res: NextApiResponse): Promise<v
                 return;
             }
 
+            const priceHistory: PriceHistory[] = req.body.priceHistory
+                ? req.body.priceHistory.map((pH: PriceHistory) => ({
+                      timestamp: new Date(pH.timestamp),
+                      price: toNumber(pH.price),
+                  }))
+                : existingProduct.priceHistory;
+
+            const releaseDate = safelyParse(req, 'body.releaseDate', parseAsString, null);
+
             await productsCollection.updateOne(
                 { _id: new ObjectId(id) },
                 {
@@ -49,7 +60,11 @@ async function editProduct(req: NextApiRequest, res: NextApiResponse): Promise<v
                         quantity: safelyParse(req, 'body.quantity', parseAsNumber, existingProduct.quantity),
                         price: safelyParse(req, 'body.price', parseAsNumber, existingProduct.price),
                         salePrice: safelyParse(req, 'body.salePrice', parseAsNumber, existingProduct.salePrice),
-                        priceHistory: req.body.priceHistory || existingProduct.priceHistory,
+                        priceHistory: priceHistory.map((pH) => ({
+                            timestamp: new Date(pH.timestamp),
+                            price: toNumber(pH.price),
+                        })),
+                        releaseDate: releaseDate ? new Date(releaseDate) : null,
                         isInfinite: safelyParse(req, 'body.isInfinite', parseAsBoolean, existingProduct.isInfinite),
                     },
                 }

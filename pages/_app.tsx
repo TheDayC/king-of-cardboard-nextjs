@@ -10,6 +10,7 @@ import { Provider } from 'react-redux';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 
 import 'react-quill/dist/quill.snow.css';
+import 'react-datepicker/dist/react-datepicker.css';
 import '../styles/globals.css';
 
 import { wrapper } from '../store';

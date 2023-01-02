@@ -14,6 +14,9 @@ module.exports = {
                 md: '0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.3)',
                 xl: '0 20px 25px -5px rgba(0, 0, 0, 0.4)',
             },
+            lineHeight: {
+                'after-content': '0.4',
+            },
         },
         backgroundColor: (theme) => ({
             ...theme('colors'),

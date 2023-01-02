@@ -33,6 +33,7 @@ interface ImportProps {
     configuration: Configuration;
     priceHistory: PriceHistory[];
     shouldShowCompare: boolean;
+    releaseDate: string | null;
 }
 
 export const Product: React.FC<ImportProps> = ({
@@ -53,6 +54,7 @@ export const Product: React.FC<ImportProps> = ({
     configuration,
     priceHistory,
     shouldShowCompare,
+    releaseDate,
 }) => {
     const dispatch = useDispatch();
     const { items, isUpdatingCart } = useSelector(selector);
@@ -110,7 +112,7 @@ export const Product: React.FC<ImportProps> = ({
             <Images mainImage={mainImage} imageCollection={gallery} />
 
             <div id="productDetails" className="flex flex-col w-full lg:w-3/4">
-                <div className="card rounded-md lg:shadow-lg md:p-4 lg:p-8">
+                <div className="card rounded-md lg:shadow-lg md:p-4 lg:p-8 space-y-4">
                     <Details
                         name={title}
                         price={getPrettyPrice(price)}
@@ -120,6 +122,7 @@ export const Product: React.FC<ImportProps> = ({
                         tags={tags}
                         description={description}
                         shouldShowCompare={shouldShowCompare}
+                        releaseDate={releaseDate}
                     />
 
                     {isAvailable && (

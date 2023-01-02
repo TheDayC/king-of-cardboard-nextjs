@@ -10,6 +10,7 @@ import { BiCategory, BiFootball, BiSave } from 'react-icons/bi';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
+import { DateTime } from 'luxon';
 
 import InputField from '../Fields/Input';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -74,6 +75,7 @@ interface ProductBodyProps {
     salePrice?: number;
     isInfinite?: boolean;
     priceHistory?: PriceHistory[];
+    releaseDate?: string | null;
     isNew: boolean;
 }
 
@@ -93,6 +95,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     price,
     salePrice,
     priceHistory,
+    releaseDate = null,
     isNew,
 }) => {
     const { data: session } = useSession();
@@ -114,19 +117,27 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             stockStatus,
             quantity,
             price,
-            salePrice,
+            salePrice: salePrice && salePrice > 0 ? salePrice : undefined,
             mainImage,
             gallery,
             content: existingContent,
             historicalTimestamp: priceHistory && priceHistory.length ? priceHistory.map((pH) => pH.timestamp) : [],
             historicalPrice: priceHistory && priceHistory.length ? priceHistory.map((pH) => pH.price) : [],
+            releaseDate,
         },
     });
     const router = useRouter();
     const dispatch = useDispatch();
+
+    // State
     const [isLoading, setIsLoading] = useState(false);
     const [mainImageFileList, setMainImageFileList] = useState<FileList | null>(null);
     const [galleryFileList, setGalleryFileList] = useState<FileList | null>(null);
+    const [startDate, setStartDate] = useState<Date | null>(
+        releaseDate ? DateTime.fromISO(releaseDate).toJSDate() : null
+    );
+
+    // Variables
     const timestamps = priceHistory && priceHistory.length ? priceHistory.map((pH) => pH.timestamp) : [];
     const prices = priceHistory && priceHistory.length ? priceHistory.map((pH) => pH.price) : [];
     const newRepeaterItems = timestamps.map((timestamp) => ({
@@ -172,6 +183,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             stockStatus,
             price,
             salePrice,
+            releaseDate,
         } = data;
         let fileName: string | null = mainImage ?? null;
         let galleryFileNames: string[] | null = gallery ?? null;
@@ -227,6 +239,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                 timestamp,
                 price: data.historicalPrice[i],
             })),
+            releaseDate: DateTime.fromJSDate(releaseDate).toISO(),
             isInfinite: false,
         };
 
@@ -270,8 +283,17 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
         setRepeaterItems([...repeaterItems.filter((item, i) => i !== rowCount)]);
     };
 
+    const handleReleaseDate = (date: Date | null) => {
+        setValue('releaseDate', date ? DateTime.fromJSDate(date).toISO() : null);
+        setStartDate(date);
+    };
+
     useEffect(() => {
         register('content');
+    }, [register]);
+
+    useEffect(() => {
+        register('releaseDate');
     }, [register]);
 
     return (
@@ -304,6 +326,18 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         register={register}
                         Icon={AiOutlineBarcode}
                         isRequired
+                    />
+                    <InputField
+                        placeholder="Release date"
+                        fieldName="releaseDate"
+                        instruction=""
+                        error={skuErr}
+                        register={register}
+                        Icon={BsCalendarDate}
+                        isRequired={false}
+                        isDate
+                        startDate={startDate}
+                        setStartDate={handleReleaseDate}
                     />
                 </div>
                 <div className="flex flex-row space-x-4 items-start justify-start">
