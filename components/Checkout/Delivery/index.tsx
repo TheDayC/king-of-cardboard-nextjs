@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { BsCreditCard2BackFill } from 'react-icons/bs';
@@ -25,6 +25,7 @@ export const Delivery: React.FC = () => {
     } = useForm();
     const isCurrentStep = currentStep === 1;
     const hasErrors = Object.keys(errors).length > 0;
+    const [shouldFetchDeliveryMethods, setShouldFetchDeliveryMethods] = useState(true);
 
     const handleSelectShippingMethod: SubmitHandler<FieldValues> = async (data: FieldValues) => {
         if (hasErrors || isCheckoutLoading) {
@@ -51,12 +52,17 @@ export const Delivery: React.FC = () => {
     };
 
     useEffect(() => {
+        // Ensure to only get delivery methods once or it will infinitely load.
+        if (!shouldFetchDeliveryMethods) return;
+
         // Set loading
         dispatch(setCheckoutLoading(true));
 
         // Fetch the shipping methods and the fetch will remove loading spinner on return.
         dispatch(fetchShippingMethods());
-    }, [shippingMethods, dispatch]);
+
+        setShouldFetchDeliveryMethods(false);
+    }, [shippingMethods, dispatch, shouldFetchDeliveryMethods]);
 
     return (
         <div

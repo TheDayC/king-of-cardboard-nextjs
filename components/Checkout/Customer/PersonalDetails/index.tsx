@@ -1,22 +1,17 @@
 import React from 'react';
-import { UseFormRegister, FieldValues } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { UseFormRegister } from 'react-hook-form';
 
 import { EMAIL_PATTERN, NAME_PATTERN, PHONE_PATTERN } from '../../../../regex';
 import { FormErrors } from '../../../../types/checkout';
 import { fieldPatternMsgs } from '../../../../utils/checkout';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
-import selector from './selector';
 
 interface PersonalDetailsProps {
-    register: UseFormRegister<FieldValues>;
+    register: UseFormRegister<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
     errors: FormErrors;
 }
 
 const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) => {
-    const { customerDetails } = useSelector(selector);
-    const { firstName, lastName, email, phone } = customerDetails;
-
     // Errors
     const firstNameErr = safelyParse(errors, 'firstName.message', parseAsString, null);
     const lastNameErr = safelyParse(errors, 'lastName.message', parseAsString, null);
@@ -42,7 +37,6 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                             },
                         })}
                         className={`input input-md input-bordered${firstNameErr ? ' input-error' : ''}`}
-                        defaultValue={firstName}
                     />
                     {firstNameErr && (
                         <label className="label">
@@ -65,7 +59,6 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                             },
                         })}
                         className={`input input-md input-bordered${lastNameErr ? ' input-error' : ''}`}
-                        defaultValue={lastName}
                     />
                     {lastNameErr && (
                         <label className="label">
@@ -88,7 +81,6 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                             },
                         })}
                         className={`input input-md input-bordered${emailErr ? ' input-error' : ''}`}
-                        defaultValue={email}
                     />
                     {emailErr && (
                         <label className="label">
@@ -111,7 +103,6 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                             },
                         })}
                         className={`input input-md input-bordered${mobileErr ? ' input-error' : ''}`}
-                        defaultValue={phone}
                     />
                     {mobileErr && (
                         <label className="label">

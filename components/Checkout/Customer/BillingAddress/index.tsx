@@ -1,22 +1,17 @@
 import React from 'react';
-import { UseFormRegister, FieldValues } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { UseFormRegister } from 'react-hook-form';
 
 import { POSTCODE_PATTERN } from '../../../../regex';
 import { FormErrors } from '../../../../types/checkout';
 import { fieldPatternMsgs } from '../../../../utils/checkout';
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
-import selector from './selector';
 
 interface BillingAddressProps {
-    register: UseFormRegister<FieldValues>;
+    register: UseFormRegister<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
     errors: FormErrors;
 }
 
 const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => {
-    const { billingAddress } = useSelector(selector);
-    const { lineOne, lineTwo, city, postcode, county, company } = billingAddress;
-
     const billingLineOneErr = safelyParse(errors, 'billingAddressLineOne.message', parseAsString, null);
     const billingCityErr = safelyParse(errors, 'billingCity.message', parseAsString, null);
     const billingPostcodeErr = safelyParse(errors, 'billingPostcode.message', parseAsString, null);
@@ -35,7 +30,6 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                         required: { value: true, message: 'Address line one is required' },
                     })}
                     className={`input input-md input-bordered${billingLineOneErr ? ' input-error' : ''}`}
-                    defaultValue={lineOne}
                 />
                 {billingLineOneErr && (
                     <label className="label">
@@ -52,7 +46,6 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                     placeholder="Address Line Two"
                     {...register('billingAddressLineTwo')}
                     className="input input-md input-bordered"
-                    defaultValue={lineTwo}
                 />
             </div>
             <div className="form-control">
@@ -64,7 +57,6 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                     placeholder="Company"
                     {...register('billingCompany')}
                     className="input input-md input-bordered"
-                    defaultValue={company}
                 />
             </div>
             <div className="form-control">
@@ -78,7 +70,6 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                         required: { value: true, message: 'City is required.' },
                     })}
                     className={`input input-md input-bordered${billingCityErr ? ' input-error' : ''}`}
-                    defaultValue={city}
                 />
                 {billingCityErr && (
                     <label className="label">
@@ -101,7 +92,6 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                         },
                     })}
                     className={`input input-md input-bordered${billingPostcodeErr ? ' input-error' : ''}`}
-                    defaultValue={postcode}
                 />
                 {billingPostcodeErr && (
                     <label className="label">
@@ -120,7 +110,6 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                         required: { value: true, message: 'County is required' },
                     })}
                     className={`input input-md input-bordered${billingCountyErr ? ' input-error' : ''}`}
-                    defaultValue={county}
                 />
                 {billingCountyErr && (
                     <label className="label">

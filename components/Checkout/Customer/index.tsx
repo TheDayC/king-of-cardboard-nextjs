@@ -23,6 +23,10 @@ import SelectionWrapper from '../../SelectionWrapper';
 import ExistingAddress from './ExistingAddress';
 import { Address } from '../../../types/checkout';
 import { BillingAddressChoice, ShippingAddressChoice } from '../../../enums/checkout';
+import { fetchAddresses, setIsLoadingAddressBook } from '../../../store/slices/account';
+
+const LIMIT = 10;
+const SKIP = 0;
 
 const defaultAddress: Address = {
     lineOne: '',
@@ -36,18 +40,54 @@ const defaultAddress: Address = {
 
 const Customer: React.FC = () => {
     const { data: session } = useSession();
-    const { currentStep, isCheckoutLoading, isShippingSameAsBilling, billingAddress, shippingAddress } =
-        useSelector(selector);
+    const {
+        currentStep,
+        isCheckoutLoading,
+        isShippingSameAsBilling,
+        billingAddress,
+        shippingAddress,
+        customerDetails,
+        existingBillingAddressId,
+        existingShippingAddressId,
+    } = useSelector(selector);
     const dispatch = useDispatch();
     const [billingAddressChoice, setBillingAddressChoice] = useState(BillingAddressChoice.New);
     const [shippingAddressChoice, setShippingAddressChoice] = useState(ShippingAddressChoice.New);
+    const [shouldFetchAddresses, setShouldFetchAddresses] = useState(true);
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm();
+        setError,
+        setValue,
+        clearErrors,
+    } = useForm({
+        defaultValues: {
+            firstName: customerDetails.firstName,
+            lastName: customerDetails.lastName,
+            email: customerDetails.email,
+            phone: customerDetails.phone,
+            billingAddressLineOne: billingAddress.lineOne,
+            billingAddressLineTwo: billingAddress.lineTwo,
+            billingCompany: billingAddress.company,
+            billingCity: billingAddress.city,
+            billingPostcode: billingAddress.postcode,
+            billingCounty: billingAddress.county,
+            shippingAddressLineOne: shippingAddress.lineOne,
+            shippingAddressLineTwo: shippingAddress.lineTwo,
+            shippingCompany: shippingAddress.company,
+            shippingCity: shippingAddress.city,
+            shippingPostcode: shippingAddress.postcode,
+            shippingCounty: shippingAddress.county,
+            existingBilling: existingBillingAddressId,
+            existingShipping: existingShippingAddressId,
+        },
+    });
     const isCurrentStep = currentStep === 0;
     const hasErrors = Object.keys(errors).length > 0;
+    const userId = safelyParse(session, 'user.id', parseAsString, null);
+    const existingBillingErr = safelyParse(errors, 'existingBilling.message', parseAsString, null);
+    const existingShippingErr = safelyParse(errors, 'existingShipping.message', parseAsString, null);
 
     const onSubmit = async (data: FieldValues) => {
         if (hasErrors || isCheckoutLoading) {
@@ -83,10 +123,18 @@ const Customer: React.FC = () => {
 
             // If the shipping same as billing checkbox is selected just copy the billing address to shipping address.
             if (isShippingSameAsBilling) dispatch(setShippingAddress(newBillingAddress));
-        } else {
+        } else if (existingBillingAddressId) {
             dispatch(setBillingAddress(billingAddress));
 
             if (isShippingSameAsBilling) dispatch(setShippingAddress(billingAddress));
+        } else {
+            setError('existingBilling', {
+                type: 'custom',
+                message: 'Must select an existing billing address or enter a new one.',
+            });
+
+            dispatch(setIsCheckoutLoading(false));
+            return;
         }
 
         // Handle a new shipping address.
@@ -103,8 +151,16 @@ const Customer: React.FC = () => {
                 };
 
                 dispatch(setShippingAddress(newShippingAddress));
-            } else {
+            } else if (existingShippingAddressId) {
                 dispatch(setShippingAddress(shippingAddress));
+            } else {
+                setError('existingShipping', {
+                    type: 'custom',
+                    message: 'Must select an existing shipping address or enter a new one.',
+                });
+
+                dispatch(setIsCheckoutLoading(false));
+                return;
             }
         }
 
@@ -143,11 +199,39 @@ const Customer: React.FC = () => {
     };
 
     useEffect(() => {
-        if (session) {
+        if (userId) {
             setBillingAddressChoice(BillingAddressChoice.Existing);
             setShippingAddressChoice(ShippingAddressChoice.Existing);
         }
-    }, [session]);
+    }, [userId]);
+
+    // Fetch existing addresses once.
+    useEffect(() => {
+        if (!userId) return;
+
+        if (shouldFetchAddresses) {
+            setShouldFetchAddresses(false);
+            dispatch(setIsLoadingAddressBook(true));
+            dispatch(fetchAddresses({ userId, limit: LIMIT, skip: SKIP }));
+        }
+    }, [userId, dispatch, shouldFetchAddresses]);
+
+    // Register existing address fields with RHF.
+    useEffect(() => {
+        register('existingBilling');
+        register('existingShipping');
+    }, [register]);
+
+    // If id's are added make sure to update custom values
+    useEffect(() => {
+        setValue('existingBilling', existingBillingAddressId);
+        clearErrors('existingBilling');
+    }, [existingBillingAddressId, setValue, clearErrors]);
+
+    useEffect(() => {
+        setValue('existingShipping', existingShippingAddressId);
+        clearErrors('existingShipping');
+    }, [existingShippingAddressId, setValue, clearErrors]);
 
     return (
         <div
@@ -174,7 +258,7 @@ const Customer: React.FC = () => {
                                     defaultChecked={shippingAddressChoice === ShippingAddressChoice.Existing}
                                     onSelect={handleBillingSelect}
                                 >
-                                    <ExistingAddress isShipping={false} />
+                                    <ExistingAddress isShipping={false} error={existingBillingErr} />
                                 </SelectionWrapper>
                             )}
                             <SelectionWrapper
@@ -203,7 +287,7 @@ const Customer: React.FC = () => {
                                             defaultChecked={shippingAddressChoice === ShippingAddressChoice.Existing}
                                             onSelect={handleShippingSelect}
                                         >
-                                            <ExistingAddress isShipping={true} />
+                                            <ExistingAddress isShipping={true} error={existingShippingErr} />
                                         </SelectionWrapper>
                                     )}
                                     <SelectionWrapper

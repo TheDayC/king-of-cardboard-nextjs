@@ -60,8 +60,6 @@ export const Address: React.FC<AddressProps> = ({
             dispatch(setBillingAddress(address));
             dispatch(setExistingBillingAddressId(id));
         }
-
-        dispatch(setCheckoutLoading(false));
     };
 
     return (

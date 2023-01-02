@@ -9,6 +9,8 @@ const selector = createSelector([selectCheckoutData], (checkout) => ({
     isShippingSameAsBilling: checkout.isShippingSameAsBilling,
     billingAddress: checkout.billingAddress,
     shippingAddress: checkout.shippingAddress,
+    existingBillingAddressId: checkout.existingBillingAddressId,
+    existingShippingAddressId: checkout.existingShippingAddressId,
 }));
 
 export default selector;
