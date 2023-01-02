@@ -9,7 +9,7 @@ import { parseAsString, safelyParse } from '../../../../utils/parsers';
 import selector from './selector';
 
 interface PersonalDetailsProps {
-    register: UseFormRegister<FieldValues>;
+    register: UseFormRegister<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
     errors: FormErrors;
 }
 
@@ -42,7 +42,6 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                             },
                         })}
                         className={`input input-md input-bordered${firstNameErr ? ' input-error' : ''}`}
-                        defaultValue={firstName}
                     />
                     {firstNameErr && (
                         <label className="label">
@@ -65,7 +64,6 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                             },
                         })}
                         className={`input input-md input-bordered${lastNameErr ? ' input-error' : ''}`}
-                        defaultValue={lastName}
                     />
                     {lastNameErr && (
                         <label className="label">
@@ -88,7 +86,6 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                             },
                         })}
                         className={`input input-md input-bordered${emailErr ? ' input-error' : ''}`}
-                        defaultValue={email}
                     />
                     {emailErr && (
                         <label className="label">
@@ -111,7 +108,6 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                             },
                         })}
                         className={`input input-md input-bordered${mobileErr ? ' input-error' : ''}`}
-                        defaultValue={phone}
                     />
                     {mobileErr && (
                         <label className="label">

@@ -36,8 +36,14 @@ const defaultAddress: Address = {
 
 const Customer: React.FC = () => {
     const { data: session } = useSession();
-    const { currentStep, isCheckoutLoading, isShippingSameAsBilling, billingAddress, shippingAddress } =
-        useSelector(selector);
+    const {
+        currentStep,
+        isCheckoutLoading,
+        isShippingSameAsBilling,
+        billingAddress,
+        shippingAddress,
+        customerDetails,
+    } = useSelector(selector);
     const dispatch = useDispatch();
     const [billingAddressChoice, setBillingAddressChoice] = useState(BillingAddressChoice.New);
     const [shippingAddressChoice, setShippingAddressChoice] = useState(ShippingAddressChoice.New);
@@ -45,13 +51,30 @@ const Customer: React.FC = () => {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm();
+    } = useForm({
+        defaultValues: {
+            firstName: customerDetails.firstName,
+            lastName: customerDetails.lastName,
+            email: customerDetails.email,
+            phone: customerDetails.phone,
+            billingAddressLineOne: billingAddress.lineOne,
+            billingAddressLineTwo: billingAddress.lineTwo,
+            billingCompany: billingAddress.company,
+            billingCity: billingAddress.city,
+            billingPostcode: billingAddress.postcode,
+            billingCounty: billingAddress.county,
+            shippingAddressLineOne: shippingAddress.lineOne,
+            shippingAddressLineTwo: shippingAddress.lineTwo,
+            shippingCompany: shippingAddress.company,
+            shippingCity: shippingAddress.city,
+            shippingPostcode: shippingAddress.postcode,
+            shippingCounty: shippingAddress.county,
+        },
+    });
     const isCurrentStep = currentStep === 0;
     const hasErrors = Object.keys(errors).length > 0;
-    console.log('🚀 ~ file: index.tsx:51 ~ errors', errors);
 
     const onSubmit = async (data: FieldValues) => {
-        console.log('🚀 ~ file: index.tsx:53 ~ onSubmit ~ data', data);
         if (hasErrors || isCheckoutLoading) {
             return;
         }

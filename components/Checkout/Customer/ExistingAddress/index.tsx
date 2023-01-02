@@ -49,8 +49,8 @@ const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping }) => {
                         }}
                         passHref
                     >
-                        <div className="flex flex-col cursor-pointer p-6 border border-solid border-base-200 justify-center items-center w-full rounded-md shadow-md h-full">
-                            <MdAddCircleOutline className="mb-2 text-2xl" />
+                        <div className="flex flex-col cursor-pointer p-6 border border-solid border-base-200 justify-center items-center w-full rounded-md shadow-md h-full space-y-4">
+                            <MdAddCircleOutline className="w-5 h-5" />
                             <p className="text-md text-center">No saved addresses available, add one?</p>
                         </div>
                     </Link>
