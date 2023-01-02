@@ -57,7 +57,7 @@ export const ProductCard: React.FC<CardProps> = ({
                         <div className="relative">
                             {releaseDate && (
                                 <div
-                                    className="absolute flex flex-col items-center rounded-full bg-secondary p-3 -top-3 -right-3 tooltip tooltip-right shadow-sm"
+                                    className="absolute flex flex-col items-center rounded-full bg-secondary p-3 -top-3 -right-3 tooltip tooltip-top shadow-sm"
                                     data-tip={`Expected release: ${DateTime.fromISO(releaseDate).toFormat(
                                         'dd/MM/yyyy'
                                     )}`}
