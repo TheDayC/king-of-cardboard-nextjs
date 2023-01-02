@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { useSession } from 'next-auth/react';
 import { MdAddCircleOutline } from 'react-icons/md';
 import Link from 'next/link';
@@ -7,29 +7,13 @@ import Link from 'next/link';
 import Address from './Address';
 import selector from './selector';
 import Loading from '../../../Loading';
-import { fetchAddresses, setIsLoadingAddressBook } from '../../../../store/slices/account';
-import { parseAsString, safelyParse } from '../../../../utils/parsers';
-
-const LIMIT = 10;
-const SKIP = 0;
 
 interface ExistingAddressProps {
     isShipping: boolean;
 }
 
 const ExistingAddress: React.FC<ExistingAddressProps> = ({ isShipping }) => {
-    const { data: session } = useSession();
-    const dispatch = useDispatch();
     const { addresses, isLoadingAddressBook } = useSelector(selector);
-    const userId = safelyParse(session, 'user.id', parseAsString, null);
-
-    useEffect(() => {
-        if (userId) {
-            dispatch(setIsLoadingAddressBook(true));
-            dispatch(fetchAddresses({ userId, limit: LIMIT, skip: SKIP }));
-            dispatch(setIsLoadingAddressBook(false));
-        }
-    }, [userId, dispatch]);
 
     return (
         <div className="w-full block relative">

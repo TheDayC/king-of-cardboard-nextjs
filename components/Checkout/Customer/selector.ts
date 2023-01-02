@@ -1,8 +1,8 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectCheckoutData } from '../../../store/state/selectors';
+import { selectCheckoutData, selectAccountData } from '../../../store/state/selectors';
 
-const selector = createSelector([selectCheckoutData], (checkout) => ({
+const selector = createSelector([selectCheckoutData, selectAccountData], (checkout, account) => ({
     currentStep: checkout.currentStep,
     customerDetails: checkout.customerDetails,
     isCheckoutLoading: checkout.isCheckoutLoading,

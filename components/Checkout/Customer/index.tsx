@@ -23,6 +23,10 @@ import SelectionWrapper from '../../SelectionWrapper';
 import ExistingAddress from './ExistingAddress';
 import { Address } from '../../../types/checkout';
 import { BillingAddressChoice, ShippingAddressChoice } from '../../../enums/checkout';
+import { fetchAddresses, setIsLoadingAddressBook } from '../../../store/slices/account';
+
+const LIMIT = 10;
+const SKIP = 0;
 
 const defaultAddress: Address = {
     lineOne: '',
@@ -47,6 +51,7 @@ const Customer: React.FC = () => {
     const dispatch = useDispatch();
     const [billingAddressChoice, setBillingAddressChoice] = useState(BillingAddressChoice.New);
     const [shippingAddressChoice, setShippingAddressChoice] = useState(ShippingAddressChoice.New);
+    const [shouldFetchAddresses, setShouldFetchAddresses] = useState(true);
     const {
         register,
         handleSubmit,
@@ -73,6 +78,7 @@ const Customer: React.FC = () => {
     });
     const isCurrentStep = currentStep === 0;
     const hasErrors = Object.keys(errors).length > 0;
+    const userId = safelyParse(session, 'user.id', parseAsString, null);
 
     const onSubmit = async (data: FieldValues) => {
         if (hasErrors || isCheckoutLoading) {
@@ -168,11 +174,22 @@ const Customer: React.FC = () => {
     };
 
     useEffect(() => {
-        if (session) {
+        if (userId) {
             setBillingAddressChoice(BillingAddressChoice.Existing);
             setShippingAddressChoice(ShippingAddressChoice.Existing);
         }
-    }, [session]);
+    }, [userId]);
+
+    // Fetch existing addresses once.
+    useEffect(() => {
+        if (!userId) return;
+
+        if (shouldFetchAddresses) {
+            setShouldFetchAddresses(false);
+            dispatch(setIsLoadingAddressBook(true));
+            dispatch(fetchAddresses({ userId, limit: LIMIT, skip: SKIP }));
+        }
+    }, [userId, dispatch, shouldFetchAddresses]);
 
     return (
         <div
