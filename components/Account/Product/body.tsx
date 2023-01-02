@@ -76,7 +76,7 @@ interface ProductBodyProps {
     salePrice?: number;
     isInfinite?: boolean;
     priceHistory?: PriceHistory[];
-    releaseDate?: Date | null;
+    releaseDate?: string | null;
     isNew: boolean;
 }
 
@@ -134,7 +134,9 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     const [isLoading, setIsLoading] = useState(false);
     const [mainImageFileList, setMainImageFileList] = useState<FileList | null>(null);
     const [galleryFileList, setGalleryFileList] = useState<FileList | null>(null);
-    const [startDate, setStartDate] = useState<Date | null>(releaseDate);
+    const [startDate, setStartDate] = useState<Date | null>(
+        releaseDate ? DateTime.fromISO(releaseDate).toJSDate() : null
+    );
 
     // Variables
     const timestamps = priceHistory && priceHistory.length ? priceHistory.map((pH) => pH.timestamp) : [];
