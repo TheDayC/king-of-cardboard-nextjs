@@ -41,6 +41,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 categories: [],
                 options: [],
                 priceHistory: [],
+                releaseDate: null,
             },
         };
     }
@@ -59,6 +60,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         category,
         configuration,
         priceHistory,
+        releaseDate,
     } = product;
 
     return {
@@ -87,6 +89,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             configuration,
             priceHistory,
             shouldShowCompare: salePrice > 0 && salePrice !== price,
+            releaseDate,
         },
     };
 };
@@ -112,6 +115,7 @@ interface ProductPageProps {
     configuration: Configuration;
     priceHistory: PriceHistory[];
     shouldShowCompare: boolean;
+    releaseDate: string | null;
 }
 
 export const ProductPage: React.FC<ProductPageProps> = ({
@@ -135,6 +139,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({
     configuration,
     priceHistory,
     shouldShowCompare,
+    releaseDate = null,
 }) => {
     // Show error page if a code is provided.
     if (errorCode) {
@@ -165,6 +170,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({
                 configuration={configuration}
                 priceHistory={priceHistory}
                 shouldShowCompare={shouldShowCompare}
+                releaseDate={releaseDate}
             />
         </PageWrapper>
     );
