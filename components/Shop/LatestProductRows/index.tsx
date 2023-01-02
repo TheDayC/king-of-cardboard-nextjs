@@ -113,6 +113,7 @@ export const LatestProductRows: React.FC = () => {
                                     shouldShowCompare={product.salePrice > 0 && product.salePrice !== product.price}
                                     stock={product.quantity}
                                     stockStatus={product.stockStatus}
+                                    releaseDate={product.releaseDate}
                                     key={`product-${product.slug}`}
                                 />
                             ))}
