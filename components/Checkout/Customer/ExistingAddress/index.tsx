@@ -1,14 +1,11 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { useSession } from 'next-auth/react';
 import { MdAddCircleOutline } from 'react-icons/md';
 import Link from 'next/link';
 
 import Address from './Address';
 import selector from './selector';
 import Loading from '../../../Loading';
-import { FormErrors } from '../../../../types/checkout';
-import { parseAsString, safelyParse } from '../../../../utils/parsers';
 
 interface ExistingAddressProps {
     isShipping: boolean;

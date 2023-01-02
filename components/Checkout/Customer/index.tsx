@@ -226,12 +226,12 @@ const Customer: React.FC = () => {
     useEffect(() => {
         setValue('existingBilling', existingBillingAddressId);
         clearErrors('existingBilling');
-    }, [existingBillingAddressId]);
+    }, [existingBillingAddressId, setValue, clearErrors]);
 
     useEffect(() => {
         setValue('existingShipping', existingShippingAddressId);
         clearErrors('existingShipping');
-    }, [existingShippingAddressId]);
+    }, [existingShippingAddressId, setValue, clearErrors]);
 
     return (
         <div
