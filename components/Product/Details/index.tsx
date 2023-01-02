@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import React from 'react';
-import { BsBoxSeam, BsCalendarDate, BsCart, BsQuestionCircle, BsQuestionCircleFill } from 'react-icons/bs';
+import { BsBoxSeam, BsCalendarDate, BsCart } from 'react-icons/bs';
 
 interface DetailsProps {
     name: string;

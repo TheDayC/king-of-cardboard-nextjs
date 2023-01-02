@@ -2,10 +2,10 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { BsArrowRightSquareFill, BsCalendarDate } from 'react-icons/bs';
+import { DateTime } from 'luxon';
 
 import { StockStatus } from '../../../../enums/products';
 import { getStockStatusColor, getStockStatusTitle, getStockStatusTooltip } from '../../../../utils/account/products';
-import { DateTime } from 'luxon';
 
 interface CardProps {
     name: string;

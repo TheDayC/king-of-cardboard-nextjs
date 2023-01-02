@@ -10,7 +10,7 @@ import { BiCategory, BiFootball, BiSave } from 'react-icons/bi';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
-import DatePicker from 'react-datepicker';
+import { DateTime } from 'luxon';
 
 import InputField from '../Fields/Input';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
@@ -22,7 +22,6 @@ import { addError, addSuccess } from '../../../store/slices/alerts';
 import ImageUpload from '../Fields/ImageUpload';
 import RepeaterField from '../Fields/Repeater';
 import { PriceHistory } from '../../../types/products';
-import { DateTime } from 'luxon';
 
 const productCategory = [
     { key: 'Sports', value: Category.Sports },
