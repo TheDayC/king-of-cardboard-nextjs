@@ -48,8 +48,10 @@ const Customer: React.FC = () => {
     } = useForm();
     const isCurrentStep = currentStep === 0;
     const hasErrors = Object.keys(errors).length > 0;
+    console.log('🚀 ~ file: index.tsx:51 ~ errors', errors);
 
     const onSubmit = async (data: FieldValues) => {
+        console.log('🚀 ~ file: index.tsx:53 ~ onSubmit ~ data', data);
         if (hasErrors || isCheckoutLoading) {
             return;
         }

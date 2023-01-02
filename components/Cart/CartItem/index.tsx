@@ -113,7 +113,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                     max={stock}
                 />
             </div>
-            <div className="hidden text-sm lg:flex lg:flex-row lg:text-lg">{stock}</div>
+            <div className="hidden text-sm items-center justify-center lg:flex lg:flex-row lg:text-lg">{stock}</div>
             <div className="flex flex-row items-center justify-center font-semibold text-sm lg:text-lg">
                 {totalAmount}
             </div>
