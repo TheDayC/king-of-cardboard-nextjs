@@ -93,15 +93,15 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts }) => {
             title="Shop - King of Cardboard"
             description="A broad selection of sports cards products for the UK."
         >
-            <div className="flex flex-col w-full relative">
-                <div className="block w-full mb-10">{content && <Content content={[content]} />}</div>
+            <div className="flex flex-col w-full relative space-y-4">
+                <div className="block w-full">{content && <Content content={[content]} />}</div>
                 {shouldFetchRows ? (
-                    <div className="flex flex-col w-full relative md:flex-row">
+                    <div className="flex flex-col w-full relative space-y-4 md:flex-row md:space-x-4 md:space-y-0">
                         <Filters />
                         <LatestProductRows />
                     </div>
                 ) : (
-                    <div className="flex flex-col w-full relative md:flex-row">
+                    <div className="flex flex-col w-full relative space-y-4 md:flex-row md:space-x-4 md:space-y-0">
                         <Filters />
                         <Grid />
                     </div>

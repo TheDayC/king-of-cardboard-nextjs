@@ -49,7 +49,7 @@ export const ShippingMethod: React.FC<ShippingMethodProps> = ({
                             <BsTruck className="w-5 h-5 mr-2 inline -mt-1" />
                             Arrives in {min} - {max} days.
                         </p>
-                        {content && <div dangerouslySetInnerHTML={{ __html: content }} />}
+                        {content && <div dangerouslySetInnerHTML={{ __html: content }} className="hidden lg:block" />}
                     </div>
                 </span>
                 <input

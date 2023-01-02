@@ -19,7 +19,7 @@ const ShipToBilling: React.FC = () => {
                     <span className="label-text text-lg">Ship to your billing address?</span>
                     <input
                         type="checkbox"
-                        className="checkbox"
+                        className="checkbox border border-gray-400"
                         onChange={handleOnChange}
                         defaultChecked={isShippingSameAsBilling}
                     />

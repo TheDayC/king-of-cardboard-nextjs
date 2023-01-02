@@ -89,7 +89,7 @@ export const ProductCard: React.FC<CardProps> = ({
                     )}
                 </div>
                 <div className="card-actions w-full justify-center">
-                    <div className="flex flex-row justify-between items-end w-full">
+                    <div className="flex flex-col justify-between items-end w-full 2xl:flex-row">
                         <p className="text-md text-green-600">{stockText}</p>
                         <div className="flex flex-row justify-end items-center">
                             {shouldShowCompare && (
@@ -101,7 +101,7 @@ export const ProductCard: React.FC<CardProps> = ({
                     <Link href={linkOptions} passHref className="w-full">
                         <button className="btn btn-block btn-md btn-primary rounded-md shadow-none">
                             View Product
-                            <BsArrowRightSquareFill className="inline w-5 h-5 ml-4" />
+                            <BsArrowRightSquareFill className="inline w-5 h-5 ml-4 inline lg:hidden xl:inline" />
                         </button>
                     </Link>
                 </div>

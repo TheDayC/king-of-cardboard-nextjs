@@ -84,7 +84,7 @@ export const LatestProductRows: React.FC = () => {
     ];
 
     return (
-        <div className="flex flex-col w-full space-y-4 md:w-5/6">
+        <div className="flex flex-col w-full md:w-4/6 md:space-y-4 xl:w-5/6">
             {rows.map(({ title, description, shouldShow, products, link, icon }) => {
                 if (!shouldShow) return null;
 
@@ -99,7 +99,7 @@ export const LatestProductRows: React.FC = () => {
                             </Link>
                         </div>
                         <p>{description}</p>
-                        <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-2">
+                        <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
                             {products.map((product) => (
                                 <ProductCard
                                     name={product.title}
@@ -119,7 +119,7 @@ export const LatestProductRows: React.FC = () => {
                         </div>
                         <div className="flex flex-row justify-end">
                             <Link href={link} passHref>
-                                <button className="btn btn-secondary rounded-md shadow-md w-full mt-0">
+                                <button className="btn btn-secondary rounded-md shadow-md w-full">
                                     View all {title}
                                     <BsArrowRightCircle className="w-6 h-6 inline-block ml-2" />
                                 </button>

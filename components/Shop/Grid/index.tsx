@@ -33,9 +33,9 @@ export const Grid: React.FC = () => {
     }
 
     return (
-        <div className="flex flex-col w-full md:w-5/6 md:space-y-4" data-testid="shop-grid">
+        <div className="flex flex-col w-full md:w-4/6 md:space-y-4 xl:w-5/6" data-testid="shop-grid">
             {products.length > 0 ? (
-                <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl2:grid-cols-6">
+                <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
                     {products.map((product) => (
                         <ProductCard
                             name={product.title}
