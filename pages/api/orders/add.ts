@@ -337,6 +337,7 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                 paymentId,
                 paymentMethod,
                 shippingMethodId,
+                trackingNumber: null,
             });
 
             // Reduce item stock counts.

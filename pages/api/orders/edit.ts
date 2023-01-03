@@ -46,6 +46,7 @@ async function editOrder(req: NextApiRequest, res: NextApiResponse): Promise<voi
             const paymentMethod = safelyParse(req, 'body.paymentMethod', parseAsNumber, null);
             const repeaterItems: Record<string, string | number>[] = req.body.repeaterItems || [];
             const shippingMethodId = safelyParse(req, 'body.shippingMethodId', parseAsString, '');
+            const trackingNumber = safelyParse(req, 'body.trackingNumber', parseAsString, null);
 
             const foundItems = await productsCollection
                 .find({ sku: { $in: repeaterItems.map((item) => item.sku) } })
@@ -116,6 +117,7 @@ async function editOrder(req: NextApiRequest, res: NextApiResponse): Promise<voi
                         paymentId,
                         paymentMethod,
                         shippingMethodId,
+                        trackingNumber,
                     },
                 }
             );

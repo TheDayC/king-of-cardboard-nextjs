@@ -12,9 +12,7 @@ import { PriceHistory } from '../../types/products';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const productSlug = safelyParse(context, 'query.slug', parseAsString, undefined);
-
     const product = await getProduct(undefined, productSlug);
-    console.log('🚀 ~ file: [slug].tsx:17 ~ constgetServerSideProps:GetServerSideProps= ~ product', product);
 
     if (!product) {
         return {
