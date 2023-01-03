@@ -34,24 +34,34 @@ async function editOrder(req: NextApiRequest, res: NextApiResponse): Promise<voi
             }
 
             const currentDate = DateTime.now().setZone('Europe/London');
-            const email = safelyParse(req, 'body.email', parseAsString, '');
-            const orderStatus: Status = safelyParse(req, 'body.orderStatus', parseAsNumber, existingOrder.ord);
-            const paymentStatus: Payment = safelyParse(req, 'body.paymentStatus', parseAsNumber, Payment.Unpaid);
+            const email = safelyParse(req, 'body.email', parseAsString, existingOrder.email);
+            const orderStatus: Status = safelyParse(req, 'body.orderStatus', parseAsNumber, existingOrder.orderStatus);
+            const paymentStatus: Payment = safelyParse(
+                req,
+                'body.paymentStatus',
+                parseAsNumber,
+                existingOrder.paymentStatus
+            );
             const fulfillmentStatus: Fulfillment = safelyParse(
                 req,
                 'body.fulfillmentStatus',
                 parseAsNumber,
-                Fulfillment.Unfulfilled
+                existingOrder.fulfillmentStatus
             );
-            const userId = safelyParse(req, 'body.userId', parseAsString, null);
+            const userId = safelyParse(req, 'body.userId', parseAsString, existingOrder.userId);
             const customerDetails = req.body.customerDetails as CustomerDetails;
             const shippingAddress = req.body.shippingAddress as Address;
             const billingAddress = req.body.billingAddress as Address;
-            const paymentId = safelyParse(req, 'body.paymentId', parseAsString, null);
-            const paymentMethod = safelyParse(req, 'body.paymentMethod', parseAsNumber, null);
+            const paymentId = safelyParse(req, 'body.paymentId', parseAsString, existingOrder.paymentId);
+            const paymentMethod = safelyParse(req, 'body.paymentMethod', parseAsNumber, existingOrder.paymentMethod);
             const repeaterItems: Record<string, string | number>[] = req.body.repeaterItems || [];
-            const shippingMethodId = safelyParse(req, 'body.shippingMethodId', parseAsString, '');
-            const trackingNumber = safelyParse(req, 'body.trackingNumber', parseAsString, null);
+            const shippingMethodId = safelyParse(
+                req,
+                'body.shippingMethodId',
+                parseAsString,
+                existingOrder.shippingMethodId
+            );
+            const trackingNumber = safelyParse(req, 'body.trackingNumber', parseAsString, existingOrder.trackingNumber);
 
             const foundItems = await productsCollection
                 .find({ sku: { $in: repeaterItems.map((item) => item.sku) } })
