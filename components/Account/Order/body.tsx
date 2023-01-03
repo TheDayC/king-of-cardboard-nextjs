@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { BsBoxSeam, BsCartFill, BsFillPinMapFill, BsInputCursorText, BsPhone } from 'react-icons/bs';
 import { MdOutlineEmail, MdOutlineTitle } from 'react-icons/md';
-import { BiBuildings, BiCategory, BiSave } from 'react-icons/bi';
+import { BiBarcodeReader, BiBuildings, BiCategory, BiSave } from 'react-icons/bi';
 import { useRouter } from 'next/router';
 import { toNumber } from 'lodash';
 import { useDispatch } from 'react-redux';
@@ -56,6 +56,7 @@ interface OrderBodyProps {
     items?: CartItem[];
     isNew: boolean;
     shippingMethods: AccountShippingMethod[];
+    trackingNumber?: string | null;
 }
 
 export const OrderBody: React.FC<OrderBodyProps> = ({
@@ -73,6 +74,7 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
     items,
     isNew,
     shippingMethods,
+    trackingNumber = null,
 }) => {
     const dispatch = useDispatch();
     const {
@@ -101,6 +103,7 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
             shippingMethodId,
             sku: items && items.length ? items.map((item) => item.sku) : [],
             quantity: items && items.length ? items.map((item) => item.quantity) : [],
+            trackingNumber,
         },
     });
     const router = useRouter();
@@ -133,6 +136,7 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
         fulfillment: safelyParse(errors, 'fulfillmentStatus.message', parseAsString, null),
     };
     const shippingMethodErr = safelyParse(errors, 'shippingMethod.message', parseAsString, null);
+    const trackingNumberErr = safelyParse(errors, 'trackingNumber.message', parseAsString, null);
 
     const reducedShippingMethods = shippingMethods.map((method) => ({
         key: method.title,
@@ -180,6 +184,7 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
             shouldFindItems: true,
             shouldCalculateTotals: true,
             shippingMethodId: data.shippingMethodId,
+            trackingNumber: data.trackingNumber,
         };
 
         if (isNew) {
@@ -396,6 +401,15 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
                             error={shippingMethodErr}
                             register={register}
                             Icon={BiCategory}
+                        />
+                        <InputField
+                            placeholder="Tracking number"
+                            fieldName="trackingNumber"
+                            instruction=""
+                            error={trackingNumberErr}
+                            register={register}
+                            Icon={BiBarcodeReader}
+                            isRequired={false}
                         />
                     </div>
                 </div>

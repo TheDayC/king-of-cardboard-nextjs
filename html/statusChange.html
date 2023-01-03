@@ -302,6 +302,36 @@
                 width: 50px;
             }
 
+            .statusList {
+                list-style: none;
+            }
+
+            .statusList li {
+                position: relative;
+                margin-left: 5px;
+            }
+
+            .badge {
+                width: 16px;
+                height: 16px;
+                background-color: rgb(87, 83, 78);
+                display: inline-block;
+                border-radius: 9999px;
+                margin-right: 8px;
+            }
+
+            .badge-green {
+                background-color: rgb(74, 222, 128);
+            }
+
+            .badge-yellow {
+                background-color: rgb(250, 204, 21);
+            }
+
+            .badge-red {
+                background-color: rgb(248, 113, 113);
+            }
+
             /* -------------------------------------
           RESPONSIVE AND MOBILE FRIENDLY STYLES
       ------------------------------------- */
@@ -438,14 +468,23 @@
                                         <tr>
                                             <td>
                                                 <p>Hi {{name}},</p>
-                                                <p>Your order status has changed to <b>{{status}}</b>!</p>
+                                                <p>
+                                                    Your order has been updated by the King, please see your current
+                                                    order status and tracking number below.
+                                                </p>
+                                                <ul class="statusList">
+                                                    <li>{{status}}</li>
+                                                    <li>{{paymentStatus}}</li>
+                                                    <li>{{fulfillmentStatus}}</li>
+                                                </ul>
                                                 <p>
                                                     Below you'll find a summary of your order, you can also review these
                                                     details by logging into your account on the website and using the
                                                     account menu to navigate to your order history.
                                                 </p>
                                                 <h1>Order Details</h1>
-                                                <h2><b>Order:</b> #{{orderNumber}}</h2>
+                                                <h2><b>Order:</b> {{orderNumber}}</h2>
+                                                <h3><b>Tracking:</b> {{trackingNumber}}</h3>
                                                 <table
                                                     role="presentation"
                                                     border="0"

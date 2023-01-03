@@ -3,15 +3,20 @@ import { toNumber } from 'lodash';
 import { DateTime } from 'luxon';
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
+import sgMail from '@sendgrid/mail';
 
 import { Fulfillment, Payment, Status } from '../../../enums/orders';
-import { Category, Configuration, Interest } from '../../../enums/products';
+import { Category, Configuration, Interest, StockStatus } from '../../../enums/products';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
+import { CartItem } from '../../../types/cart';
 import { Address, CustomerDetails } from '../../../types/checkout';
+import { createImageData, createMailerOptions } from '../../../utils/email';
 import { parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
 
 const defaultErr = 'Order could not be updated.';
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
 async function editOrder(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'PUT') {
@@ -30,9 +35,9 @@ async function editOrder(req: NextApiRequest, res: NextApiResponse): Promise<voi
 
             const currentDate = DateTime.now().setZone('Europe/London');
             const email = safelyParse(req, 'body.email', parseAsString, '');
-            const orderStatus = safelyParse(req, 'body.orderStatus', parseAsNumber, Status.Placed);
-            const paymentStatus = safelyParse(req, 'body.paymentStatus', parseAsNumber, Payment.Unpaid);
-            const fulfillmentStatus = safelyParse(
+            const orderStatus: Status = safelyParse(req, 'body.orderStatus', parseAsNumber, existingOrder.ord);
+            const paymentStatus: Payment = safelyParse(req, 'body.paymentStatus', parseAsNumber, Payment.Unpaid);
+            const fulfillmentStatus: Fulfillment = safelyParse(
                 req,
                 'body.fulfillmentStatus',
                 parseAsNumber,
@@ -46,12 +51,13 @@ async function editOrder(req: NextApiRequest, res: NextApiResponse): Promise<voi
             const paymentMethod = safelyParse(req, 'body.paymentMethod', parseAsNumber, null);
             const repeaterItems: Record<string, string | number>[] = req.body.repeaterItems || [];
             const shippingMethodId = safelyParse(req, 'body.shippingMethodId', parseAsString, '');
+            const trackingNumber = safelyParse(req, 'body.trackingNumber', parseAsString, null);
 
             const foundItems = await productsCollection
                 .find({ sku: { $in: repeaterItems.map((item) => item.sku) } })
                 .toArray();
 
-            const items = repeaterItems.map((item) => {
+            const items: CartItem[] = repeaterItems.map((item) => {
                 const matchingItem = foundItems.find((fI) => fI.sku === item.sku);
                 const title = safelyParse(matchingItem, 'title', parseAsString, '');
                 const mainImage = safelyParse(matchingItem, 'mainImage', parseAsString, '');
@@ -73,8 +79,10 @@ async function editOrder(req: NextApiRequest, res: NextApiResponse): Promise<voi
                         url: `${process.env.NEXT_PUBLIC_AWS_S3_URL}${mainImage}`,
                     },
                     stock: safelyParse(matchingItem, 'stock', parseAsNumber, 0),
+                    stockStatus: safelyParse(matchingItem, 'stockStatus', parseAsNumber, StockStatus.InStock),
                     cartQty: safelyParse(matchingItem, 'cartQty', parseAsNumber, 0),
                     releaseDate: safelyParse(matchingItem, 'releaseDate', parseAsString, null),
+                    priceHistory: matchingItem ? matchingItem.priceHistory : [],
                 };
             });
 
@@ -116,9 +124,37 @@ async function editOrder(req: NextApiRequest, res: NextApiResponse): Promise<voi
                         paymentId,
                         paymentMethod,
                         shippingMethodId,
+                        trackingNumber,
                     },
                 }
             );
+
+            // Fetch order number and generate item image data.
+            const orderNumber = safelyParse(existingOrder, 'orderNumber', parseAsNumber, 0);
+            const itemsImgData = await createImageData(items);
+
+            // Send user an update email.
+            const mailerOptions = createMailerOptions(
+                orderNumber,
+                customerDetails.firstName,
+                email,
+                customerDetails,
+                billingAddress,
+                shippingAddress,
+                items,
+                itemsImgData,
+                subTotal,
+                shipping,
+                discount,
+                total,
+                false,
+                trackingNumber,
+                orderStatus,
+                paymentStatus,
+                fulfillmentStatus,
+                true
+            );
+            await sgMail.send(mailerOptions);
 
             res.status(204).end();
         } catch (err: unknown) {

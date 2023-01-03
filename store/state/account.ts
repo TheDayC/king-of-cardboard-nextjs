@@ -51,6 +51,7 @@ const accountInitialState: AccountState = {
         paymentMethod: PaymentMethods.Unknown,
         shippingMethodId: '',
         orderNumber: 0,
+        trackingNumber: null,
     },
     addresses: [],
     addressCount: 0,
