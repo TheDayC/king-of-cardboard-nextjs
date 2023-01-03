@@ -24,6 +24,7 @@ export interface Order {
     paymentMethod: PaymentMethods;
     orderNumber: number;
     shippingMethodId: string;
+    trackingNumber: string | null;
 }
 
 export interface ListOrders {

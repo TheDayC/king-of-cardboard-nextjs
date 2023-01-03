@@ -56,7 +56,7 @@ interface OrderBodyProps {
     items?: CartItem[];
     isNew: boolean;
     shippingMethods: AccountShippingMethod[];
-    trackingNumber: string | null;
+    trackingNumber?: string | null;
 }
 
 export const OrderBody: React.FC<OrderBodyProps> = ({

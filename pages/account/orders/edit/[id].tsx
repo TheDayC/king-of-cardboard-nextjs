@@ -74,6 +74,7 @@ export const EditOrderPage: React.FC<EditProductPageProps> = ({ order, shippingM
                     shippingMethodId={order.shippingMethodId}
                     items={order.items}
                     shippingMethods={shippingMethods}
+                    trackingNumber={order.trackingNumber}
                     isNew={false}
                 />
             </div>
