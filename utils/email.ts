@@ -249,7 +249,7 @@ export function createMailerOptions(
     return {
         to: email,
         from: process.env.MAILER_ADDRESS || 'noreply@kingofcardboard.co.uk',
-        subject: `${isNotification ? 'Order Confirmation' : 'Order Placed'} - ${formatOrderNumber(
+        subject: `${isNotification ? 'Order Placed' : 'Order Confirmation'} - ${formatOrderNumber(
             orderNumber
         )} - King of Cardboard`,
         html: createHTML(

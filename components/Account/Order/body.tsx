@@ -184,6 +184,7 @@ export const OrderBody: React.FC<OrderBodyProps> = ({
             shouldFindItems: true,
             shouldCalculateTotals: true,
             shippingMethodId: data.shippingMethodId,
+            trackingNumber: data.trackingNumber,
         };
 
         if (isNew) {
