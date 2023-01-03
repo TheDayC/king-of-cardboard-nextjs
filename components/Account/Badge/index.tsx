@@ -1,9 +1,9 @@
 import React from 'react';
 
 const colors: Record<string, string> = {
-    yellow: 'rgb(250 204 21)',
-    green: 'rgb(74 222 128)',
-    red: 'rgb(248 113 113)',
+    yellow: 'rgb(250, 204, 21)',
+    green: 'rgb(74, 222, 128)',
+    red: 'rgb(248, 113, 113)',
 };
 
 interface BadgeProps {

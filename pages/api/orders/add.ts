@@ -169,6 +169,11 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                 shipping,
                 discount,
                 total,
+                false,
+                null,
+                orderStatus,
+                paymentStatus,
+                fulfillmentStatus,
                 false
             );
             await sgMail.send(mailerOptions);
@@ -187,6 +192,11 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                 shipping,
                 discount,
                 total,
+                true,
+                null,
+                orderStatus,
+                paymentStatus,
+                fulfillmentStatus,
                 false
             );
             await sgMail.send(notificationMailerOptions);

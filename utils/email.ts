@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import sgMail, { MailDataRequired } from '@sendgrid/mail';
+import { MailDataRequired } from '@sendgrid/mail';
 
 import { CartItem } from '../types/cart';
 import { AttachmentData } from '../types/webhooks';
@@ -8,9 +8,50 @@ import { parseImgData } from './webhooks';
 import { Address, CustomerDetails } from '../types/checkout';
 import { getPrettyPrice } from './account/products';
 import { formatOrderNumber } from './checkout';
+import { Fulfillment, Payment, Status } from '../enums/orders';
+import { getFulfillmentStatusTitle, getPaymentStatusTitle, getStatusTitle } from './account';
 
-const filePath = path.resolve(process.cwd(), 'html', 'order.html');
+const orderEmailPath = path.resolve(process.cwd(), 'html', 'order.html');
+const orderUpdatePath = path.resolve(process.cwd(), 'html', 'statusChange.html');
 const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.png'));
+
+export function getStatusMessage(status: Status): string {
+    switch (status) {
+        case Status.Approved:
+        case Status.Fulfilled:
+            return '<span class="badge badge-green"></span>Order status: Approved';
+        case Status.Placed:
+            return '<span class="badge badge-yellow"></span>Order status: Placed';
+        case Status.Cancelled:
+            return '<span class="badge badge-red"></span>Order status: Cancelled';
+        default:
+            return '<span class="badge"></span>Order status: Pending';
+    }
+}
+
+export function getPaymentStatusMessage(paymentStatus: Payment): string {
+    switch (paymentStatus) {
+        case Payment.Paid:
+            return '<span class="badge badge-green"></span>Payment status: Paid';
+        case Payment.Authorised:
+            return '<span class="badge badge-yellow"></span>Payment status: Authorised';
+        case Payment.Refunded:
+            return '<span class="badge badge-red"></span>Payment status: Refunded';
+        default:
+            return '<span class="badge badge-grey"></span>Payment status: Unpaid';
+    }
+}
+
+export function getFulfillmentStatusMessage(fulfillmentStatus: Fulfillment): string {
+    switch (fulfillmentStatus) {
+        case Fulfillment.Fulfilled:
+            return '<span class="badge badge-green"></span>Fulfillment status: Fulfilled';
+        case Fulfillment.InProgress:
+            return '<span class="badge badge-yellow"></span>Fulfillment status: In progress';
+        default:
+            return '<span class="badge badge-grey"></span>Fulfillment status: Unfulfilled';
+    }
+}
 
 function createItemsHTML(items: CartItem[]): string[] {
     return items.map(({ _id, title, sku, quantity, price }) => {
@@ -67,13 +108,23 @@ function createHTML(
     subTotal: number,
     shipping: number,
     discount: number,
-    total: number
+    total: number,
+    trackingNumber: string | null,
+    status: Status,
+    paymentStatus: Payment,
+    fulfillmentStatus: Fulfillment,
+    isUpdate: boolean = false
 ): string {
-    const htmlData = fs.readFileSync(filePath, 'utf8');
+    const htmlData = fs.readFileSync(isUpdate ? orderUpdatePath : orderEmailPath, 'utf8');
     const itemsHtml = createItemsHTML(items);
+    const tracking = trackingNumber ? trackingNumber : 'Not yet applied.';
 
     return htmlData
         .replace('{{orderNumber}}', `${formatOrderNumber(orderNumber)}`)
+        .replace('{{trackingNumber}}', tracking)
+        .replace('{{status}}', getStatusMessage(status))
+        .replace('{{paymentStatus}}', getPaymentStatusMessage(paymentStatus))
+        .replace('{{fulfillmentStatus}}', getFulfillmentStatusMessage(fulfillmentStatus))
         .replace('{{name}}', name)
         .replace('{{email}}', customerDetails.email)
         .replace('{{firstName}}', customerDetails.firstName)
@@ -97,6 +148,7 @@ function createHTML(
 }
 
 function createText(
+    orderNumber: number,
     name: string,
     customerDetails: CustomerDetails,
     billingAddress: Address,
@@ -106,13 +158,18 @@ function createText(
     shipping: number,
     discount: number,
     total: number,
-    isNotification: boolean
+    isNotification: boolean,
+    trackingNumber: string | null,
+    status: Status,
+    paymentStatus: Payment,
+    fulfillmentStatus: Fulfillment
 ): string {
     const itemsText = createItemsText(items);
+    const tracking = trackingNumber ? trackingNumber : 'Not yet applied.';
 
     const bodyText = isNotification
         ? `
-    The order below has been placed, ensure to fulfill. 
+    The order below has been placed, ensure to fulfill and update tracking number. 
     `
         : `
     Thank you for placing your order with King of Cardboard, we hope you enjoy the products you've bought!
@@ -124,7 +181,14 @@ function createText(
         ${bodyText}
         
         # Order Details
+        Order number: ${formatOrderNumber(orderNumber)}
+        Tracking number: ${tracking}
+        Status: ${getStatusTitle(status)}
+        Payment status: ${getPaymentStatusTitle(paymentStatus)}
+        Fulfillment status: ${getFulfillmentStatusTitle(fulfillmentStatus)}
+
         ------
+        
         ## Personal Details
         Name: ${customerDetails.firstName} ${customerDetails.lastName}
         Email: ${customerDetails.email}
@@ -175,7 +239,12 @@ export function createMailerOptions(
     shipping: number,
     discount: number,
     total: number,
-    isNotification: boolean
+    isNotification: boolean,
+    trackingNumber: string | null,
+    status: Status,
+    paymentStatus: Payment,
+    fulfillmentStatus: Fulfillment,
+    isUpdate: boolean = false
 ): MailDataRequired {
     return {
         to: email,
@@ -193,9 +262,15 @@ export function createMailerOptions(
             subTotal,
             shipping,
             discount,
-            total
+            total,
+            trackingNumber,
+            status,
+            paymentStatus,
+            fulfillmentStatus,
+            isUpdate
         ),
         text: createText(
+            orderNumber,
             name,
             customerDetails,
             billingAddress,
@@ -205,7 +280,11 @@ export function createMailerOptions(
             shipping,
             discount,
             total,
-            isNotification
+            isNotification,
+            trackingNumber,
+            status,
+            paymentStatus,
+            fulfillmentStatus
         ),
         attachments: [
             ...itemImageData,
