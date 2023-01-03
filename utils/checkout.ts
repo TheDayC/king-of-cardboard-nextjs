@@ -17,6 +17,10 @@ export function fieldPatternMsgs(field: string): string {
 }
 
 export function formatOrderNumber(orderNumber: number): string {
+    if (orderNumber < 10) {
+        return `#000${orderNumber}`;
+    }
+
     if (orderNumber < 100) {
         return `#00${orderNumber}`;
     }
