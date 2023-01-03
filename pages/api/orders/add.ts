@@ -73,6 +73,7 @@ async function createImageData(items: CartItem[]): Promise<AttachmentData[]> {
 
 function createHTML(
     orderNumber: number,
+    name: string,
     customerDetails: CustomerDetails,
     billingAddress: Address,
     shippingAddress: Address,
@@ -87,7 +88,7 @@ function createHTML(
 
     return htmlData
         .replace('{{orderNumber}}', `${formatOrderNumber(orderNumber)}`)
-        .replace('{{name}}', `${customerDetails.firstName} ${customerDetails.lastName}`)
+        .replace('{{name}}', name)
         .replace('{{email}}', customerDetails.email)
         .replace('{{firstName}}', customerDetails.firstName)
         .replace('{{lastName}}', customerDetails.lastName)
@@ -196,6 +197,7 @@ function createMailerOptions(
         subject: `${isNotification ? 'Order Confirmation' : 'Order Placed'} - King of Cardboard`,
         html: createHTML(
             orderNumber,
+            name,
             customerDetails,
             billingAddress,
             shippingAddress,
@@ -394,8 +396,8 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                 items,
                 itemsImgData,
                 subTotal,
-                discount,
                 shipping,
+                discount,
                 total,
                 false
             );
