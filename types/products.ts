@@ -21,6 +21,8 @@ export interface Product {
     priceHistory: PriceHistory[];
     releaseDate: string | null;
     isInfinite: boolean;
+    metaTitle: string;
+    metaDescription: string;
 }
 
 export interface ListProducts {
