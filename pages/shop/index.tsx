@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Document } from '@contentful/rich-text-types';
+import { isEqual } from 'lodash';
+import { createSelector } from '@reduxjs/toolkit';
 
 import PageWrapper from '../../components/PageWrapper';
 import Filters from '../../components/Shop/Filters';
@@ -18,10 +20,24 @@ import {
     setIsLoadingProducts,
     setProductsAndCount,
 } from '../../store/slices/products';
-import selector from './selector';
+import { selectFiltersData } from '../../store/state/selectors';
+import { DEFAULT_STOCK_STATUSES } from '../../utils/constants';
+import { SortOption } from '../../enums/products';
 
 const LIMIT = 4;
 const SKIP = 0;
+
+const selector = createSelector([selectFiltersData], (filters) => ({
+    shouldShowRows:
+        filters.categories.length === 0 &&
+        filters.configurations.length === 0 &&
+        filters.interests.length === 0 &&
+        isEqual(filters.stockStatus, DEFAULT_STOCK_STATUSES),
+    searchTerm: filters.searchTerm,
+    sortOption: filters.sortOption,
+    hasSearchTerm: filters.searchTerm.length > 0,
+    hasNonDefaultSortOption: filters.sortOption !== SortOption.DateAddedDesc,
+}));
 
 export const getServerSideProps: GetServerSideProps = async () => {
     const { content } = await getPageBySlug('shop', '');

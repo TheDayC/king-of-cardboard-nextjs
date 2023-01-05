@@ -27,8 +27,10 @@ export const Cart: React.FC = () => {
     };
 
     useEffect(() => {
-        dispatch(fetchCartTotals());
-    }, [dispatch]);
+        if (items.length) {
+            dispatch(fetchCartTotals());
+        }
+    }, [dispatch, items]);
 
     return (
         <div className="flex flex-col">
