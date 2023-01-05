@@ -1,14 +1,19 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { GetServerSideProps } from 'next';
+import { createSelector } from '@reduxjs/toolkit';
 
 import Steps from '../../components/Checkout/Steps';
 import Customer from '../../components/Checkout/Customer';
-import selector from './selector';
 import Delivery from '../../components/Checkout/Delivery';
 import Payment from '../../components/Checkout/Payment';
 import Summary from '../../components/Checkout/Summary';
 import PageWrapper from '../../components/PageWrapper';
+import { selectCheckoutData } from '../../store/state/selectors';
+
+const selector = createSelector([selectCheckoutData], (checkout) => ({
+    currentStep: checkout.currentStep,
+}));
 
 export const getServerSideProps: GetServerSideProps = async () => {
     return {

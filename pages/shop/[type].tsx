@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
-import { startCase, upperCase } from 'lodash';
+import { isEqual, startCase, upperCase } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { Document } from '@contentful/rich-text-types';
+import { createSelector } from '@reduxjs/toolkit';
 
 import PageWrapper from '../../components/PageWrapper';
 import { parseAsString, safelyParse } from '../../utils/parsers';
@@ -15,7 +16,20 @@ import { fetchProducts, setIsLoadingProducts, setProductsAndCount } from '../../
 import { getCategoryByInterest, getInterestBySlug, listProducts } from '../../utils/account/products';
 import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
 import { Product } from '../../types/products';
-import selector from './selector';
+import { selectFiltersData } from '../../store/state/selectors';
+import { DEFAULT_STOCK_STATUSES } from '../../utils/constants';
+
+const selector = createSelector([selectFiltersData], (filters) => ({
+    shouldShowRows:
+        filters.categories.length === 0 &&
+        filters.configurations.length === 0 &&
+        filters.interests.length === 0 &&
+        isEqual(filters.stockStatus, DEFAULT_STOCK_STATUSES),
+    searchTerm: filters.searchTerm,
+    sortOption: filters.sortOption,
+    hasSearchTerm: filters.searchTerm.length > 0,
+    hasNonDefaultSortOption: filters.sortOption !== SortOption.DateAddedDesc,
+}));
 
 const LIMIT = 8;
 const SKIP = 0;
