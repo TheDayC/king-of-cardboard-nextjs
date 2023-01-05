@@ -31,7 +31,7 @@ interface HomePageProps {
 export const Home: React.FC<HomePageProps> = ({ heroes, content, sliderImages }) => (
     <PageWrapper
         title="King of Cardboard"
-        description="The most interactive and entertaining trading card break site in the UK. No matter if you collect sports or trading cards, we have something for everyone."
+        description="Sports cards and sealed sport cards products for the UK. Whether you're into Football, Basketball or UFC, we have something for everyone."
     >
         <div className="w-full flex flex-col justify-top items-center">
             {sliderImages.length > 0 && <Slider images={sliderImages} />}
