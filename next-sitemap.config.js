@@ -2,7 +2,7 @@
 const axios = require('axios');
 
 module.exports = {
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || '',
+    siteUrl: 'https://www.kingofcardboard.co.uk/',
     generateRobotsTxt: true,
     generateIndexSitemap: true,
     robotsTxtOptions: {
@@ -37,7 +37,7 @@ module.exports = {
         ];
         const result = [];
         const res = await axios.post(
-            `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/products/list`,
+            'https://www.kingofcardboard.co.uk/api/products/list',
             {
                 count: 9999,
                 page: 0,
