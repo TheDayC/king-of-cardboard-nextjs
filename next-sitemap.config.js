@@ -1,10 +1,8 @@
 /** @type {import('next-sitemap').IConfig} */
 const axios = require('axios');
 
-const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
-
 module.exports = {
-    siteUrl: URL,
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || '',
     generateRobotsTxt: true,
     generateIndexSitemap: true,
     robotsTxtOptions: {
@@ -39,7 +37,7 @@ module.exports = {
         ];
         const result = [];
         const res = await axios.post(
-            `${URL}/api/products/list`,
+            `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/products/list`,
             {
                 count: 9999,
                 page: 0,
