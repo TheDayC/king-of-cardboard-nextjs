@@ -1,7 +1,10 @@
-const contentful = require('contentful');
+/** @type {import('next-sitemap').IConfig} */
+const axios = require('axios');
+
+const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
 module.exports = {
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || '',
+    siteUrl: URL,
     generateRobotsTxt: true,
     generateIndexSitemap: true,
     robotsTxtOptions: {
@@ -35,24 +38,36 @@ module.exports = {
             '/legal/privacy-policy',
         ];
         const result = [];
-        const client = contentful.createClient({
-            space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || '',
-            accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_TOKEN || '',
-            environment: process.env.NEXT_PUBLIC_CONTENTFUL_ENV || '',
-        });
-        const products = await client.getEntries({
-            content_type: 'product',
-            limit: 1000,
-        });
+        const res = await axios.post(
+            `${URL}/api/products/list`,
+            {
+                count: 9999,
+                page: 0,
+                categories: undefined,
+                configurations: undefined,
+                interests: undefined,
+                stockStatuses: undefined,
+                sortOption: undefined,
+                searchTerm: undefined,
+            },
+            {
+                headers: { 'Accept-Encoding': 'application/json' },
+            }
+        );
+        const products = res.data.products;
 
         for (const path of paths) {
-            result.push(await config.transform(config, path));
+            if (config.transform) {
+                result.push(await config.transform(config, path));
+            }
         }
 
-        for (const product of products.items) {
-            const slug = product.fields.slug;
+        for (const product of products) {
+            const slug = product.slug;
 
-            result.push(await config.transform(config, `/product/${slug}`));
+            if (config.transform) {
+                result.push(await config.transform(config, `/product/${slug}`));
+            }
         }
 
         return result;

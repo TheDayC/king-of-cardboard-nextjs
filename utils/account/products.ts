@@ -7,7 +7,6 @@ import { errorHandler } from '../../middleware/errors';
 import { ListProducts, Product, ProductFacets } from '../../types/products';
 import { parseAsNumber, safelyParse } from '../parsers';
 import { Category, Configuration, Interest, SortOption, StockStatus } from '../../enums/products';
-import Sort from '../../components/Shop/Filters/Sort';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || '';
 
