@@ -46,6 +46,7 @@ export const PageWrapper: React.FC<PageWrapperProps> = ({ title, description, im
         <React.Fragment>
             <Head>
                 <title>{title}</title>
+                <meta name="robots" content="index,follow" />
                 <meta property="og:title" content={title} />
                 <meta name="description" content={description} />
                 <meta property="og:description" content={description} />
