@@ -26,14 +26,14 @@ export const Grid: React.FC = () => {
 
     if (isLoadingProducts) {
         return (
-            <div className="flex flex-col w-full md:w-5/6" data-testid="shop-grid">
+            <div className="flex flex-col w-full md:w-4/6 xl:w-full" data-testid="shop-grid">
                 <Skeleton />
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col w-full md:w-4/6 md:space-y-4 xl:w-5/6" data-testid="shop-grid">
+        <div className="flex flex-col w-full md:w-4/6 md:space-y-4 xl:w-full" data-testid="shop-grid">
             {products.length > 0 ? (
                 <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
                     {products.map((product) => (

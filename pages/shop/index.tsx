@@ -91,7 +91,7 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts }) => {
     return (
         <PageWrapper
             title="Shop - King of Cardboard"
-            description="A broad selection of sports cards products for the UK."
+            description="Sealed sports cards boxes, individual cards, imports and pre-orders for UK collectors. Collect your favourite teams and players from the Premier League, NFL, NBA, UFC and WWE."
         >
             <div className="flex flex-col w-full relative space-y-4">
                 <div className="block w-full">{content && <Content content={[content]} />}</div>

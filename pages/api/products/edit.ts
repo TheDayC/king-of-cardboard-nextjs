@@ -66,6 +66,13 @@ async function editProduct(req: NextApiRequest, res: NextApiResponse): Promise<v
                         })),
                         releaseDate: releaseDate ? new Date(releaseDate) : null,
                         isInfinite: safelyParse(req, 'body.isInfinite', parseAsBoolean, existingProduct.isInfinite),
+                        metaTitle: safelyParse(req, 'body.metaTitle', parseAsString, existingProduct.metaTitle),
+                        metaDescription: safelyParse(
+                            req,
+                            'body.metaDescription',
+                            parseAsString,
+                            existingProduct.metaDescription
+                        ),
                     },
                 }
             );

@@ -84,7 +84,7 @@ export const LatestProductRows: React.FC = () => {
     ];
 
     return (
-        <div className="flex flex-col w-full md:w-4/6 md:space-y-4 xl:w-5/6">
+        <div className="flex flex-col w-full md:w-4/6 md:space-y-4 xl:w-fit">
             {rows.map(({ title, description, shouldShow, products, link, icon }) => {
                 if (!shouldShow) return null;
 

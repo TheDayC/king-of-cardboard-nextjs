@@ -7,7 +7,7 @@ export const BreakPage: React.FC = () => {
     return (
         <PageWrapper
             title="Breaks - King of Cardboard"
-            description="Hobby and booster box breaks in a variety of formats. A great way to keep the hobby low cost and accessible."
+            description="Sports card breaks for the UK collector. A great way to keep your favourite hobby cheap and accessible."
         >
             <Breaks />
         </PageWrapper>

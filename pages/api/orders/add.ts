@@ -84,6 +84,8 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                         cartQty: safelyParse(matchingItem, 'cartQty', parseAsNumber, 0),
                         releaseDate: safelyParse(matchingItem, 'releaseDate', parseAsString, null),
                         priceHistory: [],
+                        metaTitle: safelyParse(matchingItem, 'metaTitle', parseAsString, ''),
+                        metaDescription: safelyParse(matchingItem, 'metaDescription', parseAsString, ''),
                     };
                 });
 

@@ -58,6 +58,8 @@ async function addProduct(req: NextApiRequest, res: NextApiResponse): Promise<vo
                 })),
                 releaseDate: releaseDate ? new Date(releaseDate) : null,
                 isInfinite: safelyParse(req, 'body.isInfinite', parseAsBoolean, false),
+                metaTitle: safelyParse(req, 'body.metaTitle', parseAsString, ''),
+                metaDescription: safelyParse(req, 'body.metaDescription', parseAsString, ''),
             });
 
             res.status(201).end();

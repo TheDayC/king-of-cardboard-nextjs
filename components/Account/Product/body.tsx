@@ -77,6 +77,8 @@ interface ProductBodyProps {
     priceHistory?: PriceHistory[];
     releaseDate?: string | null;
     isNew: boolean;
+    metaTitle?: string;
+    metaDescription?: string;
 }
 
 export const ProductBody: React.FC<ProductBodyProps> = ({
@@ -97,6 +99,8 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     priceHistory,
     releaseDate = null,
     isNew,
+    metaTitle,
+    metaDescription,
 }) => {
     const { data: session } = useSession();
     const {
@@ -124,6 +128,8 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             historicalTimestamp: priceHistory && priceHistory.length ? priceHistory.map((pH) => pH.timestamp) : [],
             historicalPrice: priceHistory && priceHistory.length ? priceHistory.map((pH) => pH.price) : [],
             releaseDate,
+            metaTitle,
+            metaDescription,
         },
     });
     const router = useRouter();
@@ -160,6 +166,8 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     const salePriceErr = safelyParse(errors, 'salePrice.message', parseAsString, null);
     const mainImageErr = safelyParse(errors, 'mainImage.message', parseAsString, null);
     const galleryErr = safelyParse(errors, 'gallery.message', parseAsString, null);
+    const metaTitleErr = safelyParse(errors, 'metaTitle.message', parseAsString, null);
+    const metaDescriptionErr = safelyParse(errors, 'metaDescription.message', parseAsString, null);
 
     // Variables
     const userId = session ? session.user.id : null;
@@ -184,6 +192,8 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             price,
             salePrice,
             releaseDate,
+            metaTitle,
+            metaDescription,
         } = data;
         let fileName: string | null = mainImage ?? null;
         let galleryFileNames: string[] | null = gallery ?? null;
@@ -241,6 +251,8 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             })),
             releaseDate: DateTime.fromJSDate(releaseDate).toISO(),
             isInfinite: false,
+            metaTitle,
+            metaDescription,
         };
 
         if (isNew) {
@@ -338,6 +350,26 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         isDate
                         startDate={startDate}
                         setStartDate={handleReleaseDate}
+                    />
+                </div>
+                <div className="flex flex-row space-x-4 items-start justify-start">
+                    <InputField
+                        placeholder="Meta title"
+                        fieldName="metaTitle"
+                        instruction="Meta title is required."
+                        error={metaTitleErr}
+                        register={register}
+                        Icon={MdOutlineTitle}
+                        isRequired
+                    />
+                    <InputField
+                        placeholder="Meta description"
+                        fieldName="metaDescription"
+                        instruction="Meta description is required."
+                        error={metaDescriptionErr}
+                        register={register}
+                        Icon={ImFontSize}
+                        isRequired
                     />
                 </div>
                 <div className="flex flex-row space-x-4 items-start justify-start">

@@ -60,13 +60,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         configuration,
         priceHistory,
         releaseDate,
+        metaTitle,
+        metaDescription,
     } = product;
 
     return {
         props: {
             errorCode: null,
-            metaTitle: '',
-            metaDescription: '',
+            metaTitle: `${metaTitle ? metaTitle : title} - King of Cardboard`,
+            metaDescription: metaDescription
+                ? metaDescription
+                : `The ${title} sports card product from King of Cardboard.`,
             id: _id,
             name: title,
             slug,
@@ -146,11 +150,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({
     }
 
     return (
-        <PageWrapper
-            title={`${metaTitle} | Import | King of Cardboard`}
-            description={metaDescription}
-            image={mainImage.url}
-        >
+        <PageWrapper title={metaTitle} description={metaDescription} image={mainImage.url}>
             <Product
                 id={id}
                 title={name}

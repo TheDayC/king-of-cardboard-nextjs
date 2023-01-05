@@ -93,6 +93,8 @@ async function editOrder(req: NextApiRequest, res: NextApiResponse): Promise<voi
                     cartQty: safelyParse(matchingItem, 'cartQty', parseAsNumber, 0),
                     releaseDate: safelyParse(matchingItem, 'releaseDate', parseAsString, null),
                     priceHistory: matchingItem ? matchingItem.priceHistory : [],
+                    metaTitle: safelyParse(matchingItem, 'metaTitle', parseAsString, ''),
+                    metaDescription: safelyParse(matchingItem, 'metaDescription', parseAsString, ''),
                 };
             });
 

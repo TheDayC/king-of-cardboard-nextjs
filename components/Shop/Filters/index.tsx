@@ -131,7 +131,7 @@ export const Filters: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col w-full relative space-y-4 md:w-2/6 xl:w-1/6">
+        <div className="flex flex-col w-full relative space-y-4 md:w-2/6 xl:w-60">
             <div className="flex flex-col w-full">
                 <SearchBar />
             </div>
