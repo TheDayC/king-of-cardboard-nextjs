@@ -103,7 +103,7 @@ export const ShopType: React.FC<ShopTypeProps> = ({ interest, staticInterest, ca
     return (
         <PageWrapper
             title={`${caseChangedShopType} | Shop | King of Cardboard`}
-            description={`${caseChangedShopType} cards, sealed product and memorabilia.`}
+            description={`${caseChangedShopType} sports cards, sealed product and memorabilia.`}
         >
             <div className="flex flex-col w-full relative">
                 {content && <Content content={[content]} />}
