@@ -1,6 +1,9 @@
 import { DateTime } from 'luxon';
 import React from 'react';
 import { BsBoxSeam, BsCalendarDate, BsCart } from 'react-icons/bs';
+import { FaPlaneArrival } from 'react-icons/fa';
+
+import { StockStatus } from '../../../enums/products';
 
 interface DetailsProps {
     name: string;
@@ -12,6 +15,7 @@ interface DetailsProps {
     description: string | null;
     shouldShowCompare: boolean;
     releaseDate: string | null;
+    stockStatus: StockStatus;
 }
 
 export const Details: React.FC<DetailsProps> = ({
@@ -24,7 +28,10 @@ export const Details: React.FC<DetailsProps> = ({
     description,
     shouldShowCompare,
     releaseDate,
+    stockStatus,
 }) => {
+    const isImport = stockStatus === StockStatus.Import;
+
     return (
         <div className="flex flex-col items-center relative w-full space-y-4 md:items-start">
             <h1 className="card-title text-4xl">{name}</h1>
@@ -46,6 +53,17 @@ export const Details: React.FC<DetailsProps> = ({
                     <BsBoxSeam className="text-xl inline mr-2 -mt-1 text-amber-900" />
                     <span className="font-semibold">Stock:</span> {quantity}
                 </p>
+                {isImport && (
+                    <p className="text-base-400 text-xl">
+                        <FaPlaneArrival className="text-xl inline mr-2 text-secondary-focus" />
+                        <span className="font-semibold">Type:</span> Import
+                    </p>
+                )}
+                {isImport && (
+                    <p className="text-base-400 text-lg italic text-gray-400">
+                        Please allow 5-10 days for imports to arrive in the country prior to local shipping.
+                    </p>
+                )}
                 {releaseDate && (
                     <p
                         className="text-base-400 tooltip tooltip-bottom text-xl"
