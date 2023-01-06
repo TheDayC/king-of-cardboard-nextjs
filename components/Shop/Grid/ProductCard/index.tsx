@@ -3,10 +3,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { BsArrowRightSquareFill, BsCalendarDate } from 'react-icons/bs';
 import { DateTime } from 'luxon';
+import { FaPlaneArrival } from 'react-icons/fa';
 
 import { StockStatus } from '../../../../enums/products';
 import { getStockStatusColor, getStockStatusTitle, getStockStatusTooltip } from '../../../../utils/account/products';
-import { FaPlaneArrival } from 'react-icons/fa';
 
 interface CardProps {
     name: string;
