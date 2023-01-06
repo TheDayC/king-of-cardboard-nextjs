@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { BsArrowRightSquareFill, BsCalendarDate } from 'react-icons/bs';
 import { DateTime } from 'luxon';
+import { FaPlaneArrival } from 'react-icons/fa';
 
 import { StockStatus } from '../../../../enums/products';
 import { getStockStatusColor, getStockStatusTitle, getStockStatusTooltip } from '../../../../utils/account/products';
@@ -55,14 +56,26 @@ export const ProductCard: React.FC<CardProps> = ({
                 <Link href={linkOptions} passHref>
                     <div className="relative w-full h-40 cursor-pointer flex flex-row justify-center">
                         <div className="relative">
-                            {releaseDate && (
+                            {stockStatus === StockStatus.PreOrder && (
                                 <div
-                                    className="absolute flex flex-col items-center rounded-full bg-secondary p-3 -top-3 -right-3 tooltip tooltip-top shadow-sm"
-                                    data-tip={`Expected release: ${DateTime.fromISO(releaseDate).toFormat(
-                                        'dd/MM/yyyy'
-                                    )}`}
+                                    className="absolute flex flex-col items-center rounded-full bg-accent-focus p-3 -top-3 -right-3 tooltip tooltip-top shadow-sm"
+                                    data-tip={
+                                        releaseDate
+                                            ? `Expected release: ${DateTime.fromISO(releaseDate).toFormat(
+                                                  'dd/MM/yyyy'
+                                              )}`
+                                            : undefined
+                                    }
                                 >
                                     <BsCalendarDate className="inline text-white text-xl" />
+                                </div>
+                            )}
+                            {stockStatus === StockStatus.Import && (
+                                <div
+                                    className="absolute flex flex-col items-center rounded-full bg-secondary-focus p-3 -top-3 -right-3 tooltip tooltip-top shadow-sm"
+                                    data-tip="Please allow 5-10 days for imports to arrive in the country prior to local shipping."
+                                >
+                                    <FaPlaneArrival className="inline text-white text-xl" />
                                 </div>
                             )}
                             <Image
