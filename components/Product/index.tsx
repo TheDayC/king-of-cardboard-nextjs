@@ -6,7 +6,7 @@ import { toNumber } from 'lodash';
 import selector from './selector';
 import Images from './Images';
 import Details from './Details';
-import { Configuration, Interest, Category } from '../../enums/products';
+import { Configuration, Interest, Category, StockStatus } from '../../enums/products';
 import { ImageItem } from '../../types/contentful';
 import { addItem, setUpdatingCart } from '../../store/slices/cart';
 import { gaEvent } from '../../utils/ga';
@@ -15,7 +15,7 @@ import { getPrettyPrice } from '../../utils/account/products';
 import { PriceHistory } from '../../types/products';
 import PriceHistoryChart from '../PriceHistoryChart';
 
-interface ImportProps {
+interface ProductProps {
     id: string;
     title: string;
     slug: string;
@@ -34,9 +34,10 @@ interface ImportProps {
     priceHistory: PriceHistory[];
     shouldShowCompare: boolean;
     releaseDate: string | null;
+    stockStatus: StockStatus;
 }
 
-export const Product: React.FC<ImportProps> = ({
+export const Product: React.FC<ProductProps> = ({
     id,
     title,
     slug,
@@ -55,6 +56,7 @@ export const Product: React.FC<ImportProps> = ({
     priceHistory,
     shouldShowCompare,
     releaseDate,
+    stockStatus,
 }) => {
     const dispatch = useDispatch();
     const { items, isUpdatingCart } = useSelector(selector);
@@ -123,6 +125,7 @@ export const Product: React.FC<ImportProps> = ({
                         description={description}
                         shouldShowCompare={shouldShowCompare}
                         releaseDate={releaseDate}
+                        stockStatus={stockStatus}
                     />
 
                     {isAvailable && (

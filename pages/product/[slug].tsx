@@ -7,7 +7,7 @@ import Custom404Page from '../404';
 import Product from '../../components/Product';
 import { ImageItem } from '../../types/contentful';
 import { getProduct } from '../../utils/account/products';
-import { Category, Configuration, Interest } from '../../enums/products';
+import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
 import { PriceHistory } from '../../types/products';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -41,6 +41,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 options: [],
                 priceHistory: [],
                 releaseDate: null,
+                stockStatus: StockStatus.OutOfStock,
             },
         };
     }
@@ -62,6 +63,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         releaseDate,
         metaTitle,
         metaDescription,
+        stockStatus,
     } = product;
 
     return {
@@ -93,6 +95,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             priceHistory,
             shouldShowCompare: salePrice > 0 && salePrice !== price,
             releaseDate,
+            stockStatus,
         },
     };
 };
@@ -119,6 +122,7 @@ interface ProductPageProps {
     priceHistory: PriceHistory[];
     shouldShowCompare: boolean;
     releaseDate: string | null;
+    stockStatus: StockStatus;
 }
 
 export const ProductPage: React.FC<ProductPageProps> = ({
@@ -143,6 +147,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({
     priceHistory,
     shouldShowCompare,
     releaseDate = null,
+    stockStatus,
 }) => {
     // Show error page if a code is provided.
     if (errorCode) {
@@ -170,6 +175,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({
                 priceHistory={priceHistory}
                 shouldShowCompare={shouldShowCompare}
                 releaseDate={releaseDate}
+                stockStatus={stockStatus}
             />
         </PageWrapper>
     );
