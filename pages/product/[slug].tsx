@@ -1,7 +1,6 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
 
-import PageWrapper from '../../components/PageWrapper';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import Custom404Page from '../404';
 import Product from '../../components/Product';
@@ -9,6 +8,7 @@ import { ImageItem } from '../../types/contentful';
 import { getProduct } from '../../utils/account/products';
 import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
 import { PriceHistory } from '../../types/products';
+import ProductWrapper from '../../components/ProductWrapper';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const productSlug = safelyParse(context, 'query.slug', parseAsString, undefined);
@@ -155,7 +155,14 @@ export const ProductPage: React.FC<ProductPageProps> = ({
     }
 
     return (
-        <PageWrapper title={metaTitle} description={metaDescription} image={mainImage.url}>
+        <ProductWrapper
+            title={metaTitle}
+            description={metaDescription}
+            image={mainImage.url}
+            price={price}
+            stockStatus={stockStatus}
+            sku={sku}
+        >
             <Product
                 id={id}
                 title={name}
@@ -177,7 +184,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({
                 releaseDate={releaseDate}
                 stockStatus={stockStatus}
             />
-        </PageWrapper>
+        </ProductWrapper>
     );
 };
 
