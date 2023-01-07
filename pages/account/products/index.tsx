@@ -14,7 +14,7 @@ import Product from '../../../components/Account/Product';
 import Loading from '../../../components/Loading';
 import Pagination from '../../../components/Pagination';
 
-const LIMIT = 5;
+const LIMIT = 8;
 const PAGE = 0;
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
@@ -47,8 +47,6 @@ interface ProductsPageProps {
 
 export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, initialTotalProducts }) => {
     const [products, setProducts] = useState<ProductType[]>(initialProducts);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [count, setCount] = useState(LIMIT);
     const [page, setPage] = useState(PAGE);
     const [totalProducts, setTotalProducts] = useState(initialTotalProducts);
     const [isLoading, setIsLoading] = useState(false);
@@ -83,15 +81,17 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
                             </button>
                         </Link>
                     </div>
-                    {products.length > 0 &&
-                        products.map((product) => (
-                            <Product
-                                product={product}
-                                currentPage={page}
-                                key={`product-${product._id}`}
-                                updateProducts={handleUpdateProducts}
-                            />
-                        ))}
+                    <div className="grid grid-cols-2 gap-4">
+                        {products.length > 0 &&
+                            products.map((product) => (
+                                <Product
+                                    product={product}
+                                    currentPage={page}
+                                    key={`product-${product._id}`}
+                                    updateProducts={handleUpdateProducts}
+                                />
+                            ))}
+                    </div>
                     {pageCount > 1 && (
                         <Pagination currentPage={page} pageCount={pageCount} handlePageNumber={handlePageNumber} />
                     )}
