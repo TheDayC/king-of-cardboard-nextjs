@@ -51,11 +51,21 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
     const [page, setPage] = useState(PAGE);
     const [totalProducts, setTotalProducts] = useState(initialTotalProducts);
     const [isLoading, setIsLoading] = useState(false);
+    const [currentTerm, setCurrentTerm] = useState('');
     const pageCount = totalProducts / LIMIT;
 
     const handleUpdateProducts = async (nextPage: number) => {
         setIsLoading(true);
-        const { products: newProducts, count: newTotalProducts } = await listProducts(LIMIT, LIMIT * nextPage, false);
+        const { products: newProducts, count: newTotalProducts } = await listProducts(
+            LIMIT,
+            LIMIT * nextPage,
+            false,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            currentTerm
+        );
 
         setProducts(newProducts);
         setTotalProducts(newTotalProducts);
@@ -70,6 +80,8 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
 
     const handleOnSearch = async (term: string) => {
         setIsLoading(true);
+        setCurrentTerm(term);
+
         const { products: newProducts, count: newTotalProducts } = await listProducts(
             LIMIT,
             0,

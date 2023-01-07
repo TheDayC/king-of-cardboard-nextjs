@@ -62,8 +62,7 @@ interface OrdersPageProps {
 export const OrdersPage: React.FC<OrdersPageProps> = ({ initialOrders, initialTotalProducts }) => {
     const { data: session } = useSession();
     const [orders, setOrders] = useState<Order[]>(initialOrders);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [count, setCount] = useState(LIMIT);
+    const [currentTerm, setCurrentTerm] = useState('');
     const [page, setPage] = useState(PAGE);
     const [totalProducts, setTotalProducts] = useState(initialTotalProducts);
     const [isLoading, setIsLoading] = useState(false);
@@ -76,7 +75,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ initialOrders, initialTo
         if (!userId || !isAdmin) return;
 
         setIsLoading(true);
-        const ordersList = await listAllOrders(LIMIT, LIMIT * nextPage, '', false);
+        const ordersList = await listAllOrders(LIMIT, LIMIT * nextPage, currentTerm, false);
 
         if (isListOrders(ordersList)) {
             setOrders(ordersList.orders);
@@ -93,6 +92,8 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ initialOrders, initialTo
 
     const handleOnSearch = async (term: string) => {
         setIsLoading(true);
+        setCurrentTerm(term);
+
         const ordersList = await listAllOrders(LIMIT, 0, term, false);
 
         if (isListOrders(ordersList)) {

@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import Link from 'next/link';
 import React from 'react';
 import { BiEdit } from 'react-icons/bi';
-import { BsBoxSeam, BsCalendarCheck, BsCalendarDate } from 'react-icons/bs';
+import { BsBoxSeam, BsCalendarDate, BsFillPersonFill } from 'react-icons/bs';
 
 import { Order as OrderObject } from '../../../types/orders';
 import { formatOrderNumber } from '../../../utils/checkout';
@@ -21,8 +21,7 @@ interface OrderProps {
 }
 
 export const Order: React.FC<OrderProps> = ({ order }) => {
-    const { _id: id, orderNumber, lastUpdated, created, items, orderStatus, paymentStatus, fulfillmentStatus } = order;
-    const lastUpdatedDate = DateTime.fromISO(lastUpdated, { zone: 'Europe/London' });
+    const { _id: id, orderNumber, created, items, orderStatus, paymentStatus, fulfillmentStatus } = order;
     const createdDate = DateTime.fromISO(created, { zone: 'Europe/London' });
 
     const statusColor = getStatusColor(orderStatus);
@@ -37,23 +36,23 @@ export const Order: React.FC<OrderProps> = ({ order }) => {
             : 0;
 
     return (
-        <div className="card card-side bg-base-100 shadow-xl">
+        <div className="card card-side bg-base-100 shadow-md rounded-md">
             <div className="card-body justify-between space-y-4">
-                <div className="flex flex-row justify-between">
+                <div className="flex flex-col space-y-4">
                     <h2 className="text-2xl">Order {formatOrderNumber(orderNumber)}</h2>
                     <div className="flex flex-row items-start justify-start space-x-4">
-                        <p className="text-sm text-gray-400">
+                        <span className="text-sm text-gray-400">
+                            <BsFillPersonFill className="w-5 h-5 inline mr-2 -mt-1" />
+                            {order.email}
+                        </span>
+                        <span className="text-sm text-gray-400">
                             <BsCalendarDate className="w-5 h-5 inline mr-2 -mt-1" />
-                            Placed on: {createdDate.toFormat('MMM dd, y')}
-                        </p>
-                        <p className="text-sm text-gray-400">
-                            <BsCalendarCheck className="w-5 h-5 inline mr-2 -mt-1" />
-                            Last updated on: {lastUpdatedDate.toFormat('MMM dd, y')}
-                        </p>
-                        <p className="text-sm text-gray-400">
+                            {createdDate.toFormat('HH:mm - dd/MM/yyyy')}
+                        </span>
+                        <span className="text-sm text-gray-400">
                             <BsBoxSeam className="w-5 h-5 inline mr-2 -mt-1" />
-                            Items: {itemCount}
-                        </p>
+                            {itemCount}
+                        </span>
                     </div>
                 </div>
                 <div className="flex flex-row space-x-4">
