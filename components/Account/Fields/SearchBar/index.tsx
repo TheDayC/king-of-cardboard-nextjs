@@ -19,7 +19,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 
     useEffect(() => {
         onSearch(currentTerm);
-    }, [currentTerm]);
+    }, [currentTerm, onSearch]);
 
     return (
         <div className="form-control inline-block">
