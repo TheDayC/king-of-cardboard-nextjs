@@ -76,7 +76,7 @@ export const Product: React.FC<ProductProps> = ({ product, currentPage, updatePr
     };
 
     return (
-        <div className="card card-side bg-base-100 shadow-md">
+        <div className="card card-side bg-base-100 shadow-md rounded-md">
             {mainImage && (
                 <figure className="w-48 overflow-hidden relative">
                     <Image
