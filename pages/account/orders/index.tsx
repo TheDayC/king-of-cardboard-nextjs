@@ -35,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
         };
     }
 
-    const ordersList = await listAllOrders(LIMIT, PAGE, true);
+    const ordersList = await listAllOrders(LIMIT, PAGE, '', true);
 
     if (!isListOrders(ordersList)) {
         return {
