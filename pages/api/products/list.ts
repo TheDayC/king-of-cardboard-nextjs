@@ -1,3 +1,4 @@
+import { toNumber } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { SortOption } from '../../../enums/products';
@@ -21,18 +22,20 @@ async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<
             const interests = safelyParse(req, 'body.interests', parseAsArrayOfNumbers, null);
             const configurations = safelyParse(req, 'body.configurations', parseAsArrayOfNumbers, null);
             const stockStatuses = safelyParse(req, 'body.stockStatuses', parseAsArrayOfNumbers, null);
-            const searchTerm = safelyParse(req, 'body.searchTerm', parseAsString, null);
+            const searchTerm = safelyParse(req, 'body.searchTerm', parseAsString, '');
+            const regex = new RegExp(searchTerm, 'i');
             const sortOption = safelyParse(req, 'body.sortOption', parseAsNumber, SortOption.DateAddedDesc);
             const query = buildProductListMongoQueryValues(categories, interests, configurations, stockStatuses);
-            const searchQuery =
-                searchTerm && searchTerm.length > 0
-                    ? {
-                          $text: {
-                              $search: searchTerm,
-                              $caseSensitive: false,
-                          },
-                      }
-                    : {};
+            const searchQuery = {
+                $or: [
+                    { sku: regex },
+                    { title: regex },
+                    { slug: regex },
+                    { content: regex },
+                    { metaTitle: regex },
+                    { metaDescription: regex },
+                ],
+            };
             const sortQuery = getSortQuery(sortOption);
 
             const productCount = await productsCollection.countDocuments({ ...query, ...searchQuery });

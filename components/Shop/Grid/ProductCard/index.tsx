@@ -52,7 +52,7 @@ export const ProductCard: React.FC<CardProps> = ({
             className="card shadow-md rounded-md bordered pt-4 transition duration-300 ease-in-out relative hover:shadow-2xl"
             data-testid="product-card"
         >
-            {image.length > 0 && (
+            {image && image.length > 0 && (
                 <Link href={linkOptions} passHref>
                     <div className="relative w-full h-40 cursor-pointer flex flex-row justify-center">
                         <div className="relative">
