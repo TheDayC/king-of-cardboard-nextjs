@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import Link from 'next/link';
 import React from 'react';
 import { BiEdit } from 'react-icons/bi';
-import { BsBoxSeam, BsCalendarCheck, BsCalendarDate, BsFillPersonFill } from 'react-icons/bs';
+import { BsBoxSeam, BsCalendarDate, BsFillPersonFill } from 'react-icons/bs';
 
 import { Order as OrderObject } from '../../../types/orders';
 import { formatOrderNumber } from '../../../utils/checkout';
@@ -21,8 +21,7 @@ interface OrderProps {
 }
 
 export const Order: React.FC<OrderProps> = ({ order }) => {
-    const { _id: id, orderNumber, lastUpdated, created, items, orderStatus, paymentStatus, fulfillmentStatus } = order;
-    const lastUpdatedDate = DateTime.fromISO(lastUpdated, { zone: 'Europe/London' });
+    const { _id: id, orderNumber, created, items, orderStatus, paymentStatus, fulfillmentStatus } = order;
     const createdDate = DateTime.fromISO(created, { zone: 'Europe/London' });
 
     const statusColor = getStatusColor(orderStatus);

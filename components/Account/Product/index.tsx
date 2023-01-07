@@ -6,6 +6,7 @@ import { BiBarcodeReader, BiEdit, BiEditAlt, BiTrash } from 'react-icons/bi';
 import { useDispatch } from 'react-redux';
 import { toNumber } from 'lodash';
 import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
+import { BsBoxSeam, BsCalendarDate } from 'react-icons/bs';
 
 import { addError, addSuccess } from '../../../store/slices/alerts';
 import { Product as ProductType } from '../../../types/products';
@@ -13,7 +14,6 @@ import { getPrettyPrice, deleteProduct, editProduct } from '../../../utils/accou
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import Loading from '../../Loading';
 import { isNumber } from '../../../utils/typeguards';
-import { BsBoxSeam, BsCalendarDate } from 'react-icons/bs';
 
 interface ProductProps {
     product: ProductType;
