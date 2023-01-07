@@ -13,11 +13,28 @@ async function listAllOrders(req: NextApiRequest, res: NextApiResponse): Promise
             const { db } = await connectToDatabase();
 
             const collection = db.collection('orders');
-            const limit = toNumber(safelyParse(req, 'query.limit', parseAsString, 10));
-            const skip = toNumber(safelyParse(req, 'query.skip', parseAsString, 0));
+            const limit = toNumber(safelyParse(req, 'query.limit', parseAsString, '10'));
+            const skip = toNumber(safelyParse(req, 'query.skip', parseAsString, '0'));
+            const searchTerm = safelyParse(req, 'query.searchTerm', parseAsString, '');
+            const searchQuery =
+                searchTerm && searchTerm.length > 0
+                    ? {
+                          $text: {
+                              $search: searchTerm,
+                              $caseSensitive: false,
+                          },
+                      }
+                    : {};
 
             const orderCount = await collection.countDocuments();
-            const orderList = await collection.find({}, { skip, limit }).toArray();
+            const orderList = await collection
+                .find(
+                    {
+                        ...searchQuery,
+                    },
+                    { skip, limit, sort: { created: -1 } }
+                )
+                .toArray();
 
             if (orderList.length === 0) {
                 res.status(404).json({ message: defaultErr });

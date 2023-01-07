@@ -104,9 +104,9 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
                     <div className="flex flex-col w-full">
                         <SearchBar onSearch={handleOnSearch} />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        {products.length > 0 &&
-                            products.map((product) => (
+                    {products.length > 0 && (
+                        <div className="grid grid-cols-2 gap-4">
+                            {products.map((product) => (
                                 <Product
                                     product={product}
                                     currentPage={page}
@@ -114,7 +114,8 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
                                     updateProducts={handleUpdateProducts}
                                 />
                             ))}
-                    </div>
+                        </div>
+                    )}
                     {pageCount > 1 && (
                         <Pagination currentPage={page} pageCount={pageCount} handlePageNumber={handlePageNumber} />
                     )}

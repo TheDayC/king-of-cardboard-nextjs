@@ -15,8 +15,9 @@ import Pagination from '../../../components/Pagination';
 import { listAllOrders } from '../../../utils/account/order';
 import { isListOrders } from '../../../utils/typeguards';
 import { Order } from '../../../types/orders';
+import SearchBar from '../../../components/Account/Fields/SearchBar';
 
-const LIMIT = 10;
+const LIMIT = 8;
 const PAGE = 0;
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
@@ -75,7 +76,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ initialOrders, initialTo
         if (!userId || !isAdmin) return;
 
         setIsLoading(true);
-        const ordersList = await listAllOrders(LIMIT, LIMIT * nextPage, false);
+        const ordersList = await listAllOrders(LIMIT, LIMIT * nextPage, '', false);
 
         if (isListOrders(ordersList)) {
             setOrders(ordersList.orders);
@@ -88,6 +89,21 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ initialOrders, initialTo
     const handlePageNumber = (nextPage: number) => {
         setPage(nextPage);
         handleUpdateProducts(nextPage);
+    };
+
+    const handleOnSearch = async (term: string) => {
+        setIsLoading(true);
+        const ordersList = await listAllOrders(LIMIT, 0, term, false);
+
+        if (isListOrders(ordersList)) {
+            setOrders(ordersList.orders);
+            setTotalProducts(ordersList.count);
+        } else {
+            setOrders([]);
+            setTotalProducts(0);
+        }
+
+        setIsLoading(false);
     };
 
     return (
@@ -104,8 +120,16 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ initialOrders, initialTo
                             </button>
                         </Link>
                     </div>
-                    {orders.length > 0 &&
-                        orders.map((order) => <OrderComponent order={order} key={`order-${order._id}`} />)}
+                    <div className="flex flex-col w-full">
+                        <SearchBar onSearch={handleOnSearch} />
+                    </div>
+                    {orders.length > 0 && (
+                        <div className="grid grid-cols-2 gap-4">
+                            {orders.map((order) => (
+                                <OrderComponent order={order} key={`order-${order._id}`} />
+                            ))}
+                        </div>
+                    )}
                     {pageCount > 1 && (
                         <Pagination currentPage={page} pageCount={pageCount} handlePageNumber={handlePageNumber} />
                     )}
