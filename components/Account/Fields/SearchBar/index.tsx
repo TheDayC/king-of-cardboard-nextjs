@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BiSearchAlt } from 'react-icons/bi';
 import { debounce } from 'lodash';
 
@@ -7,19 +7,13 @@ interface SearchBarProps {
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
-    const [currentTerm, setCurrentTerm] = useState('');
-
     const debouncedSetCurrentTerm = debounce(async (value: string) => {
-        setCurrentTerm(value);
+        onSearch(value);
     }, 300);
 
     const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         debouncedSetCurrentTerm(e.target.value);
     };
-
-    useEffect(() => {
-        onSearch(currentTerm);
-    }, [currentTerm, onSearch]);
 
     return (
         <div className="form-control inline-block">
