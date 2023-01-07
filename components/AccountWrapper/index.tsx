@@ -56,11 +56,15 @@ export const AccountWrapper: React.FC<AccountWrapperProps> = ({ title, descripti
                 <meta name="twitter:description" content={description} />
                 <meta name="twitter:image" content={imageURL} />
             </Head>
-            <div className="flex flex-row justify-start items-stretch bg-primary-content h-screen overflow-y-auto">
-                <div className="w-80 bg-neutral py-2 h-full">
-                    <Sidebar />
+            <div className="flex flex-row justify-start items-stretch h-screen bg-neutral overflow-hidden">
+                <div className="w-80 bg-neutral">
+                    <div className="w-full overflow-y-auto h-screen py-2">
+                        <Sidebar />
+                    </div>
                 </div>
-                <div className="w-full">{children}</div>
+                <div className="flex flex-col w-full bg-white overflow-y-scroll">
+                    <div className="w-full">{children}</div>
+                </div>
             </div>
         </React.Fragment>
     );

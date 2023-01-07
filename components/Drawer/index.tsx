@@ -35,7 +35,7 @@ export const Drawer: React.FC<DrawerProps> = ({ children }) => {
     };
 
     return (
-        <div className="bg-none drawer h-screen" data-testid="drawer">
+        <div className="bg-none drawer h-screen overflow-auto xl:overflow-hiden" data-testid="drawer">
             <input type="checkbox" className="drawer-toggle" checked={isDrawerOpen} onChange={handleToggle} />
             <div className="drawer-content">{children}</div>
             <div className="drawer-side">
