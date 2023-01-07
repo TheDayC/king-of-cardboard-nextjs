@@ -37,7 +37,7 @@ export const Order: React.FC<OrderProps> = ({ order }) => {
             : 0;
 
     return (
-        <div className="card card-side bg-base-100 shadow-xl">
+        <div className="card card-side bg-base-100 shadow-xl border-radius-md">
             <div className="card-body justify-between space-y-4">
                 <div className="flex flex-col space-y-4">
                     <h2 className="text-2xl">Order {formatOrderNumber(orderNumber)}</h2>
