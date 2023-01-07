@@ -109,7 +109,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ initialOrders, initialTo
     return (
         <AccountWrapper title="Orders - Account - King of Cardboard" description="Account page">
             <div className="flex flex-col w-full justify-start items-start p-2 md:p-4 md:p-8 md:flex-row relative">
-                {isLoading && <Loading show />}
+                <Loading show={isLoading} />
                 <div className="flex flex-col relative w-full space-y-4" data-testid="content">
                     <div className="flex flex-row justify-between items-center mb-4 pb-4 border-b border-solid border-gray-300">
                         <h1 className="text-5xl">Orders</h1>
