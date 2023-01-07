@@ -77,16 +77,18 @@ export const Product: React.FC<ProductProps> = ({ product, currentPage, updatePr
 
     return (
         <div className="card card-side bg-base-100 shadow-md">
-            <figure className="w-48 overflow-hidden relative">
-                <Image
-                    src={`https://kocardboard-images.s3.eu-west-1.amazonaws.com/${mainImage}`}
-                    fill
-                    sizes="(max-width: 192px) 100vw"
-                    alt={`${title} image`}
-                    title={`${title} image`}
-                />
-            </figure>
-            <div className="card-body justify-between">
+            {mainImage && (
+                <figure className="w-48 overflow-hidden relative">
+                    <Image
+                        src={`https://kocardboard-images.s3.eu-west-1.amazonaws.com/${mainImage}`}
+                        fill
+                        sizes="(max-width: 192px) 100vw"
+                        alt={`${title} image`}
+                        title={`${title} image`}
+                    />
+                </figure>
+            )}
+            <div className="card-body justify-between p-4">
                 <div className="flex flex-row justify-between">
                     <div className="flex flex-col space-y-2">
                         <h2 className="text-2xl">{title}</h2>

@@ -13,11 +13,40 @@ async function listAllOrders(req: NextApiRequest, res: NextApiResponse): Promise
             const { db } = await connectToDatabase();
 
             const collection = db.collection('orders');
-            const limit = toNumber(safelyParse(req, 'query.limit', parseAsString, 10));
-            const skip = toNumber(safelyParse(req, 'query.skip', parseAsString, 0));
-
+            const limit = toNumber(safelyParse(req, 'query.limit', parseAsString, '10'));
+            const skip = toNumber(safelyParse(req, 'query.skip', parseAsString, '0'));
+            const searchTerm = safelyParse(req, 'query.searchTerm', parseAsString, '');
+            const regex = new RegExp(searchTerm, 'i');
             const orderCount = await collection.countDocuments();
-            const orderList = await collection.find({}, { skip, limit }).toArray();
+            const orderList = await collection
+                .find(
+                    {
+                        $or: [
+                            { email: regex },
+                            { 'customerDetails.firstName': regex },
+                            { 'customerDetails.lastName': regex },
+                            { 'customerDetails.phone': regex },
+                            { 'shippingAddress.lineOne': regex },
+                            { 'shippingAddress.lineTwo': regex },
+                            { 'shippingAddress.company': regex },
+                            { 'shippingAddress.city': regex },
+                            { 'shippingAddress.postcode': regex },
+                            { 'shippingAddress.county': searchTerm },
+                            { 'shippingAddress.country': regex },
+                            { 'billingAddress.lineOne': regex },
+                            { 'billingAddress.lineTwo': regex },
+                            { 'billingAddress.company': regex },
+                            { 'billingAddress.city': regex },
+                            { 'billingAddress.postcode': regex },
+                            { 'billingAddress.county': regex },
+                            { 'billingAddress.country': regex },
+                            { orderNumber: toNumber(searchTerm) },
+                            { trackingNumber: regex },
+                        ],
+                    },
+                    { skip, limit, sort: { created: -1 } }
+                )
+                .toArray();
 
             if (orderList.length === 0) {
                 res.status(404).json({ message: defaultErr });

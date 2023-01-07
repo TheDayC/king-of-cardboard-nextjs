@@ -13,8 +13,9 @@ import { Product as ProductType } from '../../../types/products';
 import Product from '../../../components/Account/Product';
 import Loading from '../../../components/Loading';
 import Pagination from '../../../components/Pagination';
+import SearchBar from '../../../components/Account/Fields/SearchBar';
 
-const LIMIT = 5;
+const LIMIT = 8;
 const PAGE = 0;
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
@@ -47,8 +48,6 @@ interface ProductsPageProps {
 
 export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, initialTotalProducts }) => {
     const [products, setProducts] = useState<ProductType[]>(initialProducts);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [count, setCount] = useState(LIMIT);
     const [page, setPage] = useState(PAGE);
     const [totalProducts, setTotalProducts] = useState(initialTotalProducts);
     const [isLoading, setIsLoading] = useState(false);
@@ -69,6 +68,25 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
         handleUpdateProducts(nextPage);
     };
 
+    const handleOnSearch = async (term: string) => {
+        setIsLoading(true);
+        const { products: newProducts, count: newTotalProducts } = await listProducts(
+            LIMIT,
+            0,
+            false,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            term
+        );
+
+        setProducts(newProducts);
+        setTotalProducts(newTotalProducts);
+
+        setIsLoading(false);
+    };
+
     return (
         <AccountWrapper title="Products - Account - King of Cardboard" description="Account page">
             <div className="flex flex-col w-full justify-start items-start p-2 md:p-4 md:p-8 md:flex-row relative">
@@ -83,15 +101,21 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
                             </button>
                         </Link>
                     </div>
-                    {products.length > 0 &&
-                        products.map((product) => (
-                            <Product
-                                product={product}
-                                currentPage={page}
-                                key={`product-${product._id}`}
-                                updateProducts={handleUpdateProducts}
-                            />
-                        ))}
+                    <div className="flex flex-col w-full">
+                        <SearchBar onSearch={handleOnSearch} />
+                    </div>
+                    {products.length > 0 && (
+                        <div className="grid grid-cols-2 gap-4">
+                            {products.map((product) => (
+                                <Product
+                                    product={product}
+                                    currentPage={page}
+                                    key={`product-${product._id}`}
+                                    updateProducts={handleUpdateProducts}
+                                />
+                            ))}
+                        </div>
+                    )}
                     {pageCount > 1 && (
                         <Pagination currentPage={page} pageCount={pageCount} handlePageNumber={handlePageNumber} />
                     )}

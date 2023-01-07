@@ -106,6 +106,7 @@ export async function listOrders(
 export async function listAllOrders(
     limit: number,
     skip: number,
+    searchTerm: string,
     isServer: boolean = false
 ): Promise<ListOrders | ResponseError> {
     try {
@@ -114,6 +115,7 @@ export async function listAllOrders(
             params: {
                 limit,
                 skip,
+                searchTerm,
             },
             headers,
         });
