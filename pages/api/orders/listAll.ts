@@ -16,21 +16,33 @@ async function listAllOrders(req: NextApiRequest, res: NextApiResponse): Promise
             const limit = toNumber(safelyParse(req, 'query.limit', parseAsString, '10'));
             const skip = toNumber(safelyParse(req, 'query.skip', parseAsString, '0'));
             const searchTerm = safelyParse(req, 'query.searchTerm', parseAsString, '');
-            const searchQuery =
-                searchTerm && searchTerm.length > 0
-                    ? {
-                          $text: {
-                              $search: searchTerm,
-                              $caseSensitive: false,
-                          },
-                      }
-                    : {};
-
+            const regex = new RegExp(searchTerm, 'i');
             const orderCount = await collection.countDocuments();
             const orderList = await collection
                 .find(
                     {
-                        ...searchQuery,
+                        $or: [
+                            { email: regex },
+                            { 'customerDetails.firstName': regex },
+                            { 'customerDetails.lastName': regex },
+                            { 'customerDetails.phone': regex },
+                            { 'shippingAddress.lineOne': regex },
+                            { 'shippingAddress.lineTwo': regex },
+                            { 'shippingAddress.company': regex },
+                            { 'shippingAddress.city': regex },
+                            { 'shippingAddress.postcode': regex },
+                            { 'shippingAddress.county': searchTerm },
+                            { 'shippingAddress.country': regex },
+                            { 'billingAddress.lineOne': regex },
+                            { 'billingAddress.lineTwo': regex },
+                            { 'billingAddress.company': regex },
+                            { 'billingAddress.city': regex },
+                            { 'billingAddress.postcode': regex },
+                            { 'billingAddress.county': regex },
+                            { 'billingAddress.country': regex },
+                            { orderNumber: toNumber(searchTerm) },
+                            { trackingNumber: regex },
+                        ],
                     },
                     { skip, limit, sort: { created: -1 } }
                 )
