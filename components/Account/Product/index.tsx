@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import Link from 'next/link';
 import Image from 'next/image';
 import React, { useState } from 'react';
-import { BiEdit, BiEditAlt, BiTrash } from 'react-icons/bi';
+import { BiBarcodeReader, BiEdit, BiEditAlt, BiTrash } from 'react-icons/bi';
 import { useDispatch } from 'react-redux';
 import { toNumber } from 'lodash';
 import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
@@ -13,6 +13,7 @@ import { getPrettyPrice, deleteProduct, editProduct } from '../../../utils/accou
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import Loading from '../../Loading';
 import { isNumber } from '../../../utils/typeguards';
+import { BsBoxSeam, BsCalendarDate } from 'react-icons/bs';
 
 interface ProductProps {
     product: ProductType;
@@ -88,16 +89,26 @@ export const Product: React.FC<ProductProps> = ({ product, currentPage, updatePr
                     />
                 </figure>
             )}
-            <div className="card-body justify-between p-4">
+            <div className="card-body justify-between p-4 space-y-4">
                 <div className="flex flex-row justify-between">
                     <div className="flex flex-col space-y-2">
                         <h2 className="text-2xl">{title}</h2>
-                        <p className="text-sm text-gray-400">SKU: {sku}</p>
-                        {isNumber(quantity) && <p className="text-sm text-gray-400">QTY: {quantity}</p>}
                         <p className="text-sm text-gray-400">
-                            Last updated: {lastUpdatedDate.toFormat('hh:ss')} - {lastUpdatedDate.toFormat('dd/MM/yyyy')}
+                            <BiBarcodeReader className="inline w-5 h-5 mr-1 -mt-1" /> {sku}
                         </p>
+                        <div className="flex flex-row space-x-4">
+                            {isNumber(quantity) && (
+                                <span className="text-sm text-gray-400">
+                                    <BsBoxSeam className="inline w-5 h-5 mr-1 -mt-1" /> {quantity}
+                                </span>
+                            )}
+                            <span className="text-sm text-gray-400">
+                                <BsCalendarDate className="inline w-5 h-5 mr-2 -mt-1" />
+                                {lastUpdatedDate.toFormat('HH:mm - dd/MM/yyyy')}
+                            </span>
+                        </div>
                     </div>
+
                     <div className="flex flex-col justify-start">
                         <div className="flex flex-row space-x-4 items-end">
                             {isOnSale && <p className="text-lg text-error line-through">{prettySalePrice}</p>}
