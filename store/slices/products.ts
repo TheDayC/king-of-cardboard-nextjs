@@ -2,10 +2,8 @@ import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { AppState } from '..';
-import { Interest, SortOption } from '../../enums/products';
-import { ListProducts, Product } from '../../types/products';
+import { ListProducts } from '../../types/products';
 import { listProductRows, listProducts } from '../../utils/account/products';
-import { PRODUCT_INTERESTS } from '../../utils/constants';
 import productsInitialState from '../state/products';
 import { AppStateShape } from '../types/state';
 
