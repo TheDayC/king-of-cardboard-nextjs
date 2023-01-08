@@ -231,6 +231,8 @@ export function getInterestBySlug(slug: string): Interest {
             return Interest.UFC;
         case 'wrestling':
             return Interest.Wrestling;
+        case 'formula1':
+            return Interest.F1;
         default:
             return Interest.Other;
     }
