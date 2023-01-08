@@ -1,65 +1,59 @@
 import { BiFootball, BiBall, BiBasketball, BiBaseball } from 'react-icons/bi';
 import { SiUfc, SiWwe } from 'react-icons/si';
 import { MdOutlineCatchingPokemon } from 'react-icons/md';
-import { upperCase, upperFirst } from 'lodash';
 
-import { ProductType } from '../enums/shop';
-import { Interest, StockStatus } from '../enums/products';
+import { StockStatus } from '../enums/products';
+import { GiRaceCar } from 'react-icons/gi';
 
 export const shopSubMenu = [
     {
-        href: `/shop/${ProductType.Baseball}`,
+        href: '/shop/baseball',
         icon: BiBaseball,
-        label: upperFirst(ProductType.Baseball),
+        label: 'Baseball',
         css: '',
     },
     {
-        href: `/shop/${ProductType.Basketball}`,
+        href: '/shop/basketball',
         icon: BiBasketball,
-        label: upperFirst(ProductType.Basketball),
+        label: 'Basketball',
         css: '',
     },
     {
-        href: `/shop/${ProductType.Football}`,
+        href: '/shop/football',
         icon: BiBall,
-        label: upperFirst(ProductType.Football),
+        label: 'Football',
         css: '',
     },
     {
-        href: `/shop/${ProductType.Soccer}`,
+        href: '/shop/soccer',
         icon: BiFootball,
-        label: upperFirst(ProductType.Soccer),
+        label: 'Soccer',
         css: '',
     },
     {
-        href: `/shop/${ProductType.UFC}`,
+        href: '/shop/ufc',
         icon: SiUfc,
-        label: upperCase(ProductType.UFC),
+        label: 'UFC',
         css: '',
     },
     {
-        href: `/shop/${ProductType.Wrestling}`,
+        href: '/shop/wrestling',
         icon: SiWwe,
-        label: upperFirst(ProductType.Wrestling),
+        label: 'wrestling',
         css: '',
     },
     {
-        href: `/shop/${ProductType.Pokemon}`,
+        href: '/shop/pokemon',
         icon: MdOutlineCatchingPokemon,
-        label: upperFirst(ProductType.Pokemon),
+        label: 'Pokemon',
         css: 'origin-center rotate-180',
     },
-];
-
-export const PRODUCT_INTERESTS = [
-    Interest.Baseball,
-    Interest.Basketball,
-    Interest.Football,
-    Interest.Soccer,
-    Interest.UFC,
-    Interest.Wrestling,
-    Interest.Pokemon,
-    Interest.Other,
+    {
+        href: '/shop/formula1',
+        icon: GiRaceCar,
+        label: 'Formula 1',
+        css: '',
+    },
 ];
 
 export const DEFAULT_STOCK_STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.Import, StockStatus.PreOrder];

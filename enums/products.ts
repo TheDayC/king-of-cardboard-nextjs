@@ -27,6 +27,7 @@ export enum Interest {
     Wrestling,
     Pokemon,
     Other,
+    F1,
 }
 
 export enum FilterType {

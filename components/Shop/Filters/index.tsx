@@ -6,7 +6,7 @@ import { MdOutlineCatchingPokemon } from 'react-icons/md';
 import { BsBoxSeam, BsCalendarEvent, BsEye, BsEyeSlash } from 'react-icons/bs';
 import { IoIdCardOutline } from 'react-icons/io5';
 import { RiRedPacketLine } from 'react-icons/ri';
-import { GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi';
+import { GiPerspectiveDiceSixFacesRandom, GiRaceCar } from 'react-icons/gi';
 import { FaPlaneArrival } from 'react-icons/fa';
 
 import selector from './selector';
@@ -58,6 +58,7 @@ export const INTEREST_FILTERS = [
     { value: Interest.UFC, icon: <SiUfc className={iconClassName} />, label: 'UFC' },
     { value: Interest.Wrestling, icon: <SiWwe className={iconClassName} />, label: 'Wrestling' },
     { value: Interest.Pokemon, icon: <MdOutlineCatchingPokemon className={iconClassName} />, label: 'Pokemon' },
+    { value: Interest.F1, icon: <GiRaceCar className={iconClassName} />, label: 'Formula 1' },
 ];
 
 export const STATUS_FILTERS = [
