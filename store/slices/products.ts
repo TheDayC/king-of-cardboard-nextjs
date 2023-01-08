@@ -52,6 +52,7 @@ export const fetchProductRows = createAsyncThunk(
                 ...productFacets.wrestling,
                 ...productFacets.pokemon,
                 ...productFacets.other,
+                ...productFacets.f1,
             ],
             count: 0,
         };

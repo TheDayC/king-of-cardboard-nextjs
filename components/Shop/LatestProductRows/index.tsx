@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { BiFootball, BiBall, BiBasketball, BiBaseball } from 'react-icons/bi';
 import { SiWwe } from 'react-icons/si';
 import { MdOutlineCatchingPokemon } from 'react-icons/md';
-import { GiPunch } from 'react-icons/gi';
+import { GiPunch, GiRaceCar } from 'react-icons/gi';
 import { BsArrowRightCircle } from 'react-icons/bs';
 
 import selector from './selector';
@@ -22,6 +22,7 @@ export const LatestProductRows: React.FC = () => {
         ufcProducts,
         wrestlingProducts,
         pokemonProducts,
+        f1Products,
     } = useSelector(selector);
 
     const rows = [
@@ -48,6 +49,15 @@ export const LatestProductRows: React.FC = () => {
             products: footballProducts,
             link: '/shop/football',
             icon: <BiBall className={`${iconClassName} text-amber-900`} />,
+        },
+
+        {
+            title: 'Formula 1',
+            description: 'Officially licensed F1 trading cards, sealed product and packs.',
+            shouldShow: f1Products.length > 0,
+            products: f1Products,
+            link: '/shop/formula1',
+            icon: <GiRaceCar className={`${iconClassName} text-red-500`} />,
         },
         {
             title: 'Soccer',

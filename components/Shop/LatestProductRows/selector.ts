@@ -12,6 +12,7 @@ const selector = createSelector([selectProductData], (products) => ({
     soccerProducts: products.products.filter((p) => p.interest === Interest.Soccer),
     ufcProducts: products.products.filter((p) => p.interest === Interest.UFC),
     wrestlingProducts: products.products.filter((p) => p.interest === Interest.Wrestling),
+    f1Products: products.products.filter((p) => p.interest === Interest.F1),
 }));
 
 export default selector;
