@@ -97,6 +97,7 @@ export async function listProductRows(limit: number, skip: number, isServer: boo
         wrestling: [],
         pokemon: [],
         other: [],
+        f1: [],
     };
 }
 

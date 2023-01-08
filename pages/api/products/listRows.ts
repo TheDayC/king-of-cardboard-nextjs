@@ -53,6 +53,7 @@ async function listRows(req: NextApiRequest, res: NextApiResponse): Promise<void
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
+                            f1: [{ $match: { interest: Interest.F1 } }, { $sort: { created: -1 } }, { $limit: 4 }],
                         },
                     },
                 ])

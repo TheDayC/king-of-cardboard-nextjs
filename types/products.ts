@@ -49,4 +49,5 @@ export interface ProductFacets {
     wrestling: Product[];
     pokemon: Product[];
     other: Product[];
+    f1: Product[];
 }

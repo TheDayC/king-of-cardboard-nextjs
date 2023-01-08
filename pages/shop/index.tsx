@@ -56,6 +56,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
                 ...productFacets.wrestling,
                 ...productFacets.pokemon,
                 ...productFacets.other,
+                ...productFacets.f1,
             ],
         },
     };
