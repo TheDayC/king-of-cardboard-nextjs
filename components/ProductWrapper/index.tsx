@@ -81,6 +81,7 @@ export const ProductWrapper: React.FC<ProductWrapperProps> = ({
                 <meta property="product:price:currency" content="GBP" />
                 <meta property="product:price:amount" content={`${metaPrice}`} />
                 <meta property="product:retailer_item_id" content={sku} />
+                <meta property="product:category" content="3865" />
             </Head>
             <Header />
             <div className="block w-full relative bg-primary-content p-4 md:p-6 lg:p-8">
