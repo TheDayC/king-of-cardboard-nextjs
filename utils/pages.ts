@@ -1,4 +1,5 @@
 import * as contentful from 'contentful';
+import { get } from 'lodash';
 
 import { errorHandler } from '../middleware/errors';
 import { ContentfulPage, PageWithHero } from '../types/pages';
@@ -81,10 +82,17 @@ export async function pageWithHeroBySlug(slug: string, path: string): Promise<Pa
     }
 
     const pageItems = res.items[0];
+    const sliderItems: unknown[] = get(pageItems, 'fields.slider', []);
 
     return {
         content: safelyParse(pageItems, 'fields.content.json.content', parseAsArrayOfDocuments, null),
         heroes: safelyParse(pageItems, 'fields.hero', parseAsArrayOfHeroes, null),
-        sliderImages: safelyParse(pageItems, 'fields.sliderCollection.items', parseAsArrayOfSliderImages, []),
+        sliderImages: sliderItems.map((item: unknown) => ({
+            title: safelyParse(item, 'fields.title', parseAsString, ''),
+            description: safelyParse(item, 'fields.description', parseAsString, ''),
+            contentType: safelyParse(item, 'fields.file.contentType', parseAsString, ''),
+            fileName: safelyParse(item, 'fields.file.fileName', parseAsString, ''),
+            url: safelyParse(item, 'fields.file.url', parseAsString, ''),
+        })),
     };
 }
