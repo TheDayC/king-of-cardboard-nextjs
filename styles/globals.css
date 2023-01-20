@@ -147,3 +147,18 @@
     padding-left: 0;
     padding-right: 0;
 }
+
+/* Content */
+.description ul {
+    list-style: disc;
+}
+
+.description ol {
+    list-style: decimal;
+}
+
+.description ul,
+.description ol {
+    padding-left: 30px;
+    margin: 8px 0px;
+}
