@@ -9,7 +9,7 @@ interface SliderProps {
 
 const Slider: React.FC<SliderProps> = ({ images }) => {
     return (
-        <div className="slide-container w-full lg:w-5/6 mb-8 rounded-lg overflow-x-hidden">
+        <div className="slide-container w-full max-w-7xl mb-8 rounded-lg overflow-x-hidden">
             <Fade>
                 {images.map((image, index) => (
                     <div className="each-fade" key={`slide-${index}`}>

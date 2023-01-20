@@ -106,7 +106,10 @@ export function isArrayOfHeroes(candidate: unknown): candidate is Hero[] {
 
 export function isSliderImage(candidate: unknown): candidate is SliderImage {
     return (
-        isNotNullOrUndefined<object>(candidate) && 'url' in candidate && 'width' in candidate && 'height' in candidate
+        isNotNullOrUndefined<object>(candidate) &&
+        'metadata' in candidate &&
+        'sys' in candidate &&
+        'fields' in candidate
     );
 }
 

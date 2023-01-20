@@ -19,8 +19,6 @@ export interface SliderImage {
     contentType: string;
     fileName: string;
     url: string;
-    width: number;
-    height: number;
 }
 
 export interface Hero {

@@ -36,13 +36,13 @@ export const Home: React.FC<HomePageProps> = ({ heroes, content, sliderImages })
         <div className="w-full flex flex-col justify-top items-center">
             {sliderImages.length > 0 && <Slider images={sliderImages} />}
             {content && <Content content={content} />}
-            {heroes &&
-                heroes.map((hero, i) => (
-                    <React.Fragment key={`hero-${i}`}>
-                        <HeroWithImage {...hero} shouldReverse={!isOdd(i)} />
-                        {i !== heroes.length - 1 && <div className="divider my-4 before:bg-white"></div>}
-                    </React.Fragment>
-                ))}
+            {heroes && heroes.length && (
+                <div className="flex flex-col space-y-4 max-w-7xl">
+                    {heroes.map((hero, i) => (
+                        <HeroWithImage {...hero} shouldReverse={!isOdd(i)} key={`hero-${i}`} />
+                    ))}
+                </div>
+            )}
         </div>
     </PageWrapper>
 );
