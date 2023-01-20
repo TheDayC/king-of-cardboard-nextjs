@@ -66,10 +66,10 @@ export const CartItem: React.FC<CartItemProps> = ({
                 </button>
             </div>
             <div className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2">
-                <div className="hidden lg:flex lg:flex-row items-center justify-center w-full relative">
+                <div className="flex flex-row items-center justify-center w-full relative">
                     {image.url.length > 0 && (
                         <Link href={`/product/${slug}`} passHref>
-                            <div className="w-20 h-20 rounded-md overflow-hidden">
+                            <div className="w-10 h-10 lg:w-20 lg:h-20 rounded-md overflow-hidden">
                                 <Image
                                     src={image.url}
                                     alt={image.description}
@@ -85,7 +85,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                     <Link href={`/product/${slug}`} passHref>
                         <div className="cursor-pointer">
                             <h4 className="block text-xs mb-1 font-bold lg:text-lg hover:underline">{name}</h4>
-                            <p className="block text-xs text-gray-400 lg:text-lg">{sku || ''}</p>
+                            <p className="hidden lg:block text-sm text-gray-400">{sku}</p>
 
                             {/* lineItemOptions.length > 0 &&
                                 lineItemOptions.map((option) => (
@@ -107,7 +107,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                     defaultValue={quantity}
                     name="quantity"
                     placeholder="1"
-                    className="input input-md lg:input-sm input-bordered text-center w-14 px-0"
+                    className="input input-xs lg:input-sm input-bordered text-center w-14 px-0"
                     onChange={handleChange}
                     min={1}
                     max={stock}
