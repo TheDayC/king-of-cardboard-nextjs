@@ -37,7 +37,7 @@ export const Home: React.FC<HomePageProps> = ({ heroes, content, sliderImages })
             {sliderImages.length > 0 && <Slider images={sliderImages} />}
             {content && <Content content={content} />}
             {heroes && heroes.length && (
-                <div className="flex flex-col space-y-4">
+                <div className="flex flex-col space-y-4 max-w-7xl">
                     {heroes.map((hero, i) => (
                         <HeroWithImage {...hero} shouldReverse={!isOdd(i)} key={`hero-${i}`} />
                     ))}
