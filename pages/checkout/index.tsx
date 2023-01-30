@@ -10,12 +10,24 @@ import Payment from '../../components/Checkout/Payment';
 import Summary from '../../components/Checkout/Summary';
 import PageWrapper from '../../components/PageWrapper';
 import { selectCheckoutData } from '../../store/state/selectors';
+import { getOptions } from '../../utils/account/options';
 
 const selector = createSelector([selectCheckoutData], (checkout) => ({
     currentStep: checkout.currentStep,
 }));
 
 export const getServerSideProps: GetServerSideProps = async () => {
+    const { isOnHoliday } = await getOptions(true);
+
+    if (isOnHoliday) {
+        return {
+            redirect: {
+                permanent: false,
+                destination: '/cart',
+            },
+        };
+    }
+
     return {
         props: {},
     };

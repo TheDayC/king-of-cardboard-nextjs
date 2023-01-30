@@ -8,6 +8,7 @@ import { BsBoxSeam, BsTruck } from 'react-icons/bs';
 import { parseAsRole, safelyParse } from '../../../../utils/parsers';
 import { Roles } from '../../../../enums/auth';
 import Title from '../Title';
+import { BiCog } from 'react-icons/bi';
 
 export const AdminMenu: React.FC = () => {
     const { data: session } = useSession();
@@ -35,6 +36,12 @@ export const AdminMenu: React.FC = () => {
                     <Link href="/account/orders" passHref className="p-3 bg-neutral hover:bg-neutral-focus">
                         <BsBoxSeam className="w-5 h-5" />
                         Orders
+                    </Link>
+                </li>
+                <li className="hover-bordered text-white">
+                    <Link href="/account/options" passHref className="p-3 bg-neutral hover:bg-neutral-focus">
+                        <BiCog className="w-5 h-5" />
+                        Options
                     </Link>
                 </li>
             </ul>
