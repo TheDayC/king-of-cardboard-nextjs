@@ -35,5 +35,6 @@ export async function getOptions(isServer: boolean = false): Promise<Options> {
 
     return {
         isOnHoliday: false,
+        errorMessage: '',
     };
 }

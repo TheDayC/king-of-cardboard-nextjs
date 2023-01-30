@@ -49,6 +49,7 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({ options }) => {
     } = useForm({
         defaultValues: {
             isOnHoliday: options.isOnHoliday,
+            errorMessage: options.errorMessage,
         },
     });
     const hasErrors = Object.keys(errors).length > 0;
@@ -57,12 +58,13 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({ options }) => {
         if (hasErrors || isLoading) {
             return;
         }
-        const { isOnHoliday } = data;
+        const { isOnHoliday, errorMessage } = data;
 
         setIsLoading(true);
 
         await updateOptions({
             isOnHoliday,
+            errorMessage,
         });
 
         setIsLoading(false);
@@ -77,7 +79,7 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({ options }) => {
                     </div>
 
                     <form onSubmit={handleSubmit(onSubmit)}>
-                        <div className="flex flex-col w-full space-y-4">
+                        <div className="flex flex-col space-y-4">
                             <div className="form-control">
                                 <label className="label cursor-pointer">
                                     <span className="label-text">Holiday Mode</span>
@@ -85,6 +87,17 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({ options }) => {
                                         {...register('isOnHoliday')}
                                         type="checkbox"
                                         className="toggle toggle-primary"
+                                    />
+                                </label>
+                            </div>
+                            <div className="form-control">
+                                <label className="label cursor-pointer">
+                                    <span className="label-text">Error Message</span>
+                                    <input
+                                        {...register('errorMessage')}
+                                        type="text"
+                                        placeholder="Error message..."
+                                        className="input input-bordered w-1/2"
                                     />
                                 </label>
                             </div>
