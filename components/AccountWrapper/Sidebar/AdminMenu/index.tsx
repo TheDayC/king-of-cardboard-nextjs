@@ -4,11 +4,11 @@ import { useSession } from 'next-auth/react';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { MdOutlineAdminPanelSettings } from 'react-icons/md';
 import { BsBoxSeam, BsTruck } from 'react-icons/bs';
+import { BiCog } from 'react-icons/bi';
 
 import { parseAsRole, safelyParse } from '../../../../utils/parsers';
 import { Roles } from '../../../../enums/auth';
 import Title from '../Title';
-import { BiCog } from 'react-icons/bi';
 
 export const AdminMenu: React.FC = () => {
     const { data: session } = useSession();

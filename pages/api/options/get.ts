@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
-import { parseAsBoolean, parseAsNumber, safelyParse } from '../../../utils/parsers';
+import { parseAsNumber, safelyParse } from '../../../utils/parsers';
 
 const defaultErr = 'Options could not be updated.';
 

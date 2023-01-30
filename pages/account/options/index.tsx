@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import { BiSave } from 'react-icons/bi';
 
 import AccountWrapper from '../../../components/AccountWrapper';
 import { authOptions } from '../../api/auth/[...nextauth]';
 import { parseAsRole, parseAsString, safelyParse } from '../../../utils/parsers';
 import { Roles } from '../../../enums/auth';
-import Loading from '../../../components/Loading';
 import { getOptions, updateOptions } from '../../../utils/account/options';
 import { Options } from '../../../types/account';
-import { BiSave } from 'react-icons/bi';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const session = await unstable_getServerSession(req, res, authOptions);
