@@ -7,4 +7,5 @@ export interface AccountAddress extends Address {
 
 export interface Options {
     isOnHoliday: boolean;
+    errorMessage: string;
 }
