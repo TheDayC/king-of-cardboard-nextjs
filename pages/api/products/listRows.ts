@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { Interest } from '../../../enums/products';
+import { Interest, StockStatus } from '../../../enums/products';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { parseAsNumber, safelyParse } from '../../../utils/parsers';
@@ -18,42 +18,50 @@ async function listRows(req: NextApiRequest, res: NextApiResponse): Promise<void
                     {
                         $facet: {
                             baseball: [
-                                { $match: { interest: Interest.Baseball } },
+                                { $match: { interest: Interest.Baseball, stockStatus: StockStatus.InStock } },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
                             basketball: [
-                                { $match: { interest: Interest.Basketball } },
+                                { $match: { interest: Interest.Basketball, stockStatus: StockStatus.InStock } },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
                             football: [
-                                { $match: { interest: Interest.Football } },
+                                { $match: { interest: Interest.Football, stockStatus: StockStatus.InStock } },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
                             soccer: [
-                                { $match: { interest: Interest.Soccer } },
+                                { $match: { interest: Interest.Soccer, stockStatus: StockStatus.InStock } },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
-                            ufc: [{ $match: { interest: Interest.UFC } }, { $sort: { created: -1 } }, { $limit: 4 }],
+                            ufc: [
+                                { $match: { interest: Interest.UFC, stockStatus: StockStatus.InStock } },
+                                { $sort: { created: -1 } },
+                                { $limit: 4 },
+                            ],
                             wrestling: [
-                                { $match: { interest: Interest.Wrestling } },
+                                { $match: { interest: Interest.Wrestling, stockStatus: StockStatus.InStock } },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
                             pokemon: [
-                                { $match: { interest: Interest.Pokemon } },
+                                { $match: { interest: Interest.Pokemon, stockStatus: StockStatus.InStock } },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
                             other: [
-                                { $match: { interest: Interest.Other } },
+                                { $match: { interest: Interest.Other, stockStatus: StockStatus.InStock } },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
-                            f1: [{ $match: { interest: Interest.F1 } }, { $sort: { created: -1 } }, { $limit: 4 }],
+                            f1: [
+                                { $match: { interest: Interest.F1, stockStatus: StockStatus.InStock } },
+                                { $sort: { created: -1 } },
+                                { $limit: 4 },
+                            ],
                         },
                     },
                 ])
