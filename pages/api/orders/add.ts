@@ -107,6 +107,8 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                 total = safelyParse(totalsRes, 'data.total', parseAsNumber, 0);
             }
 
+            const orderNumber = (await collection.countDocuments()) + 1;
+
             const { insertedId } = await collection.insertOne({
                 userId,
                 email,
@@ -127,6 +129,7 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
                 paymentMethod,
                 shippingMethodId,
                 trackingNumber: null,
+                orderNumber,
             });
 
             // Reduce item stock counts.
@@ -145,16 +148,7 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
             // Wait 1 second for the trigger to finish.
             await delay(2000);
 
-            // Fetch the order number.
-            const existingOrder = await collection.findOne({ _id: insertedId }, { projection: { orderNumber: 1 } });
-
-            if (!existingOrder) {
-                res.status(404).json({ message: 'Could not find order.' });
-                return Promise.resolve();
-            }
-
-            // Fetch order number and generate item image data.
-            const orderNumber = safelyParse(existingOrder, 'orderNumber', parseAsNumber, 0);
+            // Generate item image data.
             const itemsImgData = await createImageData(items);
 
             // Send user an order email.
@@ -204,7 +198,7 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
             await sgMail.send(notificationMailerOptions);
 
             res.status(200).json({
-                _id: existingOrder._id.toString(),
+                _id: insertedId,
                 orderNumber,
                 subTotal,
                 shipping,
