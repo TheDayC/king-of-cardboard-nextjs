@@ -5,7 +5,7 @@ import { MdOutlineTitle } from 'react-icons/md';
 import { ImFontSize } from 'react-icons/im';
 import { AiOutlineBarcode, AiOutlinePoundCircle } from 'react-icons/ai';
 import { FaBoxes, FaPlaneArrival } from 'react-icons/fa';
-import { kebabCase, lowerCase, toNumber, upperCase } from 'lodash';
+import { toNumber } from 'lodash';
 import { BiCategory, BiFootball, BiSave } from 'react-icons/bi';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';

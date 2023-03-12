@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { UseFormRegister } from 'react-hook-form';
 import { IconType } from 'react-icons/lib';
 import DatePicker from 'react-datepicker';
-import { kebabCase, replace, toUpper, upperCase } from 'lodash';
+import { kebabCase, toUpper } from 'lodash';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
 
@@ -34,7 +34,6 @@ interface InputFieldProps {
     defaultValue?: string | number;
     shouldKebab?: boolean;
     shouldUpperCase?: boolean;
-    valueOverride?: string;
     isDate?: boolean;
     startDate?: Date | null;
     setStartDate?: (date: Date | null) => void;
@@ -52,7 +51,6 @@ export const InputField: React.FC<InputFieldProps> = ({
     defaultValue,
     shouldKebab = false,
     shouldUpperCase = false,
-    valueOverride = '',
     isDate = false,
     startDate,
     setStartDate,
