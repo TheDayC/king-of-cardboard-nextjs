@@ -330,6 +330,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         register={register}
                         Icon={ImFontSize}
                         isRequired
+                        shouldKebab
                     />
                     <InputField
                         placeholder="SKU"
@@ -339,6 +340,8 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         register={register}
                         Icon={AiOutlineBarcode}
                         isRequired
+                        shouldKebab
+                        shouldUpperCase
                     />
                     <InputField
                         placeholder="Release date"
