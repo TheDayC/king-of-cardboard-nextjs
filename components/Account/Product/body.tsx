@@ -5,7 +5,7 @@ import { MdOutlineTitle } from 'react-icons/md';
 import { ImFontSize } from 'react-icons/im';
 import { AiOutlineBarcode, AiOutlinePoundCircle } from 'react-icons/ai';
 import { FaBoxes, FaPlaneArrival } from 'react-icons/fa';
-import { toNumber } from 'lodash';
+import { kebabCase, lowerCase, toNumber, upperCase } from 'lodash';
 import { BiCategory, BiFootball, BiSave } from 'react-icons/bi';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
@@ -330,6 +330,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         register={register}
                         Icon={ImFontSize}
                         isRequired
+                        shouldKebab
                     />
                     <InputField
                         placeholder="SKU"
@@ -339,6 +340,8 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         register={register}
                         Icon={AiOutlineBarcode}
                         isRequired
+                        shouldKebab
+                        shouldUpperCase
                     />
                     <InputField
                         placeholder="Release date"

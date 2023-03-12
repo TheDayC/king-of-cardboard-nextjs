@@ -1,7 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { UseFormRegister } from 'react-hook-form';
 import { IconType } from 'react-icons/lib';
 import DatePicker from 'react-datepicker';
+import { kebabCase, replace, toUpper, upperCase } from 'lodash';
+
+import { parseAsString, safelyParse } from '../../../../utils/parsers';
+
+function manipulateValue(value: string, shouldKebab: boolean, shouldUpperCase: boolean): string {
+    if (shouldUpperCase && shouldKebab) {
+        return toUpper(kebabCase(value));
+    }
+
+    if (shouldUpperCase) {
+        return toUpper(value);
+    }
+
+    if (shouldKebab) {
+        return kebabCase(value);
+    }
+
+    return value;
+}
 
 interface InputFieldProps {
     instruction: string;
@@ -13,6 +32,9 @@ interface InputFieldProps {
     Icon: IconType;
     isRequired: boolean;
     defaultValue?: string | number;
+    shouldKebab?: boolean;
+    shouldUpperCase?: boolean;
+    valueOverride?: string;
     isDate?: boolean;
     startDate?: Date | null;
     setStartDate?: (date: Date | null) => void;
@@ -28,10 +50,21 @@ export const InputField: React.FC<InputFieldProps> = ({
     Icon,
     isRequired,
     defaultValue,
+    shouldKebab = false,
+    shouldUpperCase = false,
+    valueOverride = '',
     isDate = false,
     startDate,
     setStartDate,
 }) => {
+    const [value, setValue] = useState<string>('');
+    const currentValue = manipulateValue(value, shouldKebab, shouldUpperCase);
+    console.log('🚀 ~ file: index.tsx:62 ~ currentValue:', currentValue);
+
+    const handleValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setValue(safelyParse(e, 'target.value', parseAsString, ''));
+    };
+
     return (
         <div className="form-control inline-block">
             <label className="input-group input-group-md">
@@ -59,6 +92,8 @@ export const InputField: React.FC<InputFieldProps> = ({
                         })}
                         className={`input input-md input-bordered w-full${error ? ' input-error' : ''}`}
                         defaultValue={defaultValue}
+                        onChange={handleValue}
+                        value={currentValue}
                     />
                 )}
             </label>
