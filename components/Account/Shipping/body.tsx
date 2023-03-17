@@ -58,7 +58,7 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
         defaultValues: {
             title,
             slug,
-            supplier,
+            supplier: supplier || Supplier.RoyalMail,
             price,
             min,
             max,
@@ -145,7 +145,6 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
                         error={titleErr}
                         register={register}
                         Icon={MdOutlineTitle}
-                        defaultValue={title}
                         isRequired
                     />
                     <InputField
@@ -155,7 +154,6 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
                         error={slugErr}
                         register={register}
                         Icon={ImFontSize}
-                        defaultValue={slug}
                         isRequired
                     />
                     <SelectField
@@ -165,7 +163,6 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
                         options={suppliers}
                         error={supplierErr}
                         register={register}
-                        defaultValue={supplier || Supplier.RoyalMail}
                         Icon={BsBoxSeam}
                     />
                 </div>
@@ -178,7 +175,6 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
                         error={priceErr}
                         register={register}
                         Icon={BsCurrencyPound}
-                        defaultValue={price}
                         isRequired
                     />
                     <InputField
@@ -189,7 +185,6 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
                         error={minErr}
                         register={register}
                         Icon={BiMinusCircle}
-                        defaultValue={min}
                         isRequired
                     />
                     <InputField
@@ -200,7 +195,6 @@ export const ShippingBody: React.FC<ShippingBodyProps> = ({
                         error={maxErr}
                         register={register}
                         Icon={BsPlusCircle}
-                        defaultValue={max}
                         isRequired
                     />
                 </div>
