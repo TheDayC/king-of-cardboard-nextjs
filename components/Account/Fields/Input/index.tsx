@@ -5,18 +5,21 @@ import DatePicker from 'react-datepicker';
 import { kebabCase, toUpper } from 'lodash';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
+import { isString } from '../../../../utils/typeguards';
 
-function manipulateValue(value: string, shouldKebab: boolean, shouldUpperCase: boolean): string {
-    if (shouldUpperCase && shouldKebab) {
-        return toUpper(kebabCase(value));
-    }
+function manipulateValue(value: string | number, shouldKebab: boolean, shouldUpperCase: boolean): string | number {
+    if (isString(value)) {
+        if (shouldUpperCase && shouldKebab) {
+            return toUpper(kebabCase(value));
+        }
 
-    if (shouldUpperCase) {
-        return toUpper(value);
-    }
+        if (shouldUpperCase) {
+            return toUpper(value);
+        }
 
-    if (shouldKebab) {
-        return kebabCase(value);
+        if (shouldKebab) {
+            return kebabCase(value);
+        }
     }
 
     return value;
@@ -31,7 +34,6 @@ interface InputFieldProps {
     register: UseFormRegister<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
     Icon: IconType;
     isRequired: boolean;
-    defaultValue?: string | number;
     shouldKebab?: boolean;
     shouldUpperCase?: boolean;
     isDate?: boolean;
@@ -48,16 +50,15 @@ export const InputField: React.FC<InputFieldProps> = ({
     register,
     Icon,
     isRequired,
-    defaultValue,
     shouldKebab = false,
     shouldUpperCase = false,
     isDate = false,
     startDate,
     setStartDate,
 }) => {
-    const [value, setValue] = useState<string>('');
+    const [value, setValue] = useState<string | number>('');
     const currentValue = manipulateValue(value, shouldKebab, shouldUpperCase);
-    console.log('🚀 ~ file: index.tsx:62 ~ currentValue:', currentValue);
+    const shouldManipulate = shouldUpperCase || shouldKebab;
 
     const handleValue = (e: React.ChangeEvent<HTMLInputElement>) => {
         setValue(safelyParse(e, 'target.value', parseAsString, ''));
@@ -89,9 +90,8 @@ export const InputField: React.FC<InputFieldProps> = ({
                             required: { value: isRequired, message: instruction },
                         })}
                         className={`input input-md input-bordered w-full${error ? ' input-error' : ''}`}
-                        defaultValue={defaultValue}
-                        onChange={handleValue}
-                        value={currentValue}
+                        onChange={shouldManipulate ? handleValue : undefined}
+                        value={shouldManipulate ? currentValue : undefined}
                     />
                 )}
             </label>
