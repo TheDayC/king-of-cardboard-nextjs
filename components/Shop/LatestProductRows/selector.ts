@@ -8,7 +8,7 @@ const selector = createSelector([selectProductData], (products) => ({
     basketballProducts: products.products.filter((p) => p.interest === Interest.Basketball),
     footballProducts: products.products.filter((p) => p.interest === Interest.Football),
     otherProducts: products.products.filter((p) => p.interest === Interest.Other),
-    pokemonProducts: products.products.filter((p) => p.interest === Interest.Pokemon),
+    tcgProducts: products.products.filter((p) => p.interest === Interest.TCG),
     soccerProducts: products.products.filter((p) => p.interest === Interest.Soccer),
     ufcProducts: products.products.filter((p) => p.interest === Interest.UFC),
     wrestlingProducts: products.products.filter((p) => p.interest === Interest.Wrestling),

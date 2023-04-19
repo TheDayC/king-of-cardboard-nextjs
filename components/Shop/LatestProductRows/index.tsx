@@ -1,15 +1,13 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
-import { BiFootball, BiBall, BiBasketball, BiBaseball } from 'react-icons/bi';
-import { SiWwe } from 'react-icons/si';
-import { MdOutlineCatchingPokemon } from 'react-icons/md';
-import { GiPunch, GiRaceCar } from 'react-icons/gi';
 import { BsArrowRightCircle } from 'react-icons/bs';
 
 import selector from './selector';
 import ProductCard from '../Grid/ProductCard';
 import { getPrettyPrice } from '../../../utils/account/products';
+import { INTERESTS } from '../../../utils/constants';
+import { Interest } from '../../../enums/products';
 
 const iconClassName = 'w-10 h-10 inline-block -mt-1 ml-2';
 
@@ -21,90 +19,50 @@ export const LatestProductRows: React.FC = () => {
         soccerProducts,
         ufcProducts,
         wrestlingProducts,
-        pokemonProducts,
         f1Products,
+        tcgProducts,
+        otherProducts,
     } = useSelector(selector);
 
-    const rows = [
-        {
-            title: 'Baseball',
-            description: 'Officially licensed and unlicensed MLB sports cards, sealed product and packs.',
-            shouldShow: baseballProducts.length > 0,
-            products: baseballProducts,
-            link: '/shop/baseball',
-            icon: <BiBaseball className={`${iconClassName} text-red-500`} />,
-        },
-        {
-            title: 'Basketball',
-            description: 'Officially licensed NBA sports cards, sealed product and packs.',
-            shouldShow: basketballProducts.length > 0,
-            products: basketballProducts,
-            link: '/shop/basketball',
-            icon: <BiBasketball className={`${iconClassName} text-orange-500`} />,
-        },
-        {
-            title: 'Football',
-            description: 'Officially licensed NFL sports cards, sealed product and packs.',
-            shouldShow: footballProducts.length > 0,
-            products: footballProducts,
-            link: '/shop/football',
-            icon: <BiBall className={`${iconClassName} text-amber-900`} />,
-        },
-
-        {
-            title: 'Formula 1',
-            description: 'Officially licensed F1 trading cards, sealed product and packs.',
-            shouldShow: f1Products.length > 0,
-            products: f1Products,
-            link: '/shop/formula1',
-            icon: <GiRaceCar className={`${iconClassName} text-red-500`} />,
-        },
-        {
-            title: 'Soccer',
-            description: 'Officially licensed Premier League, UEFA and FIFA sports cards, sealed product and packs.',
-            shouldShow: soccerProducts.length > 0,
-            products: soccerProducts,
-            link: '/shop/soccer',
-            icon: <BiFootball className={`${iconClassName} text-black`} />,
-        },
-        {
-            title: 'UFC',
-            description: 'Officially licensed UFC sports cards, sealed product and packs.',
-            shouldShow: ufcProducts.length > 0,
-            products: ufcProducts,
-            link: '/shop/ufc',
-            icon: <GiPunch className={`${iconClassName} text-red-500`} />,
-        },
-        {
-            title: 'Wrestling',
-            description: 'Officially licensed WWE and AEW sports cards, sealed product and packs.',
-            shouldShow: wrestlingProducts.length > 0,
-            products: wrestlingProducts,
-            link: '/shop/wrestling',
-            icon: <SiWwe className={`${iconClassName} text-red-500`} />,
-        },
-        {
-            title: 'Pokemon',
-            description: 'Officially licensed Pokemon trading cards, sealed product and packs.',
-            shouldShow: pokemonProducts.length > 0,
-            products: pokemonProducts,
-            link: '/shop/pokemon',
-            icon: <MdOutlineCatchingPokemon className={`${iconClassName} text-red-500`} />,
-        },
-    ];
+    const findProducts = (interest: Interest) => {
+        switch (interest) {
+            case Interest.Baseball:
+                return baseballProducts;
+            case Interest.Basketball:
+                return basketballProducts;
+            case Interest.Football:
+                return footballProducts;
+            case Interest.Soccer:
+                return soccerProducts;
+            case Interest.UFC:
+                return ufcProducts;
+            case Interest.Wrestling:
+                return wrestlingProducts;
+            case Interest.F1:
+                return f1Products;
+            case Interest.TCG:
+                return tcgProducts;
+            case Interest.Other:
+                return otherProducts;
+            default:
+                return [];
+        }
+    };
 
     return (
         <div className="flex flex-col w-full md:w-4/6 md:space-y-4 xl:w-fit">
-            {rows.map(({ title, description, shouldShow, products, link, icon }) => {
+            {INTERESTS.map(({ label, description, href, icon: Icon, value, color }) => {
+                const products = findProducts(value);
+                const shouldShow = products.length > 0;
                 if (!shouldShow) return null;
 
                 return (
-                    <div className="flex flex-col space-y-4" key={`product-row-${title}`}>
+                    <div className="flex flex-col space-y-4" key={`product-row-${label}`}>
                         <div className="flex flex-row">
-                            <Link href={link} passHref>
+                            <Link href={href} passHref>
                                 <h2 className="text-4xl hover:underline">
-                                    {title}
-                                    {icon}
+                                    {label}
+                                    <Icon className={`${iconClassName}`} color={color} />
                                 </h2>
                             </Link>
                         </div>
@@ -129,9 +87,9 @@ export const LatestProductRows: React.FC = () => {
                             ))}
                         </div>
                         <div className="flex flex-row justify-end">
-                            <Link href={link} passHref>
+                            <Link href={href} passHref>
                                 <button className="btn btn-secondary rounded-md shadow-md w-full">
-                                    View all {title}
+                                    View all {label}
                                     <BsArrowRightCircle className="w-6 h-6 inline-block ml-2" />
                                 </button>
                             </Link>

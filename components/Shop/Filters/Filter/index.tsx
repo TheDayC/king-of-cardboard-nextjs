@@ -1,19 +1,23 @@
 import React from 'react';
+import { IconType } from 'react-icons/lib';
 import { useDispatch } from 'react-redux';
 
 import { FilterValue, FilterType } from '../../../../enums/products';
 import { setIsLoadingProducts } from '../../../../store/slices/products';
+
+const iconClassName = 'w-6 h-6 inline-block mr-2';
 
 interface FilterProps {
     value: FilterValue;
     type: FilterType;
     label: string;
     checked: boolean;
-    icon: JSX.Element;
+    Icon: IconType;
+    css: string;
     changeFilterState(filter: FilterValue, filterType: FilterType, addFilter: boolean): void;
 }
 
-export const Filter: React.FC<FilterProps> = ({ value, type, label, checked, icon, changeFilterState }) => {
+export const Filter: React.FC<FilterProps> = ({ value, type, label, checked, Icon, css, changeFilterState }) => {
     const dispatch = useDispatch();
     const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(setIsLoadingProducts(true));
@@ -24,7 +28,7 @@ export const Filter: React.FC<FilterProps> = ({ value, type, label, checked, ico
         <div className="form-control">
             <label className="cursor-pointer label p-0 mb-4">
                 <span className="label-text">
-                    {icon}
+                    <Icon className={`${iconClassName} ${css}`} />
                     {label}
                 </span>
                 <input

@@ -1,58 +1,77 @@
-import { BiFootball, BiBall, BiBasketball, BiBaseball } from 'react-icons/bi';
-import { SiUfc, SiWwe } from 'react-icons/si';
+import { BiFootball, BiBall, BiBasketball } from 'react-icons/bi';
+import { SiWwe } from 'react-icons/si';
 import { MdOutlineCatchingPokemon } from 'react-icons/md';
+import { GiLightSabers } from 'react-icons/gi';
 
-import { StockStatus } from '../enums/products';
+import { Interest, StockStatus } from '../enums/products';
 import { GiRaceCar } from 'react-icons/gi';
 
-export const shopSubMenu = [
+export const INTERESTS = [
     {
-        href: '/shop/baseball',
-        icon: BiBaseball,
-        label: 'Baseball',
-        css: '',
-    },
-    {
+        value: Interest.Basketball,
+        label: 'Basketball',
         href: '/shop/basketball',
         icon: BiBasketball,
-        label: 'Basketball',
         css: '',
+        description: 'Officially licensed NBA sports cards, sealed product and packs.',
+        color: '#c2410c',
     },
     {
+        value: Interest.Football,
+        label: 'Football',
         href: '/shop/football',
         icon: BiBall,
-        label: 'Football',
         css: '',
+        description: 'Officially licensed NFL sports cards, sealed product and packs.',
+        color: '#78350f',
     },
     {
+        value: Interest.Soccer,
+        label: 'Soccer',
         href: '/shop/soccer',
         icon: BiFootball,
-        label: 'Soccer',
         css: '',
+        description: 'Officially licensed Premier League, UEFA and FIFA sports cards, sealed product and packs.',
+        color: '#292524',
+    },
+    /* {  value: Interest.UFC, filterIcon: <SiUfc className={filterIconClassName} />, label: 'UFC' }, */
+    {
+        value: Interest.TCG,
+        label: 'Trading Card Games',
+        href: '/shop/TCG',
+        icon: MdOutlineCatchingPokemon,
+        css: '',
+        description: 'Officially licensed Pokemon, Yugioh, Magic and other trading card products.',
+        color: '#dc2626',
     },
     {
-        href: '/shop/ufc',
-        icon: SiUfc,
-        label: 'UFC',
-        css: '',
-    },
-    {
+        value: Interest.Wrestling,
+        label: 'Wrestling',
         href: '/shop/wrestling',
         icon: SiWwe,
-        label: 'wrestling',
         css: '',
+        description: 'Officially licensed WWE and AEW sports cards, sealed product and packs.',
+        color: '#991b1b',
     },
+    /* { value: Interest.Baseball, icon: <BiBaseball className={filterIconClassName} />, label: 'Baseball' }, */
     {
-        href: '/shop/pokemon',
-        icon: MdOutlineCatchingPokemon,
-        label: 'Pokemon',
-        css: 'origin-center rotate-180',
-    },
-    {
+        value: Interest.F1,
+        label: 'Formula 1',
         href: '/shop/formula1',
         icon: GiRaceCar,
-        label: 'Formula 1',
-        css: '',
+        css: 'origin-center rotate-180',
+        description: 'Officially licensed F1 trading cards, sealed product and packs.',
+        color: '#065f46',
+    },
+    {
+        value: Interest.Other,
+        label: 'Other',
+        href: '/shop/other',
+        icon: GiLightSabers,
+        css: 'origin-center rotate-180',
+        description:
+            'Other stock such as baseball, UFC, Star Wars and Marvel amongst other officially licensed brands.',
+        color: '#0ea5e9',
     },
 ];
 
