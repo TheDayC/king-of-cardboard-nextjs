@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
 import { BsArrowDownCircle } from 'react-icons/bs';
 
-import { shopSubMenu } from '../../../utils/constants';
+import { INTERESTS } from '../../../utils/constants';
 
 export const Navbar: React.FC = () => (
     <div className="navbar-center" role="navigation">
@@ -25,14 +25,14 @@ export const Navbar: React.FC = () => (
                     </button>
                 </Link>
                 <ul className="bg-neutral z-50 rounded-md w-40 shadow">
-                    {shopSubMenu.map((menuItem, index) => {
+                    {INTERESTS.map((menuItem, index) => {
                         let radius = 'rounded-none';
 
                         if (index === 0) {
                             radius = 'rounded-t-md';
                         }
 
-                        if (index === shopSubMenu.length - 1) {
+                        if (index === INTERESTS.length - 1) {
                             radius = 'rounded-b-md';
                         }
 

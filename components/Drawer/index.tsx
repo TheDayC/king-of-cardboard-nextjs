@@ -9,7 +9,7 @@ import logo from '../../images/logo-full.png';
 import Rewards from '../Header/Rewards';
 import selector from './selector';
 import { setIsDrawerOpen } from '../../store/slices/global';
-import { shopSubMenu } from '../../utils/constants';
+import { INTERESTS } from '../../utils/constants';
 
 interface DrawerProps {
     children: ReactNode;
@@ -65,7 +65,7 @@ export const Drawer: React.FC<DrawerProps> = ({ children }) => {
                         </button>
                     </li>
                     <hr className="my-2" />
-                    {shopSubMenu.map((menuItem) => (
+                    {INTERESTS.map((menuItem) => (
                         <li className="text-neutral-content" key={`sub-menu-item-${menuItem.label}`}>
                             <button
                                 className="btn gap-1 rounded-sm"
