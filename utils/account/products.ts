@@ -225,6 +225,8 @@ export function getInterestBySlug(slug: string): Interest {
             return Interest.Football;
         case 'pokemon':
             return Interest.Pokemon;
+        case 'TCG':
+            return Interest.TCG;
         case 'soccer':
             return Interest.Soccer;
         case 'ufc':
