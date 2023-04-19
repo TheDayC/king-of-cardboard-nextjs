@@ -242,7 +242,7 @@ export function getInterestBySlug(slug: string): Interest {
 
 export function getCategoryByInterest(interest: Interest): Category {
     switch (interest) {
-        case Interest.Pokemon:
+        case Interest.TCG:
             return Category.TCG;
         case Interest.Other:
             return Category.Other;
