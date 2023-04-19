@@ -95,7 +95,7 @@ export async function listProductRows(limit: number, skip: number, isServer: boo
         soccer: [],
         ufc: [],
         wrestling: [],
-        pokemon: [],
+        tcg: [],
         other: [],
         f1: [],
     };

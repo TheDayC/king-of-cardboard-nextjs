@@ -50,7 +50,7 @@ export const fetchProductRows = createAsyncThunk(
                 ...productFacets.soccer,
                 ...productFacets.ufc,
                 ...productFacets.wrestling,
-                ...productFacets.pokemon,
+                ...productFacets.tcg,
                 ...productFacets.other,
                 ...productFacets.f1,
             ],
