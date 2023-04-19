@@ -95,7 +95,7 @@ export async function listProductRows(limit: number, skip: number, isServer: boo
         soccer: [],
         ufc: [],
         wrestling: [],
-        pokemon: [],
+        tcg: [],
         other: [],
         f1: [],
     };
@@ -225,6 +225,8 @@ export function getInterestBySlug(slug: string): Interest {
             return Interest.Football;
         case 'pokemon':
             return Interest.Pokemon;
+        case 'TCG':
+            return Interest.TCG;
         case 'soccer':
             return Interest.Soccer;
         case 'ufc':

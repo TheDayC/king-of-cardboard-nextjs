@@ -47,8 +47,8 @@ async function listRows(req: NextApiRequest, res: NextApiResponse): Promise<void
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
-                            pokemon: [
-                                { $match: { interest: Interest.Pokemon, stockStatus: StockStatus.InStock } },
+                            tcg: [
+                                { $match: { interest: Interest.TCG, stockStatus: StockStatus.InStock } },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],

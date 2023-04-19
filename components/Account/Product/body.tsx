@@ -43,7 +43,7 @@ const productInterest = [
     { key: 'Soccer', value: Interest.Soccer },
     { key: 'UFC', value: Interest.UFC },
     { key: 'Wrestling', value: Interest.Wrestling },
-    { key: 'Pokemon', value: Interest.Pokemon },
+    { key: 'TCG', value: Interest.TCG },
     { key: 'Other', value: Interest.Other },
     { key: 'Formula 1', value: Interest.F1 },
 ];
