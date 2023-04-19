@@ -37,7 +37,7 @@ export const INTERESTS = [
     /* {  value: Interest.UFC, filterIcon: <SiUfc className={filterIconClassName} />, label: 'UFC' }, */
     {
         value: Interest.TCG,
-        label: 'Trading Card Games',
+        label: 'TCG',
         href: '/shop/TCG',
         icon: MdOutlineCatchingPokemon,
         css: '',
