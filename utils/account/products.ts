@@ -101,11 +101,11 @@ export async function listProductRows(limit: number, skip: number, isServer: boo
     };
 }
 
-export async function deleteProduct(key: string): Promise<boolean> {
+export async function deleteProduct(id: string): Promise<boolean> {
     try {
         const res = await axios.delete(`${URL}/api/products/delete`, {
             data: {
-                key,
+                id,
             },
         });
         const status = safelyParse(res, 'status', parseAsNumber, 500);
