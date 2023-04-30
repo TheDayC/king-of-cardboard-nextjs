@@ -250,7 +250,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                 timestamp,
                 price: data.historicalPrice[i],
             })),
-            releaseDate: DateTime.fromJSDate(releaseDate).toISO(),
+            releaseDate: startDate ? DateTime.fromJSDate(startDate).toISO() : null,
             isInfinite: false,
             metaTitle,
             metaDescription,

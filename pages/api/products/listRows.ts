@@ -18,47 +18,155 @@ async function listRows(req: NextApiRequest, res: NextApiResponse): Promise<void
                     {
                         $facet: {
                             baseball: [
-                                { $match: { interest: Interest.Baseball, stockStatus: StockStatus.InStock } },
+                                {
+                                    $match: {
+                                        $and: [
+                                            { interest: Interest.Baseball },
+                                            {
+                                                $or: [
+                                                    { stockStatus: StockStatus.InStock },
+                                                    { stockStatus: StockStatus.PreOrder },
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
                             basketball: [
-                                { $match: { interest: Interest.Basketball, stockStatus: StockStatus.InStock } },
+                                {
+                                    $match: {
+                                        $and: [
+                                            { interest: Interest.Basketball },
+                                            {
+                                                $or: [
+                                                    { stockStatus: StockStatus.InStock },
+                                                    { stockStatus: StockStatus.PreOrder },
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
                             football: [
-                                { $match: { interest: Interest.Football, stockStatus: StockStatus.InStock } },
+                                {
+                                    $match: {
+                                        $and: [
+                                            { interest: Interest.Football },
+                                            {
+                                                $or: [
+                                                    { stockStatus: StockStatus.InStock },
+                                                    { stockStatus: StockStatus.PreOrder },
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
                             soccer: [
-                                { $match: { interest: Interest.Soccer, stockStatus: StockStatus.InStock } },
+                                {
+                                    $match: {
+                                        $and: [
+                                            { interest: Interest.Soccer },
+                                            {
+                                                $or: [
+                                                    { stockStatus: StockStatus.InStock },
+                                                    { stockStatus: StockStatus.PreOrder },
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
                             ufc: [
-                                { $match: { interest: Interest.UFC, stockStatus: StockStatus.InStock } },
+                                {
+                                    $match: {
+                                        $and: [
+                                            { interest: Interest.UFC },
+                                            {
+                                                $or: [
+                                                    { stockStatus: StockStatus.InStock },
+                                                    { stockStatus: StockStatus.PreOrder },
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
                             wrestling: [
-                                { $match: { interest: Interest.Wrestling, stockStatus: StockStatus.InStock } },
+                                {
+                                    $match: {
+                                        $and: [
+                                            { interest: Interest.Wrestling },
+                                            {
+                                                $or: [
+                                                    { stockStatus: StockStatus.InStock },
+                                                    { stockStatus: StockStatus.PreOrder },
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
                             tcg: [
-                                { $match: { interest: Interest.TCG, stockStatus: StockStatus.InStock } },
+                                {
+                                    $match: {
+                                        $and: [
+                                            { interest: Interest.TCG },
+                                            {
+                                                $or: [
+                                                    { stockStatus: StockStatus.InStock },
+                                                    { stockStatus: StockStatus.PreOrder },
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
                             other: [
-                                { $match: { interest: Interest.Other, stockStatus: StockStatus.InStock } },
+                                {
+                                    $match: {
+                                        $and: [
+                                            { interest: Interest.Other },
+                                            {
+                                                $or: [
+                                                    { stockStatus: StockStatus.InStock },
+                                                    { stockStatus: StockStatus.PreOrder },
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
                             f1: [
-                                { $match: { interest: Interest.F1, stockStatus: StockStatus.InStock } },
+                                {
+                                    $match: {
+                                        $and: [
+                                            { interest: Interest.F1 },
+                                            {
+                                                $or: [
+                                                    { stockStatus: StockStatus.InStock },
+                                                    { stockStatus: StockStatus.PreOrder },
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                },
                                 { $sort: { created: -1 } },
                                 { $limit: 4 },
                             ],
