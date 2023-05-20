@@ -13,7 +13,6 @@ import { gaEvent } from '../../utils/ga';
 import { addSuccess } from '../../store/slices/alerts';
 import { getPrettyPrice } from '../../utils/account/products';
 import { PriceHistory } from '../../types/products';
-import PriceHistoryChart from '../PriceHistoryChart';
 
 interface ProductProps {
     id: string;

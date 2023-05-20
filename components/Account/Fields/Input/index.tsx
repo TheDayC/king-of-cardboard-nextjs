@@ -1,29 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { UseFormRegister } from 'react-hook-form';
 import { IconType } from 'react-icons/lib';
 import DatePicker from 'react-datepicker';
-import { kebabCase, toUpper } from 'lodash';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
-import { isString } from '../../../../utils/typeguards';
-
-function manipulateValue(value: string | number, shouldKebab: boolean, shouldUpperCase: boolean): string | number {
-    if (isString(value)) {
-        if (shouldUpperCase && shouldKebab) {
-            return toUpper(kebabCase(value));
-        }
-
-        if (shouldUpperCase) {
-            return toUpper(value);
-        }
-
-        if (shouldKebab) {
-            return kebabCase(value);
-        }
-    }
-
-    return value;
-}
 
 interface InputFieldProps {
     instruction: string;

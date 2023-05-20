@@ -1,16 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { FieldValues, SubmitHandler, useForm, useFormContext, useWatch } from 'react-hook-form';
-import {
-    BsFillCartCheckFill,
-    BsBoxSeam,
-    BsCurrencyPound,
-    BsCalendarDate,
-    BsFillTagFill,
-    BsLaptop,
-} from 'react-icons/bs';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import { BsFillCartCheckFill, BsBoxSeam, BsCurrencyPound, BsCalendarDate, BsLaptop } from 'react-icons/bs';
 import { MdOutlineTitle } from 'react-icons/md';
 import { ImFontSize } from 'react-icons/im';
-import { AiOutlineBarcode, AiOutlinePoundCircle } from 'react-icons/ai';
+import { AiOutlinePoundCircle } from 'react-icons/ai';
 import { FaBoxes, FaPlaneArrival } from 'react-icons/fa';
 import { kebabCase, toLower, toNumber, toUpper } from 'lodash';
 import { BiBarcodeReader, BiCategory, BiFootball, BiSave } from 'react-icons/bi';
@@ -27,7 +20,6 @@ import { Category, Configuration, Interest, StockStatus } from '../../../enums/p
 import { addGalleryToBucket, addImageToBucket, addProduct, editProduct } from '../../../utils/account/products';
 import { addError, addSuccess } from '../../../store/slices/alerts';
 import ImageUpload from '../Fields/ImageUpload';
-import RepeaterField from '../Fields/Repeater';
 import { PriceHistory } from '../../../types/products';
 
 const productCategory = [
@@ -61,8 +53,6 @@ const productStatus = [
     { key: 'Pre-Order', value: StockStatus.PreOrder },
     { key: 'Import', value: StockStatus.Import },
 ];
-
-const defaultRepeateritem = { timestamp: '', price: 0 };
 
 interface ProductBodyProps {
     _id?: string;
@@ -149,24 +139,11 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
         releaseDate ? DateTime.fromISO(releaseDate).toJSDate() : null
     );
     const [titleField, setTitleField] = useState('');
-
-    // Variables
-    const timestamps = priceHistory && priceHistory.length ? priceHistory.map((pH) => pH.timestamp) : [];
-    const prices = priceHistory && priceHistory.length ? priceHistory.map((pH) => pH.price) : [];
-    const newRepeaterItems = timestamps.map((timestamp) => ({
-        timestamp,
-        price: prices[0],
-    }));
-    const [repeaterItems, setRepeaterItems] = useState<Record<string, string | number>[]>(
-        newRepeaterItems.length > 0 ? newRepeaterItems : [...newRepeaterItems, defaultRepeateritem]
-    );
     const [currentContent, setCurrentContent] = useState<string | undefined>(existingContent);
 
     // Errors
     const hasErrors = Object.keys(errors).length > 0;
     const titleErr = safelyParse(errors, 'title.message', parseAsString, null);
-    //const slugErr = safelyParse(errors, 'slug.message', parseAsString, null);
-    //const skuErr = safelyParse(errors, 'sku.message', parseAsString, null);
     const releaseDateErr = safelyParse(errors, 'releaseDate.message', parseAsString, null);
     const typeErr = safelyParse(errors, 'productType.message', parseAsString, null);
     const qtyErr = safelyParse(errors, 'quantity.message', parseAsString, null);
@@ -197,7 +174,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             stockStatus,
             price,
             salePrice,
-            //releaseDate,
             metaTitle,
             metaDescription,
         } = data;
