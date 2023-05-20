@@ -16,7 +16,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     };
 
     return (
-        <div className="form-control inline-block">
+        <div className="form-control inline-block grow">
             <label className="input-group input-group-md">
                 <span className="bg-base-200">
                     <BiSearchAlt className="w-5 h-5" />

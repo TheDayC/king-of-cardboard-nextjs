@@ -1,11 +1,17 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { SortOption } from '../../../enums/products';
+import { SortOption, StockStatus } from '../../../enums/products';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { buildProductListMongoQueryValues } from '../../../utils/account/database';
 import { getSortQuery } from '../../../utils/account/products';
-import { parseAsArrayOfNumbers, parseAsNumber, parseAsString, safelyParse } from '../../../utils/parsers';
+import {
+    parseAsArrayOfNumbers,
+    parseAsBoolean,
+    parseAsNumber,
+    parseAsString,
+    safelyParse,
+} from '../../../utils/parsers';
 
 const defaultErr = 'No products found.';
 
@@ -24,7 +30,25 @@ async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<
             const searchTerm = safelyParse(req, 'body.searchTerm', parseAsString, '');
             const regex = new RegExp(searchTerm, 'i');
             const sortOption = safelyParse(req, 'body.sortOption', parseAsNumber, SortOption.DateAddedDesc);
+            const shouldShowOutOfStock = safelyParse(req, 'body.shouldShowOutOfStock', parseAsBoolean, false);
             const query = buildProductListMongoQueryValues(categories, interests, configurations, stockStatuses);
+
+            const outOfStockQuery = shouldShowOutOfStock
+                ? {
+                      $and: [
+                          {
+                              $or: [
+                                  { stockStatus: StockStatus.InStock },
+                                  { stockStatus: StockStatus.OutOfStock },
+                                  { quantity: 0 },
+                              ],
+                          },
+                      ],
+                  }
+                : {
+                      $and: [{ stockStatus: StockStatus.InStock }],
+                  };
+
             const searchQuery = {
                 $or: [
                     { sku: regex },
@@ -34,6 +58,7 @@ async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<
                     { metaTitle: regex },
                     { metaDescription: regex },
                 ],
+                ...outOfStockQuery,
             };
             const sortQuery = getSortQuery(sortOption);
 

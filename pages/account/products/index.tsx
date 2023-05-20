@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { GetServerSideProps } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 import Link from 'next/link';
@@ -52,6 +52,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
     const [totalProducts, setTotalProducts] = useState(initialTotalProducts);
     const [isLoading, setIsLoading] = useState(false);
     const [currentTerm, setCurrentTerm] = useState('');
+    const [shouldShowOutOfStock, setShouldShowOutOfStock] = useState(false);
     const pageCount = totalProducts / LIMIT;
 
     const handleUpdateProducts = async (nextPage: number) => {
@@ -78,7 +79,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
         handleUpdateProducts(nextPage);
     };
 
-    const handleOnSearch = async (term: string) => {
+    const search = async (term: string, showOutOfStock: boolean) => {
         setIsLoading(true);
         setCurrentTerm(term);
 
@@ -90,13 +91,26 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
             undefined,
             undefined,
             undefined,
-            term
+            term,
+            undefined,
+            showOutOfStock
         );
 
         setProducts(newProducts);
         setTotalProducts(newTotalProducts);
 
         setIsLoading(false);
+    };
+
+    const handleSearch = async (term: string) => {
+        search(term, shouldShowOutOfStock);
+    };
+
+    const handleOnOutOfStockChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.checked;
+
+        setShouldShowOutOfStock(value);
+        await search(currentTerm, value);
     };
 
     return (
@@ -113,9 +127,21 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
                             </button>
                         </Link>
                     </div>
-                    <div className="flex flex-col w-full">
-                        <SearchBar onSearch={handleOnSearch} />
+                    <div className="flex flex-col xl:flex-row w-full justify-between xl:space-x-2">
+                        <SearchBar onSearch={handleSearch} />
+                        <div className="form-control">
+                            <label className="label cursor-pointer">
+                                <span className="label-text mr-2">Show out of stock</span>
+                                <input
+                                    type="checkbox"
+                                    className="toggle toggle-primary"
+                                    onChange={handleOnOutOfStockChange}
+                                    defaultChecked={shouldShowOutOfStock}
+                                />
+                            </label>
+                        </div>
                     </div>
+
                     {products.length > 0 && (
                         <div className="grid gap-4 grid-cols-1 xl:grid-cols-2">
                             {products.map((product) => (

@@ -38,7 +38,8 @@ export async function listProducts(
     interests?: Interest[],
     stockStatuses?: StockStatus[],
     searchTerm?: string,
-    sortOption?: SortOption
+    sortOption?: SortOption,
+    shouldShowOutOfStock: boolean = false
 ): Promise<ListProducts> {
     const headers = isServer ? { 'Accept-Encoding': 'application/json' } : undefined;
 
@@ -54,6 +55,7 @@ export async function listProducts(
                 stockStatuses,
                 sortOption,
                 searchTerm,
+                shouldShowOutOfStock,
             },
             {
                 headers,
