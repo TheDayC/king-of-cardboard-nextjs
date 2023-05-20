@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import { BsFillCartCheckFill, BsBoxSeam, BsCurrencyPound, BsCalendarDate, BsFillTagFill } from 'react-icons/bs';
+import { BsFillCartCheckFill, BsBoxSeam, BsCurrencyPound, BsCalendarDate, BsLaptop } from 'react-icons/bs';
 import { MdOutlineTitle } from 'react-icons/md';
 import { ImFontSize } from 'react-icons/im';
-import { AiOutlineBarcode, AiOutlinePoundCircle } from 'react-icons/ai';
+import { AiOutlinePoundCircle } from 'react-icons/ai';
 import { FaBoxes, FaPlaneArrival } from 'react-icons/fa';
-import { toNumber } from 'lodash';
-import { BiCategory, BiFootball, BiSave } from 'react-icons/bi';
+import { kebabCase, toLower, toNumber, toUpper } from 'lodash';
+import { BiBarcodeReader, BiCategory, BiFootball, BiSave } from 'react-icons/bi';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
@@ -20,7 +20,6 @@ import { Category, Configuration, Interest, StockStatus } from '../../../enums/p
 import { addGalleryToBucket, addImageToBucket, addProduct, editProduct } from '../../../utils/account/products';
 import { addError, addSuccess } from '../../../store/slices/alerts';
 import ImageUpload from '../Fields/ImageUpload';
-import RepeaterField from '../Fields/Repeater';
 import { PriceHistory } from '../../../types/products';
 
 const productCategory = [
@@ -54,8 +53,6 @@ const productStatus = [
     { key: 'Pre-Order', value: StockStatus.PreOrder },
     { key: 'Import', value: StockStatus.Import },
 ];
-
-const defaultRepeateritem = { timestamp: '', price: 0 };
 
 interface ProductBodyProps {
     _id?: string;
@@ -114,8 +111,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     } = useForm({
         defaultValues: {
             title,
-            slug,
-            sku,
             category,
             configuration,
             interest,
@@ -143,24 +138,13 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     const [startDate, setStartDate] = useState<Date | null>(
         releaseDate ? DateTime.fromISO(releaseDate).toJSDate() : null
     );
-
-    // Variables
-    const timestamps = priceHistory && priceHistory.length ? priceHistory.map((pH) => pH.timestamp) : [];
-    const prices = priceHistory && priceHistory.length ? priceHistory.map((pH) => pH.price) : [];
-    const newRepeaterItems = timestamps.map((timestamp) => ({
-        timestamp,
-        price: prices[0],
-    }));
-    const [repeaterItems, setRepeaterItems] = useState<Record<string, string | number>[]>(
-        newRepeaterItems.length > 0 ? newRepeaterItems : [...newRepeaterItems, defaultRepeateritem]
-    );
+    const [titleField, setTitleField] = useState('');
     const [currentContent, setCurrentContent] = useState<string | undefined>(existingContent);
 
     // Errors
     const hasErrors = Object.keys(errors).length > 0;
     const titleErr = safelyParse(errors, 'title.message', parseAsString, null);
-    const slugErr = safelyParse(errors, 'slug.message', parseAsString, null);
-    const skuErr = safelyParse(errors, 'sku.message', parseAsString, null);
+    const releaseDateErr = safelyParse(errors, 'releaseDate.message', parseAsString, null);
     const typeErr = safelyParse(errors, 'productType.message', parseAsString, null);
     const qtyErr = safelyParse(errors, 'quantity.message', parseAsString, null);
     const priceErr = safelyParse(errors, 'price.message', parseAsString, null);
@@ -181,8 +165,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
         setIsLoading(true);
 
         const {
-            sku,
-            slug,
             title,
             content,
             category,
@@ -192,10 +174,11 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             stockStatus,
             price,
             salePrice,
-            releaseDate,
             metaTitle,
             metaDescription,
         } = data;
+        const sku = toUpper(kebabCase(title));
+        const slug = toLower(kebabCase(title));
         let fileName: string | null = mainImage ?? null;
         let galleryFileNames: string[] | null = gallery ?? null;
 
@@ -286,7 +269,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
         setCurrentContent(content);
     };
 
-    const addRepeaterRow = (e: React.MouseEvent<HTMLButtonElement>) => {
+    /* const addRepeaterRow = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
         setRepeaterItems([...repeaterItems, defaultRepeateritem]);
@@ -294,11 +277,15 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
 
     const removeRepeaterRow = (rowCount: number) => {
         setRepeaterItems([...repeaterItems.filter((item, i) => i !== rowCount)]);
-    };
+    }; */
 
     const handleReleaseDate = (date: Date | null) => {
         setValue('releaseDate', date ? DateTime.fromJSDate(date).toISO() : null);
         setStartDate(date);
+    };
+
+    const handleTitleValue = (value: string) => {
+        setTitleField(value);
     };
 
     useEffect(() => {
@@ -312,7 +299,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col space-y-4">
-                <div className="flex flex-row space-x-4 items-start justify-start">
+                <div className="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0 items-start justify-start">
                     <InputField
                         placeholder="Title"
                         fieldName="title"
@@ -320,43 +307,9 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         error={titleErr}
                         register={register}
                         Icon={MdOutlineTitle}
+                        onChange={handleTitleValue}
                         isRequired
                     />
-                    <InputField
-                        placeholder="Slug"
-                        fieldName="slug"
-                        instruction="Slug is required."
-                        error={slugErr}
-                        register={register}
-                        Icon={ImFontSize}
-                        isRequired
-                        shouldKebab
-                    />
-                    <InputField
-                        placeholder="SKU"
-                        fieldName="sku"
-                        instruction="SKU is required."
-                        error={skuErr}
-                        register={register}
-                        Icon={AiOutlineBarcode}
-                        isRequired
-                        shouldKebab
-                        shouldUpperCase
-                    />
-                    <InputField
-                        placeholder="Release date"
-                        fieldName="releaseDate"
-                        instruction=""
-                        error={skuErr}
-                        register={register}
-                        Icon={BsCalendarDate}
-                        isRequired={false}
-                        isDate
-                        startDate={startDate}
-                        setStartDate={handleReleaseDate}
-                    />
-                </div>
-                <div className="flex flex-row space-x-4 items-start justify-start">
                     <InputField
                         placeholder="Meta title"
                         fieldName="metaTitle"
@@ -376,7 +329,17 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         isRequired
                     />
                 </div>
-                <div className="flex flex-row space-x-4 items-start justify-start">
+                <div className="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0 items-start justify-start">
+                    <p className="text-sm text-gray-400">
+                        <BsLaptop className="inline w-5 h-5 mr-1 -mt-1" />
+                        <span>Slug: {slug ? slug : toLower(kebabCase(titleField))}</span>
+                    </p>
+                    <p className="text-sm text-gray-400">
+                        <BiBarcodeReader className="inline w-5 h-5 mr-1 -mt-1" />
+                        <span>SKU: {sku ? sku : toLower(kebabCase(titleField))}</span>
+                    </p>
+                </div>
+                <div className="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0 items-start justify-start">
                     <SelectField
                         placeholder="Category"
                         fieldName="category"
@@ -415,7 +378,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         Icon={FaPlaneArrival}
                     />
                 </div>
-                <div className="flex flex-row space-x-4 items-start justify-start">
+                <div className="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0 items-start justify-start">
                     <InputField
                         placeholder="Quantity"
                         fieldName="quantity"
@@ -446,8 +409,20 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         Icon={AiOutlinePoundCircle}
                         isRequired={false}
                     />
+                    <InputField
+                        placeholder="Release date"
+                        fieldName="releaseDate"
+                        instruction=""
+                        error={releaseDateErr}
+                        register={register}
+                        Icon={BsCalendarDate}
+                        isRequired={false}
+                        isDate
+                        startDate={startDate}
+                        setStartDate={handleReleaseDate}
+                    />
                 </div>
-                <div className="flex flex-row space-x-4 w-full">
+                <div className="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0 w-full">
                     <div className="w-1/2">
                         <ImageUpload
                             fieldName="mainImage"
@@ -479,7 +454,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                     <RichTextEditor placeholder="Content" onChange={handleRichContent} value={currentContent || ''} />
                 </div>
 
-                <div className="flex flex-col space-y-4">
+                {/* <div className="flex flex-col space-y-4">
                     <h3 className="text-2xl">Items</h3>
                     <div className="flex flex-col space-y-4 items-start justify-start">
                         {repeaterItems.map((item, i) => (
@@ -499,7 +474,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                             />
                         ))}
                     </div>
-                </div>
+                </div> */}
 
                 <div className="form-control">
                     <button

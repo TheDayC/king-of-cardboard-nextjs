@@ -7,7 +7,6 @@ import Product from '../../components/Product';
 import { ImageItem } from '../../types/contentful';
 import { getProduct } from '../../utils/account/products';
 import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
-import { PriceHistory } from '../../types/products';
 import ProductWrapper from '../../components/ProductWrapper';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -39,7 +38,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 types: [],
                 categories: [],
                 options: [],
-                priceHistory: [],
                 releaseDate: null,
                 stockStatus: StockStatus.OutOfStock,
             },
@@ -59,7 +57,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         interest,
         category,
         configuration,
-        priceHistory,
         releaseDate,
         metaTitle,
         metaDescription,
@@ -92,7 +89,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             interest,
             category,
             configuration,
-            priceHistory,
             shouldShowCompare: salePrice > 0 && salePrice !== price,
             releaseDate,
             stockStatus,
@@ -119,7 +115,6 @@ interface ProductPageProps {
     interest: Interest;
     category: Category;
     configuration: Configuration;
-    priceHistory: PriceHistory[];
     shouldShowCompare: boolean;
     releaseDate: string | null;
     stockStatus: StockStatus;
@@ -144,7 +139,6 @@ export const ProductPage: React.FC<ProductPageProps> = ({
     interest,
     category,
     configuration,
-    priceHistory,
     shouldShowCompare,
     releaseDate = null,
     stockStatus,
@@ -179,7 +173,6 @@ export const ProductPage: React.FC<ProductPageProps> = ({
                 interest={interest}
                 category={category}
                 configuration={configuration}
-                priceHistory={priceHistory}
                 shouldShowCompare={shouldShowCompare}
                 releaseDate={releaseDate}
                 stockStatus={stockStatus}
