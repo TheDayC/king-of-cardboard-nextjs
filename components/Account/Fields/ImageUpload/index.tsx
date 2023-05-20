@@ -98,7 +98,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     }, [currentImages]);
 
     return (
-        <div className="flex flex-row space-x-4 h-full">
+        <div className="flex flex-row h-full">
             <div className="form-control rounded-md hidden">
                 <label className="label">
                     <span className="label-text">{label}</span>
@@ -121,7 +121,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                 )}
             </div>
 
-            <div className="flex flex-row space-x-2 w-full items-center justify-start">
+            <div className="flex flex-col space-y-2 items-start lg:flex-row lg:space-x-2 lg:space-y-0 w-full lg:items-center">
                 <div className="flex flex-col space-y-2 items-start">
                     <h3 className="text-3xl">{title}</h3>
                     <Previews previews={previews} />

@@ -53,7 +53,6 @@ export const Product: React.FC<ProductProps> = ({
     interest,
     category,
     configuration,
-    priceHistory,
     shouldShowCompare,
     releaseDate,
     stockStatus,
@@ -188,7 +187,7 @@ export const Product: React.FC<ProductProps> = ({
                             </form>
                         </div>
                     )}
-                    <PriceHistoryChart priceHistory={priceHistory} />
+                    {/* <PriceHistoryChart priceHistory={priceHistory} /> */}
                 </div>
             </div>
         </div>
