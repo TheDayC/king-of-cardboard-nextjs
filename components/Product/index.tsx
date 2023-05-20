@@ -12,7 +12,6 @@ import { addItem, setUpdatingCart } from '../../store/slices/cart';
 import { gaEvent } from '../../utils/ga';
 import { addSuccess } from '../../store/slices/alerts';
 import { getPrettyPrice } from '../../utils/account/products';
-import { PriceHistory } from '../../types/products';
 
 interface ProductProps {
     id: string;
@@ -30,7 +29,6 @@ interface ProductProps {
     interest: Interest;
     category: Category;
     configuration: Configuration;
-    priceHistory: PriceHistory[];
     shouldShowCompare: boolean;
     releaseDate: string | null;
     stockStatus: StockStatus;
@@ -186,7 +184,6 @@ export const Product: React.FC<ProductProps> = ({
                             </form>
                         </div>
                     )}
-                    {/* <PriceHistoryChart priceHistory={priceHistory} /> */}
                 </div>
             </div>
         </div>
