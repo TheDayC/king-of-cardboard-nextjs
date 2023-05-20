@@ -55,7 +55,7 @@ export const Order: React.FC<OrderProps> = ({ order }) => {
                         </span>
                     </div>
                 </div>
-                <div className="flex flex-row space-x-4">
+                <div className="flex flex-col space-y-4 justify-start items-start">
                     <div className="flex flex-row justify-start items-center text-lg space-x-2">
                         <Badge color={statusColor} />
                         <h3 className="font-bold">Order:</h3>

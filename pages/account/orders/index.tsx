@@ -125,7 +125,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ initialOrders, initialTo
                         <SearchBar onSearch={handleOnSearch} />
                     </div>
                     {orders.length > 0 && (
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid gap-4 grid-cols-1 xl:grid-cols-2">
                             {orders.map((order) => (
                                 <OrderComponent order={order} key={`order-${order._id}`} />
                             ))}
