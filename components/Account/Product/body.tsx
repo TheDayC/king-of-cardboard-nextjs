@@ -243,6 +243,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             metaTitle,
             metaDescription,
         };
+        console.log('🚀 ~ file: body.tsx:223 ~ constonSubmit:SubmitHandler<FieldValues>= ~ productData:', productData);
 
         if (isNew) {
             const hasAddedProduct = await addProduct(productData);
@@ -285,6 +286,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     }; */
 
     const handleReleaseDate = (date: Date | null) => {
+        console.log('🚀 ~ file: body.tsx:288 ~ handleReleaseDate ~ date:', date);
         setValue('releaseDate', date ? DateTime.fromJSDate(date).toFormat('dd/MM/yyyy') : null);
         setStartDate(date);
     };
