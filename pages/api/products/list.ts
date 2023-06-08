@@ -39,6 +39,8 @@ async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<
                           {
                               $or: [
                                   { stockStatus: StockStatus.InStock },
+                                  { stockStatus: StockStatus.Import },
+                                  { stockStatus: StockStatus.PreOrder },
                                   { stockStatus: StockStatus.OutOfStock },
                                   { quantity: 0 },
                               ],
@@ -46,7 +48,15 @@ async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<
                       ],
                   }
                 : {
-                      $and: [{ stockStatus: StockStatus.InStock }],
+                      $and: [
+                          {
+                              $or: [
+                                  { stockStatus: StockStatus.InStock },
+                                  { stockStatus: StockStatus.Import },
+                                  { stockStatus: StockStatus.PreOrder },
+                              ],
+                          },
+                      ],
                   };
 
             const searchQuery = {
