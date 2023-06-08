@@ -214,6 +214,9 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             }
         }
 
+        // eslint-disable-next-line
+        console.log('DateTime.fromJSDate(startDate).toISO():', startDate && DateTime.fromJSDate(startDate).toISO());
+
         const productData = {
             sku,
             userId,
@@ -280,7 +283,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     }; */
 
     const handleReleaseDate = (date: Date | null) => {
-        setValue('releaseDate', date ? DateTime.fromJSDate(date).toISO() : null);
+        setValue('releaseDate', date ? DateTime.fromJSDate(date).toFormat('dd/MM/yyyy') : null);
         setStartDate(date);
     };
 
