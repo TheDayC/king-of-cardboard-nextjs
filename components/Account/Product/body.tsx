@@ -130,7 +130,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     });
     const router = useRouter();
     const dispatch = useDispatch();
-    console.log('🚀 ~ file: body.tsx:130 ~ releaseDate:', releaseDate);
 
     // State
     const [isLoading, setIsLoading] = useState(false);
@@ -139,7 +138,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     const [startDate, setStartDate] = useState<Date | null>(
         releaseDate ? DateTime.fromISO(releaseDate).toJSDate() : null
     );
-    console.log('🚀 ~ file: body.tsx:141 ~ startDate:', startDate);
     const [titleField, setTitleField] = useState('');
     const [currentContent, setCurrentContent] = useState<string | undefined>(existingContent);
 
@@ -216,11 +214,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             }
         }
 
-        // eslint-disable-next-line
-
-        console.log('startDate:', startDate);
-        console.log('DateTime.fromJSDate(startDate).toISO():', startDate && DateTime.fromJSDate(startDate).toISO());
-
         const productData = {
             sku,
             userId,
@@ -245,7 +238,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             metaTitle,
             metaDescription,
         };
-        console.log('🚀 ~ file: body.tsx:223 ~ constonSubmit:SubmitHandler<FieldValues>= ~ productData:', productData);
 
         if (isNew) {
             const hasAddedProduct = await addProduct(productData);
@@ -288,7 +280,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     }; */
 
     const handleReleaseDate = (date: Date | null) => {
-        console.log('🚀 ~ file: body.tsx:288 ~ handleReleaseDate ~ date:', date);
         setValue('releaseDate', date ? DateTime.fromJSDate(date).toFormat('dd/MM/yyyy') : null);
         setStartDate(date);
     };
