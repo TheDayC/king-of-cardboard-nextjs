@@ -138,6 +138,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     const [startDate, setStartDate] = useState<Date | null>(
         releaseDate ? DateTime.fromISO(releaseDate).toJSDate() : null
     );
+    console.log('🚀 ~ file: body.tsx:141 ~ startDate:', startDate);
     const [titleField, setTitleField] = useState('');
     const [currentContent, setCurrentContent] = useState<string | undefined>(existingContent);
 
