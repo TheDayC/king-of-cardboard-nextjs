@@ -130,6 +130,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     });
     const router = useRouter();
     const dispatch = useDispatch();
+    console.log('🚀 ~ file: body.tsx:130 ~ releaseDate:', releaseDate);
 
     // State
     const [isLoading, setIsLoading] = useState(false);
