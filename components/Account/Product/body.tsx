@@ -217,6 +217,8 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
         }
 
         // eslint-disable-next-line
+
+        console.log('startDate:', startDate);
         console.log('DateTime.fromJSDate(startDate).toISO():', startDate && DateTime.fromJSDate(startDate).toISO());
 
         const productData = {
