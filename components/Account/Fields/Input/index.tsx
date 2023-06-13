@@ -37,8 +37,6 @@ export const InputField: React.FC<InputFieldProps> = ({
     setStartDate,
     onChange,
 }) => {
-    console.log('🚀 ~ file: index.tsx:40 ~ startDate:', startDate);
-    console.log('🚀 ~ file: index.tsx:40 ~ startDate:', startDate ? DateTime.fromISO(startDate).toJSDate() : null);
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (onChange) {
             onChange(safelyParse(e, 'target.value', parseAsString, ''));
