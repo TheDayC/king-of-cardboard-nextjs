@@ -212,8 +212,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             }
         }
 
-        console.log('🚀 ~ file: body.tsx:237 ~ startDate:', startDate);
-
         const productData = {
             sku,
             userId,
@@ -281,7 +279,12 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
 
     const handleReleaseDate = (date: Date | null) => {
         setValue('releaseDate', date ? DateTime.fromJSDate(date).toFormat('dd/MM/yyyy') : null);
-        setStartDate(date ? DateTime.fromJSDate(date).toISO() : null);
+        //setStartDate(date ? DateTime.fromJSDate(date).toISO() : null);
+        setStartDate(date ? date.toISOString() : null);
+        console.log(
+            '🚀 ~ file: body.tsx:284 ~ handleReleaseDate ~ date ? date.toISOString() : nul:',
+            date ? date.toISOString() : null
+        );
     };
 
     const handleTitleValue = (value: string) => {
