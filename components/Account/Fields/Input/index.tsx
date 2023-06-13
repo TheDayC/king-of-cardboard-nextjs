@@ -2,9 +2,9 @@ import React from 'react';
 import { UseFormRegister } from 'react-hook-form';
 import { IconType } from 'react-icons/lib';
 import DatePicker from 'react-datepicker';
+import { DateTime } from 'luxon';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
-import { DateTime } from 'luxon';
 
 interface InputFieldProps {
     instruction: string;
