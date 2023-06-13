@@ -214,6 +214,11 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             }
         }
 
+        console.log(
+            '🚀 ~ file: body.tsx:237 ~ constonSubmit:SubmitHandler<FieldValues>= ~ startDate:',
+            startDate ? DateTime.fromJSDate(startDate).toISO() : null
+        );
+
         const productData = {
             sku,
             userId,
