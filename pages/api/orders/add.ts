@@ -15,7 +15,6 @@ import { Category, Configuration, Interest, StockStatus } from '../../../enums/p
 import { createImageData, createMailerOptions } from '../../../utils/email';
 
 const defaultErr = 'Order could not be added.';
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
@@ -134,19 +133,29 @@ async function addOrder(req: NextApiRequest, res: NextApiResponse): Promise<void
 
             // Reduce item stock counts.
             for (const item of items) {
-                await productsCollection.findOneAndUpdate(
-                    { _id: new ObjectId(item._id) },
-                    { $inc: { quantity: -item.quantity } }
-                );
+                const objectId = new ObjectId(item._id);
+
+                await productsCollection.findOneAndUpdate({ _id: objectId }, { $inc: { quantity: -item.quantity } });
+
+                const existingProduct = await productsCollection.findOne({ _id: objectId });
+
+                // If the current product hits 0 or less stock then set to out of stock.
+                if (existingProduct) {
+                    const currentQty = safelyParse(existingProduct, 'quantity', parseAsNumber, 0);
+
+                    if (currentQty <= 0) {
+                        await productsCollection.findOneAndUpdate(
+                            { _id: objectId },
+                            { $set: { stockStatus: StockStatus.OutOfStock } }
+                        );
+                    }
+                }
             }
 
             // Reduce user's coins if discount is larger than zero.
             if (discount > 0 && userId) {
                 await usersCollection.findOneAndUpdate({ _id: new ObjectId(userId) }, { $inc: { coins: -discount } });
             }
-
-            // Wait 1 second for the trigger to finish.
-            await delay(2000);
 
             // Generate item image data.
             const itemsImgData = await createImageData(items);
