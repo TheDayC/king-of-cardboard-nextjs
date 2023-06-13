@@ -135,9 +135,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     const [isLoading, setIsLoading] = useState(false);
     const [mainImageFileList, setMainImageFileList] = useState<FileList | null>(null);
     const [galleryFileList, setGalleryFileList] = useState<FileList | null>(null);
-    const [startDate, setStartDate] = useState<Date | null>(
-        releaseDate ? DateTime.fromISO(releaseDate).toJSDate() : null
-    );
+    const [startDate, setStartDate] = useState<string | null>(releaseDate);
     const [titleField, setTitleField] = useState('');
     const [currentContent, setCurrentContent] = useState<string | undefined>(existingContent);
 
@@ -215,10 +213,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
         }
 
         console.log('🚀 ~ file: body.tsx:237 ~ startDate:', startDate);
-        console.log(
-            '🚀 ~ file: body.tsx:237 ~ constonSubmit:SubmitHandler<FieldValues>= ~ startDate:',
-            startDate ? DateTime.fromJSDate(startDate, { zone: 'utc' }).toISO() : null
-        );
 
         const productData = {
             sku,
@@ -239,7 +233,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                 timestamp,
                 price: data.historicalPrice[i],
             })),
-            releaseDate: startDate ? DateTime.fromJSDate(startDate).toISO() : null,
+            releaseDate: startDate,
             isInfinite: false,
             metaTitle,
             metaDescription,
@@ -287,7 +281,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
 
     const handleReleaseDate = (date: Date | null) => {
         setValue('releaseDate', date ? DateTime.fromJSDate(date).toFormat('dd/MM/yyyy') : null);
-        setStartDate(date);
+        setStartDate(startDate ? DateTime.fromJSDate(startDate).toISO() : null);
     };
 
     const handleTitleValue = (value: string) => {
