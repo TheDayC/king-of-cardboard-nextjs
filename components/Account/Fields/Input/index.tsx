@@ -4,6 +4,7 @@ import { IconType } from 'react-icons/lib';
 import DatePicker from 'react-datepicker';
 
 import { parseAsString, safelyParse } from '../../../../utils/parsers';
+import { DateTime } from 'luxon';
 
 interface InputFieldProps {
     instruction: string;
@@ -17,7 +18,7 @@ interface InputFieldProps {
     shouldKebab?: boolean;
     shouldUpperCase?: boolean;
     isDate?: boolean;
-    startDate?: Date | null;
+    startDate?: string | null;
     setStartDate?: (date: Date | null) => void;
     onChange?: (value: string) => void;
 }
@@ -50,7 +51,7 @@ export const InputField: React.FC<InputFieldProps> = ({
                 </span>
                 {isDate && setStartDate ? (
                     <DatePicker
-                        selected={startDate}
+                        selected={startDate ? DateTime.fromISO(startDate).toJSDate() : null}
                         onChange={(date) => setStartDate(date)}
                         wrapperClassName="inline-block border-2 border-gray-500 w-full shrink lg:w-auto h-full"
                         className="input input-md input-bordered w-full rounded-l-none"

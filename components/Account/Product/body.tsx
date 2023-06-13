@@ -281,7 +281,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
 
     const handleReleaseDate = (date: Date | null) => {
         setValue('releaseDate', date ? DateTime.fromJSDate(date).toFormat('dd/MM/yyyy') : null);
-        setStartDate(startDate ? DateTime.fromJSDate(startDate).toISO() : null);
+        setStartDate(date ? DateTime.fromJSDate(date).toISO() : null);
     };
 
     const handleTitleValue = (value: string) => {
