@@ -54,7 +54,7 @@ export const INTERESTS = [
         color: '#991b1b',
     },
     /* { value: Interest.Baseball, icon: <BiBaseball className={filterIconClassName} />, label: 'Baseball' }, */
-    {
+    /*     {
         value: Interest.F1,
         label: 'Formula 1',
         href: '/shop/formula1',
@@ -62,7 +62,7 @@ export const INTERESTS = [
         css: 'origin-center rotate-180',
         description: 'Officially licensed F1 trading cards, sealed product and packs.',
         color: '#065f46',
-    },
+    }, */
     {
         value: Interest.Other,
         label: 'Other',
