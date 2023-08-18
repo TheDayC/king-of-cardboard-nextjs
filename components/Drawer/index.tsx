@@ -40,8 +40,8 @@ export const Drawer: React.FC<DrawerProps> = ({ children }) => {
             <div className="drawer-content">{children}</div>
             <div className="drawer-side">
                 <label className="drawer-overlay" onClick={handleDrawerClick}></label>
-                <div className="w-full">
-                    <ul className="menu menu-compact p-4 overflow-y-auto w-3/4 sm:w-1/2 md:w-1/4 bg-neutral text-base-content">
+                <div className="w-3/4">
+                    <ul className="menu menu-compact p-4 overflow-y-auto w-full bg-neutral text-base-content">
                         <li className="text-neutral-content mb-2" onClick={() => handleLinkClick('/')}>
                             <div className="w-3/4 xs:w-1/2 sm:w-3/4 md:w-full p-2 mx-auto">
                                 <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
