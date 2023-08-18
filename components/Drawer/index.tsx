@@ -40,51 +40,54 @@ export const Drawer: React.FC<DrawerProps> = ({ children }) => {
             <div className="drawer-content">{children}</div>
             <div className="drawer-side">
                 <label className="drawer-overlay" onClick={handleDrawerClick}></label>
-
-                <ul className="menu menu-compact dropdown-content p-4 overflow-y-auto w-3/4 sm:w-1/2 md:w-1/4 bg-neutral text-base-content">
-                    <li className="text-neutral-content mb-2" onClick={() => handleLinkClick('/')}>
-                        <div className="w-3/4 xs:w-1/2 sm:w-3/4 md:w-full p-2 mx-auto">
-                            <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
-                        </div>
-                    </li>
-                    {status === 'authenticated' && (
-                        <li className="text-neutral-content mb-2">
-                            <Rewards fullWidth />
+                <div className="w-full">
+                    <ul className="menu menu-compact p-4 overflow-y-auto w-3/4 sm:w-1/2 md:w-1/4 bg-neutral text-base-content">
+                        <li className="text-neutral-content mb-2" onClick={() => handleLinkClick('/')}>
+                            <div className="w-3/4 xs:w-1/2 sm:w-3/4 md:w-full p-2 mx-auto">
+                                <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
+                            </div>
                         </li>
-                    )}
-                    <li className="text-neutral-content mb-4">
-                        <button className="btn gap-1" onClick={() => handleLinkClick('/')}>
-                            <AiFillHome className="inline-block w-6 h-6 mr-1.5 stroke-current" />
-                            Home
-                        </button>
-                    </li>
-                    <li className="text-neutral-content mb-2">
-                        <button className="btn gap-1" onClick={() => handleLinkClick('/shop')}>
-                            <AiFillShopping className="inline-block w-6 h-6 mr-1.5 stroke-current" />
-                            Shop
-                        </button>
-                    </li>
-                    <hr className="my-2" />
-                    {INTERESTS.map((menuItem) => (
-                        <li className="text-neutral-content" key={`sub-menu-item-${menuItem.label}`}>
-                            <button
-                                className="btn gap-1 rounded-sm"
-                                onClick={() => handleLinkClick(menuItem.href)}
-                                role="link"
-                            >
-                                <menuItem.icon className={`w-5 h-5 ${menuItem.css}`} />
-                                {menuItem.label}
+                        {status === 'authenticated' && (
+                            <li className="text-neutral-content mb-2">
+                                <Rewards fullWidth />
+                            </li>
+                        )}
+                        <li className="text-neutral-content mb-4">
+                            <button className="btn gap-1" onClick={() => handleLinkClick('/')}>
+                                <AiFillHome className="inline-block w-6 h-6 mr-1.5 stroke-current" />
+                                Home
                             </button>
                         </li>
-                    ))}
-                    <hr className="my-2" />
-                    <li className="text-neutral-content mb-2">
-                        <button className="btn rounded-btn px-4 w-full h-12" onClick={() => handleLinkClick('/breaks')}>
-                            <AiTwotoneCrown className="inline-block w-6 h-6 mr-1.5 stroke-current" />
-                            Breaks
-                        </button>
-                    </li>
-                </ul>
+                        <li className="text-neutral-content mb-2">
+                            <button className="btn gap-1" onClick={() => handleLinkClick('/shop')}>
+                                <AiFillShopping className="inline-block w-6 h-6 mr-1.5 stroke-current" />
+                                Shop
+                            </button>
+                        </li>
+                        <hr className="my-2" />
+                        {INTERESTS.map((menuItem) => (
+                            <li className="text-neutral-content" key={`sub-menu-item-${menuItem.label}`}>
+                                <button
+                                    className="btn gap-1 rounded-sm"
+                                    onClick={() => handleLinkClick(menuItem.href)}
+                                    role="link"
+                                >
+                                    <menuItem.icon className={`w-5 h-5 ${menuItem.css}`} />
+                                    {menuItem.label}
+                                </button>
+                            </li>
+                        ))}
+                        <hr className="my-2" />
+                        <li className="text-neutral-content mb-2">
+                            <a href="https://www.whatnot.com/user/kocardboard" target="__blank" role="link">
+                                <button className="btn rounded-btn px-4 w-full h-12">
+                                    <AiTwotoneCrown className="inline-block w-6 h-6 mr-1.5 stroke-current" />
+                                    Breaks
+                                </button>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     );
