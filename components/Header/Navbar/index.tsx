@@ -50,12 +50,17 @@ export const Navbar: React.FC = () => (
                 </ul>
             </li>
             <li>
-                <Link href="/breaks" passHref className="p-0 bg-neutral">
+                <a
+                    href="https://www.whatnot.com/user/kocardboard"
+                    target="__blank"
+                    role="link"
+                    className="p-0 bg-neutral"
+                >
                     <button className="btn rounded-md gap-2" role="link">
                         <AiTwotoneCrown className="w-5 h-5" />
                         Breaks
                     </button>
-                </Link>
+                </a>
             </li>
         </ul>
     </div>
