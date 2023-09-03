@@ -38,6 +38,11 @@ export const Images: React.FC<ImageProps> = ({ mainImage, imageCollection }) => 
 
             {imageCollection.length > 0 && (
                 <div className="grid grid-cols-4 relative w-full">
+                    <div className="w-full h-20 cursor-pointer p-2" onClick={() => changeImage(mainImage)}>
+                        <div className="block rounded-md overflow-hidden w-full h-full relative shadow-sm transition duration-300 ease-in-out hover:shadow-lg">
+                            <Image src={`${mainImage.url}?w=65`} alt="shipment image" fill />
+                        </div>
+                    </div>
                     {imageCollection.map((image, index) => (
                         <div
                             className="w-full h-20 cursor-pointer p-2"
@@ -45,7 +50,7 @@ export const Images: React.FC<ImageProps> = ({ mainImage, imageCollection }) => 
                             onClick={() => changeImage(image)}
                         >
                             <div className="block rounded-md overflow-hidden w-full h-full relative shadow-sm transition duration-300 ease-in-out hover:shadow-lg">
-                                <Image src={`${image.url}?w=65`} alt="shipment image" layout="fill" objectFit="cover" />
+                                <Image src={`${image.url}?w=65`} alt="shipment image" fill />
                             </div>
                         </div>
                     ))}

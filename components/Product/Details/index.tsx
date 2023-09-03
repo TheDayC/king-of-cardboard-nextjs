@@ -1,9 +1,9 @@
 import { DateTime } from 'luxon';
 import React from 'react';
 import { BsBoxSeam, BsCalendarDate, BsCart } from 'react-icons/bs';
-import { FaPlaneArrival } from 'react-icons/fa';
 
 import { StockStatus } from '../../../enums/products';
+import Availability from '../Availability';
 
 interface DetailsProps {
     name: string;
@@ -31,6 +31,7 @@ export const Details: React.FC<DetailsProps> = ({
     stockStatus,
 }) => {
     const isImport = stockStatus === StockStatus.Import;
+    const isPreOrder = stockStatus === StockStatus.PreOrder;
 
     return (
         <div className="flex flex-col items-center relative w-full space-y-4 md:items-start">
@@ -43,28 +44,18 @@ export const Details: React.FC<DetailsProps> = ({
                 <p className="text-base-400 text-xl">
                     <BsCart className="inline mr-2 -mt-1" />
                     <span className="font-semibold">Status:</span>{' '}
-                    {isAvailable ? (
-                        <span className="text-green-600">In Stock</span>
-                    ) : (
-                        <span className="text-red-600">Out of Stock</span>
-                    )}
+                    <Availability isAvailable={isAvailable} stockStatus={stockStatus} />
                 </p>
                 <p className="text-base-400 text-xl">
                     <BsBoxSeam className="text-xl inline mr-2 -mt-1 text-amber-900" />
                     <span className="font-semibold">Stock:</span> {quantity}
                 </p>
                 {isImport && (
-                    <p className="text-base-400 text-xl">
-                        <FaPlaneArrival className="text-xl inline mr-2 text-secondary-focus" />
-                        <span className="font-semibold">Type:</span> Import
-                    </p>
-                )}
-                {isImport && (
                     <p className="text-base-400 text-lg italic text-gray-400">
                         Please allow 5-10 days for imports to arrive in the country prior to local shipping.
                     </p>
                 )}
-                {releaseDate && (
+                {isPreOrder && releaseDate && (
                     <p
                         className="text-base-400 tooltip tooltip-bottom text-xl"
                         data-tip="This is the expected date of release, King of Cardboard assumes no guarantee of this release date."
