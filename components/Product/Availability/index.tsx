@@ -1,7 +1,4 @@
-import { DateTime } from 'luxon';
 import React from 'react';
-import { BsBoxSeam, BsCalendarDate, BsCart } from 'react-icons/bs';
-import { FaPlaneArrival } from 'react-icons/fa';
 
 import { StockStatus } from '../../../enums/products';
 import { getStockStatusColor } from '../../../utils/account/products';
