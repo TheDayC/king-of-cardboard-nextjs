@@ -51,6 +51,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         content,
         sku,
         mainImage,
+        gallery,
         price,
         salePrice,
         quantity,
@@ -80,7 +81,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 description: `${title} main product image`,
                 url: `${process.env.NEXT_PUBLIC_AWS_S3_URL}${mainImage}`,
             },
-            gallery: [],
+            gallery: gallery
+                ? gallery.map((image, i) => ({
+                      title: `${title} gallery image ${i}`,
+                      description: `${title} gallery product image ${i}`,
+                      url: `${process.env.NEXT_PUBLIC_AWS_S3_URL}${image}`,
+                  }))
+                : [],
             price: price,
             salePrice: salePrice,
             isAvailable: quantity > 0,
