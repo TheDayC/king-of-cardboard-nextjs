@@ -25,27 +25,27 @@ export const Footer: React.FC = () => (
                     <div className="flex flex-row flex-wrap items-between">
                         <div className="p-2">
                             <a href="https://nextjs.org/" target="__blank" role="link">
-                                <SiNextdotjs className={builtOnClass} />
+                                <SiNextdotjs className={builtOnClass} title="NextJS logo" />
                             </a>
                         </div>
                         <div className="p-2">
                             <a href="https://www.typescriptlang.org/" target="__blank" role="link">
-                                <SiTypescript className={builtOnClass} />
+                                <SiTypescript className={builtOnClass} title="Typescript logo" />
                             </a>
                         </div>
                         <div className="p-2">
                             <a href="https://reactjs.org/" target="__blank" role="link">
-                                <SiReact className={builtOnClass} />
+                                <SiReact className={builtOnClass} title="React logo" />
                             </a>
                         </div>
                         <div className="p-2">
                             <a href="https://redux.js.org/" target="__blank" role="link">
-                                <SiRedux className={builtOnClass} />
+                                <SiRedux className={builtOnClass} title="Redux logo" />
                             </a>
                         </div>
                         <div className="p-2">
                             <a href="https://www.mongodb.com/" target="__blank" role="link">
-                                <SiMongodb className={builtOnClass} />
+                                <SiMongodb className={builtOnClass} title="MongoDB logo" />
                             </a>
                         </div>
                     </div>
@@ -116,13 +116,22 @@ export const Footer: React.FC = () => (
             </div>
             <div className="flex flex-row w-full items-center justify-center pt-6 space-x-6" data-testid="social-media">
                 <a href="https://twitter.com/kocardboard" target="__blank" role="link">
-                    <BsTwitter className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary" />
+                    <BsTwitter
+                        className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary"
+                        title="Twitter logo"
+                    />
                 </a>
                 <a href="https://instagram.com/kocardboard" target="__blank" role="link">
-                    <BsInstagram className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary" />
+                    <BsInstagram
+                        className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary"
+                        title="Instagram logo"
+                    />
                 </a>
                 <a href="https://www.facebook.com/groups/kocardboardbreaks" target="__blank" role="link">
-                    <BsFacebook className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary" />
+                    <BsFacebook
+                        className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary"
+                        title="Facebook logo"
+                    />
                 </a>
             </div>
         </div>
