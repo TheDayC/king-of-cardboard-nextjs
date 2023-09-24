@@ -79,7 +79,12 @@ export const Drawer: React.FC<DrawerProps> = ({ children }) => {
                         ))}
                         <hr className="my-2" />
                         <li className="text-neutral-content mb-2">
-                            <a href="https://www.whatnot.com/user/kocardboard" target="__blank" role="link">
+                            <a
+                                href="https://www.whatnot.com/user/kocardboard"
+                                target="__blank"
+                                rel="noopener noreferrer"
+                                role="link"
+                            >
                                 <button className="btn rounded-btn px-4 w-full h-12">
                                     <AiTwotoneCrown className="inline-block w-6 h-6 mr-1.5 stroke-current" />
                                     Breaks
