@@ -24,27 +24,32 @@ export const Footer: React.FC = () => (
                     <h3 className="text-md mb-2">Built on</h3>
                     <div className="flex flex-row flex-wrap items-between">
                         <div className="p-2">
-                            <a href="https://nextjs.org/" target="__blank" role="link">
+                            <a href="https://nextjs.org/" target="__blank" rel="noopener noreferrer" role="link">
                                 <SiNextdotjs className={builtOnClass} title="NextJS logo" />
                             </a>
                         </div>
                         <div className="p-2">
-                            <a href="https://www.typescriptlang.org/" target="__blank" role="link">
+                            <a
+                                href="https://www.typescriptlang.org/"
+                                target="__blank"
+                                rel="noopener noreferrer"
+                                role="link"
+                            >
                                 <SiTypescript className={builtOnClass} title="Typescript logo" />
                             </a>
                         </div>
                         <div className="p-2">
-                            <a href="https://reactjs.org/" target="__blank" role="link">
+                            <a href="https://reactjs.org/" target="__blank" rel="noopener noreferrer" role="link">
                                 <SiReact className={builtOnClass} title="React logo" />
                             </a>
                         </div>
                         <div className="p-2">
-                            <a href="https://redux.js.org/" target="__blank" role="link">
+                            <a href="https://redux.js.org/" target="__blank" rel="noopener noreferrer" role="link">
                                 <SiRedux className={builtOnClass} title="Redux logo" />
                             </a>
                         </div>
                         <div className="p-2">
-                            <a href="https://www.mongodb.com/" target="__blank" role="link">
+                            <a href="https://www.mongodb.com/" target="__blank" rel="noopener noreferrer" role="link">
                                 <SiMongodb className={builtOnClass} title="MongoDB logo" />
                             </a>
                         </div>
@@ -90,12 +95,12 @@ export const Footer: React.FC = () => (
                             <Link href="/customer-service/returns-and-exchanges">Returns &amp; Exchanges</Link>
                         </li>
                         <li className={menuItemClass} role="menuitem">
-                            <a href="mailto:support@kingofcardboard.co.uk" target="__blank">
+                            <a href="mailto:support@kingofcardboard.co.uk" target="__blank" rel="noopener noreferrer">
                                 Contact Us
                             </a>
                         </li>
                         <li className={menuItemClass} role="menuitem">
-                            <a href="mailto:support@kingofcardboard.co.uk" target="__blank">
+                            <a href="mailto:support@kingofcardboard.co.uk" target="__blank" rel="noopener noreferrer">
                                 Submit Bug
                             </a>
                         </li>
@@ -115,19 +120,24 @@ export const Footer: React.FC = () => (
                 </div>
             </div>
             <div className="flex flex-row w-full items-center justify-center pt-6 space-x-6" data-testid="social-media">
-                <a href="https://twitter.com/kocardboard" target="__blank" role="link">
+                <a href="https://twitter.com/kocardboard" target="__blank" rel="noopener noreferrer" role="link">
                     <BsTwitter
                         className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary"
                         title="Twitter logo"
                     />
                 </a>
-                <a href="https://instagram.com/kocardboard" target="__blank" role="link">
+                <a href="https://instagram.com/kocardboard" target="__blank" rel="noopener noreferrer" role="link">
                     <BsInstagram
                         className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary"
                         title="Instagram logo"
                     />
                 </a>
-                <a href="https://www.facebook.com/groups/kocardboardbreaks" target="__blank" role="link">
+                <a
+                    href="https://www.facebook.com/groups/kocardboardbreaks"
+                    target="__blank"
+                    rel="noopener noreferrer"
+                    role="link"
+                >
                     <BsFacebook
                         className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary"
                         title="Facebook logo"

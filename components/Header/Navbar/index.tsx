@@ -53,6 +53,7 @@ export const Navbar: React.FC = () => (
                 <a
                     href="https://www.whatnot.com/user/kocardboard"
                     target="__blank"
+                    rel="noopener noreferrer"
                     role="link"
                     className="p-0 bg-neutral"
                 >
