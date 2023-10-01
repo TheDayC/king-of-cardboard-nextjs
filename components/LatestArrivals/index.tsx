@@ -1,4 +1,5 @@
 import { FC } from 'react';
+
 import { Product } from '../../types/products';
 import ProductCard from '../Shop/Grid/ProductCard';
 import { getPrettyPrice } from '../../utils/account/products';
