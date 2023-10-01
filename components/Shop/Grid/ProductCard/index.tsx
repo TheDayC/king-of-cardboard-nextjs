@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { BsArrowRightSquareFill, BsCalendarDate } from 'react-icons/bs';
+import { BsArrowRightSquareFill, BsBoxSeam, BsCalendarDate } from 'react-icons/bs';
 import { DateTime } from 'luxon';
 import { FaPlaneArrival } from 'react-icons/fa';
 
@@ -115,9 +115,12 @@ export const ProductCard: React.FC<CardProps> = ({
                     )}
                 </div>
                 <div className="card-actions w-full justify-center">
-                    <div className="flex flex-col justify-between items-end w-full 2xl:flex-row">
+                    <div className="flex flex-col justify-between items-center w-full">
                         <div className="flex flex-col">
-                            <p className="text-md text-green-600">{stockText}</p>
+                            <p className="text-md text-green-600">
+                                <BsBoxSeam className="inline-block mr-2" />
+                                {stockText}
+                            </p>
                         </div>
                         <div className="flex flex-row justify-end items-center">
                             {shouldShowCompare && (
