@@ -31,6 +31,7 @@ async function listProducts(req: NextApiRequest, res: NextApiResponse): Promise<
             const regex = new RegExp(searchTerm, 'i');
             const sortOption = safelyParse(req, 'body.sortOption', parseAsNumber, SortOption.DateAddedDesc);
             const shouldShowOutOfStock = safelyParse(req, 'body.shouldShowOutOfStock', parseAsBoolean, false);
+            const isFeatured = safelyParse(req, 'body.isFeatured', parseAsBoolean, false);
             const query = buildProductListMongoQueryValues(categories, interests, configurations, stockStatuses);
 
             const outOfStockQuery = shouldShowOutOfStock
