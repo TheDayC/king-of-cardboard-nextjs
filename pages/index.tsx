@@ -17,7 +17,7 @@ import LatestArrivals from '../components/LatestArrivals';
 const LIMIT = 4;
 const SKIP = 4;
 const CONFIGURATIONS: Configuration[] = [];
-const STOCK_STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.Import, StockStatus.PreOrder];
+const STOCK_STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.PreOrder];
 
 export const getServerSideProps: GetServerSideProps = async () => {
     const { heroes, content, sliderImages } = await pageWithHeroBySlug('home', '');
