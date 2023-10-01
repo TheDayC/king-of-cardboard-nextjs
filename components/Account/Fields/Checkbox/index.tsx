@@ -1,13 +1,11 @@
 import React from 'react';
 import { UseFormRegister } from 'react-hook-form';
-import { IconType } from 'react-icons/lib';
 
 interface CheckboxFieldProps {
     label: string;
     fieldName: string;
     error: string | null;
     register: UseFormRegister<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-    Icon: IconType;
     isChecked?: boolean;
 }
 
@@ -16,7 +14,6 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
     fieldName,
     error,
     register,
-    Icon,
     isChecked = false,
 }) => {
     return (

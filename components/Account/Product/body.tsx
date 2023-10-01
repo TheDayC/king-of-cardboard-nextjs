@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { BsFillCartCheckFill, BsBoxSeam, BsCurrencyPound, BsCalendarDate, BsLaptop } from 'react-icons/bs';
-import { MdFeaturedVideo, MdOutlineTitle } from 'react-icons/md';
+import { MdOutlineTitle } from 'react-icons/md';
 import { ImFontSize } from 'react-icons/im';
 import { AiOutlinePoundCircle } from 'react-icons/ai';
 import { FaBoxes, FaPlaneArrival } from 'react-icons/fa';
@@ -391,7 +391,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         error={featuredErr}
                         register={register}
                         isChecked={isFeatured}
-                        Icon={MdFeaturedVideo}
                     />
                 </div>
                 <div className="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0 items-start justify-start">

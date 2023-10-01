@@ -14,7 +14,6 @@ import { getPrettyPrice, deleteProduct, editProduct } from '../../../utils/accou
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import Loading from '../../Loading';
 import { isNumber } from '../../../utils/typeguards';
-import { StockStatus } from '../../../enums/products';
 
 interface ProductProps {
     product: ProductType;
