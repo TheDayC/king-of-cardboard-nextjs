@@ -64,7 +64,7 @@ export const Product: React.FC<ProductProps> = ({ product, currentPage, updatePr
     const handleSubmitPrice = async () => {
         setIsLoading(true);
 
-        const hasEditedProduct = await editProduct(id, { price: newPrice, stockStatus: StockStatus.InStock });
+        const hasEditedProduct = await editProduct(id, { price: newPrice });
 
         if (hasEditedProduct) {
             dispatch(addSuccess('Price updated!'));

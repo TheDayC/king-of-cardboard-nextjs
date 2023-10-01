@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { BsFillCartCheckFill, BsBoxSeam, BsCurrencyPound, BsCalendarDate, BsLaptop } from 'react-icons/bs';
-import { MdOutlineTitle } from 'react-icons/md';
+import { MdFeaturedVideo, MdOutlineTitle } from 'react-icons/md';
 import { ImFontSize } from 'react-icons/im';
 import { AiOutlinePoundCircle } from 'react-icons/ai';
 import { FaBoxes, FaPlaneArrival } from 'react-icons/fa';
@@ -21,6 +21,7 @@ import { addGalleryToBucket, addImageToBucket, addProduct, editProduct } from '.
 import { addError, addSuccess } from '../../../store/slices/alerts';
 import ImageUpload from '../Fields/ImageUpload';
 import { PriceHistory } from '../../../types/products';
+import CheckboxField from '../Fields/Checkbox';
 
 const productCategory = [
     { key: 'Sports', value: Category.Sports },
@@ -77,6 +78,7 @@ interface ProductBodyProps {
     isNew: boolean;
     metaTitle?: string;
     metaDescription?: string;
+    isFeatured: boolean;
 }
 
 export const ProductBody: React.FC<ProductBodyProps> = ({
@@ -99,6 +101,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     isNew,
     metaTitle,
     metaDescription,
+    isFeatured,
 }) => {
     const { data: session } = useSession();
     const {
@@ -126,6 +129,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             releaseDate,
             metaTitle,
             metaDescription,
+            isFeatured,
         },
     });
     const router = useRouter();
@@ -143,7 +147,6 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     const hasErrors = Object.keys(errors).length > 0;
     const titleErr = safelyParse(errors, 'title.message', parseAsString, null);
     const releaseDateErr = safelyParse(errors, 'releaseDate.message', parseAsString, null);
-    const typeErr = safelyParse(errors, 'productType.message', parseAsString, null);
     const qtyErr = safelyParse(errors, 'quantity.message', parseAsString, null);
     const priceErr = safelyParse(errors, 'price.message', parseAsString, null);
     const salePriceErr = safelyParse(errors, 'salePrice.message', parseAsString, null);
@@ -151,6 +154,11 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     const galleryErr = safelyParse(errors, 'gallery.message', parseAsString, null);
     const metaTitleErr = safelyParse(errors, 'metaTitle.message', parseAsString, null);
     const metaDescriptionErr = safelyParse(errors, 'metaDescription.message', parseAsString, null);
+    const categoryErr = safelyParse(errors, 'category.message', parseAsString, null);
+    const configurationErr = safelyParse(errors, 'configuration.message', parseAsString, null);
+    const interestErr = safelyParse(errors, 'interest.message', parseAsString, null);
+    const stockStatusErr = safelyParse(errors, 'stockStatus.message', parseAsString, null);
+    const featuredErr = safelyParse(errors, 'isFeatured.message', parseAsString, null);
 
     // Variables
     const userId = session ? session.user.id : null;
@@ -174,6 +182,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             salePrice,
             metaTitle,
             metaDescription,
+            isFeatured,
         } = data;
         const sku = toUpper(kebabCase(title));
         const slug = toLower(kebabCase(title));
@@ -235,6 +244,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
             isInfinite: false,
             metaTitle,
             metaDescription,
+            isFeatured,
         };
 
         if (isNew) {
@@ -343,7 +353,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         fieldName="category"
                         instruction="Category is required."
                         options={productCategory}
-                        error={typeErr}
+                        error={categoryErr}
                         register={register}
                         Icon={BiCategory}
                     />
@@ -352,7 +362,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         fieldName="configuration"
                         instruction="Configuration is required."
                         options={productConfig}
-                        error={typeErr}
+                        error={configurationErr}
                         register={register}
                         Icon={BsBoxSeam}
                     />
@@ -361,7 +371,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         fieldName="interest"
                         instruction="Interest is required."
                         options={productInterest}
-                        error={typeErr}
+                        error={interestErr}
                         register={register}
                         Icon={BiFootball}
                     />
@@ -370,10 +380,18 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         fieldName="stockStatus"
                         instruction="Stock status is required."
                         options={productStatus}
-                        error={typeErr}
+                        error={stockStatusErr}
                         register={register}
                         defaultValue={stockStatus}
                         Icon={FaPlaneArrival}
+                    />
+                    <CheckboxField
+                        label="Set as featured"
+                        fieldName="isFeatured"
+                        error={featuredErr}
+                        register={register}
+                        isChecked={isFeatured}
+                        Icon={MdFeaturedVideo}
                     />
                 </div>
                 <div className="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0 items-start justify-start">
