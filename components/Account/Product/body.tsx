@@ -78,7 +78,7 @@ interface ProductBodyProps {
     isNew: boolean;
     metaTitle?: string;
     metaDescription?: string;
-    isFeatured: boolean;
+    isFeatured?: boolean;
 }
 
 export const ProductBody: React.FC<ProductBodyProps> = ({
@@ -101,7 +101,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
     isNew,
     metaTitle,
     metaDescription,
-    isFeatured,
+    isFeatured = false,
 }) => {
     const { data: session } = useSession();
     const {
