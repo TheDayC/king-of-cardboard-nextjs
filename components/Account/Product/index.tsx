@@ -14,6 +14,7 @@ import { getPrettyPrice, deleteProduct, editProduct } from '../../../utils/accou
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import Loading from '../../Loading';
 import { isNumber } from '../../../utils/typeguards';
+import { StockStatus } from '../../../enums/products';
 
 interface ProductProps {
     product: ProductType;
@@ -63,7 +64,7 @@ export const Product: React.FC<ProductProps> = ({ product, currentPage, updatePr
     const handleSubmitPrice = async () => {
         setIsLoading(true);
 
-        const hasEditedProduct = await editProduct(id, { price: newPrice });
+        const hasEditedProduct = await editProduct(id, { price: newPrice, stockStatus: StockStatus.InStock });
 
         if (hasEditedProduct) {
             dispatch(addSuccess('Price updated!'));
