@@ -3,7 +3,6 @@ import { DateTime } from 'luxon';
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { Category, Configuration, Interest, StockStatus } from '../../../enums/products';
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { PriceHistory } from '../../../types/products';
@@ -53,10 +52,15 @@ async function editProduct(req: NextApiRequest, res: NextApiResponse): Promise<v
                         content: safelyParse(req, 'body.content', parseAsString, existingProduct.content),
                         mainImage: safelyParse(req, 'body.mainImage', parseAsString, existingProduct.mainImage),
                         gallery: safelyParse(req, 'body.gallery', parseAsArrayOfStrings, existingProduct.gallery),
-                        category: safelyParse(req, 'body.category', parseAsNumber, Category.Other),
-                        configuration: safelyParse(req, 'body.configuration', parseAsNumber, Configuration.Other),
-                        interest: safelyParse(req, 'body.interest', parseAsNumber, Interest.Other),
-                        stockStatus: safelyParse(req, 'body.stockStatus', parseAsNumber, StockStatus.OutOfStock),
+                        category: safelyParse(req, 'body.category', parseAsNumber, existingProduct.category),
+                        configuration: safelyParse(
+                            req,
+                            'body.configuration',
+                            parseAsNumber,
+                            existingProduct.configuration
+                        ),
+                        interest: safelyParse(req, 'body.interest', parseAsNumber, existingProduct.interest),
+                        stockStatus: safelyParse(req, 'body.stockStatus', parseAsNumber, existingProduct.stockStatus),
                         quantity: safelyParse(req, 'body.quantity', parseAsNumber, existingProduct.quantity),
                         price: safelyParse(req, 'body.price', parseAsNumber, existingProduct.price),
                         salePrice: safelyParse(req, 'body.salePrice', parseAsNumber, existingProduct.salePrice),
@@ -73,6 +77,7 @@ async function editProduct(req: NextApiRequest, res: NextApiResponse): Promise<v
                             parseAsString,
                             existingProduct.metaDescription
                         ),
+                        isFeatured: safelyParse(req, 'body.isFeatured', parseAsBoolean, existingProduct.isFeatured),
                     },
                 }
             );

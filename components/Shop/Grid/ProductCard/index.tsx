@@ -102,7 +102,7 @@ export const ProductCard: React.FC<CardProps> = ({
             <div className="justify-between items-center card-body px-6 py-4">
                 <div className="flex flex-col justify-start items-center space-y-2">
                     <Link href={linkOptions} passHref>
-                        <h2 className="card-title text-center text-2xl cursor-pointer hover:underline">{name}</h2>
+                        <h4 className="card-title text-center text-2xl cursor-pointer hover:underline">{name}</h4>
                     </Link>
                     {tags.length > 0 && (
                         <div className="flex flex-row flex-wrap justify-start items-center">

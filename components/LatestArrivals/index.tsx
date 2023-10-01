@@ -11,7 +11,7 @@ interface LatestArrivalsProps {
 export const LatestArrivals: FC<LatestArrivalsProps> = ({ products }) => {
     return (
         <div className="flex flex-col w-full max-w-7xl">
-            <h3 className="font-bold mb-4 text-xl lg:text-4xl">New Products</h3>
+            <h3 className="font-bold mb-4 text-xl lg:text-4xl">Latest Arrivals</h3>
             <div className="grid gap-y-4 gap-x-4 xl:gap-y-0 xl:gap-x-4 xs:grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
                 {products.map((product) => (
                     <ProductCard

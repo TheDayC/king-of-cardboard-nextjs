@@ -9,29 +9,31 @@ import { pageWithHeroBySlug } from '../utils/pages';
 import Content from '../components/Content';
 import { Hero, SliderImage } from '../types/pages';
 import Slider from '../components/Slider';
-import { listProducts } from '../utils/account/products';
+import { getFeaturedProduct, listProducts } from '../utils/account/products';
 import { Configuration, SortOption, StockStatus } from '../enums/products';
 import { Product } from '../types/products';
 import LatestArrivals from '../components/LatestArrivals';
+import FeaturedProduct from '../components/FeaturedProduct';
 
-const LIMIT = 4;
-const SKIP = 4;
 const CONFIGURATIONS: Configuration[] = [];
-const STOCK_STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.Import, StockStatus.PreOrder];
+const STOCK_STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.PreOrder];
 
 export const getServerSideProps: GetServerSideProps = async () => {
     const { heroes, content, sliderImages } = await pageWithHeroBySlug('home', '');
     const { products } = await listProducts(
-        LIMIT,
-        SKIP,
+        4,
+        0,
         true,
         [],
         CONFIGURATIONS,
         [],
         STOCK_STATUSES,
         '',
-        SortOption.DateAddedDesc
+        SortOption.DateAddedDesc,
+        false
     );
+
+    const featuredProduct = await getFeaturedProduct();
 
     return {
         props: {
@@ -39,6 +41,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
             content,
             sliderImages,
             products,
+            featuredProduct,
         },
     };
 };
@@ -48,9 +51,10 @@ interface HomePageProps {
     content: Document[] | null;
     sliderImages: SliderImage[];
     products: Product[];
+    featuredProduct: Product | null;
 }
 
-export const Home: React.FC<HomePageProps> = ({ heroes, content, sliderImages, products }) => (
+export const Home: React.FC<HomePageProps> = ({ heroes, content, sliderImages, products, featuredProduct }) => (
     <PageWrapper
         title="King of Cardboard"
         description="Sports cards and sealed sports cards products for the UK. Whether you're collecting Football, Basketball or UFC, we have something for everyone."
@@ -66,6 +70,7 @@ export const Home: React.FC<HomePageProps> = ({ heroes, content, sliderImages, p
                 </div>
             )}
             {products.length > 0 && <LatestArrivals products={products} />}
+            {featuredProduct && <FeaturedProduct product={featuredProduct} />}
         </div>
     </PageWrapper>
 );

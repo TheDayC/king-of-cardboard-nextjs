@@ -156,6 +156,23 @@ export async function getProduct(id?: string, slug?: string): Promise<Product | 
     return null;
 }
 
+export async function getFeaturedProduct(): Promise<Product | null> {
+    try {
+        const res = await axios.get(`${URL}/api/products/getFeatured`, {
+            params: {},
+            headers: {
+                'Accept-Encoding': 'application/json',
+            },
+        });
+
+        return res.data as Product;
+    } catch (error: unknown) {
+        errorHandler(error, 'Could not get product.');
+    }
+
+    return null;
+}
+
 export async function addImageToBucket(file: File, slug: string): Promise<string | null> {
     try {
         const fileName = `products/${slug}/${file.name}`;

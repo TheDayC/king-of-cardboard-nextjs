@@ -143,7 +143,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ initialProducts, ini
                     </div>
 
                     {products.length > 0 && (
-                        <div className="grid gap-4 grid-cols-1 xl:grid-cols-2">
+                        <div className="grid gap-4 grid-cols-1">
                             {products.map((product) => (
                                 <Product
                                     product={product}

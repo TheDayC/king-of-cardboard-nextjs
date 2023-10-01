@@ -6,7 +6,7 @@ import { StockStatus } from '../../../enums/products';
 import Availability from '../Availability';
 
 interface DetailsProps {
-    name: string;
+    name?: string;
     price: string;
     salePrice: string;
     isAvailable: boolean;
@@ -35,7 +35,7 @@ export const Details: React.FC<DetailsProps> = ({
 
     return (
         <div className="flex flex-col items-center relative w-full space-y-4 md:items-start">
-            <h1 className="card-title text-4xl">{name}</h1>
+            {name && <h1 className="card-title text-4xl">{name}</h1>}
             <div className="flex flex-row">
                 {shouldShowCompare && <span className="text-xs line-through text-base-200 mr-2 mt-2">{salePrice}</span>}
                 <p className="text-3xl font-semibold">{price}</p>
