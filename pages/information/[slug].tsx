@@ -40,7 +40,7 @@ export const InformationPage: React.FC<InformationPageProps> = ({ errorCode, con
     return (
         <PageWrapper
             title={`${prettySlug} - Information - King of Cardboard`}
-            description="We can't seem to find the page you requested!"
+            description="Information regarding King of Cardboard and our products."
         >
             <Content content={[content]} />
         </PageWrapper>
