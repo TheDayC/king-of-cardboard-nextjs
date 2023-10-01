@@ -7,6 +7,7 @@ const globalInitialState: Global = {
     hasRejected: false,
     sessionEmail: null,
     isDrawerOpen: false,
+    isSearchOpen: false,
 };
 
 export default globalInitialState;

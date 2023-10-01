@@ -33,6 +33,9 @@ const globalSlice = createSlice({
         setTokenExpiry(state, action) {
             state.expires = action.payload;
         },
+        setIsSearchOpen(state, action) {
+            state.isSearchOpen = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(hydrate, (state, action) => ({
@@ -53,5 +56,6 @@ export const {
     setUserId,
     setIsDrawerOpen,
     setTokenExpiry,
+    setIsSearchOpen,
 } = globalSlice.actions;
 export default globalSlice.reducer;

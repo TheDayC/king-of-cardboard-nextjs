@@ -16,6 +16,7 @@ import CartIcon from './CartIcon';
 import { setIsDrawerOpen, setUserId } from '../../store/slices/global';
 import { Slugs } from '../../enums/account';
 import IssueBanner from './IssueBanner';
+import SearchIcon from './SearchIcon';
 
 export const Header: React.FC = () => {
     const dispatch = useDispatch();
@@ -49,12 +50,13 @@ export const Header: React.FC = () => {
                 </div>
                 <NavBar />
                 <div className="navbar-end">
-                    {status === 'authenticated' && (
+                    {/* status === 'authenticated' && (
                         <div className="hidden lg:inline-block">
                             <Rewards fullWidth={false} />
                         </div>
-                    )}
+                    ) */}
                     <CartIcon />
+                    <SearchIcon />
                     {status === 'authenticated' ? (
                         <div className="dropdown dropdown-end" role="menu" data-testid="account-dropdown">
                             <div className="avatar cursor-pointer relative" tabIndex={0}>

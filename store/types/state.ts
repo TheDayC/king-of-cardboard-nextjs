@@ -57,6 +57,7 @@ export interface Global {
     hasRejected: boolean;
     sessionEmail: string | null;
     isDrawerOpen: boolean;
+    isSearchOpen: boolean;
 }
 
 export interface Checkout {
