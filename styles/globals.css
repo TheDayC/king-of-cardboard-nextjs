@@ -94,6 +94,10 @@
     outline: 2px solid #f6c467;
 }
 
+.input.no-border:focus {
+    outline: none;
+}
+
 .accountMenuHeight {
     height: 21rem;
 }

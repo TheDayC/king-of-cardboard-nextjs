@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
 import { toSvg } from 'jdenticon';
 import md5 from 'md5';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 
 import logo from '../../images/logo-full.png';
@@ -17,9 +17,12 @@ import { setIsDrawerOpen, setUserId } from '../../store/slices/global';
 import { Slugs } from '../../enums/account';
 import IssueBanner from './IssueBanner';
 import SearchIcon from './SearchIcon';
+import SearchBar from './SearchBar';
+import selector from './selector';
 
 export const Header: React.FC = () => {
     const dispatch = useDispatch();
+    const { isSearchOpen } = useSelector(selector);
     const { data: session, status } = useSession();
     const icon = safelyParse(session, 'user.image', parseAsString, null);
     const email = safelyParse(session, 'user.email', parseAsString, null);
@@ -111,6 +114,7 @@ export const Header: React.FC = () => {
                     )}
                 </div>
             </div>
+            {isSearchOpen && <SearchBar />}
             <IssueBanner />
         </React.Fragment>
     );
