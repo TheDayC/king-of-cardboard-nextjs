@@ -23,7 +23,7 @@ export const FeaturedProduct: FC<FeaturedProductProps> = ({ product }) => {
                 className="card shadow-md rounded-md p-6 transition duration-300 ease-in-out relative hover:shadow-2xl"
                 data-testid="featured-product-card"
             >
-                <div className="flex flex-row gap-x-6">
+                <div className="flex flex-col gap-y-6 lg:flex-row lg:gap-x-6">
                     <div className="flex flex-col gap-y-2">
                         <p className="badge badge-secondary shadow-sm">Featured</p>
                         <h4 className="font-bold text-lg lg:text-3xl">{product.title}</h4>
@@ -45,14 +45,16 @@ export const FeaturedProduct: FC<FeaturedProductProps> = ({ product }) => {
                             </button>
                         </Link>
                     </div>
-                    <Image
-                        src={`${process.env.NEXT_PUBLIC_AWS_S3_URL}${product.mainImage}`}
-                        width={600}
-                        height={600}
-                        alt={`${product.title} primary image`}
-                        title={`${product.title} image`}
-                        className="rounded-md shadow-md"
-                    />
+                    <div className="flex flex-row justify-center items-start w-full relative h-96 lg:h-auto">
+                        <Image
+                            src={`${process.env.NEXT_PUBLIC_AWS_S3_URL}${product.mainImage}`}
+                            fill
+                            style={{ objectFit: 'cover' }}
+                            alt={`${product.title} primary image`}
+                            title={`${product.title} image`}
+                            className="rounded-md shadow-md"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
