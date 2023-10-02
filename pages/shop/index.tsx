@@ -1,110 +1,79 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { GetServerSideProps } from 'next';
-import { useDispatch, useSelector } from 'react-redux';
 import { Document } from '@contentful/rich-text-types';
-import { isEqual } from 'lodash';
-import { createSelector } from '@reduxjs/toolkit';
 
 import PageWrapper from '../../components/PageWrapper';
 import Filters from '../../components/Shop/Filters';
 import Grid from '../../components/Shop/Grid';
-import { resetFilters } from '../../store/slices/filters';
 import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import LatestProductRows from '../../components/Shop/LatestProductRows';
 import { Product } from '../../types/products';
-import { listProductRows } from '../../utils/account/products';
-import {
-    fetchProductRows,
-    fetchProducts,
-    setIsLoadingProducts,
-    setProductsAndCount,
-} from '../../store/slices/products';
-import { selectFiltersData } from '../../store/state/selectors';
+import { listProductRows, listProducts } from '../../utils/account/products';
 import { DEFAULT_STOCK_STATUSES } from '../../utils/constants';
 import { SortOption } from '../../enums/products';
+import { parseAsString, safelyParse } from '../../utils/parsers';
 
 const LIMIT = 4;
 const SKIP = 0;
 
-const selector = createSelector([selectFiltersData], (filters) => ({
-    shouldShowRows:
-        filters.categories.length === 0 &&
-        filters.configurations.length === 0 &&
-        filters.interests.length === 0 &&
-        isEqual(filters.stockStatus, DEFAULT_STOCK_STATUSES),
-    searchTerm: filters.searchTerm,
-    sortOption: filters.sortOption,
-    hasSearchTerm: filters.searchTerm.length > 0,
-    hasNonDefaultSortOption: filters.sortOption !== SortOption.DateAddedDesc,
-}));
-
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     const { content } = await getPageBySlug('shop', '');
+    const searchTerm = safelyParse(query, 's', parseAsString, null);
 
-    const productFacets = await listProductRows(LIMIT, SKIP, true);
+    if (searchTerm) {
+        const { products, count } = await listProducts(
+            4,
+            0,
+            true,
+            [],
+            [],
+            [],
+            DEFAULT_STOCK_STATUSES,
+            searchTerm,
+            SortOption.DateAddedDesc
+        );
 
-    return {
-        props: {
-            content,
-            allProducts: [
-                ...productFacets.baseball,
-                ...productFacets.basketball,
-                ...productFacets.football,
-                ...productFacets.soccer,
-                ...productFacets.ufc,
-                ...productFacets.wrestling,
-                ...productFacets.tcg,
-                ...productFacets.other,
-                ...productFacets.f1,
-            ],
-        },
-    };
+        return {
+            props: {
+                content,
+                products,
+                productsTotal: count,
+                searchTerm,
+            },
+        };
+    } else {
+        const productFacets = await listProductRows(LIMIT, SKIP, true);
+
+        return {
+            props: {
+                content,
+                products: [
+                    ...productFacets.baseball,
+                    ...productFacets.basketball,
+                    ...productFacets.football,
+                    ...productFacets.soccer,
+                    ...productFacets.ufc,
+                    ...productFacets.wrestling,
+                    ...productFacets.tcg,
+                    ...productFacets.other,
+                    ...productFacets.f1,
+                ],
+                productsTotal: 0,
+                searchTerm,
+            },
+        };
+    }
 };
 
 interface ShopProps {
     content: Document | null;
-    allProducts: Product[];
+    products: Product[];
+    productsTotal: number;
+    searchTerm: string | null;
 }
 
-export const ShopPage: React.FC<ShopProps> = ({ content, allProducts }) => {
-    const dispatch = useDispatch();
-    const [isInitialLoad, setIsInitialLoad] = useState(true);
-    const { shouldShowRows, sortOption, hasSearchTerm, hasNonDefaultSortOption, searchTerm } = useSelector(selector);
-    const shouldFetchRows = shouldShowRows && !hasSearchTerm && !hasNonDefaultSortOption;
-
-    // On page load set the server side fetched products
-    useEffect(() => {
-        if (!setIsInitialLoad) return;
-
-        dispatch(setIsLoadingProducts(true));
-
-        // Reset the filters for the shop to show a default state.
-        dispatch(resetFilters());
-
-        // Update the shop products.
-        dispatch(
-            setProductsAndCount({
-                products: allProducts,
-                count: 0,
-            })
-        );
-        setIsInitialLoad(false);
-    }, [dispatch, allProducts, isInitialLoad]);
-
-    // If the search term is changed then fetch products.
-    useEffect(() => {
-        if (isInitialLoad) return;
-
-        dispatch(setIsLoadingProducts(true));
-
-        if (shouldFetchRows) {
-            dispatch(fetchProductRows({ limit: 4, skip: 0 }));
-        } else {
-            dispatch(fetchProducts({ limit: 8, skip: 0 }));
-        }
-    }, [dispatch, shouldFetchRows, sortOption, searchTerm, isInitialLoad]);
-
+export const ShopPage: React.FC<ShopProps> = ({ content, products, productsTotal, searchTerm }) => {
     return (
         <PageWrapper
             title="Shop - King of Cardboard"
@@ -112,15 +81,15 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts }) => {
         >
             <div className="flex flex-col w-full relative space-y-4">
                 <div className="block w-full">{content && <Content content={[content]} />}</div>
-                {shouldFetchRows ? (
+                {!searchTerm ? (
                     <div className="flex flex-col w-full relative space-y-4 md:flex-row md:space-x-4 md:space-y-0">
                         <Filters />
-                        <LatestProductRows />
+                        <LatestProductRows products={products} />
                     </div>
                 ) : (
                     <div className="flex flex-col w-full relative space-y-4 md:flex-row md:space-x-4 md:space-y-0">
                         <Filters />
-                        <Grid />
+                        <Grid products={products} productsTotal={productsTotal} />
                     </div>
                 )}
             </div>

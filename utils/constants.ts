@@ -4,7 +4,6 @@ import { MdOutlineCatchingPokemon } from 'react-icons/md';
 import { GiLightSabers } from 'react-icons/gi';
 
 import { Interest, StockStatus } from '../enums/products';
-import { GiRaceCar } from 'react-icons/gi';
 
 export const INTERESTS = [
     {

@@ -9,12 +9,18 @@ import Skeleton from './skeleton';
 import NoProducts from './NoProducts';
 import { getPrettyPrice } from '../../../utils/account/products';
 import { fetchProducts } from '../../../store/slices/products';
+import { Product } from '../../../types/products';
 
 const LIMIT = 8;
 
-export const Grid: React.FC = () => {
+interface GridProps {
+    products: Product[];
+    productsTotal: number;
+}
+
+export const Grid: React.FC<GridProps> = ({ products, productsTotal }) => {
+    console.log('🚀 ~ file: index.tsx:21 ~ products:', products);
     const dispatch = useDispatch();
-    const { products, productsTotal, isLoadingProducts } = useSelector(selector);
     const [currentPage, setCurrentPage] = useState(0);
     const productPageCount = ceil(divide(productsTotal, LIMIT));
 
@@ -24,13 +30,13 @@ export const Grid: React.FC = () => {
         dispatch(fetchProducts({ limit: LIMIT, skip: LIMIT * nextPage }));
     };
 
-    if (isLoadingProducts) {
+    /* if (isLoadingProducts) {
         return (
             <div className="flex flex-col w-full md:w-4/6 xl:w-full" data-testid="shop-grid">
                 <Skeleton />
             </div>
         );
-    }
+    } */
 
     return (
         <div className="flex flex-col w-full md:w-4/6 md:space-y-4 xl:w-full" data-testid="shop-grid">

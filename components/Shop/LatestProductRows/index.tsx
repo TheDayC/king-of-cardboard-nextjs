@@ -3,26 +3,28 @@ import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import { BsArrowRightCircle } from 'react-icons/bs';
 
-import selector from './selector';
 import ProductCard from '../Grid/ProductCard';
 import { getPrettyPrice } from '../../../utils/account/products';
 import { INTERESTS } from '../../../utils/constants';
 import { Interest } from '../../../enums/products';
+import { Product } from '../../../types/products';
 
 const iconClassName = 'w-10 h-10 inline-block -mt-1 ml-2';
 
-export const LatestProductRows: React.FC = () => {
-    const {
-        baseballProducts,
-        basketballProducts,
-        footballProducts,
-        soccerProducts,
-        ufcProducts,
-        wrestlingProducts,
-        f1Products,
-        tcgProducts,
-        otherProducts,
-    } = useSelector(selector);
+interface LatestProductRowsProps {
+    products: Product[];
+}
+
+export const LatestProductRows: React.FC<LatestProductRowsProps> = ({ products }) => {
+    const baseballProducts = products.filter((p) => p.interest === Interest.Baseball);
+    const basketballProducts = products.filter((p) => p.interest === Interest.Basketball);
+    const footballProducts = products.filter((p) => p.interest === Interest.Football);
+    const otherProducts = products.filter((p) => p.interest === Interest.Other);
+    const tcgProducts = products.filter((p) => p.interest === Interest.TCG);
+    const soccerProducts = products.filter((p) => p.interest === Interest.Soccer);
+    const ufcProducts = products.filter((p) => p.interest === Interest.UFC);
+    const wrestlingProducts = products.filter((p) => p.interest === Interest.Wrestling);
+    const f1Products = products.filter((p) => p.interest === Interest.F1);
 
     const findProducts = (interest: Interest) => {
         switch (interest) {
