@@ -347,9 +347,6 @@ export async function getCrossSales(
                 configuration,
                 interest,
             },
-            headers: {
-                'Accept-Encoding': 'application/json',
-            },
         });
 
         return res.data.products as Product[];
