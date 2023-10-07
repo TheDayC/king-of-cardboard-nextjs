@@ -2,11 +2,11 @@ import { FC } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BsArrowRightSquareFill } from 'react-icons/bs';
+import { truncate } from 'lodash';
 
 import { Product } from '../../types/products';
 import { getPrettyPrice } from '../../utils/account/products';
 import Details from '../Product/Details';
-
 interface FeaturedProductProps {
     product: Product;
 }
@@ -33,7 +33,7 @@ export const FeaturedProduct: FC<FeaturedProductProps> = ({ product }) => {
                             isAvailable={product.quantity > 0}
                             quantity={product.quantity}
                             tags={[]}
-                            description={product.content}
+                            description={truncate(product.content, { length: 400, omission: '...' })}
                             shouldShowCompare={product.salePrice > 0 && product.salePrice !== product.price}
                             releaseDate={product.releaseDate}
                             stockStatus={product.stockStatus}
