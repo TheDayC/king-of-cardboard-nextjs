@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SideBySideMagnifier } from 'react-image-magnifiers';
 import Image from 'next/image';
 
@@ -17,6 +17,10 @@ export const Images: React.FC<ImageProps> = ({ mainImage, imageCollection }) => 
             setCurrentImage(image);
         }
     };
+
+    useEffect(() => {
+        changeImage(mainImage);
+    }, [mainImage]);
 
     return (
         <div

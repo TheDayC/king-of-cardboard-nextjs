@@ -53,7 +53,7 @@ export const ProductCard: React.FC<CardProps> = ({
             data-testid="product-card"
         >
             {image && image.length > 0 && (
-                <Link href={linkOptions} passHref>
+                <Link href={linkOptions}>
                     <div className="relative w-full h-40 cursor-pointer flex flex-row justify-center">
                         <div className="relative">
                             {stockStatus === StockStatus.PreOrder && (
