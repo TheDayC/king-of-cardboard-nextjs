@@ -3,9 +3,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { BsTwitter, BsInstagram, BsFacebook, BsTiktok } from 'react-icons/bs';
 import { SiNextdotjs, SiTypescript, SiReact, SiRedux, SiMongodb } from 'react-icons/si';
+import { FaCcAmex, FaCcDiscover, FaCcMastercard, FaCcPaypal, FaCcVisa } from 'react-icons/fa';
 
 import logo from '../../images/logo-full.webp';
-import { FaCcAmex, FaCcDiscover, FaCcMastercard, FaCcPaypal, FaCcVisa } from 'react-icons/fa';
 
 const menuItemClass = 'transition duration-300 ease-in-out text-sm mb-2 hover:text-primary';
 const iconClass = 'transition-colors duration-300 ease-in-out text-4xl hover:text-primary';
