@@ -13,8 +13,8 @@ const iconClass = 'transition-colors duration-300 ease-in-out text-4xl hover:tex
 export const Footer: React.FC = () => (
     <div className="flex flex-col lg:flex-row bg-neutral text-base-200 p-4 lg:py-8">
         <div className="container mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 relative">
-                <div className="flex flex-col items-center justify-center mx-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 relative gap-x-4 mb-6">
+                <div className="flex flex-col items-center justify-center">
                     <Link href="/" passHref>
                         <div className="cursor-pointer block mb-4" data-testid="footer-logo">
                             <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" width={240} />
@@ -22,7 +22,7 @@ export const Footer: React.FC = () => (
                     </Link>
                     <p className="text-2xl">Collect. Invest. Share.</p>
                 </div>
-                <div className="flex flex-col mx-2" role="menu">
+                <div className="flex flex-col" role="menu">
                     <h4 className="text-lg">Information</h4>
                     <div className="divider lightDivider my-2"></div>
                     <ul>
@@ -45,7 +45,7 @@ export const Footer: React.FC = () => (
                         </li>
                     </ul>
                 </div>
-                <div className="flex flex-col mx-2" role="menu">
+                <div className="flex flex-col" role="menu">
                     <h4 className="text-lg">Customer Service</h4>
                     <div className="divider lightDivider my-2"></div>
                     <ul>
@@ -70,7 +70,7 @@ export const Footer: React.FC = () => (
                         </li>
                     </ul>
                 </div>
-                <div className="flex flex-col mx-2" role="menu">
+                <div className="flex flex-col" role="menu">
                     <h4 className="text-lg">Legal</h4>
                     <div className="divider lightDivider my-2"></div>
                     <ul>
@@ -83,7 +83,6 @@ export const Footer: React.FC = () => (
                     </ul>
                 </div>
             </div>
-            <div className="divider lightDivider my-2"></div>
             <div className="flex flex-row w-full items-center justify-between space-x-6">
                 <div className="flex flex-col items-center gap-y-2">
                     <h4 className="text-lg">Follow us on social media</h4>
