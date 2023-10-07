@@ -13,7 +13,7 @@ const iconClass = 'transition-colors duration-300 ease-in-out text-4xl hover:tex
 export const Footer: React.FC = () => (
     <div className="flex flex-col lg:flex-row bg-neutral text-base-200 p-4 lg:py-8">
         <div className="container mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 relative gap-x-4 mb-6">
+            <div className="grid grid-cols-1 gap-y-4 relative mb-6 xl:grid-cols-4 xl:gap-x-4">
                 <div className="flex flex-col items-center justify-center">
                     <Link href="/" passHref>
                         <div className="cursor-pointer block mb-4" data-testid="footer-logo">
@@ -83,7 +83,7 @@ export const Footer: React.FC = () => (
                     </ul>
                 </div>
             </div>
-            <div className="flex flex-row w-full items-center justify-between space-x-6">
+            <div className="flex flex-col w-full items-center justify-between gap-y-8 xl:gap-x-6 xl:flex-row">
                 <div className="flex flex-col items-center gap-y-2">
                     <h4 className="text-lg">Follow us on social media</h4>
                     <div className="flex flex-row items-center justify-center gap-x-6">
