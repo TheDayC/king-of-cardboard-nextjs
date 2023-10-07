@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { toNumber } from 'lodash';
+import { ObjectId } from 'mongodb';
 
 import { connectToDatabase } from '../../../middleware/database';
 import { errorHandler } from '../../../middleware/errors';
 import { parseAsNumber, safelyParse } from '../../../utils/parsers';
 import { StockStatus } from '../../../enums/products';
-import { toNumber } from 'lodash';
-import { ObjectId } from 'mongodb';
 import { isString } from '../../../utils/typeguards';
 
 const defaultErr = 'No products found.';
