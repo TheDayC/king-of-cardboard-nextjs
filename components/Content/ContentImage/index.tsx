@@ -40,7 +40,7 @@ export const ContentImage: React.FC<ImageProps> = ({ assetId }) => {
             title={title}
             width={width}
             height={height}
-            className="float-right m-4"
+            className="float-right p-4"
         />
     );
 };
