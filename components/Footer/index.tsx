@@ -1,59 +1,26 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { BsTwitter, BsInstagram, BsFacebook } from 'react-icons/bs';
+import { BsTwitter, BsInstagram, BsFacebook, BsTiktok } from 'react-icons/bs';
 import { SiNextdotjs, SiTypescript, SiReact, SiRedux, SiMongodb } from 'react-icons/si';
 
-import logo from '../../images/logo-full.png';
+import logo from '../../images/logo-full.webp';
+import { FaCcAmex, FaCcDiscover, FaCcMastercard, FaCcPaypal, FaCcVisa } from 'react-icons/fa';
 
-const builtOnClass = 'w-6 h-auto inline-block transition-colors duration-300 ease-in-out hover:text-primary';
 const menuItemClass = 'transition duration-300 ease-in-out text-sm mb-2 hover:text-primary';
+const iconClass = 'transition-colors duration-300 ease-in-out text-4xl hover:text-primary';
 
 export const Footer: React.FC = () => (
     <div className="flex flex-col lg:flex-row bg-neutral text-base-200 p-4 lg:py-8">
         <div className="container mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 relative">
-                <div className="flex flex-col items-center mx-2">
+                <div className="flex flex-col items-center justify-center mx-2">
                     <Link href="/" passHref>
                         <div className="cursor-pointer block mb-4" data-testid="footer-logo">
-                            <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" />
+                            <Image src={logo} alt="King of Cardboard Logo" title="King of Cardboard" width={240} />
                         </div>
                     </Link>
-                    <p>Collect. Invest. Share.</p>
-                    <div className="divider lightDivider my-4 w-full"></div>
-                    <h3 className="text-md mb-2">Built on</h3>
-                    <div className="flex flex-row flex-wrap items-between">
-                        <div className="p-2">
-                            <a href="https://nextjs.org/" target="__blank" rel="noopener noreferrer" role="link">
-                                <SiNextdotjs className={builtOnClass} title="NextJS logo" />
-                            </a>
-                        </div>
-                        <div className="p-2">
-                            <a
-                                href="https://www.typescriptlang.org/"
-                                target="__blank"
-                                rel="noopener noreferrer"
-                                role="link"
-                            >
-                                <SiTypescript className={builtOnClass} title="Typescript logo" />
-                            </a>
-                        </div>
-                        <div className="p-2">
-                            <a href="https://reactjs.org/" target="__blank" rel="noopener noreferrer" role="link">
-                                <SiReact className={builtOnClass} title="React logo" />
-                            </a>
-                        </div>
-                        <div className="p-2">
-                            <a href="https://redux.js.org/" target="__blank" rel="noopener noreferrer" role="link">
-                                <SiRedux className={builtOnClass} title="Redux logo" />
-                            </a>
-                        </div>
-                        <div className="p-2">
-                            <a href="https://www.mongodb.com/" target="__blank" rel="noopener noreferrer" role="link">
-                                <SiMongodb className={builtOnClass} title="MongoDB logo" />
-                            </a>
-                        </div>
-                    </div>
+                    <p className="text-2xl">Collect. Invest. Share.</p>
                 </div>
                 <div className="flex flex-col mx-2" role="menu">
                     <h4 className="text-lg">Information</h4>
@@ -116,30 +83,81 @@ export const Footer: React.FC = () => (
                     </ul>
                 </div>
             </div>
-            <div className="flex flex-row w-full items-center justify-center pt-6 space-x-6" data-testid="social-media">
-                <a href="https://twitter.com/kocardboard" target="__blank" rel="noopener noreferrer" role="link">
-                    <BsTwitter
-                        className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary"
-                        title="Twitter logo"
-                    />
-                </a>
-                <a href="https://instagram.com/kocardboard" target="__blank" rel="noopener noreferrer" role="link">
-                    <BsInstagram
-                        className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary"
-                        title="Instagram logo"
-                    />
-                </a>
-                <a
-                    href="https://www.facebook.com/groups/kocardboardbreaks"
-                    target="__blank"
-                    rel="noopener noreferrer"
-                    role="link"
-                >
-                    <BsFacebook
-                        className="transition-colors duration-300 ease-in-out text-4xl hover:text-primary"
-                        title="Facebook logo"
-                    />
-                </a>
+            <div className="divider lightDivider my-2"></div>
+            <div className="flex flex-row w-full items-center justify-between space-x-6">
+                <div className="flex flex-col items-center gap-y-2">
+                    <h4 className="text-lg">Follow us on social media</h4>
+                    <div className="flex flex-row items-center justify-center gap-x-6">
+                        <a
+                            href="https://www.tiktok.com/@kocardboard"
+                            target="__blank"
+                            rel="noopener noreferrer"
+                            role="link"
+                        >
+                            <BsTiktok className={iconClass} title="Tiktok" />
+                        </a>
+                        <a
+                            href="https://twitter.com/kocardboard"
+                            target="__blank"
+                            rel="noopener noreferrer"
+                            role="link"
+                        >
+                            <BsTwitter className={iconClass} title="Twitter" />
+                        </a>
+                        <a
+                            href="https://instagram.com/kocardboard"
+                            target="__blank"
+                            rel="noopener noreferrer"
+                            role="link"
+                        >
+                            <BsInstagram className={iconClass} title="Instagram" />
+                        </a>
+                        <a
+                            href="https://www.facebook.com/groups/kocardboardbreaks"
+                            target="__blank"
+                            rel="noopener noreferrer"
+                            role="link"
+                        >
+                            <BsFacebook className={iconClass} title="Facebook" />
+                        </a>
+                    </div>
+                </div>
+
+                <div className="flex flex-col items-center gap-y-2">
+                    <h4 className="text-lg">Built on</h4>
+                    <div className="flex flex-row items-center gap-x-4">
+                        <a href="https://nextjs.org/" target="__blank" rel="noopener noreferrer" role="link">
+                            <SiNextdotjs className={iconClass} title="NextJS logo" />
+                        </a>
+                        <a
+                            href="https://www.typescriptlang.org/"
+                            target="__blank"
+                            rel="noopener noreferrer"
+                            role="link"
+                        >
+                            <SiTypescript className={iconClass} title="Typescript logo" />
+                        </a>
+                        <a href="https://reactjs.org/" target="__blank" rel="noopener noreferrer" role="link">
+                            <SiReact className={iconClass} title="React logo" />
+                        </a>
+                        <a href="https://redux.js.org/" target="__blank" rel="noopener noreferrer" role="link">
+                            <SiRedux className={iconClass} title="Redux logo" />
+                        </a>
+                        <a href="https://www.mongodb.com/" target="__blank" rel="noopener noreferrer" role="link">
+                            <SiMongodb className={iconClass} title="MongoDB logo" />
+                        </a>
+                    </div>
+                </div>
+                <div className="flex flex-col items-center">
+                    <h4 className="text-lg">We accept all major credit cards</h4>
+                    <div className="flex flex-row items-center gap-x-2">
+                        <FaCcMastercard className={iconClass} title="Mastercard" />
+                        <FaCcVisa className={iconClass} title="Visa" />
+                        <FaCcDiscover className={iconClass} title="Discover" />
+                        <FaCcAmex className={iconClass} title="American Express" />
+                        <FaCcPaypal className={iconClass} title="PayPal" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -17,7 +17,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
 const filePath = path.resolve(process.cwd(), 'html', 'resetPassword.html');
 const defaultErr = 'Could not request a password reset.';
-const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.png'));
+const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.webp'));
 
 // Function to get the reset id from the DB.
 async function getResetId(email: string, token: string, db: Db): Promise<string | null> {

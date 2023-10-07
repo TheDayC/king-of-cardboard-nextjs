@@ -7,7 +7,7 @@ import { MdOutlineAccountCircle } from 'react-icons/md';
 import { toSvg } from 'jdenticon';
 import md5 from 'md5';
 
-import logo from '../../../images/logo-full.png';
+import logo from '../../../images/logo-full.webp';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import AdminMenu from './AdminMenu';
 import AccountMenu from './AccountMenu';
