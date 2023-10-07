@@ -13,7 +13,7 @@ import { getFulfillmentStatusTitle, getPaymentStatusTitle, getStatusTitle } from
 
 const orderEmailPath = path.resolve(process.cwd(), 'html', 'order.html');
 const orderUpdatePath = path.resolve(process.cwd(), 'html', 'statusChange.html');
-const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.png'));
+const logo = fs.readFileSync(path.resolve(process.cwd(), 'images', 'logo-full.webp'));
 
 export function getStatusMessage(status: Status): string {
     switch (status) {

@@ -8,7 +8,7 @@ import md5 from 'md5';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 
-import logo from '../../images/logo-full.png';
+import logo from '../../images/logo-full.webp';
 import Rewards from './Rewards';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import NavBar from './Navbar';
