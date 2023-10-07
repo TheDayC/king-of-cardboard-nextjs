@@ -332,3 +332,30 @@ export function getPercentageChange(previous: number, current: number): number {
 
     return round((decreaseValue / previous) * 100, 2);
 }
+
+export async function getCrossSales(
+    id: string,
+    category: Category,
+    configuration: Configuration,
+    interest: Interest
+): Promise<Product[]> {
+    try {
+        const res = await axios.get(`${URL}/api/products/crossSales`, {
+            params: {
+                id,
+                category,
+                configuration,
+                interest,
+            },
+            headers: {
+                'Accept-Encoding': 'application/json',
+            },
+        });
+
+        return res.data.products as Product[];
+    } catch (error: unknown) {
+        errorHandler(error, 'Could not get products.');
+    }
+
+    return [];
+}

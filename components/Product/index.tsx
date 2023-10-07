@@ -12,6 +12,7 @@ import { addItem, setUpdatingCart } from '../../store/slices/cart';
 import { gaEvent } from '../../utils/ga';
 import { addSuccess } from '../../store/slices/alerts';
 import { getPrettyPrice } from '../../utils/account/products';
+import CrossSales from '../CrossSales';
 
 interface ProductProps {
     id: string;
@@ -106,86 +107,57 @@ export const Product: React.FC<ProductProps> = ({
     };
 
     return (
-        <div className="flex flex-col relative lg:flex-row lg:space-x-8">
-            <Images mainImage={mainImage} imageCollection={gallery} />
+        <div className="flex flex-col relative gap-y-4">
+            <div className="flex flex-col relative lg:flex-row lg:space-x-8">
+                <Images mainImage={mainImage} imageCollection={gallery} />
 
-            <div id="productDetails" className="flex flex-col w-full lg:w-3/4">
-                <div className="card rounded-md lg:shadow-lg md:p-4 lg:p-8 space-y-4">
-                    <Details
-                        name={title}
-                        price={getPrettyPrice(price)}
-                        salePrice={getPrettyPrice(salePrice)}
-                        isAvailable={isAvailable}
-                        quantity={stock}
-                        tags={tags}
-                        description={description}
-                        shouldShowCompare={shouldShowCompare}
-                        releaseDate={releaseDate}
-                        stockStatus={stockStatus}
-                    />
+                <div id="productDetails" className="flex flex-col w-full lg:w-3/4">
+                    <div className="card rounded-md lg:shadow-lg md:p-4 lg:p-8 space-y-4">
+                        <Details
+                            name={title}
+                            price={getPrettyPrice(price)}
+                            salePrice={getPrettyPrice(salePrice)}
+                            isAvailable={isAvailable}
+                            quantity={stock}
+                            tags={tags}
+                            description={description}
+                            shouldShowCompare={shouldShowCompare}
+                            releaseDate={releaseDate}
+                            stockStatus={stockStatus}
+                        />
 
-                    {isAvailable && (
-                        <div className="quantity mb-4 flex flex-col justify-center">
-                            <form onSubmit={handleSubmit(onSubmit)}>
-                                {/* options.length > 0 &&
-                                    options.map((option) => (
-                                        <React.Fragment key={`option-${option.id}`}>
-                                            <h4 className="text-2xl mb-2 font-semibold">Extras</h4>
-                                            <div
-                                                className="flex flex-col justify-start align-center mb-2 lg:space-x-2 lg:flex-row"
-                                                key={`option-${option.id}`}
-                                            >
-                                                <label className="cursor-pointer label">
-                                                    <span className="label-text text-lg mr-2">
-                                                        {option.name} - {option.amount}
-                                                    </span>
-                                                    <input
-                                                        type="checkbox"
-                                                        className="toggle toggle-primary mr-2"
-                                                        onChange={(e) =>
-                                                            handleSkuOptionChange(
-                                                                e,
-                                                                option.id,
-                                                                option.amount,
-                                                                option.name,
-                                                                1
-                                                            )
-                                                        }
-                                                    />
-                                                    <div className="tooltip mr-2" data-tip={option.description}>
-                                                        <AiFillQuestionCircle className="text-lg text-accent" />
-                                                    </div>
-                                                </label>
-                                            </div>
-                                        </React.Fragment>
-                                    )) */}
-                                <h4 className="text-2xl mt-2 mb-2 font-semibold">Amount</h4>
-                                <div className="flex flex-col lg:flex-row justify-start align-center lg:space-x-2">
-                                    {!hasExceededStock && (
-                                        <input
-                                            type="number"
-                                            defaultValue="1"
-                                            {...register('quantity', {
-                                                required: { value: true, message: 'Required' },
-                                            })}
-                                            className="input input-lg input-bordered text-center w-32 px-0 w-full mb-4 lg:w-auto lg:mb-0"
-                                            min={1}
-                                            max={stock - qtyInCart}
-                                        />
-                                    )}
-                                    <button
-                                        aria-label="add to cart"
-                                        className={`btn btn-lg w-full lg:w-auto rounded-md${btnDisabled}${btnLoading}`}
-                                        disabled={hasExceededStock}
-                                    >
-                                        {isUpdatingCart ? '' : 'Add to cart'}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    )}
+                        {isAvailable && (
+                            <div className="quantity mb-4 flex flex-col justify-center">
+                                <form onSubmit={handleSubmit(onSubmit)}>
+                                    <h4 className="text-2xl mt-2 mb-2 font-semibold">Amount</h4>
+                                    <div className="flex flex-col lg:flex-row justify-start align-center lg:space-x-2">
+                                        {!hasExceededStock && (
+                                            <input
+                                                type="number"
+                                                defaultValue="1"
+                                                {...register('quantity', {
+                                                    required: { value: true, message: 'Required' },
+                                                })}
+                                                className="input input-lg input-bordered text-center w-32 px-0 w-full mb-4 lg:w-auto lg:mb-0"
+                                                min={1}
+                                                max={stock - qtyInCart}
+                                            />
+                                        )}
+                                        <button
+                                            aria-label="add to cart"
+                                            className={`btn btn-lg w-full lg:w-auto rounded-md${btnDisabled}${btnLoading}`}
+                                            disabled={hasExceededStock}
+                                        >
+                                            {isUpdatingCart ? '' : 'Add to cart'}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
+            <CrossSales id={id} category={category} interest={interest} configuration={configuration} />
         </div>
     );
 };
