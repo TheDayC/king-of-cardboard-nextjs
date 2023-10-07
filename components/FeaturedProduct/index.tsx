@@ -2,12 +2,11 @@ import { FC } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BsArrowRightSquareFill } from 'react-icons/bs';
+import { truncate } from 'lodash';
 
 import { Product } from '../../types/products';
 import { getPrettyPrice } from '../../utils/account/products';
 import Details from '../Product/Details';
-import { truncate } from 'lodash';
-
 interface FeaturedProductProps {
     product: Product;
 }
