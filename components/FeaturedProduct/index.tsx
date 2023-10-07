@@ -6,6 +6,7 @@ import { BsArrowRightSquareFill } from 'react-icons/bs';
 import { Product } from '../../types/products';
 import { getPrettyPrice } from '../../utils/account/products';
 import Details from '../Product/Details';
+import { truncate } from 'lodash';
 
 interface FeaturedProductProps {
     product: Product;
@@ -33,7 +34,7 @@ export const FeaturedProduct: FC<FeaturedProductProps> = ({ product }) => {
                             isAvailable={product.quantity > 0}
                             quantity={product.quantity}
                             tags={[]}
-                            description={product.content}
+                            description={truncate(product.content, { length: 400, omission: '...' })}
                             shouldShowCompare={product.salePrice > 0 && product.salePrice !== product.price}
                             releaseDate={product.releaseDate}
                             stockStatus={product.stockStatus}
