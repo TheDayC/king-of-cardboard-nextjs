@@ -3,11 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { BiFootball, BiRefresh } from 'react-icons/bi';
 import { SiDcentertainment } from 'react-icons/si';
 import { MdOutlineCatchingPokemon } from 'react-icons/md';
-import { BsBoxSeam, BsCalendarEvent, BsEye, BsEyeSlash } from 'react-icons/bs';
+import { BsBoxSeam, BsCalendarEvent, BsEye, BsEyeSlash, BsFilter } from 'react-icons/bs';
 import { IoIdCardOutline } from 'react-icons/io5';
 import { RiRedPacketLine } from 'react-icons/ri';
 import { GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi';
 import { FaPlaneArrival } from 'react-icons/fa';
+import { useRouter } from 'next/router';
 
 import selector from './selector';
 import {
@@ -62,6 +63,7 @@ export const SORT_OPTIONS = [
 export const Filters: React.FC = () => {
     const { filters } = useSelector(selector);
     const dispatch = useDispatch();
+    const router = useRouter();
 
     const handleFilterOnChange = (value: FilterValue, filterType: FilterType, addFilter: boolean) => {
         if (addFilter) {
@@ -101,6 +103,20 @@ export const Filters: React.FC = () => {
         }
 
         dispatch(fetchProducts({ limit: 8, skip: 0 }));
+    };
+
+    const handleFilters = () => {
+        router.push({
+            pathname: '/shop',
+            query: {
+                s: filters.searchTerm,
+                sort: filters.sortOption,
+                cat: filters.categories,
+                interest: filters.interests,
+                config: filters.configurations,
+                status: filters.stockStatus,
+            },
+        });
     };
 
     const handleClearFilters = () => {
@@ -189,10 +205,16 @@ export const Filters: React.FC = () => {
                     ))}
                 </div>
             </div>
-            <button className="btn btn-md btn-secondary" onClick={handleClearFilters}>
-                Reset Filters
-                <BiRefresh className="inline-block w-6 h-6 ml-2" />
-            </button>
+            <div className="flex flex-col gap-y-2 lg:flex-row lg:gap-x-2">
+                <button className="btn btn-md btn-primary grow" onClick={handleFilters}>
+                    Filter
+                    <BsFilter className="inline-block w-6 h-6 ml-2" />
+                </button>
+                <button className="btn btn-md btn-secondary grow" onClick={handleClearFilters}>
+                    Reset
+                    <BiRefresh className="inline-block w-6 h-6 ml-2" />
+                </button>
+            </div>
         </div>
     );
 };
