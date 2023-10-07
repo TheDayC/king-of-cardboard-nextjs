@@ -36,7 +36,7 @@ export const Header: React.FC = () => {
 
     return (
         <React.Fragment>
-            <div className="navbar bg-neutral text-neutral-content border-b-4 border-primary">
+            <div className="navbar bg-neutral text-neutral-content border-b-4 border-primary" id="header">
                 <div className="navbar-start">
                     <label className="text-2xl px-2 lg:hidden" onClick={handleDrawerClick}>
                         <AiOutlineMenu />
