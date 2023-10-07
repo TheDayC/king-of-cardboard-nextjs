@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { SideBySideMagnifier } from 'react-image-magnifiers';
 import Image from 'next/image';
 
@@ -12,11 +12,18 @@ interface ImageProps {
 export const Images: React.FC<ImageProps> = ({ mainImage, imageCollection }) => {
     const [currentImage, setCurrentImage] = useState(mainImage);
 
-    const changeImage = (image: ImageItem) => {
-        if (image.url !== currentImage.url) {
-            setCurrentImage(image);
-        }
-    };
+    const changeImage = useCallback(
+        (image: ImageItem) => {
+            if (image.url !== currentImage.url) {
+                setCurrentImage(image);
+            }
+        },
+        [currentImage.url]
+    );
+
+    useEffect(() => {
+        changeImage(mainImage);
+    }, [mainImage, changeImage]);
 
     return (
         <div

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { AppProps } from 'next/app';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Elements } from '@stripe/react-stripe-js';
@@ -8,6 +8,7 @@ import Script from 'next/script';
 import Cookies from 'js-cookie';
 import { Provider } from 'react-redux';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+import { useRouter } from 'next/router';
 
 import 'react-quill/dist/quill.snow.css';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -29,11 +30,24 @@ const paypalOptions = {
 
 const MyApp: React.FC<AppProps> = ({ Component, ...rest }) => {
     const { store, props } = wrapper.useWrappedStore(rest);
+    const { query } = useRouter();
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const persistor = store.__persistor;
     const cookieConsent = Boolean(Cookies.get('cookieConsent'));
+
+    const handleClickScroll = () => {
+        const element = document.getElementById('header');
+
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    useEffect(() => {
+        handleClickScroll();
+    }, [query]);
 
     return (
         <Provider store={store}>
