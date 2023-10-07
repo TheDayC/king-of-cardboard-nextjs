@@ -76,9 +76,6 @@ export const Footer: React.FC = () => (
                                 Rarities, Parallels, Patches and Autographs
                             </Link>
                         </li>
-                        <li className={menuItemClass} role="menuitem">
-                            <Link href="/information/roadmap">Development Roadmap</Link>
-                        </li>
                     </ul>
                 </div>
                 <div className="flex flex-col mx-2" role="menu">
