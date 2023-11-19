@@ -24,7 +24,6 @@ import { selectFiltersData } from '../../store/state/selectors';
 import { DEFAULT_STOCK_STATUSES } from '../../utils/constants';
 import { SortOption } from '../../enums/products';
 import { SliderImage } from '../../types/pages';
-import Image from 'next/image';
 
 const LIMIT = 4;
 const SKIP = 0;
