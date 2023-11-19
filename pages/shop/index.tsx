@@ -114,7 +114,7 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, sliderImag
             description="Sealed sports cards boxes, individual cards, imports and pre-orders for UK collectors. Collect your favourite teams and players from the Premier League, NFL, NBA, UFC and WWE."
         >
             <div className="flex flex-col w-full relative space-y-4">
-                {sliderImages && (
+                {sliderImages && sliderImages.length && (
                     <div className="image-container">
                         <img
                             src={sliderImages[0].url}
