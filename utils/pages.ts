@@ -3,14 +3,7 @@ import { get } from 'lodash';
 
 import { errorHandler } from '../middleware/errors';
 import { ContentfulPage, PageWithHero } from '../types/pages';
-import {
-    parseAsArrayOfDocuments,
-    parseAsArrayOfHeroes,
-    parseAsArrayOfSliderImages,
-    parseAsDocument,
-    parseAsString,
-    safelyParse,
-} from './parsers';
+import { parseAsArrayOfDocuments, parseAsArrayOfHeroes, parseAsDocument, parseAsString, safelyParse } from './parsers';
 
 export async function getPageBySlug(slug: string | null, path: string): Promise<ContentfulPage> {
     try {
@@ -32,18 +25,26 @@ export async function getPageBySlug(slug: string | null, path: string): Promise<
                 title: '',
                 slug: '',
                 content: null,
-                sliderCollection: null,
+                sliderImages: null,
                 hero: [],
             };
         }
 
         const pageItems = res.items[0];
 
+        const sliderItems: unknown[] = get(pageItems, 'fields.slider', []);
+
         return {
             title: safelyParse(pageItems, 'fields.title', parseAsString, ''),
             slug: safelyParse(pageItems, 'fields.slug', parseAsString, ''),
             content: safelyParse(pageItems, 'fields.content', parseAsDocument, null),
-            sliderCollection: null,
+            sliderImages: sliderItems.map((item: unknown) => ({
+                title: safelyParse(item, 'fields.title', parseAsString, ''),
+                description: safelyParse(item, 'fields.description', parseAsString, ''),
+                contentType: safelyParse(item, 'fields.file.contentType', parseAsString, ''),
+                fileName: safelyParse(item, 'fields.file.fileName', parseAsString, ''),
+                url: safelyParse(item, 'fields.file.url', parseAsString, ''),
+            })),
             hero: [],
         };
     } catch (error: unknown) {
@@ -54,7 +55,7 @@ export async function getPageBySlug(slug: string | null, path: string): Promise<
         title: '',
         slug: '',
         content: null,
-        sliderCollection: null,
+        sliderImages: null,
         hero: [],
     };
 }

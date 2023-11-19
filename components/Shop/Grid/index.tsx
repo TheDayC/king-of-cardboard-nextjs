@@ -36,23 +36,31 @@ export const Grid: React.FC = () => {
         <div className="flex flex-col w-full md:w-4/6 md:space-y-4 xl:w-full" data-testid="shop-grid">
             {products.length > 0 ? (
                 <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
-                    {products.map((product) => (
-                        <ProductCard
-                            name={product.title}
-                            image={product.mainImage}
-                            imgDesc={`${product.title} primary image`}
-                            imgTitle={`${product.title} image`}
-                            tags={[]}
-                            amount={getPrettyPrice(product.price)}
-                            compareAmount={getPrettyPrice(product.salePrice)}
-                            slug={product.slug}
-                            shouldShowCompare={product.salePrice > 0 && product.salePrice !== product.price}
-                            stock={product.quantity}
-                            stockStatus={product.stockStatus}
-                            releaseDate={product.releaseDate}
-                            key={`product-card-${product.slug}`}
-                        />
-                    ))}
+                    {products.map((product) => {
+                        const percentageChange =
+                            product.salePrice > 0
+                                ? ((product.price - product.salePrice) / product.salePrice) * 100
+                                : null;
+
+                        return (
+                            <ProductCard
+                                name={product.title}
+                                image={product.mainImage}
+                                imgDesc={`${product.title} primary image`}
+                                imgTitle={`${product.title} image`}
+                                tags={[]}
+                                amount={getPrettyPrice(product.price)}
+                                compareAmount={getPrettyPrice(product.salePrice)}
+                                slug={product.slug}
+                                shouldShowCompare={product.salePrice > 0 && product.salePrice !== product.price}
+                                stock={product.quantity}
+                                stockStatus={product.stockStatus}
+                                releaseDate={product.releaseDate}
+                                percentageChange={percentageChange}
+                                key={`product-card-${product.slug}`}
+                            />
+                        );
+                    })}
                 </div>
             ) : (
                 <NoProducts />

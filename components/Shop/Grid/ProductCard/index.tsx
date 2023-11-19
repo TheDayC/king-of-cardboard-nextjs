@@ -21,6 +21,7 @@ interface CardProps {
     stock: number;
     stockStatus: StockStatus;
     releaseDate: string | null;
+    percentageChange: number | null;
 }
 
 export const ProductCard: React.FC<CardProps> = ({
@@ -36,6 +37,7 @@ export const ProductCard: React.FC<CardProps> = ({
     stock,
     stockStatus,
     releaseDate = null,
+    percentageChange,
 }) => {
     const linkOptions = {
         pathname: '/product/[slug]',
@@ -52,6 +54,14 @@ export const ProductCard: React.FC<CardProps> = ({
             className="card shadow-md rounded-md bordered pt-4 transition duration-300 ease-in-out relative hover:shadow-2xl"
             data-testid="product-card"
         >
+            {percentageChange && (
+                <div className="w-12 py-2 rounded-full bg-black text-white absolute -top-2 -right-2 rounded-full shadow-md text-xs font-bold">
+                    <div className="flex flex-col items-center">
+                        <span>{Math.round(Math.abs(percentageChange))}%</span>
+                        <span>off</span>
+                    </div>
+                </div>
+            )}
             {image && image.length > 0 && (
                 <Link href={linkOptions}>
                     <div className="relative w-full h-40 cursor-pointer flex flex-row justify-center">
