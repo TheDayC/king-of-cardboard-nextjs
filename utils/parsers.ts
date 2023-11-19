@@ -13,11 +13,12 @@ import {
     isUnknown,
     isArrayOfDocuments,
     isArrayOfHeroes,
-    isArrayOfSliderImages,
     isDocument,
     isArrayOfNumbers,
     isFile,
     isArrayOfAccountAddresses,
+    isContentfulItem,
+    isArrayOfContentfulItems,
 } from './typeguards';
 import { ITypeGuard, IParser } from '../types/parsers';
 import { Slugs } from '../enums/account';
@@ -92,6 +93,7 @@ export const parseAsArrayOfContentfulBreaks = parseAsType(isArrayOfContentfulBre
 export const parseAsDocument = parseAsType(isDocument);
 export const parseAsArrayOfDocuments = parseAsType(isArrayOfDocuments);
 export const parseAsArrayOfHeroes = parseAsType(isArrayOfHeroes);
-export const parseAsArrayOfSliderImages = parseAsType(isArrayOfSliderImages);
 export const parseAsRole = parseAsType(isEnumMember(Roles));
 export const parseAsArrayOfAccountAddresses = parseAsType(isArrayOfAccountAddresses);
+export const parseAsContentfulItem = parseAsType(isContentfulItem);
+export const parseAsArrayOfContentfulItems = parseAsType(isArrayOfContentfulItems);

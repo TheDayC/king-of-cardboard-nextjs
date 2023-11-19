@@ -4,13 +4,8 @@ export interface ContentfulPage {
     title: string;
     slug: string;
     content: Document | null;
-    sliderCollection: SliderCollection | null;
+    sliderImages: SliderImage[] | null;
     hero: Hero[];
-}
-
-// Type the slider collection fields.
-interface SliderCollection {
-    items: SliderImage[];
 }
 
 export interface SliderImage {

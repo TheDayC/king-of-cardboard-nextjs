@@ -7,6 +7,7 @@ import { Hero, SliderImage } from '../types/pages';
 import { ITypeGuard } from '../types/parsers';
 import { AccountAddress } from '../types/account';
 import { ListOrders, Order } from '../types/orders';
+import { ContentfulItem } from '../types/contentful';
 
 export function isString(candidate: unknown): candidate is string {
     return typeof candidate === 'string';
@@ -104,7 +105,7 @@ export function isArrayOfHeroes(candidate: unknown): candidate is Hero[] {
     return isArray(candidate) && isHero(candidate[0]);
 }
 
-export function isSliderImage(candidate: unknown): candidate is SliderImage {
+export function isContentfulItem(candidate: unknown): candidate is ContentfulItem {
     return (
         isNotNullOrUndefined<object>(candidate) &&
         'metadata' in candidate &&
@@ -113,8 +114,8 @@ export function isSliderImage(candidate: unknown): candidate is SliderImage {
     );
 }
 
-export function isArrayOfSliderImages(candidate: unknown): candidate is SliderImage[] {
-    return isArray(candidate) && isSliderImage(candidate[0]);
+export function isArrayOfContentfulItems(candidate: unknown): candidate is ContentfulItem[] {
+    return isArray(candidate) && isContentfulItem(candidate[0]);
 }
 
 export function isAccountAddress(candidate: unknown): candidate is AccountAddress {

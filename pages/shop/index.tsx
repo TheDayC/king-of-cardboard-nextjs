@@ -23,6 +23,7 @@ import {
 import { selectFiltersData } from '../../store/state/selectors';
 import { DEFAULT_STOCK_STATUSES } from '../../utils/constants';
 import { SortOption } from '../../enums/products';
+import { SliderImage } from '../../types/pages';
 
 const LIMIT = 4;
 const SKIP = 0;
@@ -40,13 +41,14 @@ const selector = createSelector([selectFiltersData], (filters) => ({
 }));
 
 export const getServerSideProps: GetServerSideProps = async () => {
-    const { content } = await getPageBySlug('shop', '');
+    const { content, sliderImages } = await getPageBySlug('shop', '');
 
     const productFacets = await listProductRows(LIMIT, SKIP, true);
 
     return {
         props: {
             content,
+            sliderImages,
             allProducts: [
                 ...productFacets.baseball,
                 ...productFacets.basketball,
@@ -65,9 +67,10 @@ export const getServerSideProps: GetServerSideProps = async () => {
 interface ShopProps {
     content: Document | null;
     allProducts: Product[];
+    sliderImages: SliderImage[] | null;
 }
 
-export const ShopPage: React.FC<ShopProps> = ({ content, allProducts }) => {
+export const ShopPage: React.FC<ShopProps> = ({ content, allProducts, sliderImages }) => {
     const dispatch = useDispatch();
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const { shouldShowRows, sortOption, hasSearchTerm, hasNonDefaultSortOption, searchTerm } = useSelector(selector);
@@ -111,6 +114,15 @@ export const ShopPage: React.FC<ShopProps> = ({ content, allProducts }) => {
             description="Sealed sports cards boxes, individual cards, imports and pre-orders for UK collectors. Collect your favourite teams and players from the Premier League, NFL, NBA, UFC and WWE."
         >
             <div className="flex flex-col w-full relative space-y-4">
+                {sliderImages && (
+                    <div className="image-container">
+                        <img
+                            src={sliderImages[0].url}
+                            title={sliderImages[0].title}
+                            alt={sliderImages[0].description}
+                        />
+                    </div>
+                )}
                 <div className="block w-full">{content && <Content content={[content]} />}</div>
                 {shouldFetchRows ? (
                     <div className="flex flex-col w-full relative space-y-4 md:flex-row md:space-x-4 md:space-y-0">

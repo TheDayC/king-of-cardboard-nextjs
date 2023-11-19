@@ -7,3 +7,9 @@ export interface ImageItem {
 export interface ImageCollection {
     items: ImageItem[];
 }
+
+export interface ContentfulItem {
+    metadata: any;
+    sys: any;
+    fields: any;
+}

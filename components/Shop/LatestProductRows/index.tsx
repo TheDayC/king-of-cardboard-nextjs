@@ -68,23 +68,31 @@ export const LatestProductRows: React.FC = () => {
                         </div>
                         <p>{description}</p>
                         <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
-                            {products.map((product) => (
-                                <ProductCard
-                                    name={product.title}
-                                    image={product.mainImage}
-                                    imgDesc={`${product.title} primary image`}
-                                    imgTitle={`${product.title} image`}
-                                    tags={[]}
-                                    amount={getPrettyPrice(product.price)}
-                                    compareAmount={getPrettyPrice(product.salePrice)}
-                                    slug={product.slug}
-                                    shouldShowCompare={product.salePrice > 0 && product.salePrice !== product.price}
-                                    stock={product.quantity}
-                                    stockStatus={product.stockStatus}
-                                    releaseDate={product.releaseDate}
-                                    key={`product-${product.slug}`}
-                                />
-                            ))}
+                            {products.map((product) => {
+                                const percentageChange =
+                                    product.salePrice > 0
+                                        ? ((product.price - product.salePrice) / product.salePrice) * 100
+                                        : null;
+
+                                return (
+                                    <ProductCard
+                                        name={product.title}
+                                        image={product.mainImage}
+                                        imgDesc={`${product.title} primary image`}
+                                        imgTitle={`${product.title} image`}
+                                        tags={[]}
+                                        amount={getPrettyPrice(product.price)}
+                                        compareAmount={getPrettyPrice(product.salePrice)}
+                                        slug={product.slug}
+                                        shouldShowCompare={product.salePrice > 0 && product.salePrice !== product.price}
+                                        stock={product.quantity}
+                                        stockStatus={product.stockStatus}
+                                        releaseDate={product.releaseDate}
+                                        percentageChange={percentageChange}
+                                        key={`product-${product.slug}`}
+                                    />
+                                );
+                            })}
                         </div>
                         <div className="flex flex-row justify-end">
                             <Link href={href} passHref>
