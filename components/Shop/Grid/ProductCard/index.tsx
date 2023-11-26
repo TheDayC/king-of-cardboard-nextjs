@@ -55,7 +55,7 @@ export const ProductCard: React.FC<CardProps> = ({
             data-testid="product-card"
         >
             {percentageChange && (
-                <div className="w-12 py-2 rounded-full bg-black text-white absolute -top-2 -right-2 rounded-full shadow-md text-xs font-bold">
+                <div className="w-12 py-2 rounded-full bg-primary text-white absolute -top-2 -right-2 rounded-full shadow-md text-xs font-bold">
                     <div className="flex flex-col items-center">
                         <span>{Math.round(Math.abs(percentageChange))}%</span>
                         <span>off</span>
