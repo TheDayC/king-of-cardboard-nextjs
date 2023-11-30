@@ -7,14 +7,18 @@ import ArticleList from '../../components/Blog/ArticleList';
 import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import { SliderImage } from '../../types/pages';
+import { listBlogs } from '../../utils/blogs';
+import { ListBlog } from '../../types/blogs';
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async () => {
     const { content, sliderImages } = await getPageBySlug('blog', '');
+    const blogs = await listBlogs(7, 0);
 
     return {
         props: {
             content,
             sliderImages,
+            blogs,
         },
     };
 };
@@ -22,16 +26,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 interface BlogProps {
     content: Document | null;
     sliderImages: SliderImage[] | null;
+    blogs: ListBlog[];
 }
 
-const BlogPage: FC<BlogProps> = ({ content, sliderImages }) => {
+const BlogPage: FC<BlogProps> = ({ content, sliderImages, blogs }) => {
     return (
         <PageWrapper
             title="King of Cardboard"
             description="Sports cards and sealed sports cards products for the UK. Whether you're collecting Football, Basketball or UFC, we have something for everyone."
         >
             <div className="flex flex-col w-full justify-start items-start">
-                {sliderImages && sliderImages.length && (
+                {sliderImages && sliderImages.length > 0 && (
                     <div className="image-container">
                         <img
                             src={sliderImages[0].url}
@@ -42,11 +47,9 @@ const BlogPage: FC<BlogProps> = ({ content, sliderImages }) => {
                 )}
                 <div className="block">{content && <Content content={[content]} />}</div>
                 <div className="flex flex-row w-full justify-start items-start">
-                    <div className="w-1/4">
-                        <ArticleList />
-                    </div>
+                    <div className="w-1/4"></div>
                     <div className="w-3/4">
-                        <ArticleList />
+                        <ArticleList blogs={blogs} />
                     </div>
                 </div>
             </div>
