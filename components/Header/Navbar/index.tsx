@@ -1,9 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
-import { AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
-import { BsArrowDownCircle } from 'react-icons/bs';
+import { BsArrowDownCircle, BsBag, BsBoxSeam, BsHouseDoor } from 'react-icons/bs';
 
 import { INTERESTS } from '../../../utils/constants';
+import { IoNewspaperOutline } from 'react-icons/io5';
 
 export const Navbar: React.FC = () => (
     <div className="navbar-center" role="navigation">
@@ -11,7 +11,7 @@ export const Navbar: React.FC = () => (
             <li>
                 <Link href="/" passHref className="p-0 bg-neutral">
                     <button className="btn rounded-md gap-2" role="link">
-                        <AiFillHome className="w-5 h-5" />
+                        <BsHouseDoor className="w-5 h-5" />
                         Home
                     </button>
                 </Link>
@@ -19,7 +19,7 @@ export const Navbar: React.FC = () => (
             <li>
                 <Link href="/shop" passHref className="p-0 bg-neutral">
                     <button className="btn rounded-md gap-2" role="link">
-                        <AiFillShopping className="w-5 h-5" />
+                        <BsBag className="w-5 h-5" />
                         Shop
                         <BsArrowDownCircle className="w-4 h-4" />
                     </button>
@@ -50,6 +50,14 @@ export const Navbar: React.FC = () => (
                 </ul>
             </li>
             <li>
+                <Link href="/blog" passHref className="p-0 bg-neutral">
+                    <button className="btn rounded-md gap-2" role="link">
+                        <IoNewspaperOutline className="w-5 h-5" />
+                        Blog
+                    </button>
+                </Link>
+            </li>
+            <li>
                 <a
                     href="https://www.whatnot.com/user/kocardboard"
                     target="__blank"
@@ -58,7 +66,7 @@ export const Navbar: React.FC = () => (
                     className="p-0 bg-neutral"
                 >
                     <button className="btn rounded-md gap-2" role="link">
-                        <AiTwotoneCrown className="w-5 h-5" />
+                        <BsBoxSeam className="w-5 h-5" />
                         Breaks
                     </button>
                 </a>
