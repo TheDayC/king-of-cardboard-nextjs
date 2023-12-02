@@ -47,7 +47,9 @@ export const Header: React.FC = () => {
                         </div>
                     </Link>
                 </div>
-                <NavBar />
+                <div className="navbar-center" role="navigation">
+                    <NavBar />
+                </div>
                 <div className="navbar-end">
                     {status === 'authenticated' && (
                         <div className="hidden lg:inline-block">
