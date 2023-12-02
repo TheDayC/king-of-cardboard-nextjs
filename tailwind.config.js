@@ -60,6 +60,9 @@ module.exports = {
                     '.menu-link:focus': {
                         color: '#ffffff',
                     },
+                    '.pre-order-badge': {
+                        backgroundColor: '#8947ac',
+                    },
                 },
             },
         ],
