@@ -12,7 +12,7 @@ const ArticleList: FC<ArticleListProps> = ({ blogs }) => {
     if (blogs.length === 0) return null;
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 relative">
             {blogs.map((blog) => (
                 <div className="card card-compact shadow-md hover:shadow-2xl transition duration-300 ease-in-out">
                     <figure className="h-40 relative overflow-hidden">

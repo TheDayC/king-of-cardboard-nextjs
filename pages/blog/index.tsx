@@ -4,6 +4,7 @@ import { Document } from '@contentful/rich-text-types';
 
 import PageWrapper from '../../components/PageWrapper';
 import ArticleList from '../../components/Blog/ArticleList';
+import Filters from '../../components/Blog/Filters';
 import { getPageBySlug } from '../../utils/pages';
 import Content from '../../components/Content';
 import { SliderImage } from '../../types/pages';
@@ -46,11 +47,9 @@ const BlogPage: FC<BlogProps> = ({ content, sliderImages, blogs }) => {
                     </div>
                 )}
                 <div className="block">{content && <Content content={[content]} />}</div>
+                <Filters />
                 <div className="flex flex-row w-full justify-start items-start">
-                    <div className="w-1/4"></div>
-                    <div className="w-3/4">
-                        <ArticleList blogs={blogs} />
-                    </div>
+                    <ArticleList blogs={blogs} />
                 </div>
             </div>
         </PageWrapper>

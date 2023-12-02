@@ -48,7 +48,7 @@
         "constructs": "^10.1.180",
         "contentful": "^9.2.13",
         "cors": "^2.8.5",
-        "daisyui": "^2.41.0",
+        "daisyui": "^4.4.17",
         "image-type": "^5.1.0",
         "jdenticon": "^3.2.0",
         "js-cookie": "^3.0.1",
