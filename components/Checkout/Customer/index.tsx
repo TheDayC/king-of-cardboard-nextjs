@@ -311,7 +311,7 @@ const Customer: React.FC = () => {
                                 hasErrors ? ' btn-base-200 btn-disabled' : ' btn-secondary'
                             }${isCheckoutLoading ? ' loading' : ''}`}
                         >
-                            {isCheckoutLoading ? '' : 'delivery'}
+                            {isCheckoutLoading ? '' : 'Delivery'}
                             <BsTruck className="w-6 h-6 ml-2 inline" />
                         </button>
                     </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FieldValues, useForm } from 'react-hook-form';
 import { toNumber } from 'lodash';
+import { BsCartPlusFill } from 'react-icons/bs';
 
 import selector from './selector';
 import Images from './Images';
@@ -13,7 +14,6 @@ import { gaEvent } from '../../utils/ga';
 import { addSuccess } from '../../store/slices/alerts';
 import { getPrettyPrice } from '../../utils/account/products';
 import CrossSales from '../CrossSales';
-import { BsCartPlusFill } from 'react-icons/bs';
 
 interface ProductProps {
     id: string;
