@@ -14,13 +14,7 @@
         "isolatedModules": true,
         "jsx": "preserve",
         "incremental": true,
-        "typeRoots": ["./types"],
-        "types": ["@types/gtag.js"]
-    },
-    "ts-node": {
-        "compilerOptions": {
-            "module": "commonjs"
-        }
+        "typeRoots": ["./types"]
     },
     "include": ["next-env.d.ts", "global.d.ts", "**/*.ts", "**/*.tsx"],
     "exclude": ["node_modules", "data", "scripts", ".husky", "utils/testing"]

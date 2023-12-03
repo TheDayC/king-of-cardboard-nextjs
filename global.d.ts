@@ -1,3 +1,5 @@
+/// <reference types="@types/gtag.js" />
+
 /* eslint-disable no-var */
 import type { MongoClient } from 'mongodb';
 

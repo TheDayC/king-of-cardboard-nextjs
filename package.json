@@ -10,18 +10,7 @@
         "start": "next start",
         "lint": "next lint",
         "prettier": "prettier --write .",
-        "prepare": "husky install",
-        "delete:orders": "ts-node ./scripts/orders/deleteAll.ts",
-        "delete:lineItems": "ts-node ./scripts/line-items/deleteAll.ts",
-        "delete:stockLineItems": "ts-node ./scripts/stock-line-items/deleteAll.ts",
-        "delete:stockItems": "ts-node ./scripts/stock-items/deleteAll.ts",
-        "delete:skus": "ts-node ./scripts/skus/deleteAll.ts",
-        "delete:prices": "ts-node ./scripts/prices/deleteAll.ts",
-        "delete:paymentMethods": "ts-node ./scripts/payment-methods/deleteAll.ts",
-        "cancel:shipments": "ts-node ./scripts/shipments/cancelAll.ts",
-        "create:skus": "ts-node ./scripts/skus/create.ts",
-        "create:cards": "ts-node ./scripts/cards/index.ts",
-        "create:breaks": "ts-node ./scripts/breaks/index.ts"
+        "prepare": "husky install"
     },
     "lint-staged": {
         "**/*": [
@@ -102,7 +91,6 @@
         "postcss": "^8.4.19",
         "prettier": "^2.7.1",
         "tailwindcss": "^3.2.4",
-        "ts-node": "^10.9.1",
         "typescript": "^5.3.2"
     }
 }
