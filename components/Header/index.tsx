@@ -1,5 +1,5 @@
 import React from 'react';
-import { AiOutlineUser, AiOutlineMenu } from 'react-icons/ai';
+import { AiOutlineMenu } from 'react-icons/ai';
 import Image from 'next/image';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
@@ -15,6 +15,7 @@ import CartIcon from './CartIcon';
 import { setIsDrawerOpen, setUserId } from '../../store/slices/global';
 import { Slugs } from '../../enums/account';
 import IssueBanner from './IssueBanner';
+import { BsList, BsPerson, BsThreeDotsVertical } from 'react-icons/bs';
 
 export const Header: React.FC = () => {
     const dispatch = useDispatch();
@@ -37,9 +38,9 @@ export const Header: React.FC = () => {
         <React.Fragment>
             <div className="navbar bg-neutral text-neutral-content border-b-4 border-primary" id="header">
                 <div className="navbar-start">
-                    <label className="text-2xl px-2 lg:hidden" onClick={handleDrawerClick}>
-                        <AiOutlineMenu />
-                    </label>
+                    <button className="text-2xl p-2 lg:hidden menu-link rounded-md" onClick={handleDrawerClick}>
+                        <BsThreeDotsVertical />
+                    </button>
                     <Link href="/" passHref>
                         <div className="h-auto w-44 cursor-pointer lg:block" role="link" data-testid="logo">
                             <Image src={logo} alt="King of Cardboard Logo Header" title="King of Cardboard" priority />
@@ -98,12 +99,12 @@ export const Header: React.FC = () => {
                     ) : (
                         <Link href="/login" passHref>
                             <div
-                                className="flex justify-start items-center cursor-pointer rounded-md hover:bg-neutral-focus"
+                                className="flex justify-start items-center cursor-pointer rounded-md menu-link"
                                 role="button"
                                 data-testid="login-icon"
                             >
                                 <div className="p-2 text-2xl">
-                                    <AiOutlineUser />
+                                    <BsPerson />
                                 </div>
                             </div>
                         </Link>
