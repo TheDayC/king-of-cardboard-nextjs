@@ -21,7 +21,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
         <div className="grid grid-cols-1 gap-2">
             <div className="form-control">
                 <label className="label">
-                    <span className="label-text">Address Line One</span>
+                    <span className="label-text">Address Line One*</span>
                 </label>
                 <input
                     type="text"
@@ -29,7 +29,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                     {...register('billingAddressLineOne', {
                         required: { value: true, message: 'Address line one is required' },
                     })}
-                    className={`input input-md input-bordered${billingLineOneErr ? ' input-error' : ''}`}
+                    className={`input input-sm input-bordered${billingLineOneErr ? ' input-error' : ''}`}
                 />
                 {billingLineOneErr && (
                     <label className="label">
@@ -45,7 +45,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                     type="text"
                     placeholder="Address Line Two"
                     {...register('billingAddressLineTwo')}
-                    className="input input-md input-bordered"
+                    className="input input-sm input-bordered"
                 />
             </div>
             <div className="form-control">
@@ -56,12 +56,12 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                     type="text"
                     placeholder="Company"
                     {...register('billingCompany')}
-                    className="input input-md input-bordered"
+                    className="input input-sm input-bordered"
                 />
             </div>
             <div className="form-control">
                 <label className="label">
-                    <span className="label-text">City</span>
+                    <span className="label-text">City*</span>
                 </label>
                 <input
                     type="text"
@@ -69,7 +69,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                     {...register('billingCity', {
                         required: { value: true, message: 'City is required.' },
                     })}
-                    className={`input input-md input-bordered${billingCityErr ? ' input-error' : ''}`}
+                    className={`input input-sm input-bordered${billingCityErr ? ' input-error' : ''}`}
                 />
                 {billingCityErr && (
                     <label className="label">
@@ -79,7 +79,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
             </div>
             <div className="form-control">
                 <label className="label">
-                    <span className="label-text">Postcode</span>
+                    <span className="label-text">Postcode*</span>
                 </label>
                 <input
                     type="text"
@@ -91,7 +91,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                             message: fieldPatternMsgs('billingPostcode'),
                         },
                     })}
-                    className={`input input-md input-bordered${billingPostcodeErr ? ' input-error' : ''}`}
+                    className={`input input-sm input-bordered${billingPostcodeErr ? ' input-error' : ''}`}
                 />
                 {billingPostcodeErr && (
                     <label className="label">
@@ -101,7 +101,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
             </div>
             <div className="form-control">
                 <label className="label">
-                    <span className="label-text">County</span>
+                    <span className="label-text">County*</span>
                 </label>
                 <input
                     type="text"
@@ -109,7 +109,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({ register, errors }) => 
                     {...register('billingCounty', {
                         required: { value: true, message: 'County is required' },
                     })}
-                    className={`input input-md input-bordered${billingCountyErr ? ' input-error' : ''}`}
+                    className={`input input-sm input-bordered${billingCountyErr ? ' input-error' : ''}`}
                 />
                 {billingCountyErr && (
                     <label className="label">
