@@ -47,7 +47,7 @@ interface BlogProps {
 }
 
 const BlogPage: FC<BlogProps> = ({ content, sliderImages, blogs, currentPage, totalBlogs, q }) => {
-    const pageCount = ceil(divide(totalBlogs, 6));
+    const pageCount = ceil(divide(totalBlogs, LIMIT));
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
