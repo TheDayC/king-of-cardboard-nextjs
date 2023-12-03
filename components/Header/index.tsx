@@ -1,5 +1,4 @@
 import React from 'react';
-import { AiOutlineMenu } from 'react-icons/ai';
 import Image from 'next/image';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
@@ -15,7 +14,7 @@ import CartIcon from './CartIcon';
 import { setIsDrawerOpen, setUserId } from '../../store/slices/global';
 import { Slugs } from '../../enums/account';
 import IssueBanner from './IssueBanner';
-import { BsList, BsPerson, BsThreeDotsVertical } from 'react-icons/bs';
+import { BsPersonCircle, BsThreeDotsVertical } from 'react-icons/bs';
 
 export const Header: React.FC = () => {
     const dispatch = useDispatch();
@@ -104,7 +103,7 @@ export const Header: React.FC = () => {
                                 data-testid="login-icon"
                             >
                                 <div className="p-2 text-2xl">
-                                    <BsPerson />
+                                    <BsPersonCircle />
                                 </div>
                             </div>
                         </Link>

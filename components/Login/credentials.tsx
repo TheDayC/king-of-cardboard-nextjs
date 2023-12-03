@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { MdOutlineMailOutline } from 'react-icons/md';
-import { RiLockPasswordLine } from 'react-icons/ri';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { BiErrorCircle } from 'react-icons/bi';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
+import { BsBoxArrowInRight, BsEnvelopeAt, BsKey } from 'react-icons/bs';
 
 interface Submit {
     emailAddress?: string;
@@ -59,7 +58,7 @@ export const Credentials: React.FC<CredentialsProps> = ({ shouldRedirect }) => {
             <div className="form-control">
                 <label className="input-group input-group-md join">
                     <span className="bg-base-200 p-2 px-4 flex flex-row items-center join-item">
-                        <MdOutlineMailOutline className="text-2xl" />
+                        <BsEnvelopeAt className="text-2xl" />
                     </span>
                     <input
                         type="text"
@@ -79,7 +78,7 @@ export const Credentials: React.FC<CredentialsProps> = ({ shouldRedirect }) => {
             <div className="form-control mt-2">
                 <label className="input-group input-group-md join">
                     <span className="bg-base-200 p-2 px-4 flex flex-row items-center join-item">
-                        <RiLockPasswordLine className="text-2xl" />
+                        <BsKey className="text-2xl" />
                     </span>
                     <input
                         type="password"
@@ -94,6 +93,7 @@ export const Credentials: React.FC<CredentialsProps> = ({ shouldRedirect }) => {
             <div className="form-control mt-6">
                 <button type="submit" className={`btn btn-block rounded-md${btnErrClass}${btnLoadingClass}`}>
                     {loading ? '' : 'Log In'}
+                    <BsBoxArrowInRight className="text-2xl" />
                 </button>
             </div>
         </form>

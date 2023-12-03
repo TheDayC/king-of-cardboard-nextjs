@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
-import { MdOutlineMailOutline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { BiRefresh } from 'react-icons/bi';
 
@@ -8,6 +7,7 @@ import { parseAsString, safelyParse } from '../../utils/parsers';
 import { requestPasswordReset } from '../../utils/account';
 import { addError, addSuccess } from '../../store/slices/alerts';
 import { isBoolean } from '../../utils/typeguards';
+import { BsEnvelope, BsEnvelopeAt } from 'react-icons/bs';
 
 export const ResetPassword: React.FC = () => {
     const {
@@ -45,9 +45,9 @@ export const ResetPassword: React.FC = () => {
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="form-control">
-                <label className="input-group input-group-md">
-                    <span className="bg-base-200">
-                        <MdOutlineMailOutline className="w-5 h-5" />
+                <label className="input-group input-group-md join">
+                    <span className="bg-base-200 p-2 px-4 flex flex-row items-center join-item">
+                        <BsEnvelopeAt className="text-2xl" />
                     </span>
                     <input
                         type="text"
@@ -55,7 +55,7 @@ export const ResetPassword: React.FC = () => {
                         {...register('emailAddress', {
                             required: { value: true, message: 'Email address required' },
                         })}
-                        className={`input input-md input-bordered w-full${emailErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered w-full join-item${emailErr ? ' input-error' : ''}`}
                     />
                 </label>
                 {emailErr && (
