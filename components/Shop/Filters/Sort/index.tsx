@@ -24,11 +24,15 @@ export const Sort: React.FC<SortProps> = ({ options }) => {
 
     return (
         <div className="form-control inline-block">
-            <label className="input-group">
-                <span className="bg-base-200">
-                    <BsSortDown className="w-5 h-5" />
+            <label className="input-group join w-full">
+                <span className="bg-base-200 join-item flex flex-row items-center p-2 px-4">
+                    <BsSortDown className="text-2xl" />
                 </span>
-                <select className="select select-bordered grow" defaultValue={sortOption} onChange={handleOnChange}>
+                <select
+                    className="select select-bordered grow join-item w-full"
+                    defaultValue={sortOption}
+                    onChange={handleOnChange}
+                >
                     {options.length &&
                         options.map(({ key, value }) => (
                             <option value={value} key={`sort-option-${key}`}>
