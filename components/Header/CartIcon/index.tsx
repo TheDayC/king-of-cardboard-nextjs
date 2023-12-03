@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { BsCart3 } from 'react-icons/bs';
 
 import selector from './selector';
-import { BsCart3 } from 'react-icons/bs';
 
 export const CartIcon: React.FC = () => {
     const { itemCount } = useSelector(selector);

@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
-import { AiOutlineUser } from 'react-icons/ai';
-import { MdOutlineMailOutline } from 'react-icons/md';
-import { RiLockPasswordLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
+import { BsClipboardPlus, BsEnvelope, BsKey, BsPersonCircle } from 'react-icons/bs';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { addError, addSuccess } from '../../store/slices/alerts';
 import { EMAIL_PATTERN, PASS_PATTERN, USER_PATTERN } from '../../regex';
-import { BsClipboardPlus, BsEnvelope, BsKey, BsPerson, BsPersonCircle } from 'react-icons/bs';
 
 interface Submit {
     displayName?: string;

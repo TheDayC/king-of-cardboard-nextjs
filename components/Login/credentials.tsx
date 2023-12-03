@@ -3,9 +3,9 @@ import { useForm } from 'react-hook-form';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { BiErrorCircle } from 'react-icons/bi';
+import { BsBoxArrowInRight, BsEnvelopeAt, BsKey } from 'react-icons/bs';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
-import { BsBoxArrowInRight, BsEnvelopeAt, BsKey } from 'react-icons/bs';
 
 interface Submit {
     emailAddress?: string;

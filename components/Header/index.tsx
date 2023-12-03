@@ -6,6 +6,7 @@ import { toSvg } from 'jdenticon';
 import md5 from 'md5';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
+import { BsPersonCircle, BsThreeDotsVertical } from 'react-icons/bs';
 
 import logo from '../../images/logo-full.webp';
 import { parseAsString, safelyParse } from '../../utils/parsers';
@@ -14,7 +15,6 @@ import CartIcon from './CartIcon';
 import { setIsDrawerOpen, setUserId } from '../../store/slices/global';
 import { Slugs } from '../../enums/account';
 import IssueBanner from './IssueBanner';
-import { BsPersonCircle, BsThreeDotsVertical } from 'react-icons/bs';
 
 export const Header: React.FC = () => {
     const dispatch = useDispatch();
