@@ -1,8 +1,9 @@
 import { FC } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { ListBlog } from '../../../types/blogs';
-import { BsArrowRightCircle } from 'react-icons/bs';
+import { BsArrowRightCircle, BsCalendar2Fill, BsCalendar2RangeFill } from 'react-icons/bs';
 
 interface ArticleListProps {
     blogs: ListBlog[];
@@ -25,13 +26,25 @@ const ArticleList: FC<ArticleListProps> = ({ blogs }) => {
                         />
                     </figure>
                     <div className="card-body">
+                        <div className="flex flex-row justify-end items-center">
+                            <div className="badge badge-secondary inline font-semibold flex flex-row">
+                                <BsCalendar2Fill className="mr-2" /> {blog.publishDate}
+                            </div>
+                        </div>
                         <h2 className="card-title">{blog.title}</h2>
                         {blog.preview && <p>{blog.preview}</p>}
                         <div className="card-actions justify-end">
-                            <button className="btn btn-primary">
+                            <Link
+                                href={{
+                                    pathname: '/blog/[slug]',
+                                    query: { slug: blog.slug },
+                                }}
+                                passHref
+                                className="btn btn-primary uppercase font-semibold"
+                            >
                                 Read more
                                 <BsArrowRightCircle className="ml-2 mt-0.5 text-lg" />
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

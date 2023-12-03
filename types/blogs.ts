@@ -6,10 +6,15 @@ export interface Blog {
     slug: string;
     content: Document | null;
     banner: ImageItem;
+    image: ImageItem;
     youtubeEmbedId: string | null;
+    publishDate: string;
+    reviewTitle: string;
+    reviewSummary: string;
+    reviewScore: number;
 }
 
-export interface ListBlog extends Omit<Blog, 'content' | 'banner' | 'youtubeEmbedId'> {
+export interface ListBlog
+    extends Omit<Blog, 'content' | 'banner' | 'youtubeEmbedId' | 'reviewSummary' | 'reviewScore' | 'reviewTitle'> {
     preview: string | null;
-    image: ImageItem;
 }

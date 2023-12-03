@@ -1,7 +1,8 @@
 import * as contentful from 'contentful';
+import { DateTime } from 'luxon';
 
 import { errorHandler } from '../middleware/errors';
-import { parseAsDocument, parseAsString, safelyParse } from './parsers';
+import { parseAsDocument, parseAsNumber, parseAsString, safelyParse } from './parsers';
 import { Blog, ListBlog } from '../types/blogs';
 
 export async function listBlogs(limit: number, skip: number): Promise<ListBlog[]> {
@@ -16,12 +17,14 @@ export async function listBlogs(limit: number, skip: number): Promise<ListBlog[]
             content_type: 'blogPost',
             limit,
             skip,
-            select: 'fields.title,fields.slug,fields.preview,fields.image',
+            select: 'fields.title,fields.slug,fields.preview,fields.image,fields.publishDate',
         });
 
         if (res.items.length === 0) return [];
 
         return res.items.map(({ fields }) => {
+            const rawPublishDate = safelyParse(fields, 'publishDate', parseAsString, '1970-01-01T00:00+00:00');
+
             return {
                 title: safelyParse(fields, 'title', parseAsString, ''),
                 slug: safelyParse(fields, 'slug', parseAsString, ''),
@@ -31,6 +34,7 @@ export async function listBlogs(limit: number, skip: number): Promise<ListBlog[]
                     description: safelyParse(fields, 'image.fields.description', parseAsString, ''),
                     url: safelyParse(fields, 'image.fields.file.url', parseAsString, ''),
                 },
+                publishDate: DateTime.fromISO(rawPublishDate).toFormat('dd/MM/yyyy'),
             };
         });
     } catch (error: unknown) {
@@ -40,7 +44,7 @@ export async function listBlogs(limit: number, skip: number): Promise<ListBlog[]
     return [];
 }
 
-export async function getBlog(limit: number, skip: number): Promise<Blog> {
+export async function getBlog(slug: string): Promise<Blog | null> {
     try {
         const client = contentful.createClient({
             space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || '',
@@ -50,31 +54,40 @@ export async function getBlog(limit: number, skip: number): Promise<Blog> {
 
         const res = await client.getEntries({
             content_type: 'blogPost',
-            limit,
-            skip,
-            select: 'fields.title,fields.slug,fields.preview',
+            limit: 1,
+            skip: 0,
+            'fields.slug[in]': slug,
+            select: 'fields.title,fields.slug,fields.image,fields.banner,fields.publishDate,fields.youtubeEmbedId,fields.content,fields.reviewTitle,fields.reviewSummary,fields.reviewScore',
         });
-        console.log('🚀 ~ file: blogs.ts:21 ~ listBlogs ~ res:', res.items);
 
-        if (res.items.length === 0) return [];
+        if (res.items.length === 0) return null;
 
-        return res.items.map(({ fields }) => {
-            return {
-                title: safelyParse(fields, 'title', parseAsString, ''),
-                slug: safelyParse(fields, 'slug', parseAsString, ''),
-                preview: safelyParse(fields, 'preview', parseAsString, null),
-                content: safelyParse(fields, 'content', parseAsDocument, null),
-                banner: {
-                    title: safelyParse(fields, 'title', parseAsString, ''),
-                    description: safelyParse(fields, 'description', parseAsString, ''),
-                    url: safelyParse(fields, 'file.url', parseAsString, ''),
-                },
-                youtubeEmbedId: safelyParse(fields, 'youtubeEmbedId', parseAsString, null),
-            };
-        });
+        const blog = res.items[0];
+        const rawPublishDate = safelyParse(blog, 'fields.publishDate', parseAsString, '1970-01-01T00:00+00:00');
+
+        return {
+            title: safelyParse(blog, 'fields.title', parseAsString, ''),
+            slug: safelyParse(blog, 'fields.slug', parseAsString, ''),
+            publishDate: DateTime.fromISO(rawPublishDate).toFormat('dd/MM/yyyy'),
+            content: safelyParse(blog, 'fields.content', parseAsDocument, null),
+            image: {
+                title: safelyParse(blog, 'fields.image.fields.title', parseAsString, ''),
+                description: safelyParse(blog, 'fields.image.fields.description', parseAsString, ''),
+                url: safelyParse(blog, 'fields.image.fields.file.url', parseAsString, ''),
+            },
+            banner: {
+                title: safelyParse(blog, 'fields.banner.fields.title', parseAsString, ''),
+                description: safelyParse(blog, 'fields.banner.fields.description', parseAsString, ''),
+                url: safelyParse(blog, 'fields.banner.fields.file.url', parseAsString, ''),
+            },
+            youtubeEmbedId: safelyParse(blog, 'fields.youtubeEmbedId', parseAsString, null),
+            reviewTitle: safelyParse(blog, 'fields.reviewTitle', parseAsString, ''),
+            reviewSummary: safelyParse(blog, 'fields.reviewSummary', parseAsString, ''),
+            reviewScore: safelyParse(blog, 'fields.reviewScore', parseAsNumber, 0),
+        };
     } catch (error: unknown) {
         errorHandler(error, 'Failed to fetch blog lists.');
     }
 
-    return [];
+    return null;
 }
