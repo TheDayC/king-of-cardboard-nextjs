@@ -18,3 +18,8 @@ export interface ListBlog
     extends Omit<Blog, 'content' | 'banner' | 'youtubeEmbedId' | 'reviewSummary' | 'reviewScore' | 'reviewTitle'> {
     preview: string | null;
 }
+
+export interface Blogs {
+    total: number;
+    blogs: ListBlog[];
+}

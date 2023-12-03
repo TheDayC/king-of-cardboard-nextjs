@@ -3,9 +3,14 @@ import { DateTime } from 'luxon';
 
 import { errorHandler } from '../middleware/errors';
 import { parseAsDocument, parseAsNumber, parseAsString, safelyParse } from './parsers';
-import { Blog, ListBlog } from '../types/blogs';
+import { Blog, Blogs } from '../types/blogs';
 
-export async function listBlogs(limit: number, skip: number): Promise<ListBlog[]> {
+const DEFAULT_BLOGS = {
+    total: 0,
+    blogs: [],
+};
+
+export async function listBlogs(limit: number, skip: number, q: string | null): Promise<Blogs> {
     try {
         const client = contentful.createClient({
             space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || '',
@@ -18,30 +23,34 @@ export async function listBlogs(limit: number, skip: number): Promise<ListBlog[]
             limit,
             skip,
             select: 'fields.title,fields.slug,fields.preview,fields.image,fields.publishDate',
+            query: q,
         });
 
-        if (res.items.length === 0) return [];
+        if (res.items.length === 0) return DEFAULT_BLOGS;
 
-        return res.items.map(({ fields }) => {
-            const rawPublishDate = safelyParse(fields, 'publishDate', parseAsString, '1970-01-01T00:00+00:00');
+        return {
+            total: res.total,
+            blogs: res.items.map(({ fields }) => {
+                const rawPublishDate = safelyParse(fields, 'publishDate', parseAsString, '1970-01-01T00:00+00:00');
 
-            return {
-                title: safelyParse(fields, 'title', parseAsString, ''),
-                slug: safelyParse(fields, 'slug', parseAsString, ''),
-                preview: safelyParse(fields, 'preview', parseAsString, null),
-                image: {
-                    title: safelyParse(fields, 'image.fields.title', parseAsString, ''),
-                    description: safelyParse(fields, 'image.fields.description', parseAsString, ''),
-                    url: safelyParse(fields, 'image.fields.file.url', parseAsString, ''),
-                },
-                publishDate: DateTime.fromISO(rawPublishDate).toFormat('dd/MM/yyyy'),
-            };
-        });
+                return {
+                    title: safelyParse(fields, 'title', parseAsString, ''),
+                    slug: safelyParse(fields, 'slug', parseAsString, ''),
+                    preview: safelyParse(fields, 'preview', parseAsString, null),
+                    image: {
+                        title: safelyParse(fields, 'image.fields.title', parseAsString, ''),
+                        description: safelyParse(fields, 'image.fields.description', parseAsString, ''),
+                        url: safelyParse(fields, 'image.fields.file.url', parseAsString, ''),
+                    },
+                    publishDate: DateTime.fromISO(rawPublishDate).toFormat('dd/MM/yyyy'),
+                };
+            }),
+        };
     } catch (error: unknown) {
         errorHandler(error, 'Failed to fetch blog lists.');
     }
 
-    return [];
+    return DEFAULT_BLOGS;
 }
 
 export async function getBlog(slug: string): Promise<Blog | null> {
