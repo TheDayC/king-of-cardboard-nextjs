@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { BsArrowDownCircle, BsBag, BsBoxSeam, BsHouseDoor } from 'react-icons/bs';
+import { BsBag, BsBoxSeam, BsHouseDoor } from 'react-icons/bs';
+import { IoNewspaperOutline } from 'react-icons/io5';
 
 import { INTERESTS } from '../../../utils/constants';
-import { IoNewspaperOutline } from 'react-icons/io5';
 
 export const Navbar: React.FC = () => {
     const [shouldShow, setShouldShow] = useState(false);
@@ -32,26 +32,14 @@ export const Navbar: React.FC = () => {
                         className="bg-neutral z-50 rounded-md w-40 shadow-md"
                         onMouseLeave={() => handleShopMenuHover(false)}
                     >
-                        {INTERESTS.map((menuItem, index) => {
-                            let radius = 'rounded-none';
-
-                            if (index === 0) {
-                                radius = 'rounded-t-md';
-                            }
-
-                            if (index === INTERESTS.length - 1) {
-                                radius = 'rounded-b-md';
-                            }
-
-                            return (
-                                <li key={`nav-item-${index}`}>
-                                    <Link href={menuItem.href} passHref className="menu-link">
-                                        <menuItem.icon className={`w-5 h-5 ${menuItem.css}`} />
-                                        {menuItem.label}
-                                    </Link>
-                                </li>
-                            );
-                        })}
+                        {INTERESTS.map((menuItem, index) => (
+                            <li key={`nav-item-${index}`}>
+                                <Link href={menuItem.href} passHref className="menu-link">
+                                    <menuItem.icon className={`w-5 h-5 ${menuItem.css}`} />
+                                    {menuItem.label}
+                                </Link>
+                            </li>
+                        ))}
                     </ul>
                 </details>
             </li>

@@ -1,16 +1,14 @@
 import React, { ReactNode } from 'react';
 import Image from 'next/image';
-import { useSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { BsBag, BsBoxSeam, BsHouseDoor } from 'react-icons/bs';
 
 import logo from '../../images/logo-full.webp';
-import Rewards from '../Header/Rewards';
 import selector from './selector';
 import { setIsDrawerOpen } from '../../store/slices/global';
 import { INTERESTS } from '../../utils/constants';
-import { BsBag, BsBoxSeam, BsHouseDoor } from 'react-icons/bs';
 
 interface DrawerProps {
     children: ReactNode;
@@ -18,7 +16,7 @@ interface DrawerProps {
 
 export const Drawer: React.FC<DrawerProps> = ({ children }) => {
     const { isDrawerOpen } = useSelector(selector);
-    const { status } = useSession();
+    //const { status } = useSession();
     const dispatch = useDispatch();
     const router = useRouter();
 

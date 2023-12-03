@@ -1,13 +1,13 @@
 import { FC } from 'react';
 import { GetServerSideProps } from 'next';
 import Image from 'next/image';
+import { BsCalendar2Fill } from 'react-icons/bs';
 
 import PageWrapper from '../../components/PageWrapper';
 import { getBlog } from '../../utils/blogs';
 import { Blog } from '../../types/blogs';
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import Custom404Page from '../404';
-import { BsCalendar2Fill } from 'react-icons/bs';
 import Content from '../../components/Content';
 import Review from '../../components/Blog/Review';
 import YoutubeEmbed from '../../components/YoutubeEmbed';
@@ -68,20 +68,6 @@ const SingleBlogPage: FC<SingleBlogPageProps> = ({ blog }) => {
                     image={blog.image}
                     title={blog.reviewTitle}
                 />
-                {/* {sliderImages && sliderImages.length > 0 && (
-                    <div className="image-container">
-                        <img
-                            src={sliderImages[0].url}
-                            title={sliderImages[0].title}
-                            alt={sliderImages[0].description}
-                        />
-                    </div>
-                )}
-                <div className="block">{content && <Content content={[content]} />}</div>
-                <Filters />
-                <div className="flex flex-row w-full justify-start items-start">
-                    <ArticleList blogs={blogs} />
-                </div> */}
             </div>
         </PageWrapper>
     );

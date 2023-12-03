@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { BsArrowRightCircle, BsCalendar2Fill } from 'react-icons/bs';
 
 import { ListBlog } from '../../../types/blogs';
-import { BsArrowRightCircle, BsCalendar2Fill, BsCalendar2RangeFill } from 'react-icons/bs';
 
 interface ArticleListProps {
     blogs: ListBlog[];
@@ -15,7 +15,10 @@ const ArticleList: FC<ArticleListProps> = ({ blogs }) => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 relative">
             {blogs.map((blog) => (
-                <div className="card card-compact shadow-md hover:shadow-2xl transition duration-300 ease-in-out">
+                <div
+                    className="card card-compact shadow-md hover:shadow-2xl transition duration-300 ease-in-out"
+                    key={`blog-${blog.title}`}
+                >
                     <figure className="h-40 relative overflow-hidden">
                         <Image
                             src={`https:${blog.image.url}`}

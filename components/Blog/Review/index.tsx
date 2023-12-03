@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { BsStar, BsStarFill } from 'react-icons/bs';
 import Image from 'next/image';
+
 import { ImageItem } from '../../../types/contentful';
 
 interface SingleBlogPageProps {
@@ -27,9 +28,9 @@ const Review: FC<SingleBlogPageProps> = ({ title, summary, score, image }) => {
                     <div className="flex flex-row">
                         {stars.map((star) => {
                             if (star < score) {
-                                return <BsStarFill className={starBaseClass} />;
+                                return <BsStarFill className={starBaseClass} key={`star-${score}`} />;
                             } else {
-                                return <BsStar className={starBaseClass} />;
+                                return <BsStar className={starBaseClass} key={`star-${score}`} />;
                             }
                         })}
                     </div>
