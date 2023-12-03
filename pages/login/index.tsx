@@ -64,22 +64,25 @@ export const LoginPage: React.FC<LoginPageProps> = ({ providers, csrfToken }) =>
             <div className="flex flex-col w-full justify-center items-center">
                 <div className="flex flex-col w-full md:w-1/2 lg:w-1/3 card text-center rounded-md md:shadow-2xl">
                     <div className="card-body p-2 lg:p-6">
-                        <div className="tabs mb-2">
+                        <div className="tabs tabs-bordered" role="tablist">
                             <a
-                                className={`tab tab-bordered w-1/3${isLogin ? ' tab-active' : ''}`}
+                                className={`tab tab-bordered${isLogin ? ' tab-active' : ''}`}
                                 onClick={handleLoginTab}
+                                role="tab"
                             >
                                 Log In
                             </a>
                             <a
-                                className={`tab tab-bordered w-1/3${isRegister ? ' tab-active' : ''}`}
+                                className={`tab tab-bordered${isRegister ? ' tab-active' : ''}`}
                                 onClick={handleRegisterTab}
+                                role="tab"
                             >
                                 Register
                             </a>
                             <a
-                                className={`tab tab-bordered w-1/3${isReset ? ' tab-active' : ''}`}
+                                className={`tab tab-bordered${isReset ? ' tab-active' : ''}`}
                                 onClick={handleResetTab}
+                                role="tab"
                             >
                                 Reset
                             </a>
