@@ -38,28 +38,28 @@ export const RepeaterField: React.FC<RepeaterFieldProps> = ({
     return (
         <div className="flex flex-row space-x-4 items-start justify-start">
             <div className="form-control inline-block">
-                <label className="input-group input-group-md">
-                    <span className="bg-base-200">{fieldOneIcon}</span>
+                <label className="input-group input-group-md join">
+                    <span className="bg-base-200 join-item flex flex-row items-center p-2 px-4">{fieldOneIcon}</span>
                     <input
                         type="text"
                         placeholder={fieldOneLabel}
                         {...register(`${fieldOne}.${rowCount}`, {
                             required: false,
                         })}
-                        className="input input-md input-bordered w-full"
+                        className="input input-md input-bordered w-full join-item"
                     />
                 </label>
             </div>
             <div className="form-control inline-block">
-                <label className="input-group input-group-md">
-                    <span className="bg-base-200">{fieldTwoIcon}</span>
+                <label className="input-group input-group-md join">
+                    <span className="bg-base-200 join-item flex flex-row items-center p-2 px-4">{fieldTwoIcon}</span>
                     <input
                         type="number"
                         placeholder={fieldTwoLabel}
                         {...register(`${fieldTwo}.${rowCount}`, {
                             required: false,
                         })}
-                        className="input input-md input-bordered w-full"
+                        className="input input-md input-bordered w-full join-item"
                     />
                 </label>
             </div>

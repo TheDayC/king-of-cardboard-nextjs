@@ -45,16 +45,16 @@ export const InputField: React.FC<InputFieldProps> = ({
 
     return (
         <div className="form-control inline-block w-full lg:w-auto">
-            <label className="input-group input-group-md">
-                <span className="bg-base-200">
-                    <Icon className="w-5 h-5" />
+            <label className="input-group input-group-md join">
+                <span className="bg-base-200 join-item flex flex-row items-center p-2 px-4">
+                    <Icon className="text-2xl" />
                 </span>
                 {isDate && setStartDate ? (
                     <DatePicker
                         selected={startDate ? DateTime.fromISO(startDate).toJSDate() : null}
                         onChange={(date) => setStartDate(date)}
                         wrapperClassName="inline-block border-2 border-gray-500 w-full shrink lg:w-auto h-full"
-                        className="input input-md input-bordered w-full rounded-l-none"
+                        className="input input-md input-bordered w-full rounded-l-none join-item"
                         isClearable
                         placeholderText={placeholder}
                         clearButtonClassName="btn btn-square rounded-l-none after:bg-transparent after:content-['×'] after:text-xl after:leading-after-content"
@@ -68,7 +68,7 @@ export const InputField: React.FC<InputFieldProps> = ({
                         {...register(fieldName, {
                             required: { value: isRequired, message: instruction },
                         })}
-                        className={`input input-md input-bordered w-full${error ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered w-full join-item${error ? ' input-error' : ''}`}
                         onChange={handleChange}
                     />
                 )}
