@@ -139,7 +139,7 @@ export const Product: React.FC<ProductProps> = ({
                                                 {...register('quantity', {
                                                     required: { value: true, message: 'Required' },
                                                 })}
-                                                className="input input-lg input-bordered text-center px-0 w-full mb-4 lg:w-24 lg:mb-0"
+                                                className="input input-lg input-bordered text-center px-0 w-full mb-4 lg:w-32 lg:mb-0"
                                                 min={1}
                                                 max={stock - qtyInCart}
                                             />
