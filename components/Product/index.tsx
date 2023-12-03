@@ -13,6 +13,7 @@ import { gaEvent } from '../../utils/ga';
 import { addSuccess } from '../../store/slices/alerts';
 import { getPrettyPrice } from '../../utils/account/products';
 import CrossSales from '../CrossSales';
+import { BsCartPlusFill } from 'react-icons/bs';
 
 interface ProductProps {
     id: string;
@@ -138,17 +139,18 @@ export const Product: React.FC<ProductProps> = ({
                                                 {...register('quantity', {
                                                     required: { value: true, message: 'Required' },
                                                 })}
-                                                className="input input-lg input-bordered text-center w-32 px-0 w-full mb-4 lg:w-auto lg:mb-0"
+                                                className="input input-lg input-bordered text-center px-0 w-full mb-4 lg:w-24 lg:mb-0"
                                                 min={1}
                                                 max={stock - qtyInCart}
                                             />
                                         )}
                                         <button
                                             aria-label="add to cart"
-                                            className={`btn btn-lg w-full lg:w-auto rounded-md${btnDisabled}${btnLoading}`}
+                                            className={`btn btn-lg text-xl w-full lg:w-auto rounded-md${btnDisabled}${btnLoading}`}
                                             disabled={hasExceededStock}
                                         >
                                             {isUpdatingCart ? '' : 'Add to cart'}
+                                            <BsCartPlusFill className="text-2xl" />
                                         </button>
                                     </div>
                                 </form>
