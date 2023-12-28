@@ -43,12 +43,12 @@ export const Navbar: React.FC = () => {
                     </ul>
                 </details>
             </li>
-            <li>
+            {/* <li>
                 <Link href="/blog" passHref className="menu-link">
                     <IoNewspaperOutline className="w-5 h-5" />
                     Blog
                 </Link>
-            </li>
+            </li> */}
             <li>
                 <a
                     href="https://www.whatnot.com/user/kocardboard"
