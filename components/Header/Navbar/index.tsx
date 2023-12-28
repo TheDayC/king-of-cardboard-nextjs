@@ -1,70 +1,68 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { AiFillHome, AiFillShopping, AiTwotoneCrown } from 'react-icons/ai';
-import { BsArrowDownCircle } from 'react-icons/bs';
+import { BsBag, BsBoxSeam, BsHouseDoor } from 'react-icons/bs';
+//import { IoNewspaperOutline } from 'react-icons/io5';
 
 import { INTERESTS } from '../../../utils/constants';
 
-export const Navbar: React.FC = () => (
-    <div className="navbar-center" role="navigation">
-        <ul className="menu menu-horizontal hidden lg:inline-flex">
+export const Navbar: React.FC = () => {
+    const [shouldShow, setShouldShow] = useState(false);
+
+    const handleShopMenuHover = (isHovered: boolean) => {
+        setShouldShow(isHovered);
+    };
+
+    return (
+        <ul className="menu menu-horizontal bg-neutral hidden lg:inline-flex p-0">
             <li>
-                <Link href="/" passHref className="p-0 bg-neutral">
-                    <button className="btn rounded-md gap-2" role="link">
-                        <AiFillHome className="w-5 h-5" />
-                        Home
-                    </button>
+                <Link href="/" passHref className="menu-link">
+                    <BsHouseDoor className="w-5 h-5" />
+                    Home
                 </Link>
             </li>
-            <li>
-                <Link href="/shop" passHref className="p-0 bg-neutral">
-                    <button className="btn rounded-md gap-2" role="link">
-                        <AiFillShopping className="w-5 h-5" />
-                        Shop
-                        <BsArrowDownCircle className="w-4 h-4" />
-                    </button>
-                </Link>
-                <ul className="bg-neutral z-50 rounded-md w-40 shadow">
-                    {INTERESTS.map((menuItem, index) => {
-                        let radius = 'rounded-none';
-
-                        if (index === 0) {
-                            radius = 'rounded-t-md';
-                        }
-
-                        if (index === INTERESTS.length - 1) {
-                            radius = 'rounded-b-md';
-                        }
-
-                        return (
+            <li onMouseEnter={() => handleShopMenuHover(true)}>
+                <details open={shouldShow}>
+                    <summary className="menu-link">
+                        <Link href="/shop" passHref className="flex flex-row items-center space-x-2">
+                            <BsBag className="w-5 h-5" />
+                            <span>Shop</span>
+                        </Link>
+                    </summary>
+                    <ul
+                        className="bg-neutral z-50 rounded-md w-40 shadow-md"
+                        onMouseLeave={() => handleShopMenuHover(false)}
+                    >
+                        {INTERESTS.map((menuItem, index) => (
                             <li key={`nav-item-${index}`}>
-                                <Link href={menuItem.href} passHref className="p-0 bg-neutral">
-                                    <button className={`btn gap-2 p-2 w-full ${radius}`} role="link">
-                                        <menuItem.icon className={`w-5 h-5 ${menuItem.css}`} />
-                                        {menuItem.label}
-                                    </button>
+                                <Link href={menuItem.href} passHref className="menu-link">
+                                    <menuItem.icon className={`w-5 h-5 ${menuItem.css}`} />
+                                    {menuItem.label}
                                 </Link>
                             </li>
-                        );
-                    })}
-                </ul>
+                        ))}
+                    </ul>
+                </details>
             </li>
+            {/* <li>
+                <Link href="/blog" passHref className="menu-link">
+                    <IoNewspaperOutline className="w-5 h-5" />
+                    Blog
+                </Link>
+            </li> */}
             <li>
                 <a
                     href="https://www.whatnot.com/user/kocardboard"
                     target="__blank"
                     rel="noopener noreferrer"
                     role="link"
-                    className="p-0 bg-neutral"
+                    className="menu-link"
                 >
-                    <button className="btn rounded-md gap-2" role="link">
-                        <AiTwotoneCrown className="w-5 h-5" />
-                        Breaks
-                    </button>
+                    <BsBoxSeam className="w-5 h-5" />
+                    Breaks
                 </a>
             </li>
         </ul>
-    </div>
-);
+    );
+};
 
 export default Navbar;

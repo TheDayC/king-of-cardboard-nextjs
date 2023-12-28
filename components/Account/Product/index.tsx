@@ -152,13 +152,13 @@ export const Product: React.FC<ProductProps> = ({ product, currentPage, updatePr
                         }}
                         passHref
                     >
-                        <button className="btn btn-neutral rounded-md shadow-none">
-                            <BiEdit className="inline-block text-xl mr-2" />
+                        <button className="btn btn-neutral rounded-md shadow-none text-lg">
+                            <BiEdit className="inline-block text-xl" />
                             Edit
                         </button>
                     </Link>
                     <button className="btn btn-error rounded-md shadow-none" onClick={handleDelete}>
-                        <BiTrash className="inline-block text-xl" />
+                        <BiTrash className="inline-block text-xl text-white" />
                     </button>
                 </div>
             </div>

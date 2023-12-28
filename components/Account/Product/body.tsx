@@ -347,7 +347,7 @@ export const ProductBody: React.FC<ProductBodyProps> = ({
                         <span>SKU: {sku ? sku : toLower(kebabCase(titleField))}</span>
                     </p>
                 </div>
-                <div className="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0 items-start justify-start">
+                <div className="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0 items-center justify-start">
                     <SelectField
                         placeholder="Category"
                         fieldName="category"

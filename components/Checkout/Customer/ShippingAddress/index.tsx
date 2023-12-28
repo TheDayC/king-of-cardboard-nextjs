@@ -21,7 +21,7 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
         <div className="grid grid-cols-1 gap-2">
             <div className="form-control">
                 <label className="label">
-                    <span className="label-text">Address Line One</span>
+                    <span className="label-text">Address Line One*</span>
                 </label>
                 <input
                     type="text"
@@ -29,7 +29,7 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
                     {...register('shippingAddressLineOne', {
                         required: { value: true, message: 'Address line on is required' },
                     })}
-                    className={`input input-md input-bordered${shippingLineOneErr ? ' input-error' : ''}`}
+                    className={`input input-sm input-bordered${shippingLineOneErr ? ' input-error' : ''}`}
                 />
                 {shippingLineOneErr && (
                     <label className="label">
@@ -45,7 +45,7 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
                     type="text"
                     placeholder="Address Line Two"
                     {...register('shippingAddressLineTwo')}
-                    className="input input-md input-bordered"
+                    className="input input-sm input-bordered"
                 />
             </div>
             <div className="form-control">
@@ -56,12 +56,12 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
                     type="text"
                     placeholder="Company"
                     {...register('shippingCompany')}
-                    className="input input-md input-bordered"
+                    className="input input-sm input-bordered"
                 />
             </div>
             <div className="form-control">
                 <label className="label">
-                    <span className="label-text">City</span>
+                    <span className="label-text">City*</span>
                 </label>
                 <input
                     type="text"
@@ -69,7 +69,7 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
                     {...register('shippingCity', {
                         required: { value: true, message: 'City is required' },
                     })}
-                    className={`input input-md input-bordered${shippingCityErr ? ' input-error' : ''}`}
+                    className={`input input-sm input-bordered${shippingCityErr ? ' input-error' : ''}`}
                 />
                 {shippingCityErr && (
                     <label className="label">
@@ -79,7 +79,7 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
             </div>
             <div className="form-control">
                 <label className="label">
-                    <span className="label-text">Postcode</span>
+                    <span className="label-text">Postcode*</span>
                 </label>
                 <input
                     type="text"
@@ -91,7 +91,7 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
                             message: fieldPatternMsgs('shippingPostcode'),
                         },
                     })}
-                    className={`input input-md input-bordered${shippingPostcodeErr ? ' input-error' : ''}`}
+                    className={`input input-sm input-bordered${shippingPostcodeErr ? ' input-error' : ''}`}
                 />
                 {shippingPostcodeErr && (
                     <label className="label">
@@ -101,7 +101,7 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
             </div>
             <div className="form-control">
                 <label className="label">
-                    <span className="label-text">County</span>
+                    <span className="label-text">County*</span>
                 </label>
                 <input
                     type="text"
@@ -109,7 +109,7 @@ const ShippingAddress: React.FC<ShippingAddressProps> = ({ register, errors }) =
                     {...register('shippingCounty', {
                         required: { value: true, message: 'County is required' },
                     })}
-                    className={`input input-md input-bordered${shippingCountyErr ? ' input-error' : ''}`}
+                    className={`input input-sm input-bordered${shippingCountyErr ? ' input-error' : ''}`}
                 />
                 {shippingCountyErr && (
                     <label className="label">

@@ -54,6 +54,15 @@ module.exports = {
                     success: '#009485',
                     warning: '#ff9900',
                     error: '#ff5724',
+                    '.menu-link:hover': {
+                        'background-color': '#525252',
+                    },
+                    '.menu-link:focus': {
+                        color: '#ffffff',
+                    },
+                    '.pre-order-badge': {
+                        backgroundColor: '#8947ac',
+                    },
                 },
             },
         ],

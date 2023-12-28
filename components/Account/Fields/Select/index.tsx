@@ -27,12 +27,12 @@ export const SelectField: React.FC<SelectFieldProps> = ({
 }) => {
     return (
         <div className="form-control inline-block w-full lg:w-auto">
-            <div className="input-group">
-                <span className="bg-base-200">
-                    <Icon className="w-5 h-5" />
+            <div className="input-group join">
+                <span className="bg-base-200 join-item flex flex-row items-center p-2 px-4">
+                    <Icon className="text-2xl" />
                 </span>
                 <select
-                    className="select select-bordered w-full shrink"
+                    className="select select-bordered w-full shrink join-item"
                     {...register(fieldName, { required: { value: true, message: instruction } })}
                     defaultValue={defaultValue}
                 >

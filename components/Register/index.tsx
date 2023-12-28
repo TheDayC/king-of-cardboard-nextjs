@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
-import { AiOutlineUser } from 'react-icons/ai';
-import { MdOutlineMailOutline } from 'react-icons/md';
-import { RiLockPasswordLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
+import { BsClipboardPlus, BsEnvelope, BsKey, BsPersonCircle } from 'react-icons/bs';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
 import { addError, addSuccess } from '../../store/slices/alerts';
@@ -69,9 +67,9 @@ export const Register: React.FC = () => {
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="form-control">
-                <label className="input-group input-group-md">
-                    <span className="bg-base-200">
-                        <AiOutlineUser className="w-5 h-5" />
+                <label className="input-group input-group-md join">
+                    <span className="bg-base-200 p-2 px-4 flex flex-row items-center join-item">
+                        <BsPersonCircle className="text-2xl" />
                     </span>
                     <input
                         type="text"
@@ -80,7 +78,9 @@ export const Register: React.FC = () => {
                             required: { value: true, message: 'Display name required' },
                             pattern: USER_PATTERN,
                         })}
-                        className={`input input-md input-bordered w-full${displayNameTypeErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered w-full join-item${
+                            displayNameTypeErr ? ' input-error' : ''
+                        }`}
                     />
                 </label>
                 {displayNameTypeErr === 'required' && (
@@ -97,9 +97,9 @@ export const Register: React.FC = () => {
                 )}
             </div>
             <div className="form-control mt-2">
-                <label className="input-group input-group-md">
-                    <span className="bg-base-200">
-                        <MdOutlineMailOutline className="w-5 h-5" />
+                <label className="input-group input-group-md join">
+                    <span className="bg-base-200 p-2 px-4 flex flex-row items-center join-item">
+                        <BsEnvelope className="text-2xl" />
                     </span>
                     <input
                         type="text"
@@ -108,7 +108,9 @@ export const Register: React.FC = () => {
                             required: true,
                             pattern: EMAIL_PATTERN,
                         })}
-                        className={`input input-md input-bordered w-full${emailTypeErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered w-full join-item${
+                            emailTypeErr ? ' input-error' : ''
+                        }`}
                     />
                 </label>
                 {emailTypeErr === 'required' && (
@@ -125,9 +127,9 @@ export const Register: React.FC = () => {
                 )}
             </div>
             <div className="form-control mt-2">
-                <label className="input-group input-group-md">
-                    <span className="bg-base-200">
-                        <RiLockPasswordLine className="w-5 h-5" />
+                <label className="input-group input-group-md join">
+                    <span className="bg-base-200 p-2 px-4 flex flex-row items-center join-item">
+                        <BsKey className="text-2xl" />
                     </span>
                     <input
                         type="password"
@@ -136,7 +138,9 @@ export const Register: React.FC = () => {
                             required: true,
                             pattern: PASS_PATTERN,
                         })}
-                        className={`input input-md input-bordered w-full${passwordTypeErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered w-full join-item${
+                            passwordTypeErr ? ' input-error' : ''
+                        }`}
                     />
                 </label>
                 {passwordTypeErr === 'required' && (
@@ -192,6 +196,7 @@ export const Register: React.FC = () => {
                     }`}
                 >
                     {loading ? '' : 'Register'}
+                    <BsClipboardPlus className="text-2xl" />
                 </button>
             </div>
         </form>

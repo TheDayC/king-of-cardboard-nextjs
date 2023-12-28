@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { MdOutlineMailOutline } from 'react-icons/md';
-import { RiLockPasswordLine } from 'react-icons/ri';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { BiErrorCircle } from 'react-icons/bi';
+import { BsBoxArrowInRight, BsEnvelopeAt, BsKey } from 'react-icons/bs';
 
 import { parseAsString, safelyParse } from '../../utils/parsers';
 
@@ -57,9 +56,9 @@ export const Credentials: React.FC<CredentialsProps> = ({ shouldRedirect }) => {
                 </div>
             )}
             <div className="form-control">
-                <label className="input-group input-group-md">
-                    <span className="bg-base-200">
-                        <MdOutlineMailOutline className="w-5 h-5" />
+                <label className="input-group input-group-md join">
+                    <span className="bg-base-200 p-2 px-4 flex flex-row items-center join-item">
+                        <BsEnvelopeAt className="text-2xl" />
                     </span>
                     <input
                         type="text"
@@ -67,19 +66,19 @@ export const Credentials: React.FC<CredentialsProps> = ({ shouldRedirect }) => {
                         {...register('emailAddress', {
                             required: { value: true, message: 'Email address required' },
                         })}
-                        className={`input input-md input-bordered w-full${emailErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered join-item w-full${emailErr ? ' input-error' : ''}`}
                     />
                 </label>
                 {emailErr && (
                     <label className="label">
-                        <span className="label-text-alt">{emailErr}</span>
+                        <span className="label-text-alt text-red-600">{emailErr}</span>
                     </label>
                 )}
             </div>
             <div className="form-control mt-2">
-                <label className="input-group input-group-md">
-                    <span className="bg-base-200">
-                        <RiLockPasswordLine className="w-5 h-5" />
+                <label className="input-group input-group-md join">
+                    <span className="bg-base-200 p-2 px-4 flex flex-row items-center join-item">
+                        <BsKey className="text-2xl" />
                     </span>
                     <input
                         type="password"
@@ -87,13 +86,14 @@ export const Credentials: React.FC<CredentialsProps> = ({ shouldRedirect }) => {
                         {...register('password', {
                             required: { value: true, message: 'Password required' },
                         })}
-                        className={`input input-md input-bordered w-full${passwordErr ? ' input-error' : ''}`}
+                        className={`input input-md input-bordered join-item w-full${passwordErr ? ' input-error' : ''}`}
                     />
                 </label>
             </div>
             <div className="form-control mt-6">
                 <button type="submit" className={`btn btn-block rounded-md${btnErrClass}${btnLoadingClass}`}>
                     {loading ? '' : 'Log In'}
+                    <BsBoxArrowInRight className="text-2xl" />
                 </button>
             </div>
         </form>

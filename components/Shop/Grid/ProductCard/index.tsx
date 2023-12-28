@@ -68,7 +68,7 @@ export const ProductCard: React.FC<CardProps> = ({
                         <div className="relative">
                             {stockStatus === StockStatus.PreOrder && (
                                 <div
-                                    className="absolute flex flex-col items-center rounded-full bg-accent-focus p-3 -top-3 -right-3 tooltip tooltip-top shadow-sm"
+                                    className="absolute flex flex-col items-center rounded-full pre-order-badge p-3 -top-3 -right-3 tooltip tooltip-top shadow-sm"
                                     data-tip={
                                         releaseDate
                                             ? `Expected release: ${DateTime.fromISO(releaseDate).toFormat(
@@ -99,7 +99,7 @@ export const ProductCard: React.FC<CardProps> = ({
                             {shouldShowStockStatusTitle && (
                                 <div
                                     className="badge absolute -bottom-2 -right-2 text-md border-0 shadow-sm tooltip tooltip-bottom"
-                                    style={{ backgroundColor: stockStatusColor }}
+                                    style={{ backgroundColor: stockStatusColor, color: '#fff' }}
                                     data-tip={stockStatusMsg}
                                 >
                                     {stockStatusTitle}

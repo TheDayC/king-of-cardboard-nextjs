@@ -24,11 +24,11 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
             <div className="grid grid-cols-1 gap-2">
                 <div className="form-control">
                     <label className="label">
-                        <span className="label-text">First Name</span>
+                        <span className="label-text">First Name*</span>
                     </label>
                     <input
                         type="text"
-                        placeholder="First Name"
+                        placeholder="First Name*"
                         {...register('firstName', {
                             required: { value: true, message: 'Required' },
                             pattern: {
@@ -36,7 +36,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                                 message: fieldPatternMsgs('firstName'),
                             },
                         })}
-                        className={`input input-md input-bordered${firstNameErr ? ' input-error' : ''}`}
+                        className={`input input-sm input-bordered${firstNameErr ? ' input-error' : ''}`}
                     />
                     {firstNameErr && (
                         <label className="label">
@@ -46,11 +46,11 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                 </div>
                 <div className="form-control">
                     <label className="label">
-                        <span className="label-text">Last Name</span>
+                        <span className="label-text">Last Name*</span>
                     </label>
                     <input
                         type="text"
-                        placeholder="Last Name"
+                        placeholder="Last Name*"
                         {...register('lastName', {
                             required: { value: true, message: 'Required' },
                             pattern: {
@@ -58,7 +58,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                                 message: fieldPatternMsgs('lastName'),
                             },
                         })}
-                        className={`input input-md input-bordered${lastNameErr ? ' input-error' : ''}`}
+                        className={`input input-sm input-bordered${lastNameErr ? ' input-error' : ''}`}
                     />
                     {lastNameErr && (
                         <label className="label">
@@ -68,11 +68,11 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                 </div>
                 <div className="form-control">
                     <label className="label">
-                        <span className="label-text">Email</span>
+                        <span className="label-text">Email*</span>
                     </label>
                     <input
                         type="email"
-                        placeholder="Email"
+                        placeholder="Email*"
                         {...register('email', {
                             required: { value: true, message: 'Required' },
                             pattern: {
@@ -80,7 +80,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                                 message: fieldPatternMsgs('email'),
                             },
                         })}
-                        className={`input input-md input-bordered${emailErr ? ' input-error' : ''}`}
+                        className={`input input-sm input-bordered${emailErr ? ' input-error' : ''}`}
                     />
                     {emailErr && (
                         <label className="label">
@@ -90,11 +90,11 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                 </div>
                 <div className="form-control">
                     <label className="label">
-                        <span className="label-text">Mobile No.</span>
+                        <span className="label-text">Mobile No.*</span>
                     </label>
                     <input
                         type="tel"
-                        placeholder="Mobile No."
+                        placeholder="Mobile No.*"
                         {...register('phone', {
                             required: { value: true, message: 'Required' },
                             pattern: {
@@ -102,7 +102,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({ register, errors }) =
                                 message: fieldPatternMsgs('mobile'),
                             },
                         })}
-                        className={`input input-md input-bordered${mobileErr ? ' input-error' : ''}`}
+                        className={`input input-sm input-bordered${mobileErr ? ' input-error' : ''}`}
                     />
                     {mobileErr && (
                         <label className="label">

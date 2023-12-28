@@ -2,6 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FieldValues, useForm } from 'react-hook-form';
 import { toNumber } from 'lodash';
+import { BsCartPlusFill } from 'react-icons/bs';
 
 import selector from './selector';
 import Images from './Images';
@@ -138,17 +139,18 @@ export const Product: React.FC<ProductProps> = ({
                                                 {...register('quantity', {
                                                     required: { value: true, message: 'Required' },
                                                 })}
-                                                className="input input-lg input-bordered text-center w-32 px-0 w-full mb-4 lg:w-auto lg:mb-0"
+                                                className="input input-lg input-bordered text-center px-0 w-full mb-4 lg:w-32 lg:mb-0"
                                                 min={1}
                                                 max={stock - qtyInCart}
                                             />
                                         )}
                                         <button
                                             aria-label="add to cart"
-                                            className={`btn btn-lg w-full lg:w-auto rounded-md${btnDisabled}${btnLoading}`}
+                                            className={`btn btn-lg text-xl w-full lg:w-auto rounded-md${btnDisabled}${btnLoading}`}
                                             disabled={hasExceededStock}
                                         >
                                             {isUpdatingCart ? '' : 'Add to cart'}
+                                            <BsCartPlusFill className="text-2xl" />
                                         </button>
                                     </div>
                                 </form>
