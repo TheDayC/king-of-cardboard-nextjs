@@ -135,7 +135,7 @@ export const Shipping: React.FC<ShippingProps> = ({ shippingMethod, updateShippi
                             Edit
                         </button>
                     </Link>
-                    <button className="btn btn-error rounded-md shadow-md" onClick={handleDelete}>
+                    <button className="btn btn-error rounded-md shadow-md text-white" onClick={handleDelete}>
                         <BiTrash className="inline-block text-xl" />
                         Delete
                     </button>

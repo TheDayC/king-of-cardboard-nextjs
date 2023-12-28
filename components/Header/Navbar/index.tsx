@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { BsBag, BsBoxSeam, BsHouseDoor } from 'react-icons/bs';
-import { IoNewspaperOutline } from 'react-icons/io5';
+//import { IoNewspaperOutline } from 'react-icons/io5';
 
 import { INTERESTS } from '../../../utils/constants';
 

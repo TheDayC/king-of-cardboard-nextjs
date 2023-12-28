@@ -73,7 +73,7 @@ export const Header: React.FC = () => {
                             </div>
                             <ul
                                 tabIndex={0}
-                                className="p-2 shadow menu dropdown-content bg-base-100 rounded-md w-52 text-base-content"
+                                className="p-2 shadow menu dropdown-content bg-base-100 rounded-md w-52 text-base-content z-10"
                             >
                                 <li
                                     className={`${slug === Slugs.Profile ? 'bordered' : 'hover-bordered'}`}
