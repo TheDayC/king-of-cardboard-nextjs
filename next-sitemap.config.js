@@ -20,6 +20,7 @@ module.exports = {
         '/selector',
         '/500',
         '/404',
+        '/blog',
     ],
     additionalPaths: async (config) => {
         const paths = [
