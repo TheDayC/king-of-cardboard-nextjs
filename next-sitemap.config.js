@@ -6,9 +6,9 @@ module.exports = {
     generateRobotsTxt: true,
     generateIndexSitemap: true,
     robotsTxtOptions: {
-        policies: [{ userAgent: '*', allow: '/' }],
+        policies: [{ userAgent: '*', disallow: '/' }],
     },
-    exclude: [
+    /* exclude: [
         '/account/*',
         '/account/*',
         '/checkout',
@@ -20,8 +20,8 @@ module.exports = {
         '/selector',
         '/500',
         '/404',
-    ],
-    additionalPaths: async (config) => {
+    ], */
+    /* additionalPaths: async (config) => {
         const paths = [
             '/information/what-is-king-of-cardboard',
             '/information/break-info',
@@ -69,5 +69,5 @@ module.exports = {
         }
 
         return result;
-    },
+    }, */
 };
