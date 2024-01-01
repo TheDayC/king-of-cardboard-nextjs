@@ -9,7 +9,6 @@ import Details from './Details';
 import { Configuration, Interest, Category, StockStatus } from '../../enums/products';
 import { ImageItem } from '../../types/contentful';
 import { addItem, setUpdatingCart } from '../../store/slices/cart';
-import { gaEvent } from '../../utils/ga';
 import { addSuccess } from '../../store/slices/alerts';
 import { getPrettyPrice } from '../../utils/account/products';
 import CrossSales from '../CrossSales';
@@ -88,7 +87,7 @@ export const Product: React.FC<ProductProps> = ({
         dispatch(addItem(attributes));
 
         // Capture event.
-        gaEvent('addProductToCart', { sku_code: sku });
+        //gaEvent('addProductToCart', { sku_code: sku });
 
         // Inform user.
         dispatch(addSuccess(`${title} added to cart.`));

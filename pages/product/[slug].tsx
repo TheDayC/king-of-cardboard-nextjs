@@ -1,15 +1,13 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
 
-import { parseAsString, safelyParse } from '../../utils/parsers';
 import Custom404Page from '../404';
 import Product from '../../components/Product';
 import { ImageItem } from '../../types/contentful';
-import { getProduct } from '../../utils/account/products';
 import { Category, Configuration, Interest, StockStatus } from '../../enums/products';
 import ProductWrapper from '../../components/ProductWrapper';
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async () => {
     // Shutting up shop.
     return {
         redirect: {
@@ -18,7 +16,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
     };
 
-    const productSlug = safelyParse(context, 'query.slug', parseAsString, undefined);
+    /* const productSlug = safelyParse(context, 'query.slug', parseAsString, undefined);
     const product = await getProduct(undefined, productSlug);
 
     if (!product) {
@@ -108,7 +106,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             releaseDate,
             stockStatus,
         },
-    };
+    }; */
 };
 
 interface ProductPageProps {

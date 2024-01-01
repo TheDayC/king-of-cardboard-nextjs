@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
-import Cookies from 'js-cookie';
 import Head from 'next/head';
 
-import * as ga from '../../lib/ga';
 import Sidebar from './Sidebar';
 
 const DEFAULT_IMAGE =
@@ -18,11 +16,11 @@ interface AccountWrapperProps {
 
 export const AccountWrapper: React.FC<AccountWrapperProps> = ({ title, description, image, children }) => {
     const router = useRouter();
-    const cookieConsent = Boolean(Cookies.get('cookieConsent'));
+    //const cookieConsent = Boolean(Cookies.get('cookieConsent'));
     const imageURL = image ? image : DEFAULT_IMAGE;
 
     // Some GA subscribers.
-    useEffect(() => {
+    /* useEffect(() => {
         if (cookieConsent && router && router.events) {
             const handleRouteChange = (url: string) => {
                 ga.pageview(url);
@@ -38,7 +36,7 @@ export const AccountWrapper: React.FC<AccountWrapperProps> = ({ title, descripti
                 router.events.off('routeChangeComplete', handleRouteChange);
             };
         }
-    }, [router, cookieConsent]);
+    }, [router, cookieConsent]); */
 
     return (
         <React.Fragment>

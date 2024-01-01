@@ -77,7 +77,6 @@
         "@contentful/rich-text-types": "^15.14.1",
         "@types/bcrypt": "^5.0.0",
         "@types/cors": "^2.8.12",
-        "@types/gtag.js": "^0.0.12",
         "@types/js-cookie": "^3.0.2",
         "@types/lodash": "^4.14.189",
         "@types/luxon": "^3.1.0",

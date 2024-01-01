@@ -1,12 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
-import Cookies from 'js-cookie';
 import Head from 'next/head';
 
 import Header from '../Header';
 import Footer from '../Footer';
 import GDPR from '../GDPR';
-import * as ga from '../../lib/ga';
 
 const DEFAULT_IMAGE =
     'https://images.ctfassets.net/qeycwswfx7l5/2kAmPK2bBwIBHOWbylhgPz/8fdb6fd76bc2fb592592f96d7c4d343f/large-crown.png';
@@ -20,11 +18,11 @@ interface PageWrapperProps {
 
 export const PageWrapper: React.FC<PageWrapperProps> = ({ title, description, image, children }) => {
     const router = useRouter();
-    const cookieConsent = Boolean(Cookies.get('cookieConsent'));
+    //const cookieConsent = Boolean(Cookies.get('cookieConsent'));
     const imageURL = image ? image : DEFAULT_IMAGE;
 
     // Some GA subscribers.
-    useEffect(() => {
+    /* useEffect(() => {
         if (cookieConsent && router && router.events) {
             const handleRouteChange = (url: string) => {
                 ga.pageview(url);
@@ -40,7 +38,7 @@ export const PageWrapper: React.FC<PageWrapperProps> = ({ title, description, im
                 router.events.off('routeChangeComplete', handleRouteChange);
             };
         }
-    }, [router, cookieConsent]);
+    }, [router, cookieConsent]); */
 
     return (
         <React.Fragment>

@@ -14,8 +14,7 @@
         "isolatedModules": true,
         "jsx": "preserve",
         "incremental": true,
-        "typeRoots": ["./types"],
-        "types": ["@types/gtag.js"]
+        "typeRoots": ["./types"]
     },
     "ts-node": {
         "compilerOptions": {

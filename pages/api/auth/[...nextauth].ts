@@ -9,7 +9,6 @@ import { DateTime } from 'luxon';
 import clientPromise from '../../../lib/mongodb';
 import { connectToDatabase } from '../../../middleware/database';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
-import { gaEvent } from '../../../utils/ga';
 import { Roles } from '../../../enums/auth';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -143,7 +142,7 @@ export const authOptions: NextAuthOptions = {
                         // Build other user related items in the DB on register.
                         await setUpUserExtras(userId);
 
-                        gaEvent('registration', { email });
+                        //gaEvent('registration', { email });
 
                         return {
                             id: userId,
@@ -153,7 +152,7 @@ export const authOptions: NextAuthOptions = {
                         };
                     }
                 } catch (error) {
-                    gaEvent('failedRegistration', { email });
+                    //gaEvent('failedRegistration', { email });
                     throw new Error(error as string);
                 }
             },
@@ -230,7 +229,7 @@ export const authOptions: NextAuthOptions = {
             await setUserLoginDate(email);
 
             // Log the sign in as a gaEvent
-            gaEvent('login', { email });
+            //gaEvent('login', { email });
 
             // Allow the user in.
             return true;

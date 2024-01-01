@@ -1,12 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
-import Cookies from 'js-cookie';
 import Head from 'next/head';
 
 import Header from '../Header';
 import Footer from '../Footer';
 import GDPR from '../GDPR';
-import * as ga from '../../lib/ga';
 import { StockStatus } from '../../enums/products';
 
 const DEFAULT_IMAGE =
@@ -32,14 +30,14 @@ export const ProductWrapper: React.FC<ProductWrapperProps> = ({
     sku,
 }) => {
     const router = useRouter();
-    const cookieConsent = Boolean(Cookies.get('cookieConsent'));
+    //const cookieConsent = Boolean(Cookies.get('cookieConsent'));
     const imageURL = image ? image : DEFAULT_IMAGE;
     const brand = title.includes('Topps') ? 'Topps' : 'Panini';
     const metaPrice = (price / 100).toFixed(2);
     const status = stockStatus === StockStatus.OutOfStock ? 'out of stock' : 'in stock';
 
     // Some GA subscribers.
-    useEffect(() => {
+    /* useEffect(() => {
         if (cookieConsent && router && router.events) {
             const handleRouteChange = (url: string) => {
                 ga.pageview(url);
@@ -55,7 +53,7 @@ export const ProductWrapper: React.FC<ProductWrapperProps> = ({
                 router.events.off('routeChangeComplete', handleRouteChange);
             };
         }
-    }, [router, cookieConsent]);
+    }, [router, cookieConsent]); */
 
     return (
         <React.Fragment>

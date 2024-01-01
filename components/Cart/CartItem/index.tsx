@@ -9,7 +9,6 @@ import { fetchCartTotals, removeItem, setUpdatingCart, updateCartQty } from '../
 import { ImageItem } from '../../../types/contentful';
 import { addSuccess } from '../../../store/slices/alerts';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
-import { gaEvent } from '../../../utils/ga';
 
 interface CartItemProps {
     id: string;
@@ -44,7 +43,7 @@ export const CartItem: React.FC<CartItemProps> = ({
         dispatch(setUpdatingCart(true));
         dispatch(removeItem(id));
         dispatch(fetchCartTotals());
-        gaEvent('Item removed from cart.', { sku });
+        //gaEvent('Item removed from cart.', { sku });
         dispatch(addSuccess('Item removed from cart.'));
     };
 

@@ -17,7 +17,6 @@ import SelectionWrapper from '../../SelectionWrapper';
 import Source from './Source';
 import { parseAsString, safelyParse } from '../../../utils/parsers';
 import UseCoins from '../../UseCoins';
-import { gaEvent } from '../../../utils/ga';
 import { PaymentMethods } from '../../../enums/checkout';
 import { addOrder } from '../../../utils/account/order';
 import { Status, Payment as PaymentStatus, Fulfillment } from '../../../enums/orders';
@@ -253,7 +252,7 @@ export const Payment: React.FC = () => {
         const chosenPaymentMethod = toNumber(data.paymentMethod);
 
         setPaymentMethod(chosenPaymentMethod);
-        gaEvent('checkout', { paymentMethod: chosenPaymentMethod });
+        //gaEvent('checkout', { paymentMethod: chosenPaymentMethod });
 
         // Form now only submits stripe payments
         handleStripePayment();
