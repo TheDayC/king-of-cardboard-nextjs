@@ -2,18 +2,12 @@ import { GetServerSideProps } from 'next';
 import React from 'react';
 import { Document } from '@contentful/rich-text-types';
 
-import HeroWithImage from '../components/Hero/withImage';
 import PageWrapper from '../components/PageWrapper';
-import { isOdd } from '../utils';
 import { pageWithHeroBySlug } from '../utils/pages';
-import Content from '../components/Content';
 import { Hero, SliderImage } from '../types/pages';
-import Slider from '../components/Slider';
 import { getFeaturedProduct, listProducts } from '../utils/account/products';
 import { Configuration, SortOption, StockStatus } from '../enums/products';
 import { Product } from '../types/products';
-import LatestArrivals from '../components/LatestArrivals';
-import FeaturedProduct from '../components/FeaturedProduct';
 
 const CONFIGURATIONS: Configuration[] = [];
 const STOCK_STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.PreOrder];
@@ -54,7 +48,7 @@ interface HomePageProps {
     featuredProduct: Product | null;
 }
 
-export const Home: React.FC<HomePageProps> = ({ heroes, content, sliderImages, products, featuredProduct }) => (
+export const Home: React.FC<HomePageProps> = () => (
     <PageWrapper
         title="King of Cardboard"
         description="Sports cards and sealed sports cards products for the UK. Whether you're collecting Football, Basketball or UFC, we have something for everyone."
@@ -81,9 +75,9 @@ export const Home: React.FC<HomePageProps> = ({ heroes, content, sliderImages, p
             </p>
             <p>
                 To those I have met, made friends with and to those that have supported me every step of the way, thank
-                you, this journey has given me some incredible life lessons and helped me to grow as a person. Don't
-                worry though, I won't vanish. I'll still be around, remaining orders will still be fulfilled and new
-                exciting ideas will be produced in the future.
+                you, this journey has given me some incredible life lessons and helped me to grow as a person.
+                Don&apos;t worry though, I won&apos;t vanish. I&apos;ll still be around, remaining orders will still be
+                fulfilled and new exciting ideas will be produced in the future.
             </p>
             <p>
                 You can still email me at{' '}
@@ -100,8 +94,8 @@ export const Home: React.FC<HomePageProps> = ({ heroes, content, sliderImages, p
                 >
                     Instagram account
                 </a>{' '}
-                will still be checked if you'd like to message me and follow my sports card journey over there too. Keep
-                an eye out for more exciting things to come from me in the sports card world!
+                will still be checked if you`&apos;d like to message me and follow my sports card journey over there
+                too. Keep an eye out for more exciting things to come from me in the sports card world!
             </p>
             <p>Thank you.</p>
         </div>

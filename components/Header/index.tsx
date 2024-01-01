@@ -9,10 +9,7 @@ import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 
 import logo from '../../images/logo-full.webp';
-import Rewards from './Rewards';
 import { parseAsString, safelyParse } from '../../utils/parsers';
-import NavBar from './Navbar';
-import CartIcon from './CartIcon';
 import { setIsDrawerOpen, setUserId } from '../../store/slices/global';
 import { Slugs } from '../../enums/account';
 import IssueBanner from './IssueBanner';
