@@ -17,6 +17,14 @@ const selector = createSelector([selectCheckoutData], (checkout) => ({
 }));
 
 export const getServerSideProps: GetServerSideProps = async () => {
+    // Shutting up shop.
+    return {
+        redirect: {
+            permanent: true,
+            destination: '/',
+        },
+    };
+
     const { isOnHoliday } = await getOptions(true);
 
     if (isOnHoliday) {

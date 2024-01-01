@@ -41,6 +41,14 @@ const selector = createSelector([selectFiltersData], (filters) => ({
 }));
 
 export const getServerSideProps: GetServerSideProps = async () => {
+    // Shutting up shop.
+    return {
+        redirect: {
+            permanent: true,
+            destination: '/',
+        },
+    };
+
     const { content, sliderImages } = await getPageBySlug('shop', '');
 
     const productFacets = await listProductRows(LIMIT, SKIP, true);

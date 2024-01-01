@@ -10,6 +10,14 @@ import Content from '../../components/Content';
 import { toTitleCase } from '../../utils';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+    // Shutting up shop.
+    return {
+        redirect: {
+            permanent: true,
+            destination: '/',
+        },
+    };
+
     const slug = safelyParse(context, 'query.slug', parseAsString, null);
 
     const { content } = await getPageBySlug(slug, 'information/');

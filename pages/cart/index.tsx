@@ -5,6 +5,14 @@ import Cart from '../../components/Cart';
 import PageWrapper from '../../components/PageWrapper';
 
 export const getServerSideProps: GetServerSideProps = async () => {
+    // Shutting up shop.
+    return {
+        redirect: {
+            permanent: true,
+            destination: '/',
+        },
+    };
+
     return {
         props: {},
     };

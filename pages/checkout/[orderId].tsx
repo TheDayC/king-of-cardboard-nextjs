@@ -9,6 +9,14 @@ import Payment from '../../components/Checkout/Payment';
 import Summary from '../../components/Checkout/Summary';
 
 export const getServerSideProps: GetServerSideProps = async () => {
+    // Shutting up shop.
+    return {
+        redirect: {
+            permanent: true,
+            destination: '/',
+        },
+    };
+
     return {
         props: {},
     };

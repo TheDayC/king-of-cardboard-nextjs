@@ -10,6 +10,14 @@ import { Category, Configuration, Interest, StockStatus } from '../../enums/prod
 import ProductWrapper from '../../components/ProductWrapper';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+    // Shutting up shop.
+    return {
+        redirect: {
+            permanent: true,
+            destination: '/',
+        },
+    };
+
     const productSlug = safelyParse(context, 'query.slug', parseAsString, undefined);
     const product = await getProduct(undefined, productSlug);
 

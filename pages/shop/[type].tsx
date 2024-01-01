@@ -37,6 +37,14 @@ const CONFIGURATIONS: Configuration[] = [];
 const STOCK_STATUSES: StockStatus[] = [StockStatus.InStock, StockStatus.Import, StockStatus.PreOrder];
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+    // Shutting up shop.
+    return {
+        redirect: {
+            permanent: true,
+            destination: '/',
+        },
+    };
+
     const staticInterest = safelyParse(context, 'query.type', parseAsString, '');
     const interest = getInterestBySlug(staticInterest);
     const category = getCategoryByInterest(interest);

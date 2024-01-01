@@ -47,14 +47,16 @@ export const Header: React.FC = () => {
                         </div>
                     </Link>
                 </div>
-                <NavBar />
+                {/* <div className="navbar-center" role="navigation">
+                    <NavBar />
+                </div> */}
                 <div className="navbar-end">
-                    {status === 'authenticated' && (
+                    {/*status === 'authenticated' && (
                         <div className="hidden lg:inline-block">
                             <Rewards fullWidth={false} />
                         </div>
-                    )}
-                    <CartIcon />
+                    ) */}
+                    {/* <CartIcon /> */}
                     {status === 'authenticated' ? (
                         <div className="dropdown dropdown-end" role="menu" data-testid="account-dropdown">
                             <div className="avatar cursor-pointer relative" tabIndex={0}>

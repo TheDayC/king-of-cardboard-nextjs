@@ -1,10 +1,21 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { GetServerSideProps } from 'next';
 
 import Summary from '../../components/Checkout/Summary';
 import ConfirmationDetails from '../../components/ConfirmationDetails';
 import PageWrapper from '../../components/PageWrapper';
 import { resetCheckoutDetails } from '../../store/slices/checkout';
+
+export const getServerSideProps: GetServerSideProps = async () => {
+    // Shutting up shop.
+    return {
+        redirect: {
+            permanent: true,
+            destination: '/',
+        },
+    };
+};
 
 export const ConfirmationPage: React.FC = () => {
     const dispatch = useDispatch();
